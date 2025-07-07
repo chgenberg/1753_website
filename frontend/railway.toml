@@ -1,0 +1,15 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "npm start"
+healthcheckPath = "/"
+healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
+
+[variables]
+NODE_ENV = "production"
+NEXT_PUBLIC_API_URL = "${{NEXT_PUBLIC_API_URL}}"
+NEXT_PUBLIC_JUDGE_ME_SHOP_DOMAIN = "1753skincare.myshopify.com"
+NEXT_PUBLIC_JUDGE_ME_PUBLIC_TOKEN = "BEnXoguHo7hItl0TiV92JC65Rmk" 
