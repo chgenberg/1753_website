@@ -16,6 +16,7 @@ import { validateEnv } from './config/env'
 // Routes
 import authRoutes from './routes/auth'
 import productRoutes from './routes/products'
+import quizRoutes from './routes/quiz'
 // TODO: Add these routes when implemented
 // import userRoutes from './routes/users'
 // import orderRoutes from './routes/orders'
@@ -81,6 +82,7 @@ app.get('/health', (_req, res) => {
 // API Routes
 app.use('/api/auth', authRoutes)
 app.use('/api/products', productRoutes)
+app.use('/api/quiz', quizRoutes)
 // TODO: Uncomment when routes are implemented
 // app.use('/api/users', userRoutes)
 // app.use('/api/orders', orderRoutes)

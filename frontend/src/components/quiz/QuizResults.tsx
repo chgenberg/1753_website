@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { CheckCircle, Star, ShoppingCart, ArrowRight, Sparkles } from 'lucide-react'
+import { CheckCircle, Star, ShoppingCart, ArrowRight, Sparkles, Loader2 } from 'lucide-react'
 
 interface QuizResultsProps {
-  answers: { [key: string]: string }
+  answers: { [key: string]: string | string[] }
   onRestart: () => void
   onClose: () => void
 }
@@ -20,112 +20,138 @@ interface ProductRecommendation {
   match: number
 }
 
+interface PersonalizedResult {
+  skinProfile: string
+  recommendations: {
+    products: string[]
+    ingredients: string[]
+    routine: string[]
+  }
+  explanation: string
+  tips: string[]
+}
+
 export const QuizResults = ({ answers, onRestart, onClose }: QuizResultsProps) => {
   const [email, setEmail] = useState('')
+  const [aiResults, setAiResults] = useState<PersonalizedResult | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  // Analyze answers to determine skin profile
-  const analyzeSkinProfile = () => {
-    const concerns = answers.concerns?.split(',') || []
-    const skinType = answers.skinType || ''
-    const age = answers.age || ''
-    
-    let profile = ''
-    let recommendations: ProductRecommendation[] = []
-    
-    if (concerns.includes('acne') || concerns.includes('inflammation')) {
-      profile = 'Problematisk hud'
-      recommendations = [
-        {
-          id: 'ta-da',
-          name: 'TA-DA',
-          image: '/images/products/TA-DA.png',
-          price: '899 kr',
-          description: 'Perfekt för problematisk hud med anti-inflammatoriska egenskaper',
-          benefits: ['Minskar inflammation', 'Balanserar oljeproduktion', 'Lugnar irriterad hud'],
-          match: 95
-        },
-        {
-          id: 'the-one',
-          name: 'THE ONE',
-          image: '/images/products/TheONE.png',
-          price: '799 kr',
-          description: 'Vår bestseller med CBD och CBG för balanserad hud',
-          benefits: ['Stärker hudbarriären', 'Återfuktar', 'Antioxidanter'],
-          match: 85
+  // Fetch AI-generated results
+  useEffect(() => {
+    const fetchAIResults = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+
+        // Transform answers to match API format
+        const quizAnswers = {
+          skinType: answers.skinType as string || '',
+          concerns: Array.isArray(answers.concerns) ? answers.concerns : [answers.concerns as string].filter(Boolean),
+          lifestyle: Array.isArray(answers.lifestyle) ? answers.lifestyle : [answers.lifestyle as string].filter(Boolean),
+          currentProducts: Array.isArray(answers.currentProducts) ? answers.currentProducts : [answers.currentProducts as string].filter(Boolean),
+          goals: Array.isArray(answers.goals) ? answers.goals : [answers.goals as string].filter(Boolean),
+          age: answers.age as string || '',
+          budget: answers.budget as string || ''
         }
-      ]
-    } else if (skinType === 'sensitive' || concerns.includes('sensitivity')) {
-      profile = 'Känslig hud'
-      recommendations = [
-        {
-          id: 'naturel',
-          name: 'NATUREL',
-          image: '/images/products/Naturel.png',
-          price: '749 kr',
-          description: 'Mild formula speciellt utvecklad för känslig hud',
-          benefits: ['Lugnar känslig hud', 'Hypoallergen', 'Stärker hudbarriären'],
-          match: 92
-        },
-        {
-          id: 'the-one',
-          name: 'THE ONE',
-          image: '/images/products/TheONE.png',
-          price: '799 kr',
-          description: 'Vår bestseller med CBD och CBG för balanserad hud',
-          benefits: ['Stärker hudbarriären', 'Återfuktar', 'Antioxidanter'],
-          match: 80
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/quiz/results`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(quizAnswers)
+        })
+
+        if (!response.ok) {
+          throw new Error('Kunde inte hämta personaliserade resultat')
         }
-      ]
-    } else if (concerns.includes('aging') || concerns.includes('firmness')) {
-      profile = 'Anti-age fokus'
-      recommendations = [
-        {
-          id: 'fungtastic',
-          name: 'FUNGTASTIC',
-          image: '/images/products/Fungtastic.png',
-          price: '949 kr',
-          description: 'Med medicinsvampar för anti-aging och fasthet',
-          benefits: ['Stimulerar kollagenproduktion', 'Förbättrar elasticitet', 'Antioxidanter'],
-          match: 90
-        },
-        {
-          id: 'the-one',
-          name: 'THE ONE',
-          image: '/images/products/TheONE.png',
-          price: '799 kr',
-          description: 'Vår bestseller med CBD och CBG för balanserad hud',
-          benefits: ['Stärker hudbarriären', 'Återfuktar', 'Antioxidanter'],
-          match: 85
-        }
-      ]
-    } else {
-      profile = 'Allmän hudvård'
-      recommendations = [
-        {
-          id: 'the-one',
-          name: 'THE ONE',
-          image: '/images/products/TheONE.png',
-          price: '799 kr',
-          description: 'Vår bestseller med CBD och CBG för balanserad hud',
-          benefits: ['Stärker hudbarriären', 'Återfuktar', 'Antioxidanter'],
-          match: 88
-        },
-        {
-          id: 'i-love',
-          name: 'I LOVE',
-          image: '/images/products/ILOVE.png',
-          price: '1299 kr',
-          description: 'Komplett hudvårdskit för daglig rutin',
-          benefits: ['Komplett rutin', 'Dag och natt', 'Perfekt start'],
-          match: 82
-        }
-      ]
+
+        const data = await response.json()
+        setAiResults(data.data)
+      } catch (err) {
+        console.error('Error fetching AI results:', err)
+        setError(err instanceof Error ? err.message : 'Ett fel uppstod')
+        // Fallback to basic results
+        setAiResults({
+          skinProfile: 'Personlig hudanalys',
+          recommendations: {
+            products: ['THE ONE'],
+            ingredients: ['CBD', 'CBG'],
+            routine: ['Rengör huden', 'Applicera ansiktsolja', 'Använd fuktkräm']
+          },
+          explanation: 'Baserat på dina svar rekommenderar vi vår bestseller THE ONE för en balanserad hudvård.',
+          tips: ['Var konsekvent med din rutin', 'Lyssna på din hud', 'Ge produkterna tid att verka']
+        })
+      } finally {
+        setLoading(false)
+      }
     }
-    
-    return { profile, recommendations }
-  }
 
-  const { profile, recommendations } = analyzeSkinProfile()
+    fetchAIResults()
+  }, [answers])
+
+  // Map product names to product data
+  const getProductRecommendations = (productNames: string[]): ProductRecommendation[] => {
+    const productMap: { [key: string]: ProductRecommendation } = {
+      'THE ONE': {
+        id: 'the-one',
+        name: 'THE ONE',
+        image: '/images/products/TheONE.png',
+        price: '799 kr',
+        description: 'Vår bestseller med CBD och CBG för balanserad hud',
+        benefits: ['Stärker hudbarriären', 'Återfuktar', 'Antioxidanter'],
+        match: 95
+      },
+      'NATUREL': {
+        id: 'naturel',
+        name: 'NATUREL',
+        image: '/images/products/Naturel.png',
+        price: '749 kr',
+        description: 'Mild formula speciellt utvecklad för känslig hud',
+        benefits: ['Lugnar känslig hud', 'Hypoallergen', 'Stärker hudbarriären'],
+        match: 92
+      },
+      'TA-DA': {
+        id: 'ta-da',
+        name: 'TA-DA',
+        image: '/images/products/TA-DA.png',
+        price: '899 kr',
+        description: 'Perfekt för problematisk hud med anti-inflammatoriska egenskaper',
+        benefits: ['Minskar inflammation', 'Balanserar oljeproduktion', 'Lugnar irriterad hud'],
+        match: 90
+      },
+      'FUNGTASTIC': {
+        id: 'fungtastic',
+        name: 'FUNGTASTIC',
+        image: '/images/products/Fungtastic.png',
+        price: '949 kr',
+        description: 'Med medicinsvampar för anti-aging och fasthet',
+        benefits: ['Stimulerar kollagenproduktion', 'Förbättrar elasticitet', 'Antioxidanter'],
+        match: 88
+      },
+      'I LOVE': {
+        id: 'i-love',
+        name: 'I LOVE',
+        image: '/images/products/ILOVE.png',
+        price: '1299 kr',
+        description: 'Komplett hudvårdskit för daglig rutin',
+        benefits: ['Komplett rutin', 'Dag och natt', 'Perfekt start'],
+        match: 85
+      },
+      'DUO': {
+        id: 'duo',
+        name: 'DUO',
+        image: '/images/products/DUO.png',
+        price: '1499 kr',
+        description: 'Kombinationspaket för komplett hudvård',
+        benefits: ['Två produkter', 'Perfekt kombination', 'Bästa värdet'],
+        match: 87
+      }
+    }
+
+    return productNames.map(name => productMap[name.toUpperCase()] || productMap['THE ONE'])
+  }
 
   const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -133,6 +159,50 @@ export const QuizResults = ({ answers, onRestart, onClose }: QuizResultsProps) =
     console.log('Email submitted:', email)
     // Show success message or redirect
   }
+
+  if (loading) {
+    return (
+      <div className="max-w-4xl mx-auto p-6">
+        <div className="flex flex-col items-center justify-center py-12">
+          <Loader2 className="h-12 w-12 text-green-500 animate-spin mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            Analyserar dina svar...
+          </h2>
+          <p className="text-gray-600 text-center">
+            Vår AI skapar personaliserade hudvårdsrekommendationer baserat på dina svar.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error && !aiResults) {
+    return (
+      <div className="max-w-4xl mx-auto p-6">
+        <div className="text-center py-12">
+          <div className="text-red-500 mb-4">
+            <svg className="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.866-.833-2.598 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            Kunde inte ladda resultat
+          </h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button
+            onClick={onRestart}
+            className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
+          >
+            Försök igen
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  if (!aiResults) return null
+
+  const productRecommendations = getProductRecommendations(aiResults.recommendations.products)
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -150,11 +220,11 @@ export const QuizResults = ({ answers, onRestart, onClose }: QuizResultsProps) =
           Dina personliga resultat!
         </h2>
         <p className="text-lg text-gray-600">
-          Baserat på dina svar har vi identifierat din hudprofil
+          AI-genererade rekommendationer baserat på dina svar
         </p>
       </motion.div>
 
-      {/* Skin Profile */}
+      {/* AI-Generated Skin Profile */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -162,26 +232,57 @@ export const QuizResults = ({ answers, onRestart, onClose }: QuizResultsProps) =
         className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6 mb-8"
       >
         <h3 className="text-xl font-semibold text-gray-900 mb-3">
-          Din hudprofil: {profile}
+          {aiResults.skinProfile}
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <p className="text-gray-700 mb-4">{aiResults.explanation}</p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <h4 className="font-medium text-gray-700 mb-2">Dina svar:</h4>
-            <ul className="space-y-1 text-sm text-gray-600">
-              <li>• Hudtyp: {answers.skinType || 'Ej specificerad'}</li>
-              <li>• Ålder: {answers.age || 'Ej specificerad'}</li>
-              <li>• Huvudsakliga bekymmer: {answers.concerns || 'Inga specifika'}</li>
-              <li>• Nuvarande rutin: {answers.routine || 'Ej specificerad'}</li>
+            <h4 className="font-medium text-gray-900 mb-2">Rekommenderade ingredienser:</h4>
+            <ul className="space-y-1">
+              {aiResults.recommendations.ingredients.map((ingredient, index) => (
+                <li key={index} className="text-sm text-gray-600 flex items-center">
+                  <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
+                  {ingredient}
+                </li>
+              ))}
             </ul>
           </div>
           <div>
-            <h4 className="font-medium text-gray-700 mb-2">Våra rekommendationer:</h4>
-            <p className="text-sm text-gray-600">
-              Vi har valt produkter som specifikt passar din hudprofil och dina behov. 
-              Våra CBD- och CBG-baserade produkter arbetar med din hud naturligt.
-            </p>
+            <h4 className="font-medium text-gray-900 mb-2">Din hudvårdsrutin:</h4>
+            <ol className="space-y-1">
+              {aiResults.recommendations.routine.map((step, index) => (
+                <li key={index} className="text-sm text-gray-600 flex items-start">
+                  <span className="bg-green-100 text-green-800 text-xs rounded-full h-5 w-5 flex items-center justify-center mr-2 mt-0.5 flex-shrink-0">
+                    {index + 1}
+                  </span>
+                  {step}
+                </li>
+              ))}
+            </ol>
           </div>
         </div>
+      </motion.div>
+
+      {/* AI Tips */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="bg-yellow-50 rounded-xl p-6 mb-8"
+      >
+        <h3 className="text-xl font-semibold text-gray-900 mb-3 flex items-center">
+          <Sparkles className="h-5 w-5 text-yellow-500 mr-2" />
+          Personliga tips för dig
+        </h3>
+        <ul className="space-y-2">
+          {aiResults.tips.map((tip, index) => (
+            <li key={index} className="text-gray-700 flex items-start">
+              <ArrowRight className="h-4 w-4 text-yellow-500 mr-2 mt-0.5 flex-shrink-0" />
+              {tip}
+            </li>
+          ))}
+        </ul>
       </motion.div>
 
       {/* Product Recommendations */}
@@ -195,7 +296,7 @@ export const QuizResults = ({ answers, onRestart, onClose }: QuizResultsProps) =
           Rekommenderade produkter för dig
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {recommendations.map((product, index) => (
+          {productRecommendations.map((product, index) => (
             <motion.div
               key={product.id}
               initial={{ opacity: 0, y: 20 }}
@@ -260,10 +361,10 @@ export const QuizResults = ({ answers, onRestart, onClose }: QuizResultsProps) =
         className="bg-gray-50 rounded-xl p-6 mb-8"
       >
         <h3 className="text-xl font-bold text-gray-900 mb-3">
-          Få dina resultat via email
+          Få dina AI-resultat via email
         </h3>
         <p className="text-gray-600 mb-4">
-          Vi skickar dig en sammanfattning av dina resultat och personliga hudvårdstips.
+          Vi skickar dig en sammanfattning av dina personaliserade resultat och hudvårdstips.
         </p>
         <form onSubmit={handleEmailSubmit} className="flex flex-col sm:flex-row gap-3">
           <input
