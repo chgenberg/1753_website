@@ -1,0 +1,263 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import Image from 'next/image'
+import { usePathname } from 'next/navigation'
+import { motion, AnimatePresence } from 'framer-motion'
+import { 
+  Home, 
+  Info, 
+  Package, 
+  Phone, 
+  ShoppingBag,
+  Users,
+  Leaf,
+  HelpCircle,
+  Store,
+  BookOpen
+} from 'lucide-react'
+
+interface MenuItem {
+  name: string
+  href: string
+  icon: React.ReactNode
+  children?: {
+    name: string
+    href: string
+    icon?: React.ReactNode
+  }[]
+}
+
+export function Header() {
+  const [isScrolled, setIsScrolled] = useState(false)
+  const [cartCount, setCartCount] = useState(2)
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null)
+  const pathname = usePathname()
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 300)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  const menuItems: MenuItem[] = [
+    {
+      name: 'HEM',
+      href: '/',
+      icon: <Home className="w-5 h-5" />
+    },
+    {
+      name: 'OM OSS',
+      href: '#', // Prevent navigation when hovering
+      icon: <Info className="w-5 h-5" />,
+      children: [
+        { name: 'Vilka är vi?', href: '/om-oss', icon: <Users className="w-4 h-4" /> },
+        { name: 'Våra ingredienser', href: '/om-oss/ingredienser', icon: <Leaf className="w-4 h-4" /> },
+        { name: 'Q & A', href: '/om-oss/faq', icon: <HelpCircle className="w-4 h-4" /> },
+        { name: 'Återförsäljare', href: '/om-oss/aterforsaljare', icon: <Store className="w-4 h-4" /> }
+      ]
+    },
+    {
+      name: 'PRODUKTER',
+      href: '/products',
+      icon: <Package className="w-5 h-5" />
+    },
+    {
+      name: 'BLOGG',
+      href: '/blogg',
+      icon: <BookOpen className="w-5 h-5" />
+    },
+    {
+      name: 'KONTAKTA OSS',
+      href: '/kontakt',
+      icon: <Phone className="w-5 h-5" />
+    }
+  ]
+
+  return (
+    <>
+      {/* Scrolling Banner */}
+      <div className="fixed top-0 left-0 right-0 z-[60] h-10 overflow-hidden bg-black">
+        <div className="absolute inset-0">
+          <svg
+            className="absolute bottom-0 w-full h-3"
+            preserveAspectRatio="none"
+            viewBox="0 0 1200 40"
+          >
+            <path
+              d="M0,20 Q150,5 300,20 T600,20 T900,20 T1200,20 L1200,40 L0,40 Z"
+              fill="#000000"
+              className="animate-pulse"
+            />
+          </svg>
+        </div>
+        <div className="relative z-10 flex h-full items-center overflow-hidden">
+          <div className="animate-marquee whitespace-nowrap">
+            <span className="text-white text-sm font-medium tracking-wider px-8">
+              FRI FRAKT ÖVER 500 KR • FRI FRAKT ÖVER 500 KR • FRI FRAKT ÖVER 500 KR • FRI FRAKT ÖVER 500 KR • FRI FRAKT ÖVER 500 KR • FRI FRAKT ÖVER 500 KR • FRI FRAKT ÖVER 500 KR • FRI FRAKT ÖVER 500 KR •
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Vertical Navigation on Left - Always visible with glassmorphism */}
+      <nav className={`fixed left-0 top-0 h-full z-50 transition-all duration-500 pt-10 ${
+        isScrolled ? 'bg-white/90 backdrop-blur-md shadow-lg' : 'bg-black/20 backdrop-blur-sm'
+      }`}>
+        <div className="flex flex-col h-full py-6 px-4">
+          {/* Logo integrated in navigation */}
+          <div className="flex justify-center mb-6">
+            <Link href="/" className="relative">
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                whileHover={{ scale: 1.05 }}
+                className="bg-white/10 backdrop-blur-sm rounded-full p-3 hover:bg-white/20 transition-all duration-300"
+              >
+                <img
+                  src="/1753_white.png"
+                  alt="1753 Skincare"
+                  className="h-8 w-auto"
+                />
+              </motion.div>
+            </Link>
+          </div>
+          
+          <div className="flex-1 flex flex-col items-center space-y-6">
+            {menuItems.map((item) => (
+              <div 
+                key={item.name} 
+                className="relative group"
+                onMouseEnter={() => setHoveredItem(item.name)}
+                onMouseLeave={() => setHoveredItem(null)}
+              >
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="relative"
+                >
+                  {item.children ? (
+                    <div
+                      className={`flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 cursor-pointer ${
+                        isScrolled 
+                          ? 'text-gray-600 hover:text-[#064400] hover:bg-gray-100'
+                          : 'text-white/80 hover:text-white hover:bg-white/20'
+                      }`}
+                    >
+                      {item.icon}
+                    </div>
+                  ) : (
+                    <Link
+                      href={item.href}
+                      className={`flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 ${
+                        pathname === item.href
+                          ? 'bg-[#064400] text-white'
+                          : isScrolled 
+                            ? 'text-gray-600 hover:text-[#064400] hover:bg-gray-100'
+                            : 'text-white/80 hover:text-white hover:bg-white/20'
+                      }`}
+                    >
+                      {item.icon}
+                    </Link>
+                  )}
+                </motion.div>
+
+                {/* Glassmorphism tooltip */}
+                <AnimatePresence>
+                  {hoveredItem === item.name && !item.children && (
+                    <motion.div
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -10 }}
+                      className="absolute left-16 top-1/2 -translate-y-1/2 whitespace-nowrap pointer-events-none"
+                    >
+                      <div className={`backdrop-blur-md px-4 py-2 rounded-lg shadow-lg border ${
+                        isScrolled 
+                          ? 'bg-white/90 border-gray-200/50 text-gray-800' 
+                          : 'bg-white/20 border-white/20 text-white'
+                      }`}>
+                        <span className="text-sm font-medium">{item.name}</span>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Submenu - Shows on hover */}
+                <AnimatePresence>
+                  {hoveredItem === item.name && item.children && (
+                    <motion.div
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -10 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute left-16 top-0 ml-2"
+                    >
+                      <div className={`backdrop-blur-md rounded-lg shadow-xl border py-2 min-w-[200px] ${
+                        isScrolled 
+                          ? 'bg-white/95 border-gray-200/50' 
+                          : 'bg-black/60 border-white/20'
+                      }`}>
+                        <div className={`px-4 py-2 mb-2 border-b ${
+                          isScrolled ? 'border-gray-200/50' : 'border-white/20'
+                        }`}>
+                          <span className={`text-sm font-semibold ${
+                            isScrolled ? 'text-gray-800' : 'text-white'
+                          }`}>{item.name}</span>
+                        </div>
+                        {item.children.map((child) => (
+                          <Link
+                            key={child.name}
+                            href={child.href}
+                            className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-all duration-200 ${
+                              isScrolled 
+                                ? 'text-gray-600 hover:text-[#064400] hover:bg-gray-50/50' 
+                                : 'text-white/80 hover:text-white hover:bg-white/10'
+                            }`}
+                          >
+                            {child.icon}
+                            <span>{child.name}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ))}
+          </div>
+        </div>
+      </nav>
+
+      {/* Shopping Cart - Floating Pill - back to top right */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        whileHover={{ scale: 1.05 }}
+        className="fixed top-14 right-6 z-50"
+      >
+        <Link
+          href="/cart"
+          className="relative flex items-center gap-2 bg-black text-white px-6 py-3 rounded-full hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl"
+        >
+          <ShoppingBag className="w-5 h-5" />
+          <span className="text-sm font-medium">Varukorg</span>
+          {cartCount > 0 && (
+            <motion.span
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              className="absolute -top-2 -right-2 bg-[#064400] text-white text-xs w-6 h-6 rounded-full flex items-center justify-center font-bold"
+            >
+              {cartCount}
+            </motion.span>
+          )}
+        </Link>
+      </motion.div>
+    </>
+  )
+} 

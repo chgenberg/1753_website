@@ -1,0 +1,224 @@
+Produktnamn	DUO-kit + TA-DA Serum
+Slug	duo-ta-da
+Kort beskrivning	Komplett rutinpaket med TA-DA Serum (3 % CBG) + två ansiktsoljor för djup fukt, lugn och långvarig lyster.
+Lång beskrivning	Ge huden ett komplett ekosystem-lyft i tre steg. I paketet samlas The ONE Facial Oil, I LOVE Facial Oil och TA-DA Serum i en helhetsrutin som stärker hudbarriären, minskar inflammation och kapslar in fukt – samtidigt som den kickstartar hudens endocannabinoidsystem (ECS) för långsiktig balans. 
+Omedelbar lyster & spänst – ekologisk jojobaolja och cannabigerol (CBG) binder fukt på djupet och jämnar ut hudtonen. 
+Bevisat anti-inflammatoriskt skydd – CBG har i laboratoriestudier visat bred nedreglering av inflammatoriska markörer i hudceller. 
+Fastare, fylligare känsla – kontinuerlig användning förbättrar elasticitet och fasthet tack vare synergier mellan CBD, CBG och essentiella fettsyror.
+Pris	1 498 kr
+SKU	4004
+EAN	
+Lagersaldo	
+Spåra lager	Ja
+Kategorinamn	Hudvårdskit
+Kategori-slug	hudvardskit
+Taggar	CBG, Serum, Facial Oil, Hudvårdskit, Torr hud, Känslig hud
+Hudtyper	Alla hudtyper – särskilt torr, känslig & inflammerad
+Fördelar	Stärker hudbarriären; djupt återfuktande; anti‑inflammatoriskt; ökar elasticitet & lyster
+Användning	Morgon – 3‑4 dr The ONE + 1‑2 pump TA‑DA; Kväll – 3‑4 dr I LOVE + 1‑2 pump TA‑DA.
+Ingrediens 1 namn	Cannabigerol (CBG)
+Ingrediens 1 beskrivning	Icke‑psykoaktiv cannabinoid som stödjer hudens fuktbalans.
+Ingrediens 1 fördelar	Antioxidativ, anti‑inflammatorisk, stärker kollagen & barriär
+Ingrediens 1 koncentration	3 % i serum
+Bild 1 URL	
+Bild 1 Alt-text	Produktfoto: TA‑DA Serum + ansiktsoljor
+Bild 1 Position	1
+Bild 2 URL	
+Bild 2 Alt-text	Kit placerat i naturlig skogsmiljö
+Bild 2 Position	2
+SEO-titel	DUO-kit + TA-DA Serum – komplett CBG-hudvårdskit
+SEO-beskrivning	Få mjuk, lugn & återfuktad hud med 1753 Skincare‑kitet: två ansiktsoljor + TA‑DA Serum (3 % CBG). Kliniskt bevisad effekt mot torrhet & irritation.
+SEO-nyckelord	CBG serum, hudvårdskit, torr hud rutin, 1753 skincare, ansiktsolja
+
+
+Produktnamn	TA-DA Serum
+Slug	ta-da-serum
+Kort beskrivning	3 % CBG‑serum som låser in fukt och lugnar irritation för silkesmjuk, strålande hud.
+Lång beskrivning	Din dagliga fuktförsäkring i kallt klimat. Med 3 % (1500 mg) CBG och ekologisk jojobaolja låser TA-DA in vatten, lugnar irriterad hud och bygger upp en studsig, ungdomlig hudstruktur. 
+Djupt återfuktande – kliniskt kopplat till minskad transepidermal vattenförlust. 
+Bygger fasthet – CBG sägs aktivera CB2-receptorer som reglerar kollagensyntes och hudelasticitet.
+Antioxidant-sköld – skyddar mot fria radikaler och urban stress.
+Pris	699 kr
+SKU	1005
+EAN	7350147660067
+Lagersaldo	
+Spåra lager	Ja
+Kategorinamn	Serum
+Kategori-slug	serum
+Taggar	CBG, Torr hud, Känslig hud, Antioxidant
+Hudtyper	Alla hudtyper – extra bra för torr & känslig
+Fördelar	Återfuktar djupt; anti‑inflammatoriskt; förbättrar fasthet & glow
+Användning	Morgon/kväll: Applicera 1–2 pump ovanpå ansiktsolja.
+Ingrediens 1 namn	Cannabigerol (CBG)
+Ingrediens 1 beskrivning	Naturlig cannabinoid som kommunicerar med hudens ECS.
+Ingrediens 1 fördelar	Antioxidativ, lugnar rodnad, stärker barriär
+Ingrediens 1 koncentration	3 %
+Bild 1 URL	
+Bild 1 Alt-text	Glasflaska TA‑DA Serum på grön bakgrund
+Bild 1 Position	1
+Bild 2 URL	
+Bild 2 Alt-text	
+Bild 2 Position	
+SEO-titel	TA‑DA Serum – 3 % CBG mot torr hud
+SEO-beskrivning	Säg hejdå till stram hud: TA‑DA Serum kapslar in fukt och boostar elasticitet. 100 % naturligt, veganskt & parfymfritt.
+SEO-nyckelord	CBG serum, torr hud, känslig hud, 1753 skincare
+
+
+Produktnamn	DUO-kit (The ONE + I LOVE Facial Oil)
+Slug	duo-kit-the-one-i-love-facial-oil
+Kort beskrivning	Pack med dag‑ & nattolja som ger komplett cannabinoid‑support och lyster.
+Lång beskrivning	Morgon-till-kväll-duon som förvandlar hudens textur. The ONE skyddar på dagen med 10 % CBD, medan I LOVE reparerar på natten med 10 % CBD + 5 % CBG. Tillsammans balanserar de sebum, reducerar rodnad och ger ”spa-lyster” dygnet runt. 
+Kund-favorit för spänst – användare rapporterar mjukare, elastisk hud redan efter några veckor.
+CBD + CBG-synergi – forskning visar att kombinationen ger förstärkt anti-oxidativ och anti-inflammatorisk effekt. 
+
+Pris	1 099 kr
+SKU	1003
+EAN	
+Lagersaldo	
+Spåra lager	Ja
+Kategorinamn	Hudvårdskit
+Kategori-slug	hudvardskit
+Taggar	CBD, CBG, Ansiktsolja, Duo-kit, Glow
+Hudtyper	Alla hudtyper
+Fördelar	Skyddar dagtid; reparerar nattetid; reducerar rodnad & torrhet; ökar glow
+Användning	Morgon: The ONE 3–4 dr. Kväll: I LOVE 3–4 dr.
+Ingrediens 1 namn	Cannabidiol (CBD)
+Ingrediens 1 beskrivning	Icke‑psykoaktiv cannabinoid med anti‑inflammatorisk effekt.
+Ingrediens 1 fördelar	Lugnar, återfuktar, främjar elasticitet
+Ingrediens 1 koncentration	10 % (i I LOVE)
+Bild 1 URL	
+Bild 1 Alt-text	Duo-kit med två oljeflaskor & kartong
+Bild 1 Position	1
+Bild 2 URL	
+Bild 2 Alt-text	
+Bild 2 Position	
+SEO-titel	Duo Facial Oil Kit – CBD + CBG för lyster
+SEO-beskrivning	Dag‑ & nattolja med CBD/CBG stärker barriären och ger mjuk, glowig hud. Fri frakt över 500 kr.
+SEO-nyckelord	CBD ansiktsolja, duo-kit, känslig hud, 1753 skincare
+
+
+Produktnamn	I LOVE Facial Oil
+Slug	i-love-facial-oil
+Kort beskrivning	Ansiktsolja med 10 % CBD + 5 % CBG för nattlig reparation och lugn hud.
+Lång beskrivning	Nattoljan som jobbar medan du sover. Höga halter av CBD och CBG samverkar för att minska inflammation, öka elasticitet och ge morgonglow redan efter första veckan. 
+Stark anti-age-kombo – CBD reducerar oxidativ stress medan CBG förbättrar hudton och fasthet.
+Kliniskt stödd hudro – CBD har dokumenterad effekt på rodnad och stressutslag.
+Pris	849 kr
+SKU	3001
+EAN	7350147660029
+Lagersaldo	
+Spåra lager	Ja
+Kategorinamn	Ansiktsolja
+Kategori-slug	ansiktsolja
+Taggar	CBD, CBG, Glow, Nattolja
+Hudtyper	Alla hudtyper – ideal för torr & inflammerad
+Fördelar	Minskar rodnad; återfuktar; ökar elasticitet & lyster
+Användning	Kväll: 3–4 droppar på ren hud (eller morgon & kväll vid behov).
+Ingrediens 1 namn	Cannabigerol (CBG)
+Ingrediens 1 beskrivning	Antioxidant som stärker kollagen & jämnar hudton.
+Ingrediens 1 fördelar	Anti‑inflammatorisk, elasticitetsökande
+Ingrediens 1 koncentration	5 %
+Bild 1 URL	
+Bild 1 Alt-text	I LOVE Facial Oil flaska mot beige bakgrund
+Bild 1 Position	1
+Bild 2 URL	
+Bild 2 Alt-text	
+Bild 2 Position	
+SEO-titel	I LOVE Facial Oil – 10 % CBD, 5 % CBG
+SEO-beskrivning	Lyxig nattolja som lugnar, återfuktar och ger glow med CBD + CBG. Vegansk & 100 % naturlig.
+SEO-nyckelord	CBD ansiktsolja, CBG hudvård, nattolja, 1753 skincare
+
+
+Produktnamn	The ONE Facial Oil
+Slug	facialoil
+Kort beskrivning	Daglig ansiktsolja med 10 % CBD och 0,2 % CBG som skyddar och återfuktar.
+Lång beskrivning	Den dagliga multivitamin-oljan för huden. En perfekt balans av 10 % CBD och 0 ,2 % CBG stärker barriären, reducerar känslighet och ger omedelbar pärlglans. 
+Snabbabsorberande glow – lägger sig fjäderlätt och lämnar en hälsosam lyster utan att täppa porer.
+Fastare struktur över tid – kontinuerlig CBD-användning har kopplats till förbättrad kollagenmognad och hudtäthet.
+Pris	649 kr
+SKU	1001
+EAN	7350147660005
+Lagersaldo	
+Spåra lager	Ja
+Kategorinamn	Ansiktsolja
+Kategori-slug	ansiktsolja
+Taggar	CBD, Dagolja, Glow, Känslig hud
+Hudtyper	Alla hudtyper
+Fördelar	Lugnar; stärker barriär; ger mjuk lyster
+Användning	Morgon: 3–4 droppar på ren hud (mer vid torrhet).
+Ingrediens 1 namn	Cannabidiol (CBD)
+Ingrediens 1 beskrivning	Kraftfull antioxidant och anti‑inflammatorisk molekyl.
+Ingrediens 1 fördelar	Minskar känslighet; återfuktar; förbättrar fasthet
+Ingrediens 1 koncentration	10 %
+Bild 1 URL	
+Bild 1 Alt-text	The ONE Facial Oil flaska mot rosa bakgrund
+Bild 1 Position	1
+Bild 2 URL	
+Bild 2 Alt-text	
+Bild 2 Position	
+SEO-titel	The ONE Facial Oil – 10 % CBD för daglig lyster
+SEO-beskrivning	Skydda & återfukta huden med The ONE Facial Oil. 10 % CBD lugnar rodnad och ger frisk glow.
+SEO-nyckelord	CBD ansiktsolja, dagolja, känslig hud, 1753 skincare
+
+
+Produktnamn	Au Naturel Makeup Remover
+Slug	makeup-remover-au-naturel
+Kort beskrivning	Skonsam rengöringsolja med MCT + 0,2 % CBD som löser makeup och smuts utan att torka ut.
+Lång beskrivning	Rengöringsoljan som vårdar medan den tvättar. Två ingredienser räcker: silkeslen MCT-olja löser upp smuts och makeup, medan CBD lugnar och återfuktar – hudbarriären lämnas stark och spänstig efter varje tvätt.
+Pris	199 kr
+SKU	1004
+EAN	7350147660036
+Lagersaldo	
+Spåra lager	Ja
+Kategorinamn	Rengöring
+Kategori-slug	rengoring
+Taggar	CBD, Makeup Remover, Rengöringsolja
+Hudtyper	Alla hudtyper
+Fördelar	Löser makeup; återfuktar; bevarar barriären
+Användning	Massera in några droppar; torka av med varm handduk.
+Ingrediens 1 namn	Cannabidiol (CBD)
+Ingrediens 1 beskrivning	Anti‑inflammatorisk cannabinoid som lugnar huden.
+Ingrediens 1 fördelar	Mjukgör, minskar rodnad, stödjer barriär
+Ingrediens 1 koncentration	0,2 %
+Bild 1 URL	
+Bild 1 Alt-text	Glasflaska Au Naturel Makeup Remover mot beige bakgrund
+Bild 1 Position	1
+Bild 2 URL	
+Bild 2 Alt-text	
+Bild 2 Position	
+SEO-titel	Au Naturel Makeup Remover – MCT + CBD
+SEO-beskrivning	Ta bort makeup naturligt med MCT‑olja & 0,2 % CBD. Ren hud utan uttorkning.
+SEO-nyckelord	CBD rengöringsolja, makeup remover, naturlig hudvård, 1753 skincare
+
+
+Produktnamn	Fungtastic Mushroom Extract
+Slug	fungtastic-extract
+Kort beskrivning	Extrakt av Chaga, Lion’s Mane, Cordyceps & Reishi för energi, fokus och immun­support.
+Lång beskrivning	Skönhet inifrån – fyra svampar, ett mål: vital hud och kropp. Kapslarna kombinerar Chaga, Lion’s Mane, Cordyceps och Reishi (var och en 25 %) för att stärka immunförsvar, energi och stressresiliens – tre nycklar till frisk, elastisk hud. 
+Chaga & Betulinsyra – potenta antioxidanter som skyddar kollagen mot nedbrytning. 
+Lion’s Mane & Reishi – bidrar till bättre sömn och kognitiv återhämtning, faktorer kopplade till hudförnyelsecykler. 
+Cordyceps – ökar syresättning och blodcirkulation, vilket kan ge ”inside-out-glow”.
+Pris	399 kr
+SKU	4001
+EAN	7350147660043
+Lagersaldo	
+Spåra lager	Ja
+Kategorinamn	Kosttillskott
+Kategori-slug	kosttillskott
+Taggar	Chaga, Reishi, Lion’s Mane, Cordyceps, Immun, Fokus
+Hudtyper	–
+Fördelar	Ökar energi; stärker immunförsvar; förbättrar fokus & återhämtning
+Användning	Ta 2 kapslar dagligen med vatten.
+Ingrediens 1 namn	Chaga Extrakt
+Ingrediens 1 beskrivning	Svamp rik på betulinsyra och antioxidanter.
+Ingrediens 1 fördelar	Stärker immunförsvar; anti‑inflammatorisk
+Ingrediens 1 koncentration	25 %
+Bild 1 URL	
+Bild 1 Alt-text	Fungtastic kapselburk med kapslar
+Bild 1 Position	1
+Bild 2 URL	
+Bild 2 Alt-text	
+Bild 2 Position	
+SEO-titel	Fungtastic – 4‑svampskomplex för daglig vitalitet
+SEO-beskrivning	Chaga, Reishi, Lion’s Mane & Cordyceps i ett potent extrakt som höjer ditt välbefinnande.
+SEO-nyckelord	svamp extrakt, chaga kosttillskott, immunboost, 1753 lifestyle
