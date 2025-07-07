@@ -9,6 +9,7 @@ const nextConfig = {
     NEXT_PUBLIC_JUDGE_ME_SHOP_DOMAIN: process.env.NEXT_PUBLIC_JUDGE_ME_SHOP_DOMAIN || '1753skincare.myshopify.com',
     NEXT_PUBLIC_JUDGE_ME_PUBLIC_TOKEN: process.env.NEXT_PUBLIC_JUDGE_ME_PUBLIC_TOKEN || 'BEnXoguHo7hItl0TiV92JC65Rmk',
     JUDGE_ME_PRIVATE_TOKEN: process.env.JUDGE_ME_PRIVATE_TOKEN || '3WoipsmPeFi0aRvUOyqwsw5P21c',
+    _next_intl_trailing_slash: 'false',
   },
   images: {
     remotePatterns: [
