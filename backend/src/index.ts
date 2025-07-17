@@ -11,47 +11,47 @@ import { errorHandler } from './middleware/errorHandler'
 import { notFound } from './middleware/notFound'
 import { logger } from './utils/logger'
 import { prisma } from './lib/prisma'
-import { validateEnv } from './config/env'
+import { validateEnv, env } from './config/env'
 
 // Routes
 import authRoutes from './routes/auth'
 import productRoutes from './routes/products'
 import quizRoutes from './routes/quiz'
-// TODO: Add these routes when implemented
-// import userRoutes from './routes/users'
-// import orderRoutes from './routes/orders'
-// import cartRoutes from './routes/cart'
-// import paymentRoutes from './routes/payments'
 import reviewRoutes from './routes/reviews'
 import newsletterRoutes from './routes/newsletter'
-// import contentRoutes from './routes/content'
-// import uploadRoutes from './routes/uploads'
-// import webhookRoutes from './routes/webhooks'
 
 // Validate environment variables
-validateEnv()
+const envConfig = validateEnv()
 
 const app = express()
-const PORT = process.env.PORT || 5002
+const PORT = process.env.PORT || envConfig.PORT || 5002
 
 // Security middleware
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
 }))
 
-// Rate limiting
+// Rate limiting - more lenient for production
 const limiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000'), // 15 minutes
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100'),
+  windowMs: parseInt(envConfig.RATE_LIMIT_WINDOW_MS || '900000'), // 15 minutes
+  max: parseInt(envConfig.RATE_LIMIT_MAX_REQUESTS || '1000'), // Increased for production
   message: 'Too many requests from this IP, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => {
+    // Skip rate limiting for health checks
+    return req.path === '/health' || req.path === '/api/health'
+  }
 })
 app.use(limiter)
 
-// CORS
+// CORS - more permissive for production
+const corsOrigins = process.env.NODE_ENV === 'production' 
+  ? ['https://1753skincare.com', 'https://www.1753skincare.com', 'https://frontend-production-url.railway.app']
+  : ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002']
+
 app.use(cors({
-  origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002'],
+  origin: envConfig.CORS_ORIGIN === '*' ? true : corsOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
@@ -76,6 +76,17 @@ app.get('/health', (_req, res) => {
     status: 'OK',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
+    environment: process.env.NODE_ENV,
+    port: PORT,
+    database: 'connected'
+  })
+})
+
+// Simple health check for Railway
+app.get('/', (_req, res) => {
+  res.status(200).json({
+    message: '1753 Skincare API is running',
+    timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV
   })
 })
@@ -85,22 +96,15 @@ app.use('/api/auth', authRoutes)
 app.use('/api/products', productRoutes)
 app.use('/api/quiz', quizRoutes)
 app.use('/api/newsletter', newsletterRoutes)
-// TODO: Uncomment when routes are implemented
-// app.use('/api/users', userRoutes)
-// app.use('/api/orders', orderRoutes)
-// app.use('/api/cart', cartRoutes)
-// app.use('/api/payments', paymentRoutes)
 app.use('/api/reviews', reviewRoutes)
-// app.use('/api/content', contentRoutes)
-// app.use('/api/uploads', uploadRoutes)
-// app.use('/api/webhooks', webhookRoutes)
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.status(200).json({ 
     success: true, 
     message: 'Backend API is running',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    version: '1.0.0'
   })
 })
 
@@ -110,29 +114,65 @@ app.use(errorHandler)
 
 async function startServer() {
   try {
-    // Test PostgreSQL connection
-    await prisma.$connect()
-    logger.info('Connected to PostgreSQL via Prisma')
+    // Test PostgreSQL connection with retry logic
+    let retries = 5
+    while (retries > 0) {
+      try {
+        await prisma.$connect()
+        logger.info('Connected to PostgreSQL via Prisma')
+        break
+      } catch (error) {
+        retries--
+        logger.warn(`Failed to connect to database. Retries left: ${retries}`)
+        if (retries === 0) throw error
+        await new Promise(resolve => setTimeout(resolve, 5000))
+      }
+    }
 
     // Start server
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, '0.0.0.0', () => {
       logger.info(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`)
+      console.log(`🚀 Server ready at http://0.0.0.0:${PORT}`)
+      console.log(`📊 Health check available at http://0.0.0.0:${PORT}/health`)
     })
+
+    // Graceful shutdown
+    process.on('SIGTERM', () => {
+      logger.info('SIGTERM signal received: closing HTTP server')
+      server.close(() => {
+        logger.info('HTTP server closed')
+        prisma.$disconnect()
+        process.exit(0)
+      })
+    })
+
   } catch (error) {
     logger.error('Failed to start server:', error)
-    process.exit(1)
+    console.error('❌ Server startup failed:', error)
+    
+    // In production, exit gracefully
+    if (process.env.NODE_ENV === 'production') {
+      process.exit(1)
+    } else {
+      throw error
+    }
   }
 }
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err: Error) => {
   logger.error('Unhandled Promise Rejection:', err)
-  process.exit(1)
+  console.error('❌ Unhandled Promise Rejection:', err)
+  
+  if (process.env.NODE_ENV === 'production') {
+    process.exit(1)
+  }
 })
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (err: Error) => {
   logger.error('Uncaught Exception:', err)
+  console.error('❌ Uncaught Exception:', err)
   process.exit(1)
 })
 
