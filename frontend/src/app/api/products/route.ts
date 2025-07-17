@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server'
 
+// Force localhost in development, regardless of NEXT_PUBLIC_API_URL
 const BACKEND_URL = process.env.NODE_ENV === 'development' 
   ? 'http://localhost:5002' 
-  : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002')
+  : (process.env.NEXT_PUBLIC_API_URL || 'https://1753websitebackend-production.up.railway.app')
 
 export async function GET() {
   try {
