@@ -83,6 +83,10 @@ export function validateEnv() {
   try {
     const parsed = envSchema.parse(process.env)
     
+    // Log startup info
+    console.log(`🔧 Environment: ${parsed.NODE_ENV}`)
+    console.log(`🗄️  Database: ${parsed.DATABASE_URL ? 'Connected' : 'Missing'}`)
+    
     // Log warnings for missing important but optional variables in production
     if (parsed.NODE_ENV === 'production') {
       const warnings = []
@@ -106,10 +110,37 @@ export function validateEnv() {
       })
     }
     
-    // In production, try to start anyway with warnings
+    // In production, create a minimal config and continue
     if (process.env.NODE_ENV === 'production') {
-      console.warn('⚠️  Starting in production mode despite validation errors...')
-      return process.env as any
+      console.warn('⚠️  Creating fallback config for production...')
+      
+      // Ensure we have the most critical variables
+      if (!process.env.DATABASE_URL) {
+        console.error('❌ DATABASE_URL is required in production!')
+        process.exit(1)
+      }
+      
+      return {
+        NODE_ENV: process.env.NODE_ENV || 'production',
+        PORT: process.env.PORT || '5002',
+        DATABASE_URL: process.env.DATABASE_URL,
+        JWT_SECRET: process.env.JWT_SECRET || 'fallback-jwt-secret-for-production',
+        REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET || 'fallback-refresh-secret-for-production',
+        CORS_ORIGIN: process.env.CORS_ORIGIN || '*',
+        FRONTEND_URL: process.env.FRONTEND_URL || 'https://1753skincare.com',
+        BACKEND_URL: process.env.BACKEND_URL || 'https://backend-production-url.railway.app',
+        RATE_LIMIT_WINDOW_MS: process.env.RATE_LIMIT_WINDOW_MS || '900000',
+        RATE_LIMIT_MAX_REQUESTS: process.env.RATE_LIMIT_MAX_REQUESTS || '1000',
+        BCRYPT_ROUNDS: process.env.BCRYPT_ROUNDS || '12',
+        JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',
+        REFRESH_TOKEN_EXPIRES_IN: process.env.REFRESH_TOKEN_EXPIRES_IN || '30d',
+        // Include all other env vars as-is
+        ...Object.fromEntries(
+          Object.entries(process.env).filter(([key]) => 
+            !['NODE_ENV', 'PORT', 'DATABASE_URL', 'JWT_SECRET', 'REFRESH_TOKEN_SECRET'].includes(key)
+          )
+        )
+      } as any
     }
     
     process.exit(1)

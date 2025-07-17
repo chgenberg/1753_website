@@ -114,17 +114,27 @@ app.use(errorHandler)
 
 async function startServer() {
   try {
-    // Test PostgreSQL connection with retry logic
+    console.log('🚀 Starting 1753 Skincare API server...')
+    console.log(`📍 NODE_ENV: ${process.env.NODE_ENV}`)
+    console.log(`🌐 PORT: ${PORT}`)
+    console.log(`🗄️  DATABASE_URL: ${process.env.DATABASE_URL ? 'Set' : 'Missing'}`)
+    
+    // Database connection with retry logic
     let retries = 5
     while (retries > 0) {
       try {
         await prisma.$connect()
         logger.info('Connected to PostgreSQL via Prisma')
+        console.log('✅ Database connection successful')
         break
       } catch (error) {
         retries--
         logger.warn(`Failed to connect to database. Retries left: ${retries}`)
-        if (retries === 0) throw error
+        console.warn(`⚠️  Database connection failed. Retries left: ${retries}`)
+        if (retries === 0) {
+          console.error('❌ Database connection failed permanently:', error)
+          throw error
+        }
         await new Promise(resolve => setTimeout(resolve, 5000))
       }
     }
@@ -134,13 +144,30 @@ async function startServer() {
       logger.info(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`)
       console.log(`🚀 Server ready at http://0.0.0.0:${PORT}`)
       console.log(`📊 Health check available at http://0.0.0.0:${PORT}/health`)
+      console.log(`📋 API routes available at http://0.0.0.0:${PORT}/api`)
     })
+
+    // Test that server is actually responding
+    setTimeout(async () => {
+      try {
+        const response = await fetch(`http://localhost:${PORT}/health`)
+        if (response.ok) {
+          console.log('✅ Health check endpoint is responding')
+        } else {
+          console.warn('⚠️  Health check endpoint returned non-200 status:', response.status)
+        }
+      } catch (error) {
+        console.warn('⚠️  Could not test health check endpoint:', error.message)
+      }
+    }, 2000)
 
     // Graceful shutdown
     process.on('SIGTERM', () => {
       logger.info('SIGTERM signal received: closing HTTP server')
+      console.log('📴 Received SIGTERM, shutting down gracefully...')
       server.close(() => {
         logger.info('HTTP server closed')
+        console.log('✅ HTTP server closed')
         prisma.$disconnect()
         process.exit(0)
       })
@@ -152,6 +179,7 @@ async function startServer() {
     
     // In production, exit gracefully
     if (process.env.NODE_ENV === 'production') {
+      console.error('💥 Exiting due to startup failure in production')
       process.exit(1)
     } else {
       throw error
