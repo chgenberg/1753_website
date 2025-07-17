@@ -1,11 +1,12 @@
 import { getRequestConfig } from 'next-intl/server'
 
-export default getRequestConfig(async ({ locale }) => {
-  // Use the locale from the URL params, default to 'sv' if not provided
-  const resolvedLocale = locale || 'sv'
+export default getRequestConfig(async () => {
+  // Hardcode to Swedish to avoid header issues in development
+  // The locale will be handled by the middleware and URL structure
+  const locale = 'sv'
   
   return {
-    locale: resolvedLocale,
-    messages: (await import(`../messages/${resolvedLocale}.json`)).default
+    locale,
+    messages: (await import(`../messages/${locale}.json`)).default
   }
 }) 
