@@ -16,8 +16,7 @@
     "scrape": "ts-node --transpile-only src/scripts/productScraper.ts",
     "scrape-and-seed": "npm run scrape && npm run seed",
     "import": "ts-node --transpile-only src/scripts/importProducts.ts",
-    "migrate:judgeme": "ts-node --transpile-only src/scripts/migrateFromJudgeMe.ts",
-    "migrate:postgresql": "ts-node --transpile-only src/scripts/migrateToPostgreSQL.ts",
+
     "import:products": "ts-node --transpile-only src/scripts/importProductsToPrisma.ts",
     "import:reviews": "ts-node --transpile-only src/scripts/importReviewsFromCSV.ts",
     "import:all": "npm run import:products && npm run import:reviews",

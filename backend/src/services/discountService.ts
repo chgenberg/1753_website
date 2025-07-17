@@ -1,5 +1,5 @@
 import Discount, { IDiscount } from '../models/Discount'
-import Order from '../models/Order'
+import { Order } from '../models/Order'
 import { IUser } from '../models/User'
 
 export interface CartItem {
