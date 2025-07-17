@@ -48,6 +48,7 @@ export function QuizResultsMockup({ answers }: QuizResultsMockupProps) {
           src="/Porträtt_hemsidan/Kapitel 22-desktop.png"
           alt="Skin ecosystem"
           fill
+          sizes="100vw"
           className="object-cover hidden md:block"
           priority
         />
@@ -55,6 +56,7 @@ export function QuizResultsMockup({ answers }: QuizResultsMockupProps) {
           src="/Porträtt_hemsidan/Kapitel 22.png"
           alt="Skin ecosystem"
           fill
+          sizes="100vw"
           className="object-cover md:hidden"
           priority
         />

@@ -111,6 +111,7 @@ export function ReviewsSection() {
                     src={review.image}
                     alt={review.name}
                     fill
+                    sizes="48px"
                     className="object-cover"
                   />
                 </div>
@@ -143,6 +144,7 @@ export function ReviewsSection() {
                     src={img}
                     alt="Customer"
                     fill
+                    sizes="40px"
                     className="object-cover"
                   />
                 </div>
