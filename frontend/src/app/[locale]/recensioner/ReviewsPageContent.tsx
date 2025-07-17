@@ -55,8 +55,14 @@ export default function ReviewsPageContent() {
     fetchProducts()
   }, [selectedRating, selectedProduct, sortBy, page])
 
+  useEffect(() => {
+    setPage(1)
+    setReviews([])
+  }, [selectedRating, selectedProduct, sortBy])
+
   const fetchReviews = async () => {
     try {
+      setLoading(true)
       const params = new URLSearchParams({
         page: page.toString(),
         limit: ITEMS_PER_PAGE.toString(),
@@ -66,18 +72,23 @@ export default function ReviewsPageContent() {
       })
 
       const response = await fetch(`/api/reviews?${params}`)
+      if (!response.ok) {
+        throw new Error('Failed to fetch reviews')
+      }
+      
       const data = await response.json()
       
       if (page === 1) {
-        setReviews(data.reviews)
+        setReviews(data.reviews || [])
       } else {
-        setReviews(prev => [...prev, ...data.reviews])
+        setReviews(prev => [...(prev || []), ...(data.reviews || [])])
       }
       
-      setHasMore(data.hasMore)
-      setLoading(false)
+      setHasMore(data.hasMore || false)
     } catch (error) {
       console.error('Error fetching reviews:', error)
+      setReviews([])
+    } finally {
       setLoading(false)
     }
   }
@@ -85,20 +96,28 @@ export default function ReviewsPageContent() {
   const fetchStats = async () => {
     try {
       const response = await fetch('/api/reviews/stats')
+      if (!response.ok) {
+        throw new Error('Failed to fetch stats')
+      }
       const data = await response.json()
       setStats(data)
     } catch (error) {
       console.error('Error fetching stats:', error)
+      setStats(null)
     }
   }
 
   const fetchProducts = async () => {
     try {
       const response = await fetch('/api/products')
+      if (!response.ok) {
+        throw new Error('Failed to fetch products')
+      }
       const data = await response.json()
-      setProducts(data.products.map((p: any) => ({ id: p.id, name: p.name })))
+      setProducts(data.products?.map((p: any) => ({ id: p.id, name: p.name })) || [])
     } catch (error) {
       console.error('Error fetching products:', error)
+      setProducts([])
     }
   }
 
@@ -321,7 +340,7 @@ export default function ReviewsPageContent() {
             exit={{ opacity: 0 }}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           >
-            {reviews.map((review, index) => (
+            {Array.isArray(reviews) && reviews.map((review, index) => (
               <motion.div
                 key={review.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -391,7 +410,7 @@ export default function ReviewsPageContent() {
         </AnimatePresence>
 
         {/* Load More Button */}
-        {hasMore && (
+        {hasMore && Array.isArray(reviews) && reviews.length > 0 && (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -418,13 +437,16 @@ export default function ReviewsPageContent() {
         )}
 
         {/* No Reviews Message */}
-        {reviews.length === 0 && !loading && (
+        {(!Array.isArray(reviews) || reviews.length === 0) && !loading && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="text-center py-20"
           >
             <p className="text-gray-500">{t('noReviews')}</p>
+            {!Array.isArray(reviews) && (
+              <p className="text-red-500 text-sm mt-2">Kunde inte ladda recensioner. Kontrollera API-anslutningen.</p>
+            )}
           </motion.div>
         )}
       </section>
