@@ -1,170 +1,150 @@
 'use client'
 
-import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { Play, ArrowRight, Target, Zap, Microscope } from 'lucide-react'
-import { SkinCareQuizModal } from '@/components/quiz/SkinCareQuizModal'
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import Link from 'next/link'
+import Image from 'next/image'
+import { ArrowRight, ChevronDown } from 'lucide-react'
 
-export const HeroSection = () => {
-  const [isQuizOpen, setIsQuizOpen] = useState(false)
+const heroSlides = [
+  {
+    imageDesktop: '/Porträtt_hemsidan/Kapitel 15-desktop.png',
+    imageMobile: '/Porträtt_hemsidan/Kapitel 15.png',
+  },
+  {
+    imageDesktop: '/Porträtt_hemsidan/Kapitel 4-desktop.png',
+    imageMobile: '/Porträtt_hemsidan/Kapitel 4.png',
+  },
+  {
+    imageDesktop: '/Porträtt_hemsidan/Kapitel 43-desktop.png',
+    imageMobile: '/Porträtt_hemsidan/Kapitel 43.png',
+  }
+]
 
-  const openQuiz = () => setIsQuizOpen(true)
-  const closeQuiz = () => setIsQuizOpen(false)
+export function HeroSection() {
+  const [currentSlide, setCurrentSlide] = useState(0)
+  const [isLoaded, setIsLoaded] = useState(false)
+
+  useEffect(() => {
+    setIsLoaded(true)
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length)
+    }, 10000) // Increased to 10 seconds
+    return () => clearInterval(timer)
+  }, [])
 
   return (
-    <>
-      <section className="relative min-h-screen bg-gradient-to-br from-[#F3EFE3] to-[#E8E3D3] overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-20 left-10 w-32 h-32 rounded-full bg-[#014421]"></div>
-          <div className="absolute top-40 right-20 w-24 h-24 rounded-full bg-[#93C560]"></div>
-          <div className="absolute bottom-40 left-20 w-28 h-28 rounded-full bg-[#660C21]"></div>
-          <div className="absolute bottom-20 right-10 w-20 h-20 rounded-full bg-[#FFE135]"></div>
-        </div>
+    <section className="relative h-screen w-full overflow-hidden bg-black">
+      {/* Background Images with Cross-fade */}
+      <div className="absolute inset-0">
+        {heroSlides.map((slide, index) => (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0 }}
+            animate={{ 
+              opacity: currentSlide === index ? 1 : 0,
+              scale: currentSlide === index ? 1 : 1.1
+            }}
+            transition={{ 
+              opacity: { duration: 2, ease: "easeInOut" },
+              scale: { duration: 10, ease: "easeOut" }
+            }}
+            className="absolute inset-0"
+          >
+            {/* Desktop Image */}
+            <Image
+              src={slide.imageDesktop}
+              alt="Hero background"
+              fill
+              className="object-cover hidden md:block"
+              priority={index === 0}
+              quality={90}
+            />
+            {/* Mobile Image */}
+            <Image
+              src={slide.imageMobile}
+              alt="Hero background"
+              fill
+              className="object-cover md:hidden"
+              priority={index === 0}
+              quality={90}
+            />
+          </motion.div>
+        ))}
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/50" />
+      </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
-          <div className="text-center">
-            {/* Main Hero Content */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="max-w-4xl mx-auto"
+      {/* Content - Quiz CTA */}
+      <div className="relative z-10 h-full flex items-center justify-center px-4 sm:px-6 lg:px-8">
+        <div className="text-center max-w-4xl mx-auto">
+          <motion.h1 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light text-white mb-6 tracking-tight uppercase"
+          >
+            GÖR VÅRT KOSTNADSFRIA HUDVÅRDSQUIZ
+          </motion.h1>
+          
+          <motion.p 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="text-lg sm:text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto font-light"
+          >
+            Få en komplett hudanalys och personliga produktrekommendationer på under 2 minuter
+          </motion.p>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center"
+          >
+            <Link 
+              href="/quiz" 
+              className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-medium bg-white text-black rounded-full hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-2xl"
             >
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-[#014421] mb-6 leading-tight">
-                UPPTÄCK DIN PERFEKTA
-                <span className="block text-[#93C560]">HUDVÅRDSSTRATEGI</span>
-              </h1>
-              
-              <p className="text-lg md:text-xl text-[#112A12] mb-8 max-w-3xl mx-auto leading-relaxed">
-                Få personaliserade rekommendationer för optimal hudhälsa baserat på din hudtyp, 
-                livsstil och behov. Vårt intelligenta quiz analyserar din hudkondition och ger 
-                dig skräddarsydda råd för en strålande hud.
-              </p>
-
-              {/* Features */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3, duration: 0.6 }}
-                className="flex flex-wrap justify-center gap-6 md:gap-8 mb-10"
-              >
-                <div className="flex items-center gap-3 bg-white/80 backdrop-blur-sm px-4 py-3 rounded-full shadow-md">
-                  <div className="w-10 h-10 bg-[#93C560] rounded-full flex items-center justify-center text-xl">
-                    🎯
-                  </div>
-                  <span className="text-[#014421] font-medium">Personaliserade hudrekommendationer</span>
-                </div>
-                
-                <div className="flex items-center gap-3 bg-white/80 backdrop-blur-sm px-4 py-3 rounded-full shadow-md">
-                  <div className="w-10 h-10 bg-[#93C560] rounded-full flex items-center justify-center text-xl">
-                    🧬
-                  </div>
-                  <span className="text-[#014421] font-medium">Vetenskapligt baserade hudråd</span>
-                </div>
-                
-                <div className="flex items-center gap-3 bg-white/80 backdrop-blur-sm px-4 py-3 rounded-full shadow-md">
-                  <div className="w-10 h-10 bg-[#93C560] rounded-full flex items-center justify-center text-xl">
-                    ⚡
-                  </div>
-                  <span className="text-[#014421] font-medium">Snabb analys på 3 minuter</span>
-                </div>
-              </motion.div>
-
-              {/* CTA Button */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.5, duration: 0.6 }}
-                className="mb-6"
-              >
-                <button
-                  onClick={openQuiz}
-                  className="group bg-[#014421] hover:bg-[#112A12] text-white px-8 py-4 md:px-12 md:py-6 rounded-full text-lg md:text-xl font-bold transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105 flex items-center gap-3 mx-auto"
-                >
-                  Starta Ditt Personliga Hudquiz
-                  <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
-                </button>
-              </motion.div>
-
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.7, duration: 0.6 }}
-                className="text-[#112A12]/70 text-sm md:text-base"
-              >
-                12 smarta frågor • Kostnadsfritt • Inga mejl krävs
-              </motion.p>
-            </motion.div>
-
-            {/* Benefits Section */}
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8, duration: 0.8 }}
-              className="mt-20"
+              <span className="relative z-10 uppercase tracking-wide">Starta Quiz Nu</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-amber-700 to-amber-900 rounded-full opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
+            </Link>
+            
+            <Link 
+              href="/products" 
+              className="inline-flex items-center justify-center px-8 py-4 text-lg font-medium bg-transparent text-white border-2 border-white/30 rounded-full hover:bg-white/10 transition-all duration-300 uppercase tracking-wide"
             >
-              <h2 className="text-2xl md:text-3xl font-bold text-[#014421] mb-12">
-                Vad får du ut av quizet?
-              </h2>
-              
-              <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-                  <div className="w-16 h-16 bg-[#93C560] rounded-full flex items-center justify-center text-3xl mb-6 mx-auto">
-                    🧴
-                  </div>
-                  <h3 className="text-xl font-bold text-[#014421] mb-4">Hudvårdsrutin</h3>
-                  <p className="text-[#112A12] leading-relaxed">
-                    Personaliserad morgon- och kvällsrutin anpassad för din hudtyp
-                  </p>
-                </div>
-
-                <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-                  <div className="w-16 h-16 bg-[#93C560] rounded-full flex items-center justify-center text-3xl mb-6 mx-auto">
-                    🏃‍♀️
-                  </div>
-                  <h3 className="text-xl font-bold text-[#014421] mb-4">Livsstilstips</h3>
-                  <p className="text-[#112A12] leading-relaxed">
-                    Praktiska råd för sömn, stress och vanor som förbättrar hudhälsan
-                  </p>
-                </div>
-
-                <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-                  <div className="w-16 h-16 bg-[#93C560] rounded-full flex items-center justify-center text-3xl mb-6 mx-auto">
-                    🥗
-                  </div>
-                  <h3 className="text-xl font-bold text-[#014421] mb-4">Kost & Tillskott</h3>
-                  <p className="text-[#112A12] leading-relaxed">
-                    Näringsrekommendationer och tillskott för hudhälsa inifrån
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          </div>
+              Se Produkter
+            </Link>
+          </motion.div>
         </div>
+      </div>
 
-        {/* Scroll Indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2, duration: 0.6 }}
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-        >
-          <div className="flex flex-col items-center gap-2">
-            <span className="text-[#014421] text-sm">Utforska våra produkter</span>
-            <div className="w-6 h-10 border-2 border-[#014421] rounded-full flex justify-center">
-              <div className="w-1 h-3 bg-[#014421] rounded-full mt-2 animate-bounce"></div>
-            </div>
-          </div>
-        </motion.div>
-      </section>
+      {/* Slide Indicators */}
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-3 z-20">
+        {heroSlides.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentSlide(index)}
+            className={`h-2 rounded-full transition-all duration-700 ${
+              index === currentSlide 
+                ? 'w-12 bg-white' 
+                : 'w-2 bg-white/50 hover:bg-white/70'
+            }`}
+            aria-label={`Go to slide ${index + 1}`}
+          />
+        ))}
+      </div>
 
-      {/* Quiz Modal */}
-      {isQuizOpen && (
-        <SkinCareQuizModal 
-          onClose={closeQuiz}
-        />
-      )}
-    </>
+      {/* Scroll Indicator */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1, repeat: Infinity, repeatType: "reverse", duration: 1.5 }}
+        className="absolute bottom-12 left-1/2 transform -translate-x-1/2"
+      >
+        <ChevronDown className="w-6 h-6 text-white drop-shadow-lg" />
+      </motion.div>
+    </section>
   )
 } 

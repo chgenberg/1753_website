@@ -73,15 +73,35 @@ export default function IngredientsPage() {
       <Header />
       <main className="pt-20">
         {/* Hero Section */}
-        <section className="relative py-20 bg-gradient-to-br from-green-50 to-blue-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
+          {/* Background Image */}
+          <div className="absolute inset-0">
+            <Image
+              src="/Porträtt_hemsidan/Ingredienser-desktop.png"
+              alt="Ingredienser hero"
+              fill
+              className="object-cover hidden md:block"
+              priority
+            />
+            <Image
+              src="/Porträtt_hemsidan/Ingredienser.png"
+              alt="Ingredienser hero"
+              fill
+              className="object-cover md:hidden"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
+          </div>
+          
+          {/* Content */}
+          <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
-              className="text-center"
+              className="text-white"
             >
-              <span className="text-[#00937c] font-medium text-sm uppercase tracking-wider">Ingredienser</span>
+              <span className="text-[#8B4513] font-medium text-sm uppercase tracking-wider">Ingredienser</span>
               <h1 className="text-5xl md:text-6xl font-bold mt-4 mb-6">
                 Låt oss prata växter
               </h1>
@@ -142,7 +162,7 @@ export default function IngredientsPage() {
                         />
                       </div>
                     ) : (
-                      <div className="w-20 h-20 bg-[#00937c] text-white rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-[#007363] transition-colors duration-300">
+                      <div className="w-20 h-20 bg-[#8B4513] text-white rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-[#6B3410] transition-colors duration-300">
                         {ingredient.icon}
                       </div>
                     )}
@@ -157,7 +177,7 @@ export default function IngredientsPage() {
                       }
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="inline-block px-6 py-2 bg-[#00937c] text-white rounded-full font-medium hover:bg-[#007363] transition-colors duration-300"
+                      className="inline-block px-6 py-2 bg-[#8B4513] text-white rounded-full font-medium hover:bg-[#6B3410] transition-colors duration-300"
                     >
                       Läs mer
                     </motion.a>
@@ -169,168 +189,170 @@ export default function IngredientsPage() {
         </section>
 
         {/* Medicinal Mushrooms Section */}
-        <section className="mb-16">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Medicinsvampar
-            </h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Våra noggrant utvalda medicinsvampar har använts i tusentals år för sina kraftfulla hälsofrämjande egenskaper.
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* Chaga */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group"
-            >
-              <div className="relative h-48 overflow-hidden">
-                <img
-                  src="/Mushrooms/chaga.png"
-                  alt="Chaga svamp"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Chaga</h3>
-                <p className="text-gray-600 mb-4">
-                  "Skogens diamant" - Rik på antioxidanter och stärker immunförsvaret
-                </p>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  <span className="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm">
-                    Antioxidanter
-                  </span>
-                  <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">
-                    Immunförsvar
-                  </span>
+        <section className="py-20 bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                Medicinsvampar
+              </h2>
+              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                Våra noggrant utvalda medicinsvampar har använts i tusentals år för sina kraftfulla hälsofrämjande egenskaper.
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 lg:gap-8">
+              {/* Chaga */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group"
+              >
+                <div className="relative h-48 overflow-hidden">
+                  <img
+                    src="/Mushrooms/chaga.png"
+                    alt="Chaga svamp"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                 </div>
-                <Link
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">Chaga</h3>
+                  <p className="text-gray-600 mb-4">
+                    "Skogens diamant" - Rik på antioxidanter och stärker immunförsvaret
+                  </p>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    <span className="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm">
+                      Antioxidanter
+                    </span>
+                    <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">
+                      Immunförsvar
+                    </span>
+                  </div>
+                                  <Link
                   href="/om-oss/ingredienser/chaga"
-                  className="text-green-600 hover:text-green-700 font-medium flex items-center"
+                  className="text-[#8B4513] hover:text-[#6B3410] font-medium flex items-center"
                 >
                   Läs mer
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
-              </div>
-            </motion.div>
-
-            {/* Reishi */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7 }}
-              className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group"
-            >
-              <div className="relative h-48 overflow-hidden">
-                <img
-                  src="/Mushrooms/reiki.png"
-                  alt="Reishi svamp"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Reishi</h3>
-                <p className="text-gray-600 mb-4">
-                  "Odödlighetens svamp" - Adaptogen som balanserar stress och sömn
-                </p>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">
-                    Adaptogen
-                  </span>
-                  <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
-                    Stressbalans
-                  </span>
                 </div>
-                <Link
+              </motion.div>
+
+              {/* Reishi */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7 }}
+                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group"
+              >
+                <div className="relative h-48 overflow-hidden">
+                  <img
+                    src="/Mushrooms/reiki.png"
+                    alt="Reishi svamp"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                </div>
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">Reishi</h3>
+                  <p className="text-gray-600 mb-4">
+                    "Odödlighetens svamp" - Adaptogen som balanserar stress och sömn
+                  </p>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">
+                      Adaptogen
+                    </span>
+                    <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                      Stressbalans
+                    </span>
+                  </div>
+                                  <Link
                   href="/om-oss/ingredienser/reishi"
-                  className="text-green-600 hover:text-green-700 font-medium flex items-center"
+                  className="text-[#8B4513] hover:text-[#6B3410] font-medium flex items-center"
                 >
                   Läs mer
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
-              </div>
-            </motion.div>
-
-            {/* Lion's Mane */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 }}
-              className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group"
-            >
-              <div className="relative h-48 overflow-hidden">
-                <img
-                  src="/Mushrooms/lionsmane.png"
-                  alt="Lion's Mane svamp"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Lion's Mane</h3>
-                <p className="text-gray-600 mb-4">
-                  "Den smarta svampen" - Stödjer kognitiv funktion och fokus
-                </p>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">
-                    Kognition
-                  </span>
-                  <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
-                    Fokus
-                  </span>
                 </div>
-                <Link
+              </motion.div>
+
+              {/* Lion's Mane */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8 }}
+                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group"
+              >
+                <div className="relative h-48 overflow-hidden">
+                  <img
+                    src="/Mushrooms/lionsmane.png"
+                    alt="Lion's Mane svamp"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                </div>
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">Lion's Mane</h3>
+                  <p className="text-gray-600 mb-4">
+                    "Den smarta svampen" - Stödjer kognitiv funktion och fokus
+                  </p>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">
+                      Kognition
+                    </span>
+                    <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+                      Fokus
+                    </span>
+                  </div>
+                                  <Link
                   href="/om-oss/ingredienser/lions-mane"
-                  className="text-green-600 hover:text-green-700 font-medium flex items-center"
+                  className="text-[#8B4513] hover:text-[#6B3410] font-medium flex items-center"
                 >
                   Läs mer
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
-              </div>
-            </motion.div>
-
-            {/* Cordyceps */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.9 }}
-              className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group"
-            >
-              <div className="relative h-48 overflow-hidden">
-                <img
-                  src="/Mushrooms/cordyceps.png"
-                  alt="Cordyceps svamp"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Cordyceps</h3>
-                <p className="text-gray-600 mb-4">
-                  "Energigivande svamp" - Ökar uthållighet och syreupptagning
-                </p>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">
-                    Energi
-                  </span>
-                  <span className="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm">
-                    Uthållighet
-                  </span>
                 </div>
-                <Link
+              </motion.div>
+
+              {/* Cordyceps */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.9 }}
+                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group"
+              >
+                <div className="relative h-48 overflow-hidden">
+                  <img
+                    src="/Mushrooms/cordyceps.png"
+                    alt="Cordyceps svamp"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                </div>
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">Cordyceps</h3>
+                  <p className="text-gray-600 mb-4">
+                    "Energigivande svamp" - Ökar uthållighet och syreupptagning
+                  </p>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">
+                      Energi
+                    </span>
+                    <span className="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm">
+                      Uthållighet
+                    </span>
+                  </div>
+                                  <Link
                   href="/om-oss/ingredienser/cordyceps"
-                  className="text-green-600 hover:text-green-700 font-medium flex items-center"
+                  className="text-[#8B4513] hover:text-[#6B3410] font-medium flex items-center"
                 >
                   Läs mer
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
-              </div>
-            </motion.div>
+                </div>
+              </motion.div>
+            </div>
           </div>
         </section>
 

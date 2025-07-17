@@ -1,8 +1,26 @@
+'use client'
 
-import "leaflet-defaulticon-compatibility";
+import { useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import L from 'leaflet';
+
+// Fix for default markers in react-leaflet
+const icon = L.icon({
+  iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
 
 export const Map = () => {
+  useEffect(() => {
+    // Set default icon for all markers
+    L.Marker.prototype.options.icon = icon;
+  }, []);
+
   return (
     <MapContainer
       center={[57.3553, 12.108]}
@@ -14,7 +32,7 @@ export const Map = () => {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
-      <Marker position={[57.3553, 12.108]}>
+      <Marker position={[57.3553, 12.108]} icon={icon}>
         <Popup>
           1753 Skincare <br /> Södra Skjutbanevägen 10
         </Popup>

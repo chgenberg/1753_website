@@ -1,419 +1,486 @@
 export interface QuizOption {
-  label: string
-  description: string
-  value: string
-  icon: string
+  value: string;
+  label: string;
+  emoji: string;
+  description?: string;
 }
 
-export interface QuizQuestionData {
-  id: number
-  question: string
-  subtitle: string
-  icon: string
-  options: QuizOption[]
+export interface QuizQuestion {
+  id: string;
+  text: string;
+  description?: string;
+  options: QuizOption[];
 }
 
-export const quizQuestions: QuizQuestionData[] = [
+export const questions: QuizQuestion[] = [
   {
-    id: 1,
-    question: "Hur skulle du beskriva din hudtyp?",
-    subtitle: "Att förstå din grundläggande hudtyp hjälper oss ge rätt råd",
-    icon: "🧴",
+    id: 'skinType',
+    text: 'Hur skulle du beskriva din hudtyp?',
+    description: 'Att förstå din grundläggande hudtyp hjälper oss ge rätt råd',
     options: [
       {
-        label: "Torr hud",
-        description: "Min hud känns ofta stram och kan fjälla sig",
-        value: "dry_skin",
-        icon: "🏜️"
+        value: 'dry',
+        label: 'Torr hud',
+        emoji: '🏜️',
+        description: 'Min hud känns ofta stram och kan fjälla sig'
       },
       {
-        label: "Fet hud",
-        description: "Min hud är ofta oljig och glansig, särskilt i T-zonen",
-        value: "oily_skin",
-        icon: "✨"
+        value: 'oily',
+        label: 'Fet hud',
+        emoji: '✨',
+        description: 'Min hud är ofta oljig och glansig, särskilt i T-zonen'
       },
       {
-        label: "Kombinationshud",
-        description: "Fet i T-zonen men torr på kinderna",
-        value: "combination_skin",
-        icon: "🎭"
+        value: 'combination',
+        label: 'Kombinationshud',
+        emoji: '🎭',
+        description: 'Fet i T-zonen men torr på kinderna'
       },
       {
-        label: "Känslig hud",
-        description: "Min hud reagerar lätt på produkter och blir irriterad",
-        value: "sensitive_skin",
-        icon: "😳"
+        value: 'sensitive',
+        label: 'Känslig hud',
+        emoji: '😊',
+        description: 'Min hud reagerar lätt på produkter och blir irriterad'
       },
       {
-        label: "Normal hud",
-        description: "Min hud är generellt balanserad utan större problem",
-        value: "normal_skin",
-        icon: "😌"
+        value: 'normal',
+        label: 'Normal hud',
+        emoji: '😊',
+        description: 'Min hud är generellt balanserad utan större problem'
       }
     ]
   },
   {
-    id: 2,
-    question: "Vilka hudproblem upplever du mest?",
-    subtitle: "Identifiera dina huvudsakliga hudbekymmer",
-    icon: "🔍",
+    id: 'concerns',
+    text: 'Vad är din största hudbekymmer?',
     options: [
       {
-        label: "Akne och finnar",
-        description: "Jag har regelbundna utbrott av finnar och pormaskar",
-        value: "acne_breakouts",
-        icon: "🎯"
+        value: 'acne',
+        label: 'Akne',
+        emoji: '🔴',
+        description: 'Finnar, pormaskar eller utbrott'
       },
       {
-        label: "Rynkor och åldrande",
-        description: "Jag ser tecken på åldrande som rynkor och förlust av fasthet",
-        value: "aging_wrinkles",
-        icon: "⏰"
+        value: 'aging',
+        label: 'Åldrande',
+        emoji: '⏳',
+        description: 'Rynkor, fina linjer eller slapp hud'
       },
       {
-        label: "Pigmentfläckar och ojämn hudton",
-        description: "Jag har mörka fläckar och ojämn hudton",
-        value: "pigmentation_uneven",
-        icon: "🌈"
+        value: 'pigmentation',
+        label: 'Pigmentering',
+        emoji: '🎨',
+        description: 'Mörka fläckar eller ojämn hudton'
       },
       {
-        label: "Eksem eller utslag",
-        description: "Jag har ofta rödhet, klåda eller inflammationer",
-        value: "eczema_rash",
-        icon: "🔥"
+        value: 'redness',
+        label: 'Rodnad',
+        emoji: '🌹',
+        description: 'Rosacea eller känslig, röd hud'
       },
       {
-        label: "Stora porer och ojämn hudstruktur",
-        description: "Mina porer är synliga och huden känns ojämn",
-        value: "large_pores",
-        icon: "🕳️"
+        value: 'dryness',
+        label: 'Torrhet',
+        emoji: '🏜️',
+        description: 'Stram, fjällig eller uttorkad hud'
       }
     ]
   },
   {
-    id: 3,
-    question: "Hur ofta vårdar du ditt ansikte?",
-    subtitle: "Din nuvarande hudvårdsrutin påverkar hudkvaliteten",
-    icon: "🧼",
+    id: 'routine',
+    text: 'Hur ser din nuvarande hudvårdsrutin ut?',
     options: [
       {
-        label: "Omfattande rutin (morgon och kväll)",
-        description: "Jag har en detaljerad rutin med flera steg",
-        value: "comprehensive_routine",
-        icon: "✨"
+        value: 'minimal',
+        label: 'Minimal',
+        emoji: '1️⃣',
+        description: 'Jag använder bara 1-2 produkter'
       },
       {
-        label: "Grundläggande rutin (tvätta och fukta)",
-        description: "Jag tvättar ansiktet och använder fuktcreme",
-        value: "basic_routine",
-        icon: "🧴"
+        value: 'basic',
+        label: 'Grundläggande',
+        emoji: '2️⃣',
+        description: 'Rengöring och återfuktning'
       },
       {
-        label: "Minimal rutin (bara tvättar ansiktet)",
-        description: "Jag tvättar ansiktet med vanlig tvål ibland",
-        value: "minimal_routine",
-        icon: "💧"
+        value: 'moderate',
+        label: 'Måttlig',
+        emoji: '3️⃣',
+        description: '3-5 produkter inklusive serum'
       },
       {
-        label: "Ingen rutin",
-        description: "Jag gör ingenting speciellt för min hud",
-        value: "no_routine",
-        icon: "🤷"
+        value: 'extensive',
+        label: 'Omfattande',
+        emoji: '4️⃣',
+        description: 'Fler än 5 produkter dagligen'
       }
     ]
   },
   {
-    id: 4,
-    question: "Hur påverkar stress din hud?",
-    subtitle: "Stress har stor inverkan på hudkvaliteten",
-    icon: "😰",
+    id: 'sleep',
+    text: 'Hur många timmar sover du i genomsnitt per natt?',
     options: [
       {
-        label: "Stora utbrott vid stress",
-        description: "Min hud blir betydligt sämre när jag är stressad",
-        value: "major_stress_impact",
-        icon: "🌋"
+        value: 'less5',
+        label: 'Mindre än 5 timmar',
+        emoji: '😴',
+        description: 'Jag sover alltför lite'
       },
       {
-        label: "Märkbar försämring vid stress",
-        description: "Jag ser tydliga förändringar i huden vid stress",
-        value: "noticeable_stress_impact",
-        icon: "📈"
+        value: '5-6',
+        label: '5-6 timmar',
+        emoji: '😪',
+        description: 'Något för lite sömn'
       },
       {
-        label: "Minimal påverkan av stress",
-        description: "Stress påverkar min hud lite grann",
-        value: "minimal_stress_impact",
-        icon: "🌊"
+        value: '7-8',
+        label: '7-8 timmar',
+        emoji: '😊',
+        description: 'Lagom med sömn'
       },
       {
-        label: "Ingen påverkan av stress",
-        description: "Jag märker ingen skillnad i huden vid stress",
-        value: "no_stress_impact",
-        icon: "🧘"
+        value: 'more8',
+        label: 'Mer än 8 timmar',
+        emoji: '😌',
+        description: 'Jag får gott om sömn'
       }
     ]
   },
   {
-    id: 5,
-    question: "Hur mycket sömn får du per natt?",
-    subtitle: "Sömn är avgörande för hudens återhämtning och förnyelse",
-    icon: "🌙",
+    id: 'stress',
+    text: 'Hur skulle du beskriva din stressnivå?',
     options: [
       {
-        label: "7-9 timmar kvalitetssömn",
-        description: "Jag sover tillräckligt och vaknar utvilad",
-        value: "good_sleep",
-        icon: "😴"
+        value: 'very_high',
+        label: 'Mycket hög',
+        emoji: '🌋',
+        description: 'Jag känner mig konstant stressad'
       },
       {
-        label: "6-7 timmar, okej kvalitet",
-        description: "Jag sover ganska bra men kunde sova mer",
-        value: "moderate_sleep",
-        icon: "😊"
+        value: 'high',
+        label: 'Hög',
+        emoji: '😰',
+        description: 'Ofta stressad i vardagen'
       },
       {
-        label: "5-6 timmar, oregelbunden sömn",
-        description: "Jag sover för lite och har oregelbundna tider",
-        value: "poor_sleep",
-        icon: "😵"
+        value: 'moderate',
+        label: 'Måttlig',
+        emoji: '😐',
+        description: 'Ibland stressad, ibland lugn'
       },
       {
-        label: "Mindre än 5 timmar, dålig kvalitet",
-        description: "Jag sover för lite och vaknar ofta under natten",
-        value: "very_poor_sleep",
-        icon: "🥱"
+        value: 'low',
+        label: 'Låg',
+        emoji: '😌',
+        description: 'Sällan stressad, oftast lugn'
       }
     ]
   },
   {
-    id: 6,
-    question: "Hur mycket vatten dricker du dagligen?",
-    subtitle: "Hydratisering påverkar hudens elasticitet och utseende",
-    icon: "💧",
+    id: 'water',
+    text: 'Hur mycket vatten dricker du dagligen?',
     options: [
       {
-        label: "2-3 liter om dagen",
-        description: "Jag dricker mycket vatten och är väl hydrerad",
-        value: "well_hydrated",
-        icon: "🌊"
+        value: 'less1L',
+        label: 'Mindre än 1 liter',
+        emoji: '💧',
+        description: 'Jag dricker för lite vatten'
       },
       {
-        label: "1-2 liter om dagen",
-        description: "Jag dricker en del vatten men kunde dricka mer",
-        value: "moderately_hydrated",
-        icon: "💧"
+        value: '1-2L',
+        label: '1-2 liter',
+        emoji: '💦',
+        description: 'Okej mängd, men kunde vara mer'
       },
       {
-        label: "Mindre än 1 liter",
-        description: "Jag dricker lite vatten, mest kaffe och andra drycker",
-        value: "dehydrated",
-        icon: "🏜️"
+        value: '2-3L',
+        label: '2-3 liter',
+        emoji: '🌊',
+        description: 'Bra mängd vatten dagligen'
       },
       {
-        label: "Glömmer ofta att dricka vatten",
-        description: "Jag tänker sällan på att dricka vatten",
-        value: "very_dehydrated",
-        icon: "🥵"
+        value: 'more3L',
+        label: 'Mer än 3 liter',
+        emoji: '🏊',
+        description: 'Mycket bra hydrering'
       }
     ]
   },
   {
-    id: 7,
-    question: "Hur är dina matvanor för hudhälsa?",
-    subtitle: "Kosten påverkar huden inifrån och ut",
-    icon: "🥗",
+    id: 'diet',
+    text: 'Hur skulle du beskriva din kost?',
     options: [
       {
-        label: "Hälsosam kost med mycket antioxidanter",
-        description: "Jag äter mycket grönsaker, frukt och näring som gynnar huden",
-        value: "skin_healthy_diet",
-        icon: "🌱"
+        value: 'very_healthy',
+        label: 'Mycket hälsosam',
+        emoji: '🥗',
+        description: 'Mestadels färsk mat, grönsaker och frukt'
       },
       {
-        label: "Blandat - ibland hälsosamt",
-        description: "Jag försöker äta hälsosamt men lyckas inte alltid",
-        value: "mixed_diet",
-        icon: "🥙"
+        value: 'healthy',
+        label: 'Hälsosam',
+        emoji: '🍎',
+        description: 'Balanserad kost med ibland onyttigt'
       },
       {
-        label: "Mycket socker och processad mat",
-        description: "Jag äter ofta godis, snabbmat och processed food",
-        value: "inflammatory_diet",
-        icon: "🍟"
+        value: 'average',
+        label: 'Varierande',
+        emoji: '🍔',
+        description: 'Blandat mellan nyttigt och onyttigt'
       },
       {
-        label: "Osäker på vad som är bra för huden",
-        description: "Jag vet inte vilka livsmedel som påverkar min hud",
-        value: "unsure_diet",
-        icon: "🤔"
+        value: 'unhealthy',
+        label: 'Ohälsosam',
+        emoji: '🍟',
+        description: 'Mycket processad mat och socker'
       }
     ]
   },
   {
-    id: 8,
-    question: "Hur mycket är du i solen?",
-    subtitle: "Solexponering påverkar hudens åldrande och hälsa",
-    icon: "☀️",
+    id: 'exercise',
+    text: 'Hur ofta tränar du?',
     options: [
       {
-        label: "Mycket sol, använder alltid solskydd",
-        description: "Jag är ofta utomhus men skyddar alltid min hud",
-        value: "sun_protected",
-        icon: "🧴"
+        value: 'daily',
+        label: 'Dagligen',
+        emoji: '💪',
+        description: 'Tränar varje dag'
       },
       {
-        label: "Måttligt med sol, ibland solskydd",
-        description: "Jag är utomhus ibland och använder solskydd när jag tänker på det",
-        value: "moderate_sun",
-        icon: "🌤️"
+        value: '3-5week',
+        label: '3-5 gånger/vecka',
+        emoji: '🏃',
+        description: 'Regelbunden träning'
       },
       {
-        label: "Mycket sol, sällan solskydd",
-        description: "Jag är ofta i solen men använder sällan solskydd",
-        value: "sun_exposed",
-        icon: "🏖️"
+        value: '1-2week',
+        label: '1-2 gånger/vecka',
+        emoji: '🚶',
+        description: 'Tränar ibland'
       },
       {
-        label: "Lite sol, inomhus mest",
-        description: "Jag är mest inomhus och får lite naturligt ljus",
-        value: "limited_sun",
-        icon: "🏠"
+        value: 'rarely',
+        label: 'Sällan',
+        emoji: '🛋️',
+        description: 'Tränar nästan aldrig'
       }
     ]
   },
   {
-    id: 9,
-    question: "Hur ofta tränar du?",
-    subtitle: "Motion förbättrar cirkulationen och hudens utseende",
-    icon: "🏃‍♀️",
+    id: 'sunExposure',
+    text: 'Hur mycket tid spenderar du i solen?',
     options: [
       {
-        label: "5+ gånger per vecka",
-        description: "Jag tränar regelbundet och svettas bra",
-        value: "very_active",
-        icon: "💪"
+        value: 'minimal',
+        label: 'Minimal',
+        emoji: '🏠',
+        description: 'Mest inomhus, lite sol'
       },
       {
-        label: "3-4 gånger per vecka",
-        description: "Jag tränar regelbundet några gånger i veckan",
-        value: "active",
-        icon: "🏋️"
+        value: 'moderate',
+        label: 'Måttlig',
+        emoji: '⛅',
+        description: 'Balanserad inom- och utomhustid'
       },
       {
-        label: "1-2 gånger per vecka",
-        description: "Jag rör på mig ibland men inte så ofta",
-        value: "somewhat_active",
-        icon: "🚶"
+        value: 'high',
+        label: 'Mycket',
+        emoji: '☀️',
+        description: 'Ofta utomhus i solen'
       },
       {
-        label: "Sällan eller aldrig",
-        description: "Jag tränar inte särskilt ofta",
-        value: "sedentary",
-        icon: "🛋️"
+        value: 'excessive',
+        label: 'Väldigt mycket',
+        emoji: '🏖️',
+        description: 'Arbetar utomhus eller solar ofta'
       }
     ]
   },
   {
-    id: 10,
-    question: "Hur påverkar hormoner din hud?",
-    subtitle: "Hormonella förändringar kan starkt påverka hudtillståndet",
-    icon: "🔄",
+    id: 'smoking',
+    text: 'Röker du eller exponeras du för cigarettrök?',
     options: [
       {
-        label: "Stora förändringar under menstruationen",
-        description: "Min hud förändras dramatiskt under menscykeln",
-        value: "major_hormonal_changes",
-        icon: "🌊"
+        value: 'yes_daily',
+        label: 'Ja, dagligen',
+        emoji: '🚬',
+        description: 'Röker eller exponeras dagligen'
       },
       {
-        label: "Märkbara förändringar under menstruationen",
-        description: "Jag ser tydliga förändringar i huden under vissa perioder",
-        value: "noticeable_hormonal_changes",
-        icon: "📅"
+        value: 'sometimes',
+        label: 'Ibland',
+        emoji: '💨',
+        description: 'Röker eller exponeras ibland'
       },
       {
-        label: "Små förändringar eller osäker",
-        description: "Jag märker minimal påverkan eller är osäker",
-        value: "minimal_hormonal_changes",
-        icon: "🤷"
+        value: 'passive',
+        label: 'Passiv rökning',
+        emoji: '😤',
+        description: 'Exponeras för andras rök'
       },
       {
-        label: "Genomgår menopaus/hormonförändringar",
-        description: "Jag är i menopaus eller har andra hormonella förändringar",
-        value: "menopausal_changes",
-        icon: "🔥"
+        value: 'never',
+        label: 'Aldrig',
+        emoji: '🌿',
+        description: 'Röker inte och undviker rök'
       }
     ]
   },
   {
-    id: 11,
-    question: "Vilken åldersgrupp tillhör du?",
-    subtitle: "Hudens behov förändras med åldern",
-    icon: "🎂",
+    id: 'alcohol',
+    text: 'Hur ofta dricker du alkohol?',
     options: [
       {
-        label: "Under 25 år",
-        description: "Jag är ung och vill förebygga hudproblem",
-        value: "young_adult",
-        icon: "🌟"
+        value: 'daily',
+        label: 'Dagligen',
+        emoji: '🍷',
+        description: 'Dricker alkohol varje dag'
       },
       {
-        label: "25-35 år",
-        description: "Jag börjar tänka på anti-aging och förebyggande vård",
-        value: "young_professional",
-        icon: "💼"
+        value: 'weekly',
+        label: 'Varje vecka',
+        emoji: '🍺',
+        description: 'Dricker regelbundet varje vecka'
       },
       {
-        label: "35-45 år",
-        description: "Jag ser första tecknen på åldrande och vill motverka det",
-        value: "middle_aged",
-        icon: "🎯"
+        value: 'monthly',
+        label: 'Någon gång i månaden',
+        emoji: '🥂',
+        description: 'Dricker vid speciella tillfällen'
       },
       {
-        label: "45+ år",
-        description: "Jag vill bekämpa åldrande och bevara hudkvaliteten",
-        value: "mature_adult",
-        icon: "👑"
+        value: 'rarely',
+        label: 'Sällan eller aldrig',
+        emoji: '💧',
+        description: 'Dricker nästan aldrig alkohol'
       }
     ]
   },
   {
-    id: 12,
-    question: "Vad är ditt främsta hudmål?",
-    subtitle: "Vad vill du uppnå med förbättrad hudvård?",
-    icon: "🎯",
+    id: 'hormones',
+    text: 'Upplever du hormonella förändringar?',
     options: [
       {
-        label: "Få bukt med akne och finnar",
-        description: "Jag vill ha en ren, problemfri hud",
-        value: "clear_skin",
-        icon: "✨"
+        value: 'menstrual',
+        label: 'Menstruationscykel',
+        emoji: '🌙',
+        description: 'Regelbundna hormonella förändringar'
       },
       {
-        label: "Minska åldrande och rynkor",
-        description: "Jag vill bevara ungdomlig, fast hud",
-        value: "anti_aging",
-        icon: "⏰"
+        value: 'pregnancy',
+        label: 'Graviditet/amning',
+        emoji: '🤱',
+        description: 'Gravid eller ammar'
       },
       {
-        label: "Förbättra hudton och lyster",
-        description: "Jag vill ha en jämn, strålande hud",
-        value: "radiant_skin",
-        icon: "🌟"
+        value: 'menopause',
+        label: 'Klimakteriet',
+        emoji: '🌅',
+        description: 'I eller nära klimakteriet'
       },
       {
-        label: "Lugna känslig/irriterad hud",
-        description: "Jag vill ha mindre rodnad och irritation",
-        value: "calm_skin",
-        icon: "🌿"
+        value: 'none',
+        label: 'Inga märkbara',
+        emoji: '⚖️',
+        description: 'Inga tydliga hormonella förändringar'
+      }
+    ]
+  },
+  {
+    id: 'medications',
+    text: 'Tar du några mediciner som kan påverka huden?',
+    options: [
+      {
+        value: 'hormonal',
+        label: 'Hormonella',
+        emoji: '💊',
+        description: 'P-piller eller hormonbehandling'
       },
       {
-        label: "Allmän hudförbättring",
-        description: "Jag vill förbättra hela min hudkvalitet",
-        value: "overall_improvement",
-        icon: "🚀"
+        value: 'antibiotics',
+        label: 'Antibiotika',
+        emoji: '💉',
+        description: 'Tar eller har nyligen tagit antibiotika'
+      },
+      {
+        value: 'other',
+        label: 'Andra mediciner',
+        emoji: '🏥',
+        description: 'Andra mediciner som kan påverka huden'
+      },
+      {
+        value: 'none',
+        label: 'Inga mediciner',
+        emoji: '🌿',
+        description: 'Tar inga mediciner'
+      }
+    ]
+  },
+  {
+    id: 'age',
+    text: 'Vilken åldersgrupp tillhör du?',
+    options: [
+      {
+        value: 'under20',
+        label: 'Under 20',
+        emoji: '👶'
+      },
+      {
+        value: '20-30',
+        label: '20-30',
+        emoji: '👨'
+      },
+      {
+        value: '30-40',
+        label: '30-40',
+        emoji: '👩'
+      },
+      {
+        value: '40-50',
+        label: '40-50',
+        emoji: '🧑'
+      },
+      {
+        value: 'over50',
+        label: 'Över 50',
+        emoji: '👵'
+      }
+    ]
+  },
+  {
+    id: 'environment',
+    text: 'I vilken typ av klimat bor du?',
+    options: [
+      {
+        value: 'humid',
+        label: 'Fuktigt',
+        emoji: '💦',
+        description: 'Hög luftfuktighet året runt'
+      },
+      {
+        value: 'dry',
+        label: 'Torrt',
+        emoji: '🏜️',
+        description: 'Låg luftfuktighet, ofta torr luft'
+      },
+      {
+        value: 'mixed',
+        label: 'Blandat',
+        emoji: '🌤️',
+        description: 'Växlar mellan årstider'
+      },
+      {
+        value: 'cold',
+        label: 'Kallt',
+        emoji: '❄️',
+        description: 'Kallt klimat större delen av året'
+      },
+      {
+        value: 'hot',
+        label: 'Varmt',
+        emoji: '☀️',
+        description: 'Varmt och soligt större delen av året'
       }
     ]
   }
-] 
+]; 

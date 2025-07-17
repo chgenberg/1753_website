@@ -9,6 +9,7 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { JudgeMeWidget } from '@/components/reviews/JudgeMeWidget'
 import { ReviewsList } from '@/components/reviews/ReviewsList'
+import { useCart } from '@/contexts/CartContext'
 import { 
   Heart, 
   ShoppingBag, 
@@ -67,6 +68,7 @@ const skinTypeTranslations: Record<string, string> = {
 
 export default function ProductPage() {
   const params = useParams()
+  const { addToCart } = useCart()
   const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
   const [selectedImage, setSelectedImage] = useState(0)
@@ -84,10 +86,10 @@ export default function ProductPage() {
     const mockProducts = [
       {
         id: '1',
-        name: 'THE ONE - Ansiktsolja',
-        slug: 'the-one-ansiktsolja',
+        name: 'The ONE Facial Oil',
+        slug: 'the-one-facial-oil',
         description: 'Vår populäraste ansiktsolja med CBD och CBG för alla hudtyper',
-        longDescription: `THE ONE är vår mest populära ansiktsolja, utvecklad för att passa alla hudtyper. Med en kraftfull kombination av CBD och CBG ger denna olja din hud den balans och näring den behöver.
+        longDescription: `The ONE Facial Oil är vår mest populära ansiktsolja, utvecklad för att passa alla hudtyper. Med en kraftfull kombination av CBD och CBG ger denna olja din hud den balans och näring den behöver.
 
 Denna unika formula innehåller:
 • 500mg CBD för anti-inflammatorisk effekt
@@ -95,9 +97,8 @@ Denna unika formula innehåller:
 • Jojoba-olja för djup återfuktning
 • MCT-kokosolja som bärarolja
 
-THE ONE har hjälpt tusentals kunder att uppnå en friskare, mer balanserad hud. Perfekt för daglig användning, morgon och kväll.`,
-        price: 899,
-        compareAtPrice: 1099,
+The ONE har hjälpt tusentals kunder att uppnå en friskare, mer balanserad hud. Perfekt för daglig användning, morgon och kväll.`,
+        price: 649,
         images: [
           { url: '/images/products/TheONE.png', alt: 'THE ONE Ansiktsolja', position: 0 }
         ],
@@ -142,18 +143,18 @@ THE ONE har hjälpt tusentals kunder att uppnå en friskare, mer balanserad hud.
       },
       {
         id: '2',
-        name: 'NATUREL - Ansiktsolja',
-        slug: 'naturel-ansiktsolja',
-        description: 'Mild ansiktsolja för känslig hud med naturliga ingredienser',
-        longDescription: `NATUREL är speciellt utvecklad för känslig hud som behöver extra omtanke. Denna milda formula kombinerar CBD med lugnande naturliga oljor för optimal komfort.
+        name: 'Au Naturel Makeup Remover',
+        slug: 'au-naturel-makeup-remover',
+        description: 'Mild makeupborttagare för känslig hud med naturliga ingredienser',
+        longDescription: `Au Naturel Makeup Remover är speciellt utvecklad för känslig hud som behöver extra omtanke. Denna milda formula tar effektivt bort makeup utan att irritera huden.
 
 Perfekt för dig som har:
 • Känslig hud som reagerar på starka ingredienser
-• Rodnad och irritation
-• Behov av mild men effektiv hudvård
+• Behov av skonsam men effektiv rengöring
+• Önskan om naturlig makeupborttagning
 
-Med sin milda sammansättning är NATUREL idealisk för daglig användning, även på den mest känsliga huden.`,
-        price: 799,
+Med sin milda sammansättning är Au Naturel idealisk för daglig användning, även på den mest känsliga huden.`,
+        price: 399,
         images: [
           { url: '/images/products/Naturel.png', alt: 'NATUREL Ansiktsolja', position: 0 }
         ],
@@ -191,10 +192,10 @@ Med sin milda sammansättning är NATUREL idealisk för daglig användning, äve
       },
       {
         id: '3',
-        name: 'TA-DA - Ansiktsolja',
-        slug: 'ta-da-ansiktsolja',
-        description: 'Kraftfull ansiktsolja för problematisk hud',
-        longDescription: `TA-DA är utvecklad för dig som kämpar med problematisk hud och behöver extra kraft för att bekämpa orenheter och inflammationer.
+        name: 'TA-DA Serum',
+        slug: 'ta-da-serum',
+        description: 'Kraftfullt serum för problematisk hud',
+        longDescription: `TA-DA Serum är utvecklat för dig som kämpar med problematisk hud och behöver extra kraft för att bekämpa orenheter och inflammationer.
 
 Denna kraftfulla formula innehåller:
 • Hög koncentration CBD för anti-inflammatorisk effekt
@@ -203,7 +204,7 @@ Denna kraftfulla formula innehåller:
 • Salicylsyra för pordjuprengöring
 
 TA-DA hjälper dig att ta kontroll över din hud och säga "TA-DA!" till en klarare, friskare hy.`,
-        price: 899,
+        price: 699,
         images: [
           { url: '/images/products/TA-DA.png', alt: 'TA-DA Ansiktsolja', position: 0 }
         ],
@@ -241,10 +242,10 @@ TA-DA hjälper dig att ta kontroll över din hud och säga "TA-DA!" till en klar
       },
       {
         id: '4',
-        name: 'FUNGTASTIC - Svampextrakt',
-        slug: 'fungtastic-svampextrakt',
+        name: 'Fungtastic Mushroom Extract',
+        slug: 'fungtastic-mushroom-extract',
         description: 'Kraftfulla medicinska svampar för hud och hälsa',
-        longDescription: `FUNGTASTIC innehåller fyra av världens mest kraftfulla medicinska svampar för optimal hud- och kroppshälsa.
+        longDescription: `Fungtastic Mushroom Extract innehåller fyra av världens mest kraftfulla medicinska svampar för optimal hud- och kroppshälsa.
 
 Denna unika blandning innehåller:
 • Chaga - "Skogens diamant" med antioxidanter
@@ -252,8 +253,8 @@ Denna unika blandning innehåller:
 • Lion's Mane - "Den smarta svampen" för hjärnhälsa
 • Cordyceps - "Energisvampen" för uthållighet
 
-FUNGTASTIC stödjer din hud inifrån och ut genom att stärka immunsystemet och minska inflammation.`,
-        price: 699,
+Fungtastic stödjer din hud inifrån och ut genom att stärka immunsystemet och minska inflammation.`,
+        price: 399,
         images: [
           { url: '/images/products/Fungtastic.png', alt: 'FUNGTASTIC Svampextrakt', position: 0 }
         ],
@@ -304,20 +305,19 @@ FUNGTASTIC stödjer din hud inifrån och ut genom att stärka immunsystemet och 
       },
       {
         id: '5',
-        name: 'I LOVE - Hudvårdskit',
-        slug: 'i-love-hudvardskit',
-        description: 'Komplett hudvårdskit för nybörjare',
-        longDescription: `I LOVE är det perfekta startkitet för dig som vill börja din resa mot friskare hud. Detta kit innehåller allt du behöver för en komplett hudvårdsrutin.
+        name: 'I LOVE Facial Oil',
+        slug: 'i-love-facial-oil',
+        description: 'Komplett ansiktsolja för alla hudtyper',
+        longDescription: `I LOVE Facial Oil är vår mest omfattande ansiktsolja, perfekt för dig som vill ge din hud det allra bästa. Denna lyxiga formula kombinerar det bästa från alla våra oljor.
 
-Kitet innehåller:
-• THE ONE ansiktsolja (30ml)
-• NATUREL ansiktsolja (30ml)
-• Detaljerad guide för hudvård
-• Personlig hudvårdsplan
+Fördelar:
+• Komplett hudvård i en flaska
+• Passar alla hudtyper
+• Rik på CBD och CBG
+• Djupt återfuktande
 
-Med I LOVE får du prova våra mest populära produkter till ett fantastiskt pris.`,
-        price: 1499,
-        compareAtPrice: 1799,
+Med I LOVE får du en lyxig hudupplevelse varje dag.`,
+        price: 849,
         images: [
           { url: '/images/products/ILOVE.png', alt: 'I LOVE Hudvårdskit', position: 0 }
         ],
@@ -354,19 +354,19 @@ Med I LOVE får du prova våra mest populära produkter till ett fantastiskt pri
       },
       {
         id: '6',
-        name: 'DUO - Hudvårdskit',
-        slug: 'duo-hudvardskit',
+        name: 'DUO-kit',
+        slug: 'duo-kit',
         description: 'Perfekt kombination för optimal hudvård',
-        longDescription: `DUO är den perfekta kombinationen av våra mest effektiva produkter för dig som vill maximera din hudvård.
+        longDescription: `DUO-kit är den perfekta kombinationen av våra mest effektiva produkter för dig som vill maximera din hudvård.
 
 Detta kit innehåller:
-• THE ONE ansiktsolja (50ml) - För daglig användning
-• TA-DA ansiktsolja (30ml) - För intensiv behandling
+• The ONE Facial Oil (50ml) - För daglig användning
+• TA-DA Serum (30ml) - För intensiv behandling
 • Appliceringsguide
 • Hudvårdsschema
 
-DUO ger dig flexibiliteten att anpassa din hudvård efter dina behov.`,
-        price: 1299,
+DUO-kit ger dig flexibiliteten att anpassa din hudvård efter dina behov.`,
+        price: 1099,
         images: [
           { url: '/images/products/DUO.png', alt: 'DUO Hudvårdskit', position: 0 }
         ],
@@ -409,9 +409,29 @@ DUO ger dig flexibiliteten att anpassa din hudvård efter dina behov.`,
   }
 
   const handleAddToCart = () => {
-    setAddedToCart(true)
-    setTimeout(() => setAddedToCart(false), 3000)
-    // Add actual cart logic here
+    if (!product) return
+    
+    // Convert product to match the Product type expected by cart
+    const cartProduct = {
+      ...product,
+      images: product.images.map((img, index) => ({
+        id: `img-${index}`,
+        url: img.url,
+        alt: img.alt || product.name,
+        position: img.position || 0
+      })),
+      variants: [],
+      inventory: {
+        quantity: 100,
+        sku: product.slug,
+        trackQuantity: false
+      },
+      saleProduct: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    }
+    
+    addToCart(cartProduct as any, quantity)
   }
 
   const handleQuantityChange = (change: number) => {

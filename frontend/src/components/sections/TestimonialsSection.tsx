@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { Star, Quote } from 'lucide-react'
+import Image from 'next/image'
 
 const testimonials = [
   {
@@ -11,7 +12,7 @@ const testimonials = [
     location: 'Stockholm',
     rating: 5,
     text: 'Jag har kämpat med torr hud i åratal, men efter att ha använt DUO-kit i bara två veckor är min hud helt förvandlad. Den känns mjuk, återfuktad och ser strålande ut!',
-    product: 'DUO-kit + TA-DA Serum',
+          product: 'DUO-kit',
     image: '/images/testimonials/anna.jpg'
   },
   {
@@ -39,6 +40,22 @@ const testimonials = [
 export function TestimonialsSection() {
   return (
     <section className="py-20 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden">
+      {/* Background image with overlay */}
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="/Porträtt_hemsidan/Kapitel 13-desktop.png"
+          alt="Background"
+          fill
+          className="object-cover opacity-10 hidden md:block"
+        />
+        <Image
+          src="/Porträtt_hemsidan/Kapitel 13.png"
+          alt="Background"
+          fill
+          className="object-cover opacity-10 md:hidden"
+        />
+      </div>
+      
       {/* Background decoration */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-[#00937c]/10 rounded-full blur-3xl" />
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#00937c]/5 rounded-full blur-3xl" />

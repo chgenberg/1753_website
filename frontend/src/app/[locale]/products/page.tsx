@@ -7,19 +7,34 @@ import Link from 'next/link'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { JudgeMeWidget } from '@/components/reviews/JudgeMeWidget'
+import { useCart } from '@/contexts/CartContext'
 import { Filter, ChevronDown } from 'lucide-react'
 import { generatePageSEO } from '@/lib/seo-utils'
 import type { Metadata } from 'next'
 
+interface Product {
+  id: string
+  name: string
+  slug: string
+  description: string
+  price: number
+  compareAtPrice?: number
+  image: string
+  category: string
+  skinTypes: string[]
+  featured: boolean
+  bestseller: boolean
+  newProduct: boolean
+}
+
 // Mock products data - replace with real data later
-const mockProducts = [
+const mockProducts: Product[] = [
   {
     id: '1',
-    name: 'THE ONE - Ansiktsolja',
-    slug: 'the-one-ansiktsolja',
+    name: 'The ONE Facial Oil',
+    slug: 'the-one-facial-oil',
     description: 'Vår populäraste ansiktsolja med CBD och CBG för alla hudtyper',
-    price: 899,
-    compareAtPrice: 1099,
+    price: 649,
     image: '/images/products/TheONE.png',
     category: 'ansiktsolja',
     skinTypes: ['alla'],
@@ -29,12 +44,12 @@ const mockProducts = [
   },
   {
     id: '2', 
-    name: 'NATUREL - Ansiktsolja',
-    slug: 'naturel-ansiktsolja',
-    description: 'Mild ansiktsolja för känslig hud med naturliga ingredienser',
-    price: 799,
+    name: 'Au Naturel Makeup Remover',
+    slug: 'au-naturel-makeup-remover',
+    description: 'Mild makeupborttagare för känslig hud med naturliga ingredienser',
+    price: 399,
     image: '/images/products/Naturel.png',
-    category: 'ansiktsolja',
+    category: 'rengöring',
     skinTypes: ['känslig'],
     featured: true,
     bestseller: false,
@@ -42,12 +57,12 @@ const mockProducts = [
   },
   {
     id: '3',
-    name: 'TA-DA - Ansiktsolja',
-    slug: 'ta-da-ansiktsolja',
-    description: 'Kraftfull ansiktsolja för problematisk hud',
-    price: 899,
+    name: 'TA-DA Serum',
+    slug: 'ta-da-serum',
+    description: 'Kraftfullt serum för problematisk hud',
+    price: 699,
     image: '/images/products/TA-DA.png',
-    category: 'ansiktsolja',
+    category: 'serum',
     skinTypes: ['problematisk'],
     featured: false,
     bestseller: false,
@@ -55,10 +70,10 @@ const mockProducts = [
   },
   {
     id: '4',
-    name: 'FUNGTASTIC - Svampextrakt',
-    slug: 'fungtastic-svampextrakt',
+    name: 'Fungtastic Mushroom Extract',
+    slug: 'fungtastic-mushroom-extract',
     description: 'Kraftfulla medicinska svampar för hud och hälsa',
-    price: 699,
+    price: 399,
     image: '/images/products/Fungtastic.png',
     category: 'kosttillskott',
     skinTypes: ['alla'],
@@ -68,13 +83,12 @@ const mockProducts = [
   },
   {
     id: '5',
-    name: 'I LOVE - Hudvårdskit',
-    slug: 'i-love-hudvardskit',
-    description: 'Komplett hudvårdskit för nybörjare',
-    price: 1499,
-    compareAtPrice: 1799,
+    name: 'I LOVE Facial Oil',
+    slug: 'i-love-facial-oil',
+    description: 'Komplett ansiktsolja för alla hudtyper',
+    price: 849,
     image: '/images/products/ILOVE.png',
-    category: 'kit',
+    category: 'ansiktsolja',
     skinTypes: ['alla'],
     featured: true,
     bestseller: true,
@@ -82,10 +96,10 @@ const mockProducts = [
   },
   {
     id: '6',
-    name: 'DUO - Hudvårdskit',
-    slug: 'duo-hudvardskit',
+    name: 'DUO-kit',
+    slug: 'duo-kit',
     description: 'Perfekt kombination för optimal hudvård',
-    price: 1299,
+    price: 1099,
     image: '/images/products/DUO.png',
     category: 'kit',
     skinTypes: ['alla'],
@@ -98,7 +112,9 @@ const mockProducts = [
 const categories = [
   { value: 'alla', label: 'Alla produkter' },
   { value: 'ansiktsolja', label: 'Ansiktsolja' },
-  { value: 'kit', label: 'Hudvårdskit' },
+  { value: 'rengöring', label: 'Rengöring' },
+  { value: 'serum', label: 'Serum' },
+  { value: 'kit', label: 'Kit' },
   { value: 'kosttillskott', label: 'Kosttillskott' }
 ]
 
@@ -109,10 +125,17 @@ const skinTypes = [
 ]
 
 export default function ProductsPage() {
+  const { addToCart } = useCart()
   const [selectedCategory, setSelectedCategory] = useState('alla')
   const [selectedSkinType, setSelectedSkinType] = useState('alla')
   const [sortBy, setSortBy] = useState('featured')
   const [showFilters, setShowFilters] = useState(false)
+  const [activeFilter, setActiveFilter] = useState<string | null>(null)
+
+  const handleFilter = (filterType: string | null) => {
+    setActiveFilter(filterType)
+    // Logic to apply filter will go here
+  }
 
   // Filter products
   const filteredProducts = mockProducts.filter(product => {
@@ -142,40 +165,86 @@ export default function ProductsPage() {
       <Header />
       <main className="pt-20">
         {/* Hero Section */}
-        <section className="relative h-[40vh] min-h-[400px] flex items-center justify-center overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-black to-gray-900"></div>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="relative z-10 text-center text-white px-4"
-          >
-            <h1 className="text-5xl md:text-6xl font-bold mb-4">Våra Produkter</h1>
-            <p className="text-xl md:text-2xl max-w-2xl mx-auto">
-              Upptäck kraften i CBD & CBG för din hud
-            </p>
-          </motion.div>
+        <section className="relative py-24 bg-white overflow-hidden">
+          <div className="absolute inset-0 z-0">
+            <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-gray-50/50"></div>
+          </div>
+          
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="text-center"
+            >
+              <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tighter">VÅRA PRODUKTER</h1>
+              <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto font-light">
+                Upptäck vårt utvalda sortiment av CBD-berikade hudvårdsprodukter
+              </p>
+            </motion.div>
+          </div>
         </section>
 
-        {/* Filter Bar */}
-        <section className="sticky top-20 z-40 bg-white shadow-md">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-              <div className="flex items-center gap-4 w-full md:w-auto">
-                <button
+        {/* Filter Bar - Minimalist Apple Style */}
+        <section className="sticky top-20 z-40 bg-white/80 backdrop-blur-lg border-b border-gray-100">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+              <div className="flex items-center gap-3 w-full md:w-auto overflow-x-auto">
+                {/* Filter Pills */}
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => setShowFilters(!showFilters)}
-                  className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="flex items-center gap-2 px-6 py-3 bg-gray-100 hover:bg-gray-200 rounded-full font-medium transition-all whitespace-nowrap"
                 >
-                  <Filter className="w-5 h-5" />
-                  <span>Filter</span>
+                  <Filter className="w-4 h-4" />
+                  <span>FILTER</span>
                   {(selectedCategory !== 'alla' || selectedSkinType !== 'alla') && (
                     <span className="bg-[#00937c] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                       {[selectedCategory !== 'alla', selectedSkinType !== 'alla'].filter(Boolean).length}
                     </span>
                   )}
-                </button>
+                </motion.button>
                 
-                <div className="text-sm text-gray-600">
-                  {filteredProducts.length} produkter
+                <div className="h-6 w-px bg-gray-200"></div>
+                
+                <div className="flex gap-2">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handleFilter(null)}
+                    className={`px-5 py-2.5 rounded-full font-medium transition-all ${
+                      activeFilter === null 
+                        ? 'bg-black text-white' 
+                        : 'bg-gray-100 hover:bg-gray-200'
+                    }`}
+                  >
+                    ALLA
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handleFilter('bestseller')}
+                    className={`px-5 py-2.5 rounded-full font-medium transition-all ${
+                      activeFilter === 'bestseller' 
+                        ? 'bg-black text-white' 
+                        : 'bg-gray-100 hover:bg-gray-200'
+                    }`}
+                  >
+                    BESTSELLERS
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handleFilter('new')}
+                    className={`px-5 py-2.5 rounded-full font-medium transition-all ${
+                      activeFilter === 'new' 
+                        ? 'bg-black text-white' 
+                        : 'bg-gray-100 hover:bg-gray-200'
+                    }`}
+                  >
+                    NYTT
+                  </motion.button>
                 </div>
               </div>
 
@@ -264,99 +333,152 @@ export default function ProductsPage() {
         </section>
 
         {/* Products Grid */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <motion.div 
             layout
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
           >
             {filteredProducts.map((product, index) => (
               <motion.div
                 key={product.id}
                 layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3, delay: index * 0.05 }}
-                whileHover={{ y: -5 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                whileHover={{ y: -8 }}
                 className="group"
               >
                 <Link href={`/products/${product.slug}`}>
-                  <div className="bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl cursor-pointer">
-                    {/* Image Container */}
-                    <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-green-50 to-emerald-50">
-                      <Image
-                        src={product.image}
-                        alt={product.name}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-110"
-                      />
+                  <div className="relative bg-white rounded-3xl overflow-hidden transition-all duration-500 hover:shadow-2xl cursor-pointer">
+                    {/* Image Container - Minimalist Style */}
+                    <div className="relative aspect-[4/5] overflow-hidden bg-gradient-to-b from-gray-50 to-white">
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        transition={{ duration: 0.6 }}
+                        className="relative w-full h-full"
+                      >
+                        <Image
+                          src={product.image}
+                          alt={product.name}
+                          fill
+                          className="object-contain p-8"
+                        />
+                      </motion.div>
                       
-                      {/* Badges */}
-                      <div className="absolute top-4 left-4 flex flex-col gap-2">
+                      {/* Minimal Badges */}
+                      <div className="absolute top-6 left-6 flex flex-col gap-2">
                         {product.bestseller && (
-                          <span className="bg-red-500 text-white text-xs px-3 py-1 rounded-full">
-                            Bästsäljare
-                          </span>
+                          <motion.span
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            className="bg-black text-white text-xs px-4 py-2 rounded-full font-medium"
+                          >
+                            BESTSELLER
+                          </motion.span>
                         )}
                         {product.newProduct && (
-                          <span className="bg-blue-500 text-white text-xs px-3 py-1 rounded-full">
-                            Nyhet
-                          </span>
-                        )}
-                        {product.compareAtPrice && (
-                          <span className="bg-yellow-500 text-white text-xs px-3 py-1 rounded-full">
-                            {Math.round((1 - product.price / product.compareAtPrice) * 100)}% rabatt
-                          </span>
+                          <motion.span
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.1 }}
+                            className="bg-[#00937c] text-white text-xs px-4 py-2 rounded-full font-medium"
+                          >
+                            NYHET
+                          </motion.span>
                         )}
                       </div>
+
+                      {/* Quick View on Hover */}
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        whileHover={{ opacity: 1 }}
+                        className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      >
+                        <span className="text-white font-medium px-6 py-3 bg-white/20 backdrop-blur-sm rounded-full">
+                          SE PRODUKT
+                        </span>
+                      </motion.div>
                     </div>
 
-                    {/* Product Info */}
-                    <div className="p-6">
-                      <div className="mb-2">
-                        <span className="text-xs text-gray-500 uppercase tracking-wider">
+                    {/* Product Info - Clean Typography */}
+                    <div className="p-8">
+                      <div className="mb-3">
+                        <span className="text-xs text-gray-500 font-medium tracking-[0.1em] uppercase">
                           {categories.find(c => c.value === product.category)?.label}
                         </span>
                       </div>
                       
-                      <h3 className="font-semibold text-lg mb-2 line-clamp-2">
+                      <h3 className="font-semibold text-xl mb-3 tracking-tight">
                         {product.name}
                       </h3>
                       
-                      {/* Star Rating */}
-                      <div className="mb-2">
-                        <JudgeMeWidget
-                          shopDomain={process.env.NEXT_PUBLIC_JUDGE_ME_SHOP_DOMAIN || '1753skincare.myshopify.com'}
-                          productHandle={product.slug}
-                          widgetType="preview-badge"
-                          className="text-sm"
-                        />
-                      </div>
-                      
-                      <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+                      <p className="text-gray-600 mb-6 line-clamp-2 font-light">
                         {product.description}
                       </p>
 
-                      {/* Price */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="text-2xl font-bold text-[#00937c]">
-                            {product.price} kr
+                      {/* Price - Bold and Clear */}
+                      <div className="flex items-baseline gap-3">
+                        <span className="text-2xl font-bold">
+                          {product.price} kr
+                        </span>
+                        {product.compareAtPrice && (
+                          <span className="text-lg text-gray-400 line-through">
+                            {product.compareAtPrice} kr
                           </span>
-                          {product.compareAtPrice && (
-                            <span className="text-sm text-gray-400 line-through">
-                              {product.compareAtPrice} kr
-                            </span>
-                          )}
-                        </div>
+                        )}
                       </div>
 
                       {/* Add to Cart Button */}
-                      <button 
-                        className="w-full mt-4 bg-[#00937c] text-white py-2 px-4 rounded-lg hover:bg-[#007363] transition-colors duration-300"
-                        onClick={(e) => e.preventDefault()}
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={(e) => {
+                          e.preventDefault()
+                          // Create a simplified product object for cart
+                          const cartProduct = {
+                            id: product.id,
+                            name: product.name,
+                            slug: product.slug,
+                            description: product.description,
+                            longDescription: product.description,
+                            price: product.price,
+                            compareAtPrice: product.compareAtPrice,
+                            images: [{
+                              id: 'img-1',
+                              url: product.image,
+                              alt: product.name,
+                              position: 0
+                            }],
+                            variants: [],
+                            category: { name: product.category, slug: product.category },
+                            tags: [],
+                            ingredients: [],
+                            skinTypes: product.skinTypes,
+                            benefits: [],
+                            howToUse: '',
+                            featured: product.featured,
+                            bestseller: product.bestseller,
+                            newProduct: product.newProduct,
+                            saleProduct: false,
+                            inventory: {
+                              quantity: 100,
+                              sku: product.slug,
+                              trackQuantity: false
+                            },
+                            seo: {
+                              title: product.name,
+                              description: product.description,
+                              keywords: []
+                            },
+                            createdAt: new Date().toISOString(),
+                            updatedAt: new Date().toISOString()
+                          }
+                          addToCart(cartProduct as any, 1)
+                        }}
+                        className="mt-6 w-full bg-black text-white py-4 rounded-full font-medium hover:bg-gray-900 transition-colors"
                       >
-                        Lägg i varukorg
-                      </button>
+                        LÄGG I VARUKORG
+                      </motion.button>
                     </div>
                   </div>
                 </Link>

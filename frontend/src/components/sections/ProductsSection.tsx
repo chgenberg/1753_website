@@ -17,6 +17,10 @@ interface Product {
   category: { name: string }
   bestseller: boolean
   newProduct: boolean
+  rating?: {
+    average: number
+    count: number
+  }
 }
 
 export function ProductsSection() {
@@ -29,10 +33,29 @@ export function ProductsSection() {
 
   const fetchProducts = async () => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api'
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002/api'
       const response = await fetch(`${apiUrl}/products?limit=4&featured=true`)
       const result = await response.json()
-      setProducts(result.data || [])
+      
+      if (result.success && result.data) {
+        // Transform data to match expected structure
+        const transformedProducts = result.data.map((product: any) => ({
+          id: product.id,
+          name: product.name,
+          slug: product.slug,
+          description: product.description,
+          price: product.price,
+          compareAtPrice: product.compareAtPrice,
+          images: product.images || [{ url: `/images/products/${product.slug}.png`, alt: product.name }],
+          category: { name: product.category },
+          bestseller: product.isBestseller || false,
+          newProduct: product.isNew || false,
+          rating: product.rating || { average: 0, count: 0 }
+        }))
+        setProducts(transformedProducts)
+      } else {
+        setProducts(mockProducts)
+      }
       setLoading(false)
     } catch (error) {
       console.error('Error fetching products:', error)
@@ -46,45 +69,44 @@ export function ProductsSection() {
   const mockProducts: Product[] = [
     {
       id: '1',
-      name: 'THE ONE - Ansiktsolja',
-      slug: 'the-one-ansiktsolja',
+      name: 'The ONE Facial Oil',
+      slug: 'the-one-facial-oil',
       description: 'Vår mest populära ansiktsolja med CBD och CBG för alla hudtyper',
-      price: 599,
-      compareAtPrice: 699,
-      images: [{ url: '/images/products/TheONE.png', alt: 'THE ONE Ansiktsolja' }],
+      price: 649,
+      images: [{ url: '/images/products/TheONE.png', alt: 'The ONE Facial Oil' }],
       category: { name: 'Ansiktsoljor' },
       bestseller: true,
       newProduct: false
     },
     {
       id: '2',
-      name: 'NATUREL - Känslig hud',
-      slug: 'naturel-kanslig-hud',
-      description: 'Specialformulerad för känslig hud med lugnande CBD och naturliga ingredienser',
-      price: 649,
-      images: [{ url: '/images/products/Naturel.png', alt: 'NATUREL för känslig hud' }],
-      category: { name: 'Ansiktsoljor' },
+      name: 'Au Naturel Makeup Remover',
+      slug: 'au-naturel-makeup-remover',
+      description: 'Mild makeupborttagare för känslig hud med naturliga ingredienser',
+      price: 399,
+      images: [{ url: '/images/products/Naturel.png', alt: 'Au Naturel Makeup Remover' }],
+      category: { name: 'Rengöring' },
       bestseller: false,
       newProduct: false
     },
     {
       id: '3',
-      name: 'TA-DA - Problematisk hud',
-      slug: 'ta-da-problematisk-hud',
-      description: 'Kraftfull formula för problematisk hud med CBG och antiinflammatoriska ingredienser',
+      name: 'TA-DA Serum',
+      slug: 'ta-da-serum',
+      description: 'Kraftfullt serum för problematisk hud med CBG och antiinflammatoriska ingredienser',
       price: 699,
-      images: [{ url: '/images/products/TA-DA.png', alt: 'TA-DA för problematisk hud' }],
-      category: { name: 'Ansiktsoljor' },
+      images: [{ url: '/images/products/TA-DA.png', alt: 'TA-DA Serum' }],
+      category: { name: 'Serum' },
       bestseller: false,
       newProduct: true
     },
     {
       id: '4',
-      name: 'FUNGTASTIC - Svampextrakt',
-      slug: 'fungtastic-svampextrakt',
+      name: 'Fungtastic Mushroom Extract',
+      slug: 'fungtastic-mushroom-extract',
       description: 'Kraftfulla medicinska svampar för hud och hälsa',
-      price: 699,
-      images: [{ url: '/images/products/Fungtastic.png', alt: 'FUNGTASTIC Svampextrakt' }],
+      price: 399,
+      images: [{ url: '/images/products/Fungtastic.png', alt: 'Fungtastic Mushroom Extract' }],
       category: { name: 'Kosttillskott' },
       bestseller: false,
       newProduct: false
@@ -102,20 +124,21 @@ export function ProductsSection() {
   }
 
   return (
-    <section className="py-20 bg-gray-50">
-      <div className="container mx-auto px-4">
+    <section className="py-24 bg-[var(--color-bg-secondary)]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-12"
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
-            Våra produkter
+          <h2 className="text-4xl md:text-5xl font-bold text-[var(--color-primary-dark)] mb-4 tracking-tight">
+            UTVALDA PRODUKTER
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Upptäck kraften i CBD och CBG för din hud
+          <p className="text-lg text-[var(--color-gray-600)] max-w-2xl mx-auto font-light">
+            Upptäck våra mest älskade produkter för en balanserad och strålande hud
           </p>
         </motion.div>
 
@@ -182,12 +205,23 @@ export function ProductsSection() {
                     </p>
 
                     {/* Rating */}
-                    <div className="flex items-center mb-4">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="w-4 h-4 fill-[#064400] text-[#064400]" />
-                      ))}
-                      <span className="text-sm text-gray-600 ml-2">(4.9)</span>
-                    </div>
+                    {product.rating && product.rating.count > 0 && (
+                      <div className="flex items-center mb-4">
+                        {[...Array(5)].map((_, i) => (
+                          <Star 
+                            key={i} 
+                            className={`w-4 h-4 ${
+                              i < Math.round(product.rating!.average)
+                                ? 'fill-[#064400] text-[#064400]'
+                                : 'text-gray-300'
+                            }`} 
+                          />
+                        ))}
+                        <span className="text-sm text-gray-600 ml-2">
+                          ({product.rating.average.toFixed(1)}) · {product.rating.count} recensioner
+                        </span>
+                      </div>
+                    )}
 
                     {/* Price - Always at bottom */}
                     <div className="flex items-center justify-between mt-auto">

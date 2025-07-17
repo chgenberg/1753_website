@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useCart } from '@/contexts/CartContext'
 import { 
   Home, 
   Info, 
@@ -31,9 +32,9 @@ interface MenuItem {
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
-  const [cartCount, setCartCount] = useState(2)
   const [hoveredItem, setHoveredItem] = useState<string | null>(null)
   const pathname = usePathname()
+  const { cartCount, openCart } = useCart()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -117,12 +118,12 @@ export function Header() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
                 whileHover={{ scale: 1.05 }}
-                className="bg-white/10 backdrop-blur-sm rounded-full p-3 hover:bg-white/20 transition-all duration-300"
+                className="bg-white rounded-full p-3 hover:bg-gray-100 transition-all duration-300"
               >
                 <img
-                  src="/1753_white.png"
+                  src="/1753.png"
                   alt="1753 Skincare"
-                  className="h-8 w-auto"
+                  className="h-8 w-auto opacity-100"
                 />
               </motion.div>
             </Link>
@@ -145,8 +146,8 @@ export function Header() {
                     <div
                       className={`flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 cursor-pointer ${
                         isScrolled 
-                          ? 'text-gray-600 hover:text-[#064400] hover:bg-gray-100'
-                          : 'text-white/80 hover:text-white hover:bg-white/20'
+                          ? 'text-gray-600 hover:text-black hover:bg-gray-200'
+                          : 'text-white/80 hover:text-black hover:bg-white'
                       }`}
                     >
                       {item.icon}
@@ -158,8 +159,8 @@ export function Header() {
                         pathname === item.href
                           ? 'bg-[#064400] text-white'
                           : isScrolled 
-                            ? 'text-gray-600 hover:text-[#064400] hover:bg-gray-100'
-                            : 'text-white/80 hover:text-white hover:bg-white/20'
+                            ? 'text-gray-600 hover:text-black hover:bg-gray-200'
+                            : 'text-white/80 hover:text-black hover:bg-white'
                       }`}
                     >
                       {item.icon}
@@ -178,8 +179,8 @@ export function Header() {
                     >
                       <div className={`backdrop-blur-md px-4 py-2 rounded-lg shadow-lg border ${
                         isScrolled 
-                          ? 'bg-white/90 border-gray-200/50 text-gray-800' 
-                          : 'bg-white/20 border-white/20 text-white'
+                          ? 'bg-white/90 border-gray-200/50 text-black' 
+                          : 'bg-white/90 border-white/20 text-black'
                       }`}>
                         <span className="text-sm font-medium">{item.name}</span>
                       </div>
@@ -200,13 +201,13 @@ export function Header() {
                       <div className={`backdrop-blur-md rounded-lg shadow-xl border py-2 min-w-[200px] ${
                         isScrolled 
                           ? 'bg-white/95 border-gray-200/50' 
-                          : 'bg-black/60 border-white/20'
+                          : 'bg-white/90 border-white/20'
                       }`}>
                         <div className={`px-4 py-2 mb-2 border-b ${
-                          isScrolled ? 'border-gray-200/50' : 'border-white/20'
+                          isScrolled ? 'border-gray-200/50' : 'border-gray-200/30'
                         }`}>
                           <span className={`text-sm font-semibold ${
-                            isScrolled ? 'text-gray-800' : 'text-white'
+                            isScrolled ? 'text-black' : 'text-black'
                           }`}>{item.name}</span>
                         </div>
                         {item.children.map((child) => (
@@ -215,8 +216,8 @@ export function Header() {
                             href={child.href}
                             className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-all duration-200 ${
                               isScrolled 
-                                ? 'text-gray-600 hover:text-[#064400] hover:bg-gray-50/50' 
-                                : 'text-white/80 hover:text-white hover:bg-white/10'
+                                ? 'text-gray-600 hover:text-black hover:bg-gray-100' 
+                                : 'text-gray-700 hover:text-black hover:bg-gray-100'
                             }`}
                           >
                             {child.icon}
@@ -230,34 +231,45 @@ export function Header() {
               </div>
             ))}
           </div>
+
+          {/* Cart Icon at Bottom */}
+          <div className="mt-auto flex justify-center">
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <button
+                onClick={openCart}
+                className={`relative flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 ${
+                  isScrolled 
+                    ? 'text-gray-600 hover:text-black hover:bg-gray-200'
+                    : 'text-white/80 hover:text-black hover:bg-white'
+                }`}
+              >
+                <ShoppingBag className="w-5 h-5" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-[#064400] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
+              </button>
+            </motion.div>
+          </div>
         </div>
       </nav>
 
-      {/* Shopping Cart - Floating Pill - back to top right */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-        whileHover={{ scale: 1.05 }}
-        className="fixed top-14 right-6 z-50"
-      >
-        <Link
-          href="/cart"
-          className="relative flex items-center gap-2 bg-black text-white px-6 py-3 rounded-full hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl"
-        >
-          <ShoppingBag className="w-5 h-5" />
-          <span className="text-sm font-medium">Varukorg</span>
-          {cartCount > 0 && (
-            <motion.span
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              className="absolute -top-2 -right-2 bg-[#064400] text-white text-xs w-6 h-6 rounded-full flex items-center justify-center font-bold"
-            >
-              {cartCount}
-            </motion.span>
-          )}
-        </Link>
-      </motion.div>
+      {/* Main content padding */}
+      <style jsx global>{`
+        @keyframes marquee {
+          0% { transform: translateX(0%); }
+          100% { transform: translateX(-50%); }
+        }
+        
+        .animate-marquee {
+          display: inline-block;
+          animation: marquee 30s linear infinite;
+        }
+      `}</style>
     </>
   )
 } 

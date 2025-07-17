@@ -64,20 +64,40 @@ export default function AboutPage() {
     <> 
       <Header />
       <main className="pt-20">
-        {/* Hero Section */}
-        <section className="relative py-20 bg-gradient-to-br from-gray-50 to-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Hero Section with Team Photo */}
+        <section className="relative min-h-screen flex items-center justify-center bg-white overflow-hidden">
+          {/* Full screen team photo */}
+          {isClient && (
+            <motion.div
+              initial={{ opacity: 0, scale: 1.05 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1.2 }}
+              className="absolute inset-0"
+            >
+              <Image
+                src="/Porträtt/C_&_E_2.jpg"
+                alt="Christopher och Ebba Genberg - Grundarna av 1753 Skincare"
+                fill
+                className="object-cover"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-white/90"></div>
+            </motion.div>
+          )}
+          
+          {/* Hero Content */}
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="text-center"
+              transition={{ duration: 0.8, delay: 0.5 }}
+              className="bg-white/80 backdrop-blur-sm rounded-3xl p-12 shadow-2xl"
             >
-              <span className="text-[#00937c] font-medium text-sm uppercase tracking-wider">1753 Skincare</span>
-              <h1 className="text-5xl md:text-6xl font-bold mt-4 mb-6">
-                Vilka är vi?
+              <span className="text-[#00937c] font-medium text-sm uppercase tracking-[0.2em] mb-4 block">1753 SKINCARE</span>
+              <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight">
+                VILKA ÄR VI?
               </h1>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-xl md:text-2xl text-gray-700 max-w-3xl mx-auto leading-relaxed font-light">
                 Vi är en familj och en rörelse som vågar ifrågasätta hudvårdsindustrin. 
                 Med forskning om hudens endocannabinoidsystem som grund skapar vi produkter för långsiktig hudhälsa.
               </p>
@@ -85,69 +105,43 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* Welcome Section */}
-        <section className="py-20 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Welcome Section - Minimalist Design */}
+        <section className="py-32 bg-gray-50">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="text-center mb-16"
+              className="text-center"
             >
-              <h2 className="text-4xl font-bold mb-8 text-[#00937c]">Välkommen till vår familj</h2>
-              <div className="max-w-4xl mx-auto space-y-6 text-lg text-gray-700 leading-relaxed">
+              <h2 className="text-3xl md:text-5xl font-bold mb-16 text-[#00937c] tracking-tight">VÄLKOMMEN TILL VÅR FAMILJ</h2>
+              <div className="space-y-8 text-lg md:text-xl text-gray-700 leading-relaxed font-light">
                 <p>
-                  Vi är inte bara ett hudvårdsmärke – vi är en familj och en rörelse som vill förändra framtidens syn på hälsa och skönhet. Med rötterna i forskningen om hudens endocannabinoidsystem och hjärtat i ett orubbligt engagemang för mänskligt välmående, vågar vi vara annorlunda.
+                  Vi är inte bara ett hudvårdsmärke – vi är en familj och en rörelse som vill förändra framtidens syn på hälsa och skönhet.
                 </p>
                 <p>
-                  Vi vågar ifrågasätta en industri som ofta säljer kortsiktiga drömmar på bekostnad av långsiktig hudhälsa. Vår vision är att varje människa, oavsett bakgrund, ska känna kraften i balanserad hud och stärkt självförtroende.
+                  Med rötterna i forskningen om hudens endocannabinoidsystem och hjärtat i ett orubbligt engagemang för mänskligt välmående, vågar vi vara annorlunda.
                 </p>
-                <p className="text-xl font-semibold text-[#00937c]">
-                  Välkommen att vara en del av något större – 1753 Skincare är ditt uppror såväl som vårt.
+                <p className="text-2xl md:text-3xl font-medium text-[#00937c] pt-8">
+                  Välkommen att vara en del av något större.
                 </p>
               </div>
             </motion.div>
           </div>
         </section>
 
-        {/* Team Section */}
-        <section className="py-20 bg-gray-50">
+        {/* Team Section - Clean Grid Layout */}
+        <section className="py-32 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="text-center mb-16"
+              className="text-center mb-20"
             >
-              <h2 className="text-4xl font-bold mb-6">Vilka är vi?</h2>
-              
-              {/* Team Photo */}
-              {isClient && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: 0.2 }}
-                  className="relative max-w-2xl mx-auto mb-12"
-                >
-                  <div className="relative rounded-3xl overflow-hidden shadow-2xl">
-                    <Image
-                      src="/Porträtt/C_&_E_2.jpg"
-                      alt="Christopher och Ebba Genberg - Grundarna av 1753 Skincare"
-                      width={800}
-                      height={600}
-                      className="w-full h-auto object-cover"
-                      priority
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
-                  </div>
-                  <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-[#00937c] rounded-full flex items-center justify-center shadow-lg">
-                    <Heart className="w-12 h-12 text-white" />
-                  </div>
-                </motion.div>
-              )}
+              <h2 className="text-3xl md:text-5xl font-bold text-gray-900 tracking-tight">MÖTE GRUNDARNA</h2>
             </motion.div>
 
             <div className="grid lg:grid-cols-2 gap-16">

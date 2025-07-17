@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
-import { Product } from '../models/Product'
+import { prisma } from '../lib/prisma'
 import { AppError } from '../middleware/errorHandler'
 
 // @desc    Get all products
@@ -15,144 +15,186 @@ export const getProducts = async (
     const limit = parseInt(req.query.limit as string) || 12
     const skip = (page - 1) * limit
 
-    // Build query
-    const query: any = { status: 'active' }
+    // Build where clause
+    const where: any = { isActive: true }
 
     // Category filter
     if (req.query.category) {
-      query['category.slug'] = req.query.category
-    }
-
-    // Skin type filter
-    if (req.query.skinType) {
-      query.skinTypes = { $in: [req.query.skinType] }
+      where.category = { contains: req.query.category as string, mode: 'insensitive' }
     }
 
     // Price range filter
     if (req.query.minPrice || req.query.maxPrice) {
-      query.price = {}
-      if (req.query.minPrice) query.price.$gte = parseFloat(req.query.minPrice as string)
-      if (req.query.maxPrice) query.price.$lte = parseFloat(req.query.maxPrice as string)
+      where.price = {}
+      if (req.query.minPrice) where.price.gte = parseFloat(req.query.minPrice as string)
+      if (req.query.maxPrice) where.price.lte = parseFloat(req.query.maxPrice as string)
     }
 
     // Search filter
     if (req.query.search) {
-      query.$text = { $search: req.query.search as string }
+      const searchTerm = req.query.search as string
+      where.OR = [
+        { name: { contains: searchTerm, mode: 'insensitive' } },
+        { description: { contains: searchTerm, mode: 'insensitive' } }
+      ]
     }
 
-    // Tags filter
-    if (req.query.tags) {
-      const tags = (req.query.tags as string).split(',')
-      query.tags = { $in: tags }
+    // Featured filter
+    if (req.query.featured === 'true') {
+      where.isFeatured = true
     }
-
-    // Feature filters
-    if (req.query.featured === 'true') query.featured = true
-    if (req.query.bestseller === 'true') query.bestseller = true
-    if (req.query.new === 'true') query.newProduct = true
-    if (req.query.sale === 'true') query.saleProduct = true
 
     // Sorting
-    let sort: any = {}
+    let orderBy: any = { createdAt: 'desc' }
     switch (req.query.sort) {
       case 'price-asc':
-        sort = { price: 1 }
+        orderBy = { price: 'asc' }
         break
       case 'price-desc':
-        sort = { price: -1 }
-        break
-      case 'name':
-        sort = { name: 1 }
+        orderBy = { price: 'desc' }
         break
       case 'newest':
-        sort = { createdAt: -1 }
+        orderBy = { createdAt: 'desc' }
         break
-      default:
-        sort = { featured: -1, bestseller: -1, createdAt: -1 }
+      case 'oldest':
+        orderBy = { createdAt: 'asc' }
+        break
+      case 'featured':
+        orderBy = [
+          { isFeatured: 'desc' },
+          { createdAt: 'desc' }
+        ]
+        break
     }
 
-    // Execute query
-    const products = await Product.find(query)
-      .sort(sort)
-      .skip(skip)
-      .limit(limit)
-      .select('-__v')
+    // Execute query with reviews and calculate ratings
+    const [products, total] = await Promise.all([
+      prisma.product.findMany({
+        where,
+        orderBy,
+        skip,
+        take: limit,
+        include: {
+          reviews: {
+            where: { status: 'APPROVED' },
+            select: { rating: true }
+          },
+          _count: {
+            select: {
+              reviews: {
+                where: { status: 'APPROVED' }
+              }
+            }
+          }
+        }
+      }),
+      prisma.product.count({ where })
+    ])
 
-    const total = await Product.countDocuments(query)
+    // Calculate ratings for each product
+    const productsWithRatings = products.map(product => {
+      const approvedReviews = product.reviews || []
+      const reviewCount = product._count.reviews
+      
+      let averageRating = 0
+      if (approvedReviews.length > 0) {
+        const totalRating = approvedReviews.reduce((sum, review) => sum + review.rating, 0)
+        averageRating = totalRating / approvedReviews.length
+      }
+
+      // Remove the raw reviews data and replace with rating info
+      const { reviews, _count, ...productData } = product
+      
+      return {
+        ...productData,
+        rating: {
+          average: Math.round(averageRating * 10) / 10, // Round to 1 decimal
+          count: reviewCount
+        }
+      }
+    })
+
+    // Pagination info
+    const totalPages = Math.ceil(total / limit)
+    const hasNextPage = page < totalPages
+    const hasPrevPage = page > 1
 
     res.status(200).json({
       success: true,
-      data: products,
-      meta: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit),
-      },
+      data: productsWithRatings,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalProducts: total,
+        hasNextPage,
+        hasPrevPage,
+        limit
+      }
     })
   } catch (error) {
-    next(error)
+    next(new AppError('Error fetching products', 500))
   }
 }
 
-// @desc    Get single product
+// @desc    Get single product by slug
 // @route   GET /api/products/:slug
 // @access  Public
-export const getProduct = async (
+export const getProductBySlug = async (
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
-    const product = await Product.findOne({
-      slug: req.params.slug,
-      status: 'active',
+    const { slug } = req.params
+
+    const product = await prisma.product.findUnique({
+      where: { slug, isActive: true },
+      include: {
+        reviews: {
+          where: { status: 'APPROVED' },
+          select: { rating: true }
+        },
+        _count: {
+          select: {
+            reviews: {
+              where: { status: 'APPROVED' }
+            }
+          }
+        }
+      }
     })
 
     if (!product) {
-      throw new AppError('Product not found', 404)
+      return next(new AppError('Product not found', 404))
+    }
+
+    // Calculate rating
+    const approvedReviews = product.reviews || []
+    const reviewCount = product._count.reviews
+    
+    let averageRating = 0
+    if (approvedReviews.length > 0) {
+      const totalRating = approvedReviews.reduce((sum, review) => sum + review.rating, 0)
+      averageRating = totalRating / approvedReviews.length
+    }
+
+    // Remove the raw reviews data and replace with rating info
+    const { reviews, _count, ...productData } = product
+    
+    const productWithRating = {
+      ...productData,
+      rating: {
+        average: Math.round(averageRating * 10) / 10,
+        count: reviewCount
+      }
     }
 
     res.status(200).json({
       success: true,
-      data: product,
+      data: productWithRating
     })
   } catch (error) {
-    next(error)
-  }
-}
-
-// @desc    Get product categories
-// @route   GET /api/products/categories
-// @access  Public
-export const getCategories = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-  try {
-    const categories = await Product.aggregate([
-      { $match: { status: 'active' } },
-      {
-        $group: {
-          _id: '$category.slug',
-          name: { $first: '$category.name' },
-          count: { $sum: 1 },
-        },
-      },
-      { $sort: { name: 1 } },
-    ])
-
-    res.status(200).json({
-      success: true,
-      data: categories.map(cat => ({
-        slug: cat._id,
-        name: cat.name,
-        count: cat.count,
-      })),
-    })
-  } catch (error) {
-    next(error)
+    next(new AppError('Error fetching product', 500))
   }
 }
 
@@ -165,153 +207,58 @@ export const getFeaturedProducts = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const limit = parseInt(req.query.limit as string) || 8
+    const limit = parseInt(req.query.limit as string) || 4
 
-    const products = await Product.find({
-      status: 'active',
-      featured: true,
-    })
-      .sort({ createdAt: -1 })
-      .limit(limit)
-      .select('-__v')
-
-    res.status(200).json({
-      success: true,
-      data: products,
-    })
-  } catch (error) {
-    next(error)
-  }
-}
-
-// @desc    Get bestseller products
-// @route   GET /api/products/bestsellers
-// @access  Public
-export const getBestsellerProducts = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-  try {
-    const limit = parseInt(req.query.limit as string) || 8
-
-    const products = await Product.find({
-      status: 'active',
-      bestseller: true,
-    })
-      .sort({ createdAt: -1 })
-      .limit(limit)
-      .select('-__v')
-
-    res.status(200).json({
-      success: true,
-      data: products,
-    })
-  } catch (error) {
-    next(error)
-  }
-}
-
-// @desc    Get new products
-// @route   GET /api/products/new
-// @access  Public
-export const getNewProducts = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-  try {
-    const limit = parseInt(req.query.limit as string) || 8
-
-    const products = await Product.find({
-      status: 'active',
-      newProduct: true,
-    })
-      .sort({ createdAt: -1 })
-      .limit(limit)
-      .select('-__v')
-
-    res.status(200).json({
-      success: true,
-      data: products,
-    })
-  } catch (error) {
-    next(error)
-  }
-}
-
-// @desc    Get products by skin type
-// @route   GET /api/products/skin-type/:skinType
-// @access  Public
-export const getProductsBySkinType = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-  try {
-    const { skinType } = req.params
-    const limit = parseInt(req.query.limit as string) || 12
-
-    const products = await Product.find({
-      status: 'active',
-      skinTypes: { $in: [skinType] },
-    })
-      .sort({ featured: -1, bestseller: -1, createdAt: -1 })
-      .limit(limit)
-      .select('-__v')
-
-    res.status(200).json({
-      success: true,
-      data: products,
-    })
-  } catch (error) {
-    next(error)
-  }
-}
-
-// @desc    Search products
-// @route   GET /api/products/search
-// @access  Public
-export const searchProducts = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-  try {
-    const { q } = req.query
-    const page = parseInt(req.query.page as string) || 1
-    const limit = parseInt(req.query.limit as string) || 12
-    const skip = (page - 1) * limit
-
-    if (!q || typeof q !== 'string') {
-      throw new AppError('Search query is required', 400)
-    }
-
-    const query = {
-      status: 'active',
-      $text: { $search: q },
-    }
-
-    const products = await Product.find(query, { score: { $meta: 'textScore' } })
-      .sort({ score: { $meta: 'textScore' } })
-      .skip(skip)
-      .limit(limit)
-      .select('-__v')
-
-    const total = await Product.countDocuments(query)
-
-    res.status(200).json({
-      success: true,
-      data: products,
-      meta: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit),
-        query: q,
+    const products = await prisma.product.findMany({
+      where: { 
+        isActive: true,
+        isFeatured: true
       },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+      include: {
+        reviews: {
+          where: { status: 'APPROVED' },
+          select: { rating: true }
+        },
+        _count: {
+          select: {
+            reviews: {
+              where: { status: 'APPROVED' }
+            }
+          }
+        }
+      }
+    })
+
+    // Calculate ratings for each product
+    const productsWithRatings = products.map(product => {
+      const approvedReviews = product.reviews || []
+      const reviewCount = product._count.reviews
+      
+      let averageRating = 0
+      if (approvedReviews.length > 0) {
+        const totalRating = approvedReviews.reduce((sum, review) => sum + review.rating, 0)
+        averageRating = totalRating / approvedReviews.length
+      }
+
+      // Remove the raw reviews data and replace with rating info
+      const { reviews, _count, ...productData } = product
+      
+      return {
+        ...productData,
+        rating: {
+          average: Math.round(averageRating * 10) / 10,
+          count: reviewCount
+        }
+      }
+    })
+
+    res.status(200).json({
+      success: true,
+      data: productsWithRatings
     })
   } catch (error) {
-    next(error)
+    next(new AppError('Error fetching featured products', 500))
   }
 } 

@@ -4,10 +4,24 @@ import { motion } from 'framer-motion'
 import { Calendar, Clock, User, Tag, Search, Filter } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useMemo } from 'react'
-import type { BlogPostData } from '@/lib/blog-utils'
+import NewsletterSection from '@/components/sections/NewsletterSection'
+
+interface BlogPost {
+  title: string
+  content: string
+  date?: string
+  author?: string
+  slug: string
+  url?: string
+  tags?: string[]
+  category?: string
+  readingTime?: number
+  metaDescription?: string
+  keywords?: string[]
+}
 
 interface BlogContentProps {
-  posts: BlogPostData[]
+  posts: BlogPost[]
 }
 
 export default function BlogContent({ posts }: BlogContentProps) {
@@ -254,21 +268,7 @@ export default function BlogContent({ posts }: BlogContentProps) {
             <p className="text-xl text-gray-600 mb-8">
               Prenumerera på vårt nyhetsbrev och få de senaste artiklarna direkt till din inbox.
             </p>
-            <form className="max-w-md mx-auto flex gap-4">
-              <input
-                type="email"
-                placeholder="Din e-postadress"
-                className="flex-1 px-6 py-3 border border-gray-300 rounded-full focus:outline-none focus:border-[#00937c]"
-              />
-              <motion.button
-                type="submit"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-8 py-3 bg-[#00937c] text-white rounded-full font-semibold hover:bg-[#007363] transition-colors duration-300"
-              >
-                Prenumerera
-              </motion.button>
-            </form>
+            <NewsletterSection variant="minimal" />
           </motion.div>
         </div>
       </section>

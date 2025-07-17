@@ -3,6 +3,8 @@ import { Inter, Playfair_Display } from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
 import { Toaster } from 'react-hot-toast'
+import { CartProvider } from '@/contexts/CartContext'
+import { CartDrawer } from '@/components/cart/CartDrawer'
 import './globals.css'
 
 const inter = Inter({ 
@@ -91,17 +93,20 @@ export default async function RootLayout({
     <html lang={locale} className={`${inter.variable} ${playfair.variable}`}>
       <body className="font-sans">
         <NextIntlClientProvider messages={messages}>
-          {children}
-          <Toaster 
-            position="top-right"
-            toastOptions={{
-              duration: 4000,
-              style: {
-                background: '#363636',
-                color: '#fff',
-              },
-            }}
-          />
+          <CartProvider>
+            {children}
+            <CartDrawer />
+            <Toaster 
+              position="top-right"
+              toastOptions={{
+                duration: 4000,
+                style: {
+                  background: '#363636',
+                  color: '#fff',
+                },
+              }}
+            />
+          </CartProvider>
         </NextIntlClientProvider>
       </body>
     </html>

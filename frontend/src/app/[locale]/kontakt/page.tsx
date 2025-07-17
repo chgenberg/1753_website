@@ -5,6 +5,7 @@ import { Footer } from '@/components/layout/Footer'
 import { motion } from 'framer-motion'
 import { useState } from 'react'
 import dynamic from 'next/dynamic'
+import Image from 'next/image'
 import { 
   Phone, 
   Mail, 
@@ -80,10 +81,39 @@ export default function ContactPage() {
     message: ''
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle form submission here
-    console.log('Form submitted:', formData)
+    
+    try {
+      // Track contact form submission in Drip
+      if (formData.email) {
+        try {
+          await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002'}/api/newsletter/track`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: formData.email,
+              action: 'contact_form_submitted',
+              data: {
+                subject: formData.subject,
+                name: formData.name
+              }
+            })
+          });
+        } catch (trackingError) {
+          console.error('Contact tracking error:', trackingError);
+        }
+      }
+      
+      // Handle form submission here
+      console.log('Form submitted:', formData)
+      
+      // Show success message
+      // toast.success('Tack för ditt meddelande! Vi svarar så snart som möjligt.')
+      
+    } catch (error) {
+      console.error('Form submission error:', error)
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -98,8 +128,24 @@ export default function ContactPage() {
       <Header />
       <main className="pt-20">
         {/* Hero Section */}
-        <section className="relative py-20 bg-gradient-to-br from-blue-50 to-indigo-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="relative py-20 bg-gradient-to-br from-blue-50 to-indigo-50 overflow-hidden">
+          {/* Background Image */}
+          <div className="absolute inset-0 z-0">
+            <Image
+              src="/Porträtt_hemsidan/Kapitel 18-desktop.png"
+              alt="Background"
+              fill
+              className="object-cover opacity-15 hidden md:block"
+            />
+            <Image
+              src="/Porträtt_hemsidan/Kapitel 18.png"
+              alt="Background"
+              fill
+              className="object-cover opacity-15 md:hidden"
+            />
+          </div>
+          
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}

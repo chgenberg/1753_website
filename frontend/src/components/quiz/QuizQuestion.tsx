@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { QuizQuestionData } from './quizData'
+import { Check } from 'lucide-react'
 
 interface QuizQuestionProps {
   question: QuizQuestionData
@@ -16,86 +17,100 @@ export const QuizQuestion: React.FC<QuizQuestionProps> = ({
 }) => {
   return (
     <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -20 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3 }}
-      className="max-w-3xl mx-auto"
+      className="w-full"
     >
-      {/* Question Header */}
-      <div className="text-center mb-8">
-        <div className="w-16 h-16 bg-[#93C560] rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
-          {question.icon}
-        </div>
-        <h3 className="text-2xl md:text-3xl font-bold text-[#014421] mb-3">
+      {/* Question Header - More Compact */}
+      <div className="text-center mb-6 md:mb-8">
+        <motion.div 
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ type: "spring", stiffness: 200, damping: 20 }}
+          className="w-14 h-14 md:w-16 md:h-16 bg-black rounded-full flex items-center justify-center text-2xl md:text-3xl mx-auto mb-4"
+        >
+          <span className="filter grayscale-0">{question.icon}</span>
+        </motion.div>
+        <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">
           {question.question}
         </h3>
-        <p className="text-[#112A12] text-lg">
+        <p className="text-gray-600 text-sm md:text-base">
           {question.subtitle}
         </p>
       </div>
 
-      {/* Options */}
-      <div className="space-y-4">
+      {/* Options Grid - Responsive Layout */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 max-w-4xl mx-auto">
         {question.options.map((option, index) => (
           <motion.button
             key={option.value}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1, duration: 0.3 }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: index * 0.05, duration: 0.2 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => onAnswer(question.id, option.value)}
-            className={`w-full p-6 rounded-2xl border-2 transition-all duration-300 text-left group hover:scale-[1.02] ${
+            className={`relative p-4 md:p-5 rounded-2xl border-2 transition-all duration-300 text-left group ${
               selectedValue === option.value
-                ? 'border-[#93C560] bg-[#93C560]/10 shadow-lg'
-                : 'border-[#014421]/20 hover:border-[#93C560]/50 hover:bg-[#F3EFE3]/50'
+                ? 'border-black bg-black text-white shadow-xl'
+                : 'border-gray-200 hover:border-gray-400 hover:shadow-lg bg-white'
             }`}
           >
-            <div className="flex items-start gap-4">
-              {/* Option Icon */}
-              <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl transition-colors ${
+            <div className="flex items-start gap-3">
+              {/* Option Icon - Smaller and Cleaner */}
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-all ${
                 selectedValue === option.value
-                  ? 'bg-[#93C560] text-white'
-                  : 'bg-[#F3EFE3] text-[#014421] group-hover:bg-[#93C560]/20'
+                  ? 'bg-white/20'
+                  : 'bg-gray-100 group-hover:bg-gray-200'
               }`}>
-                {option.icon}
+                <span className="text-lg">{option.icon}</span>
               </div>
 
-              {/* Option Content */}
-              <div className="flex-1">
-                <h4 className={`font-semibold text-lg mb-2 transition-colors ${
+              {/* Option Content - Compact */}
+              <div className="flex-1 min-w-0">
+                <h4 className={`font-semibold text-sm md:text-base mb-1 ${
                   selectedValue === option.value
-                    ? 'text-[#014421]'
-                    : 'text-[#014421] group-hover:text-[#014421]'
+                    ? 'text-white'
+                    : 'text-gray-900'
                 }`}>
                   {option.label}
                 </h4>
-                <p className={`text-sm leading-relaxed transition-colors ${
+                <p className={`text-xs md:text-sm leading-relaxed ${
                   selectedValue === option.value
-                    ? 'text-[#112A12]'
-                    : 'text-[#112A12]/80 group-hover:text-[#112A12]'
+                    ? 'text-white/80'
+                    : 'text-gray-600'
                 }`}>
                   {option.description}
                 </p>
               </div>
 
-              {/* Selection Indicator */}
-              <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
-                selectedValue === option.value
-                  ? 'border-[#93C560] bg-[#93C560]'
-                  : 'border-[#014421]/30 group-hover:border-[#93C560]'
-              }`}>
-                {selectedValue === option.value && (
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="w-3 h-3 bg-white rounded-full"
-                  />
-                )}
-              </div>
+              {/* Selection Indicator - Simplified */}
+              {selectedValue === option.value && (
+                <motion.div
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  className="w-6 h-6 bg-white rounded-full flex items-center justify-center flex-shrink-0"
+                >
+                  <Check className="w-4 h-4 text-black" strokeWidth={3} />
+                </motion.div>
+              )}
             </div>
           </motion.button>
         ))}
       </div>
+
+      {/* Mobile-friendly hint */}
+      <motion.p 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+        className="text-center text-xs text-gray-500 mt-4 md:hidden"
+      >
+        Tryck för att välja
+      </motion.p>
     </motion.div>
   )
 } 

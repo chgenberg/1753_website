@@ -80,7 +80,7 @@ export const QuizResults = ({ answers, onRestart, onClose }: QuizResultsProps) =
             ingredients: ['CBD', 'CBG'],
             routine: ['Rengör huden', 'Applicera ansiktsolja', 'Använd fuktkräm']
           },
-          explanation: 'Baserat på dina svar rekommenderar vi vår bestseller THE ONE för en balanserad hudvård.',
+          explanation: 'Baserat på dina svar rekommenderar vi vår bestseller The ONE Facial Oil för en balanserad hudvård.',
           tips: ['Var konsekvent med din rutin', 'Lyssna på din hud', 'Ge produkterna tid att verka']
         })
       } finally {
@@ -96,54 +96,54 @@ export const QuizResults = ({ answers, onRestart, onClose }: QuizResultsProps) =
     const productMap: { [key: string]: ProductRecommendation } = {
       'THE ONE': {
         id: 'the-one',
-        name: 'THE ONE',
+        name: 'The ONE Facial Oil',
         image: '/images/products/TheONE.png',
-        price: '799 kr',
+        price: '649 kr',
         description: 'Vår bestseller med CBD och CBG för balanserad hud',
         benefits: ['Stärker hudbarriären', 'Återfuktar', 'Antioxidanter'],
         match: 95
       },
       'NATUREL': {
         id: 'naturel',
-        name: 'NATUREL',
+        name: 'Au Naturel Makeup Remover',
         image: '/images/products/Naturel.png',
-        price: '749 kr',
-        description: 'Mild formula speciellt utvecklad för känslig hud',
-        benefits: ['Lugnar känslig hud', 'Hypoallergen', 'Stärker hudbarriären'],
+        price: '399 kr',
+        description: 'Mild makeupborttagare för känslig hud',
+        benefits: ['Lugnar känslig hud', 'Hypoallergen', 'Skonsam rengöring'],
         match: 92
       },
       'TA-DA': {
         id: 'ta-da',
-        name: 'TA-DA',
+        name: 'TA-DA Serum',
         image: '/images/products/TA-DA.png',
-        price: '899 kr',
-        description: 'Perfekt för problematisk hud med anti-inflammatoriska egenskaper',
+        price: '699 kr',
+        description: 'Kraftfullt serum för problematisk hud',
         benefits: ['Minskar inflammation', 'Balanserar oljeproduktion', 'Lugnar irriterad hud'],
         match: 90
       },
       'FUNGTASTIC': {
         id: 'fungtastic',
-        name: 'FUNGTASTIC',
+        name: 'Fungtastic Mushroom Extract',
         image: '/images/products/Fungtastic.png',
-        price: '949 kr',
+        price: '399 kr',
         description: 'Med medicinsvampar för anti-aging och fasthet',
         benefits: ['Stimulerar kollagenproduktion', 'Förbättrar elasticitet', 'Antioxidanter'],
         match: 88
       },
       'I LOVE': {
         id: 'i-love',
-        name: 'I LOVE',
+        name: 'I LOVE Facial Oil',
         image: '/images/products/ILOVE.png',
-        price: '1299 kr',
-        description: 'Komplett hudvårdskit för daglig rutin',
-        benefits: ['Komplett rutin', 'Dag och natt', 'Perfekt start'],
+        price: '849 kr',
+        description: 'Komplett ansiktsolja för alla hudtyper',
+        benefits: ['Komplett hudvård', 'Rik på CBD och CBG', 'Djupt återfuktande'],
         match: 85
       },
       'DUO': {
         id: 'duo',
-        name: 'DUO',
+        name: 'DUO-kit',
         image: '/images/products/DUO.png',
-        price: '1499 kr',
+        price: '1099 kr',
         description: 'Kombinationspaket för komplett hudvård',
         benefits: ['Två produkter', 'Perfekt kombination', 'Bästa värdet'],
         match: 87

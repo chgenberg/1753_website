@@ -1,122 +1,187 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 import Link from 'next/link'
-import { Leaf, Shield, Heart, Award } from 'lucide-react'
+import { ArrowRight, Leaf, Heart, Shield } from 'lucide-react'
 
-const features = [
+const values = [
   {
     icon: <Leaf className="w-6 h-6" />,
-    title: '100% Naturligt',
-    description: 'Alla våra produkter är tillverkade av naturliga ingredienser utan skadliga kemikalier'
-  },
-  {
-    icon: <Shield className="w-6 h-6" />,
-    title: 'Laboratorietestade',
-    description: 'Varje produkt genomgår rigorösa tester för att säkerställa högsta kvalitet och säkerhet'
+    title: 'Naturlig',
+    description: 'Endast naturliga ingredienser från naturen'
   },
   {
     icon: <Heart className="w-6 h-6" />,
-    title: 'Hudvänligt',
-    description: 'Utvecklat i samarbete med dermatologer för alla hudtyper, även känslig hud'
+    title: 'Kärleksfull',
+    description: 'Skapad med omsorg för din hud'
   },
   {
-    icon: <Award className="w-6 h-6" />,
-    title: 'Svensk kvalitet',
-    description: 'Stolt svensk tradition sedan 1753 med fokus på hållbarhet och innovation'
+    icon: <Shield className="w-6 h-6" />,
+    title: 'Säker',
+    description: 'Testad och certifierad hudvård'
   }
 ]
 
 export function AboutSection() {
   return (
-    <section className="py-20 bg-white">
-      <div className="container mx-auto px-4">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Content */}
+    <section className="py-24 bg-[var(--color-bg-secondary)]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-4xl md:text-5xl font-bold text-[var(--color-primary-dark)] mb-4 tracking-tight">
+            VÅR FILOSOFI
+          </h2>
+          <p className="text-lg text-[var(--color-gray-600)] max-w-2xl mx-auto font-light">
+            En tidlös tradition av naturlig hudvård, grundad på vetenskap och kärlek till naturen
+          </p>
+        </motion.div>
+
+        {/* Main Content Grid */}
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center mb-20">
+          {/* Text Content */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8 }}
+            className="order-2 lg:order-1"
           >
-            <span className="text-[#00937c] font-medium text-sm uppercase tracking-wider">Om 1753 Skincare</span>
-            <h2 className="text-4xl md:text-5xl font-bold mt-4 mb-6">
-              Naturens kraft möter <span className="text-[#00937c]">modern vetenskap</span>
-            </h2>
-            <div className="space-y-4 text-gray-600 text-lg">
+            <h3 className="text-3xl font-bold text-[var(--color-primary)] mb-6 tracking-tight">
+              SEDAN 1753 HAR VI FÖRSTÅTT HUDENS NATURLIGA BEHOV
+            </h3>
+            <div className="space-y-4 text-[var(--color-gray-700)] leading-relaxed">
               <p>
-                Sedan 1753 har vi varit dedikerade till att skapa hudvårdsprodukter som kombinerar det bästa från naturen med den senaste vetenskapliga forskningen.
+                I hjärtat av svensk natur föddes vår vision om att skapa hudvård som 
+                arbetar i harmoni med din huds naturliga processer. Vi kombinerar 
+                traditionell kunskap med modern forskning.
               </p>
               <p>
-                Våra CBD- och CBG-berikade formler är resultatet av årtionden av forskning och utveckling, där varje ingrediens är noggrant utvald för sin effektivitet och säkerhet.
+                Våra produkter innehåller noggrant utvalda ingredienser som CBD och CBG, 
+                kända för sina lugnande och balanserande egenskaper. Varje formula är 
+                utvecklad för att ge din hud det den behöver - inget mer, inget mindre.
               </p>
             </div>
             
-            <Link href="/om-oss">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="mt-8 px-8 py-4 bg-black text-white rounded-full font-medium hover:bg-gray-900 transition-colors duration-300"
+            {/* Values */}
+            <div className="grid grid-cols-3 gap-6 mt-10">
+              {values.map((value, index) => (
+                <motion.div
+                  key={value.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  className="text-center"
+                >
+                  <div className="w-12 h-12 bg-[var(--color-accent-light)]/20 rounded-full flex items-center justify-center mx-auto mb-3 text-[var(--color-accent)]">
+                    {value.icon}
+                  </div>
+                  <h4 className="font-medium text-[var(--color-primary-dark)] mb-1">
+                    {value.title}
+                  </h4>
+                  <p className="text-sm text-[var(--color-gray-600)]">
+                    {value.description}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="mt-10"
+            >
+              <Link
+                href="/om-oss"
+                className="inline-flex items-center gap-2 text-[var(--color-primary)] hover:text-[var(--color-primary-dark)] font-medium transition-colors group"
               >
                 Läs mer om vår historia
-              </motion.button>
-            </Link>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </motion.div>
           </motion.div>
 
-          {/* Features Grid */}
+          {/* Image */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="grid grid-cols-2 gap-8"
+            transition={{ duration: 0.8 }}
+            className="order-1 lg:order-2"
           >
-            {features.map((feature, index) => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="text-center group"
-              >
-                <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-2xl flex items-center justify-center text-[#00937c] group-hover:bg-[#00937c] group-hover:text-white transition-all duration-300">
-                  {feature.icon}
-                </div>
-                <h3 className="font-semibold text-lg mb-2">{feature.title}</h3>
-                <p className="text-sm text-gray-600">{feature.description}</p>
-              </motion.div>
-            ))}
+            <div className="relative h-[500px] lg:h-[600px] rounded-2xl overflow-hidden">
+              {/* Desktop Image */}
+              <Image
+                src="/Porträtt_hemsidan/Kapitel 17-desktop.png"
+                alt="Naturlig hudvård"
+                fill
+                className="object-cover hidden md:block"
+              />
+              {/* Mobile Image */}
+              <Image
+                src="/Porträtt_hemsidan/Kapitel 17.png"
+                alt="Naturlig hudvård"
+                fill
+                className="object-cover md:hidden"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-primary)]/20 to-transparent" />
+            </div>
           </motion.div>
         </div>
 
-        {/* Stats */}
+        {/* Founders Section */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8"
+          transition={{ duration: 0.8 }}
+          className="bg-white rounded-3xl p-8 lg:p-12 shadow-lg"
         >
-          {[
-            { value: '270+', label: 'År av erfarenhet' },
-            { value: '50k+', label: 'Nöjda kunder' },
-            { value: '99%', label: 'Naturliga ingredienser' },
-            { value: '15+', label: 'Prisbelönta produkter' }
-          ].map((stat, index) => (
-            <div key={stat.label} className="text-center">
-              <motion.div
-                initial={{ scale: 0 }}
-                whileInView={{ scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="text-4xl md:text-5xl font-bold text-[#00937c] mb-2"
-              >
-                {stat.value}
-              </motion.div>
-              <p className="text-gray-600">{stat.label}</p>
+          <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-center">
+            <div className="relative h-[400px] rounded-2xl overflow-hidden">
+              {/* Desktop Image */}
+              <Image
+                src="/Porträtt_hemsidan/Kapitel 40-desktop.png"
+                alt="Grundare"
+                fill
+                className="object-cover hidden md:block"
+              />
+              {/* Mobile Image */}
+              <Image
+                src="/Porträtt_hemsidan/Kapitel 40.png"
+                alt="Grundare"
+                fill
+                className="object-cover md:hidden"
+              />
             </div>
-          ))}
+            <div>
+              <h3 className="text-2xl font-bold text-[var(--color-primary-dark)] mb-4 tracking-tight">
+                EN PASSION FÖR NATURLIG SKÖNHET
+              </h3>
+              <p className="text-[var(--color-gray-700)] leading-relaxed mb-6 font-light">
+                "Vår resa började med en enkel tro - att naturen har alla svar för 
+                en frisk och strålande hud. Efter år av forskning och utveckling har 
+                vi skapat produkter som vi själva älskar att använda varje dag."
+              </p>
+              <div className="border-l-4 border-[var(--color-accent)] pl-6">
+                <p className="font-medium text-[var(--color-primary)]">
+                  Christopher & Anna
+                </p>
+                <p className="text-sm text-[var(--color-gray-600)]">
+                  Grundare, 1753 Skincare
+                </p>
+              </div>
+            </div>
+          </div>
         </motion.div>
       </div>
     </section>

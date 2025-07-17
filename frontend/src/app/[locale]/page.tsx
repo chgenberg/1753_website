@@ -5,6 +5,8 @@ import { ProductsSection } from '@/components/sections/ProductsSection'
 import { AboutSection } from '@/components/sections/AboutSection'
 import { BlogSection } from '@/components/sections/BlogSection'
 import { ReviewsSection } from '@/components/sections/ReviewsSection'
+import { GallerySection } from '@/components/sections/GallerySection'
+import NewsletterSection from '@/components/sections/NewsletterSection'
 import { generatePageSEO } from '@/lib/seo-utils'
 import type { Metadata } from 'next'
 
@@ -37,7 +39,9 @@ export default function HomePage() {
         <ProductsSection />
         <ReviewsSection />
         <AboutSection />
+        <GallerySection />
         <BlogSection />
+        <NewsletterSection />
       </main>
       <Footer />
     </>

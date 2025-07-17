@@ -10,9 +10,12 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.4",
     "@hookform/resolvers": "^3.3.2",
+    "@types/canvas-confetti": "^1.9.0",
     "@types/leaflet": "^1.9.20",
     "axios": "^1.6.2",
+    "canvas-confetti": "^1.9.3",
     "clsx": "^2.0.0",
     "date-fns": "^2.30.0",
     "framer-motion": "^10.18.0",
@@ -21,6 +24,7 @@
     "lucide-react": "^0.294.0",
     "next": "14.0.3",
     "next-intl": "^3.3.2",
+    "openai": "^5.10.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.48.2",

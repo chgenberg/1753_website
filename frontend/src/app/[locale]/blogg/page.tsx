@@ -2,7 +2,6 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import type { Metadata } from 'next'
 import BlogContent from './BlogContent'
-import { getAllBlogPosts } from '@/lib/blog-utils'
 import { generatePageSEO } from '@/lib/seo-utils'
 
 const seoData = generatePageSEO('blog')
@@ -26,12 +25,28 @@ export const metadata: Metadata = {
 }
 
 export default async function BlogPage() {
-  const posts = await Promise.resolve(getAllBlogPosts())
+  // Mock blog posts - replace with API call later
+  const mockPosts = [
+    {
+      title: '10 tips för akne',
+      content: 'Upptäck de bästa metoderna för att hantera akne naturligt med CBD och CBG...',
+      date: '2024-01-15',
+      slug: '10-tips-for-akne',
+      readingTime: 5
+    },
+    {
+      title: 'CBD och CBG - Cellförnyelseprocessen',
+      content: 'Förstå hur CBD och CBG påverkar hudens naturliga cellförnyelse...',
+      date: '2024-01-12',
+      slug: 'cbd-och-cbg-cellfornyelse',
+      readingTime: 7
+    }
+  ]
   
   return (
     <>
       <Header />
-      <BlogContent posts={posts} />
+      <BlogContent posts={mockPosts} />
       <Footer />
     </>
   )

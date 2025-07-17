@@ -9,6 +9,7 @@ interface DripSubscriber {
     skin_type?: string
     skin_concerns?: string[]
     source?: string
+    interests?: string
   }
   tags?: string[]
 }

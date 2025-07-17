@@ -5,7 +5,7 @@ const envSchema = z.object({
   PORT: z.string().default('5000'),
   
   // Database
-  MONGODB_URI: z.string().min(1, 'MongoDB URI is required'),
+  DATABASE_URL: z.string().min(1, 'Database URL is required'),
   
   // JWT
   JWT_SECRET: z.string().min(32, 'JWT secret must be at least 32 characters'),
@@ -59,6 +59,13 @@ const envSchema = z.object({
   // Newsletter - Drip.com
   DRIP_API_TOKEN: z.string().optional(),
   DRIP_ACCOUNT_ID: z.string().optional(),
+  DRIP_REVIEW_REQUEST_WORKFLOW_ID: z.string().optional(),
+  DRIP_REVIEW_SUBMITTED_WORKFLOW_ID: z.string().optional(),
+  DRIP_REVIEW_APPROVED_WORKFLOW_ID: z.string().optional(),
+  DRIP_QUIZ_COMPLETED_WORKFLOW_ID: z.string().optional(),
+  DRIP_PRODUCT_VIEWED_WORKFLOW_ID: z.string().optional(),
+  DRIP_CART_ABANDONED_WORKFLOW_ID: z.string().optional(),
+  DRIP_BLOG_ENGAGED_WORKFLOW_ID: z.string().optional(),
   
   // Redis (optional)
   REDIS_URL: z.string().optional(),

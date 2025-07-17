@@ -10,7 +10,7 @@ import rateLimit from 'express-rate-limit'
 import { errorHandler } from './middleware/errorHandler'
 import { notFound } from './middleware/notFound'
 import { logger } from './utils/logger'
-import connectDB from './config/database'
+import { prisma } from './lib/prisma'
 import { validateEnv } from './config/env'
 
 // Routes
@@ -22,7 +22,8 @@ import quizRoutes from './routes/quiz'
 // import orderRoutes from './routes/orders'
 // import cartRoutes from './routes/cart'
 // import paymentRoutes from './routes/payments'
-// import reviewRoutes from './routes/reviews'
+import reviewRoutes from './routes/reviews'
+import newsletterRoutes from './routes/newsletter'
 // import contentRoutes from './routes/content'
 // import uploadRoutes from './routes/uploads'
 // import webhookRoutes from './routes/webhooks'
@@ -83,12 +84,13 @@ app.get('/health', (_req, res) => {
 app.use('/api/auth', authRoutes)
 app.use('/api/products', productRoutes)
 app.use('/api/quiz', quizRoutes)
+app.use('/api/newsletter', newsletterRoutes)
 // TODO: Uncomment when routes are implemented
 // app.use('/api/users', userRoutes)
 // app.use('/api/orders', orderRoutes)
 // app.use('/api/cart', cartRoutes)
 // app.use('/api/payments', paymentRoutes)
-// app.use('/api/reviews', reviewRoutes)
+app.use('/api/reviews', reviewRoutes)
 // app.use('/api/content', contentRoutes)
 // app.use('/api/uploads', uploadRoutes)
 // app.use('/api/webhooks', webhookRoutes)
@@ -108,9 +110,9 @@ app.use(errorHandler)
 
 async function startServer() {
   try {
-    // Connect to MongoDB
-    await connectDB()
-    logger.info('Connected to MongoDB')
+    // Test PostgreSQL connection
+    await prisma.$connect()
+    logger.info('Connected to PostgreSQL via Prisma')
 
     // Start server
     app.listen(PORT, () => {

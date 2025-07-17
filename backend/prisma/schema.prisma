@@ -1,0 +1,356 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model
+model User {
+  id                    String   @id @default(cuid())
+  email                 String   @unique
+  password              String
+  firstName             String
+  lastName              String
+  phone                 String?
+  dateOfBirth          DateTime?
+  avatar                String?
+  isEmailVerified      Boolean  @default(false)
+  emailVerificationToken String?
+  passwordResetToken    String?
+  passwordResetExpires  DateTime?
+  lastLogin            DateTime?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  // User preferences
+  language             String   @default("sv") // sv, en, es
+  newsletter           Boolean  @default(false)
+  skinType             String?  // dry, oily, combination, sensitive, normal, acne, mature
+  skinConcerns         String[] // Array of strings
+  emailNotifications   Boolean  @default(true)
+  smsNotifications     Boolean  @default(false)
+  orderUpdates         Boolean  @default(true)
+  skinJourneyReminders Boolean  @default(true)
+
+  // Relations
+  orders               Order[]
+  reviews              Review[]
+  addresses            Address[]
+  skinJourneyEntries   SkinJourneyEntry[]
+  
+  @@map("users")
+}
+
+// Address model (separated from User for better normalization)
+model Address {
+  id          String  @id @default(cuid())
+  userId      String
+  type        String  // shipping, billing
+  firstName   String
+  lastName    String
+  company     String?
+  address1    String
+  address2    String?
+  city        String
+  province    String
+  postalCode  String
+  country     String  @default("SE")
+  phone       String?
+  isDefault   Boolean @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("addresses")
+}
+
+// Skin Journey model (separated for better structure)
+model SkinJourneyEntry {
+  id             String   @id @default(cuid())
+  userId         String
+  date           DateTime @default(now())
+  skinCondition  Int      // 1-10 rating
+  notes          String?
+  photos         String[] // Array of photo URLs
+  photoType      String   // before, progress, after
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("skin_journey_entries")
+}
+
+// Product model
+model Product {
+  id            String   @id @default(cuid())
+  name          String
+  slug          String   @unique
+  description   String?
+  shortDescription String?
+  price         Float
+  compareAtPrice Float?
+  sku           String?  @unique
+  barcode       String?
+  weight        Float?
+  dimensions    Json?    // {length, width, height}
+  category      String?
+  tags          String[]
+  images        Json[]   // Array of image objects
+  variants      Json[]   // Array of variant objects
+  inventory     Int      @default(0)
+  trackInventory Boolean @default(true)
+  allowBackorder Boolean @default(false)
+  isActive      Boolean  @default(true)
+  isFeatured    Boolean  @default(false)
+  metaTitle     String?
+  metaDescription String?
+  seoKeywords   String[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  orderItems    OrderItem[]
+  reviews       Review[]
+  discounts     ProductDiscount[]
+  
+  @@map("products")
+}
+
+// Order model
+model Order {
+  id              String      @id @default(cuid())
+  orderNumber     String      @unique
+  userId          String?
+  email           String
+  phone           String?
+  status          OrderStatus @default(PENDING)
+  paymentStatus   PaymentStatus @default(PENDING)
+  fulfillmentStatus FulfillmentStatus @default(UNFULFILLED)
+  
+  // Totals
+  subtotal        Float
+  taxAmount       Float       @default(0)
+  shippingAmount  Float       @default(0)
+  discountAmount  Float       @default(0)
+  totalAmount     Float
+  currency        String      @default("SEK")
+  
+  // Addresses (stored as JSON for flexibility)
+  shippingAddress Json
+  billingAddress  Json
+  
+  // Payment info
+  paymentMethod   String?
+  paymentReference String?
+  
+  // Fulfillment
+  trackingNumber  String?
+  trackingCompany String?
+  shippedAt      DateTime?
+  deliveredAt    DateTime?
+  
+  // Notes
+  customerNotes  String?
+  internalNotes  String?
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  user           User?     @relation(fields: [userId], references: [id])
+  items          OrderItem[]
+  
+  @@map("orders")
+}
+
+// Order items (normalized)
+model OrderItem {
+  id          String @id @default(cuid())
+  orderId     String
+  productId   String
+  variantId   String?
+  quantity    Int
+  price       Float
+  title       String
+  variantTitle String?
+  sku         String?
+  createdAt   DateTime @default(now())
+
+  // Relations
+  order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product     Product @relation(fields: [productId], references: [id])
+  
+  @@map("order_items")
+}
+
+// Review model (enhanced)
+model Review {
+  id                String      @id @default(cuid())
+  productId         String
+  userId            String?
+  orderId           String?
+  rating            Int         // 1-5 stars
+  title             String
+  body              String
+  reviewerName      String
+  reviewerEmail     String
+  reviewerLocation  String?
+  isVerified        Boolean     @default(false)
+  isVerifiedPurchase Boolean    @default(false)
+  photos            Json[]      // Array of photo objects
+  helpfulVotes      Int         @default(0)
+  reportedCount     Int         @default(0)
+  status            ReviewStatus @default(PENDING)
+  moderatorNotes    String?
+  source            String?     // judge.me_csv, judge.me_api, website
+  externalId        String?     // Original Judge.me ID
+  
+  // Skincare-specific metadata
+  skinType          String?
+  ageRange          String?
+  usageDuration     String?
+  skinConcerns      String[]
+  
+  // Drip integration
+  dripSubscriberId  String?
+  dripCampaignId    String?
+  dripWorkflowTriggered Boolean @default(false)
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  product           Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user              User?    @relation(fields: [userId], references: [id])
+  replies           ReviewReply[]
+  
+  @@map("reviews")
+}
+
+// Review replies (normalized)
+model ReviewReply {
+  id          String      @id @default(cuid())
+  reviewId    String
+  authorType  ReplyAuthorType
+  authorName  String
+  body        String
+  createdAt   DateTime    @default(now())
+
+  // Relations
+  review      Review      @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  
+  @@map("review_replies")
+}
+
+// Discount model
+model Discount {
+  id              String        @id @default(cuid())
+  code            String        @unique
+  title           String
+  description     String?
+  type            DiscountType  // percentage, fixed_amount, free_shipping
+  value           Float
+  minimumAmount   Float?
+  usageLimit      Int?
+  usageCount      Int           @default(0)
+  isActive        Boolean       @default(true)
+  startsAt        DateTime?
+  endsAt          DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relations
+  products        ProductDiscount[]
+  
+  @@map("discounts")
+}
+
+// Product-Discount junction table
+model ProductDiscount {
+  id          String    @id @default(cuid())
+  productId   String
+  discountId  String
+  createdAt   DateTime  @default(now())
+
+  // Relations
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  discount    Discount  @relation(fields: [discountId], references: [id], onDelete: Cascade)
+  
+  @@unique([productId, discountId])
+  @@map("product_discounts")
+}
+
+// Newsletter subscribers (separate from users for non-customers)
+model NewsletterSubscriber {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  firstName     String?
+  lastName      String?
+  skinType      String?
+  skinConcerns  String[]
+  interests     String[]
+  source        String?  // website, checkout, quiz, blog
+  isActive      Boolean  @default(true)
+  
+  // Drip integration
+  dripSubscriberId String?
+  dripTags         String[]
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@map("newsletter_subscribers")
+}
+
+// Enums
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+enum FulfillmentStatus {
+  UNFULFILLED
+  PARTIAL
+  FULFILLED
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  HIDDEN
+}
+
+enum ReplyAuthorType {
+  CUSTOMER
+  ADMIN
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED_AMOUNT
+  FREE_SHIPPING
+}
