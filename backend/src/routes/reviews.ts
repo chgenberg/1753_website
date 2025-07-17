@@ -213,7 +213,7 @@ router.get('/featured', async (req, res) => {
  * GET /api/reviews
  * Hämta alla godkända recensioner med filtrering
  */
-router.get('/reviews', async (req: Request, res: Response) => {
+router.get('/', async (req: Request, res: Response) => {
   try {
     const { 
       page = 1, 
@@ -283,7 +283,7 @@ router.get('/reviews', async (req: Request, res: Response) => {
  * GET /api/reviews/stats
  * Hämta statistik för alla godkända recensioner
  */
-router.get('/reviews/stats', async (req: Request, res: Response) => {
+router.get('/stats', async (req: Request, res: Response) => {
   try {
     const stats = await prisma.review.aggregate({
       where: { status: 'APPROVED' },

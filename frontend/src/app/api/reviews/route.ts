@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002'
+const BACKEND_URL = process.env.NODE_ENV === 'development' 
+  ? 'http://localhost:5002' 
+  : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002')
 
-// Mock reviews data
+// Mock reviews data (only used if backend fails)
 const mockReviews = [
   {
     id: '1',

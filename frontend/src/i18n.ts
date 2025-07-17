@@ -3,7 +3,7 @@ import { headers } from 'next/headers'
 
 export default getRequestConfig(async () => {
   // Get locale from headers or default to 'sv'
-  const headersList = headers()
+  const headersList = await headers()
   const acceptLanguage = headersList.get('accept-language')
   
   // Simple locale detection - default to 'sv' if not found
