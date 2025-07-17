@@ -138,5 +138,21 @@
     "newsletterDescription": "Get the latest news about skincare and CBD",
     "subscribe": "Subscribe",
     "copyright": "© 2024 1753 Skincare. All rights reserved."
+  },
+  "Quiz": {
+    "title": "Skin Analysis Quiz",
+    "subtitle": "Get personalized skincare recommendations based on your unique skin profile",
+    "startButton": "Start quiz",
+    "nextButton": "Next",
+    "previousButton": "Previous",
+    "submitButton": "Get my results",
+    "loading": "Analyzing your answers...",
+    "error": "Something went wrong. Please try again.",
+    "progress": "Question {current} of {total}",
+    "results": {
+      "title": "Your results",
+      "loading": "Preparing your personalized skin analysis...",
+      "error": "Could not load results. Please try again."
+    }
   }
 } 

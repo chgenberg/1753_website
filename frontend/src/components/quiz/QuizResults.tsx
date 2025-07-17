@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { CheckCircle, Star, ShoppingCart, ArrowRight, Sparkles, Loader2 } from 'lucide-react'
+import { CheckCircle, Star, ShoppingCart, ArrowRight, Sparkles, Loader2, AlertCircle } from 'lucide-react'
+import { QuizResultsMockup } from './QuizResultsMockup'
 
 interface QuizResultsProps {
   answers: { [key: string]: string | string[] }
@@ -36,6 +37,7 @@ export const QuizResults = ({ answers, onRestart, onClose }: QuizResultsProps) =
   const [aiResults, setAiResults] = useState<PersonalizedResult | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [showMockup, setShowMockup] = useState(false)
 
   // Fetch AI-generated results
   useEffect(() => {
@@ -72,17 +74,7 @@ export const QuizResults = ({ answers, onRestart, onClose }: QuizResultsProps) =
       } catch (err) {
         console.error('Error fetching AI results:', err)
         setError(err instanceof Error ? err.message : 'Ett fel uppstod')
-        // Fallback to basic results
-        setAiResults({
-          skinProfile: 'Personlig hudanalys',
-          recommendations: {
-            products: ['THE ONE'],
-            ingredients: ['CBD', 'CBG'],
-            routine: ['Rengör huden', 'Applicera ansiktsolja', 'Använd fuktkräm']
-          },
-          explanation: 'Baserat på dina svar rekommenderar vi vår bestseller The ONE Facial Oil för en balanserad hudvård.',
-          tips: ['Var konsekvent med din rutin', 'Lyssna på din hud', 'Ge produkterna tid att verka']
-        })
+        setShowMockup(true)
       } finally {
         setLoading(false)
       }
@@ -176,26 +168,26 @@ export const QuizResults = ({ answers, onRestart, onClose }: QuizResultsProps) =
     )
   }
 
-  if (error && !aiResults) {
+  // Show mockup if API fails or is not available
+  if (showMockup || (error && !aiResults)) {
     return (
-      <div className="max-w-4xl mx-auto p-6">
-        <div className="text-center py-12">
-          <div className="text-red-500 mb-4">
-            <svg className="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.866-.833-2.598 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-            </svg>
-          </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Kunde inte ladda resultat
-          </h2>
-          <p className="text-gray-600 mb-4">{error}</p>
-          <button
-            onClick={onRestart}
-            className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
+      <div>
+        {error && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-4xl mx-auto p-4 mb-4"
           >
-            Försök igen
-          </button>
-        </div>
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-center">
+              <AlertCircle className="w-5 h-5 text-yellow-600 mr-3" />
+              <div>
+                <p className="text-yellow-800 font-medium">Demo-läge aktiverat</p>
+                <p className="text-yellow-700 text-sm">OpenAI API är inte tillgängligt just nu, så vi visar en mockup av resultaten.</p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+        <QuizResultsMockup answers={answers} />
       </div>
     )
   }

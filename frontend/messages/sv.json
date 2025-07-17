@@ -138,5 +138,21 @@
     "newsletterDescription": "Få de senaste nyheterna om hudvård och CBD",
     "subscribe": "Prenumerera",
     "copyright": "© 2024 1753 Skincare. Alla rättigheter förbehållna."
+  },
+  "Quiz": {
+    "title": "Hudanalys Quiz",
+    "subtitle": "Få personliga hudvårdsrekommendationer baserat på din unika hudprofil",
+    "startButton": "Starta quiz",
+    "nextButton": "Nästa",
+    "previousButton": "Föregående",
+    "submitButton": "Få mina resultat",
+    "loading": "Analyserar dina svar...",
+    "error": "Något gick fel. Vänligen försök igen.",
+    "progress": "Fråga {current} av {total}",
+    "results": {
+      "title": "Dina resultat",
+      "loading": "Förbereder din personliga hudanalys...",
+      "error": "Kunde inte ladda resultaten. Vänligen försök igen."
+    }
   }
 } 
