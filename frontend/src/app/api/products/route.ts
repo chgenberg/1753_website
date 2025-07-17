@@ -1,13 +1,15 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
 // Force localhost in development, regardless of NEXT_PUBLIC_API_URL
 const BACKEND_URL = process.env.NODE_ENV === 'development' 
   ? 'http://localhost:5002' 
   : (process.env.NEXT_PUBLIC_API_URL || 'https://1753websitebackend-production.up.railway.app')
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const fullUrl = `${BACKEND_URL}/api/products`
+    const searchParams = request.nextUrl.searchParams
+    const queryString = searchParams.toString()
+    const fullUrl = `${BACKEND_URL}/api/products${queryString ? `?${queryString}` : ''}`
     console.log('Fetching products from:', fullUrl)
     
     const response = await fetch(fullUrl, {

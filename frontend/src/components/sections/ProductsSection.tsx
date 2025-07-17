@@ -33,8 +33,8 @@ export function ProductsSection() {
 
   const fetchProducts = async () => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002/api'
-      const response = await fetch(`${apiUrl}/products?limit=4&featured=true`)
+      // Always use Next.js API routes to avoid CORS issues
+      const response = await fetch(`/api/products?limit=4&featured=true`)
       const result = await response.json()
       
       if (result.success && result.data) {
