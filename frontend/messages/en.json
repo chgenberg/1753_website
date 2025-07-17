@@ -139,6 +139,26 @@
     "subscribe": "Subscribe",
     "copyright": "© 2024 1753 Skincare. All rights reserved."
   },
+  "Reviews": {
+    "pageTitle": "Reviews - 1753 Skincare",
+    "pageDescription": "Read what our customers say about 1753 Skincare. Real reviews from people who have discovered the power of natural skincare.",
+    "title": "What Our Customers Say",
+    "subtitle": "Real stories from people who have discovered the power of natural skincare",
+    "totalReviews": "Reviews",
+    "averageRating": "Average Rating",
+    "fiveStarPercentage": "5-star ratings",
+    "allRatings": "All ratings",
+    "allProducts": "All products",
+    "sortNewest": "Newest first",
+    "sortHighest": "Highest rating first",
+    "sortLowest": "Lowest rating first",
+    "resetFilters": "Reset filters",
+    "verifiedPurchase": "Verified Buyer",
+    "loading": "Loading...",
+    "loadMore": "Show more",
+    "noReviews": "No reviews found",
+    "readAllReviews": "READ ALL REVIEWS"
+  },
   "Quiz": {
     "title": "Skin Analysis Quiz",
     "subtitle": "Get personalized skincare recommendations based on your unique skin profile",

@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { Star, Quote } from 'lucide-react'
+import { useTranslations } from 'next-intl'
+import Link from 'next/link'
 
 const reviews = [
   {
@@ -37,6 +39,8 @@ export function ReviewsSection() {
     totalReviews: 823,
     averageRating: 4.62
   })
+
+  const t = useTranslations('Reviews')
 
   useEffect(() => {
     // You could fetch overall stats from API here if needed
@@ -153,6 +157,22 @@ export function ReviewsSection() {
               </p>
             </div>
           </div>
+          
+          {/* Read All Reviews Button */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            className="mt-6"
+          >
+            <Link
+              href="/recensioner"
+              className="inline-flex items-center px-6 py-3 bg-[#4A3428] text-white rounded-full text-sm font-medium hover:bg-[#6B5D54] transition-colors"
+            >
+              {t('readAllReviews')}
+            </Link>
+          </motion.div>
         </motion.div>
       </div>
     </section>

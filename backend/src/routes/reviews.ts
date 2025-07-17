@@ -2,6 +2,7 @@ import express from 'express'
 import { param, query } from 'express-validator'
 import { prisma } from '../lib/prisma'
 import { logger } from '../utils/logger'
+import { Request, Response } from 'express'
 
 const router = express.Router()
 
@@ -205,6 +206,123 @@ router.get('/featured', async (req, res) => {
       success: false,
       message: error.message || 'Failed to fetch featured reviews'
     })
+  }
+})
+
+/**
+ * GET /api/reviews
+ * Hämta alla godkända recensioner med filtrering
+ */
+router.get('/reviews', async (req: Request, res: Response) => {
+  try {
+    const { 
+      page = 1, 
+      limit = 12, 
+      rating, 
+      productId, 
+      sort = 'newest' 
+    } = req.query
+
+    const pageNum = parseInt(page as string)
+    const limitNum = parseInt(limit as string)
+    const skip = (pageNum - 1) * limitNum
+
+    // Build where clause
+    const where: any = { status: 'APPROVED' }
+    if (rating) where.rating = parseInt(rating as string)
+    if (productId) where.productId = productId
+
+    // Build order by
+    let orderBy: any = {}
+    switch (sort) {
+      case 'newest':
+        orderBy = { createdAt: 'desc' }
+        break
+      case 'highest':
+        orderBy = { rating: 'desc' }
+        break
+      case 'lowest':
+        orderBy = { rating: 'asc' }
+        break
+    }
+
+    const [reviews, totalCount] = await Promise.all([
+      prisma.review.findMany({
+        where,
+        include: {
+          product: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              images: true
+            }
+          }
+        },
+        orderBy,
+        skip,
+        take: limitNum
+      }),
+      prisma.review.count({ where })
+    ])
+
+    res.json({
+      reviews,
+      totalCount,
+      hasMore: skip + reviews.length < totalCount,
+      currentPage: pageNum,
+      totalPages: Math.ceil(totalCount / limitNum)
+    })
+  } catch (error) {
+    logger.error('Error fetching reviews:', error)
+    res.status(500).json({ error: 'Failed to fetch reviews' })
+  }
+})
+
+/**
+ * GET /api/reviews/stats
+ * Hämta statistik för alla godkända recensioner
+ */
+router.get('/reviews/stats', async (req: Request, res: Response) => {
+  try {
+    const stats = await prisma.review.aggregate({
+      where: { status: 'APPROVED' },
+      _count: true,
+      _avg: {
+        rating: true
+      }
+    })
+
+    const ratingDistribution = await prisma.review.groupBy({
+      by: ['rating'],
+      where: { status: 'APPROVED' },
+      _count: true,
+      orderBy: {
+        rating: 'desc'
+      }
+    })
+
+    // Convert to object format
+    const distribution: Record<number, number> = {
+      1: 0,
+      2: 0,
+      3: 0,
+      4: 0,
+      5: 0
+    }
+
+    ratingDistribution.forEach(item => {
+      distribution[item.rating] = item._count
+    })
+
+    res.json({
+      totalReviews: stats._count,
+      averageRating: stats._avg.rating || 0,
+      ratingDistribution: distribution
+    })
+  } catch (error) {
+    logger.error('Error fetching review stats:', error)
+    res.status(500).json({ error: 'Failed to fetch review statistics' })
   }
 })
 

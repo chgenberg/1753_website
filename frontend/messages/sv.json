@@ -139,6 +139,26 @@
     "subscribe": "Prenumerera",
     "copyright": "© 2024 1753 Skincare. Alla rättigheter förbehållna."
   },
+  "Reviews": {
+    "pageTitle": "Recensioner - 1753 Skincare",
+    "pageDescription": "Läs vad våra kunder säger om 1753 Skincare. Äkta recensioner från människor som upptäckt kraften i naturlig hudvård.",
+    "title": "Vad våra kunder säger",
+    "subtitle": "Äkta berättelser från människor som upptäckt kraften i naturlig hudvård",
+    "totalReviews": "Recensioner",
+    "averageRating": "Genomsnittligt betyg",
+    "fiveStarPercentage": "5-stjärniga betyg",
+    "allRatings": "Alla betyg",
+    "allProducts": "Alla produkter",
+    "sortNewest": "Senaste först",
+    "sortHighest": "Högsta betyg först",
+    "sortLowest": "Lägsta betyg först",
+    "resetFilters": "Återställ filter",
+    "verifiedPurchase": "Verifierad köpare",
+    "loading": "Laddar...",
+    "loadMore": "Visa fler",
+    "noReviews": "Inga recensioner hittades",
+    "readAllReviews": "LÄS ALLA RECENSIONER"
+  },
   "Quiz": {
     "title": "Hudanalys Quiz",
     "subtitle": "Få personliga hudvårdsrekommendationer baserat på din unika hudprofil",
