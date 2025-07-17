@@ -126,7 +126,7 @@ export function NutritionTab({ results }: NutritionTabProps) {
                 <ul className="text-sm text-[#6B5D54] space-y-1">
                   <li>• Blåbär (1 dl/dag)</li>
                   <li>• Grönt te (2-3 koppar)</li>
-                  <li>• Kakao (>70%, 20-30g)</li>
+                  <li>• Kakao (&gt;70%, 20-30g)</li>
                   <li>• Granatäpple</li>
                   <li>• Spenat & grönkål</li>
                 </ul>
@@ -192,7 +192,7 @@ export function NutritionTab({ results }: NutritionTabProps) {
               <li>• Mejeriprodukter (särskilt mjölk)</li>
               <li>• Processade livsmedel</li>
               <li>• Transfetter och vegetabiliska oljor</li>
-              <li>• Överdrivet koffeinintag (>3 koppar/dag)</li>
+              <li>• Överdrivet koffeinintag (&gt;3 koppar/dag)</li>
             </ul>
           </div>
           
