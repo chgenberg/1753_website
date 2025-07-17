@@ -80,6 +80,7 @@ export default function IngredientsPage() {
               src="/Porträtt_hemsidan/Ingredienser-desktop.png"
               alt="Ingredienser hero"
               fill
+              sizes="100vw"
               className="object-cover hidden md:block"
               priority
             />
@@ -87,6 +88,7 @@ export default function IngredientsPage() {
               src="/Porträtt_hemsidan/Ingredienser.png"
               alt="Ingredienser hero"
               fill
+              sizes="100vw"
               className="object-cover md:hidden"
               priority
             />

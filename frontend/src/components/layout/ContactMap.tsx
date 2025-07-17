@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from 'leaflet';
 
@@ -16,9 +16,20 @@ const icon = L.icon({
 });
 
 export const Map = () => {
+  const mapRef = useRef<L.Map | null>(null);
+
   useEffect(() => {
     // Set default icon for all markers
     L.Marker.prototype.options.icon = icon;
+
+    // Cleanup on hot-reload/unmount to avoid “Map container is already initialized”
+    return () => {
+      const container = document.getElementById('contact-map');
+      if (container && (container as any)._leaflet_id) {
+        // @ts-ignore - Leaflet stores its id on the DOM element
+        delete (container as any)._leaflet_id;
+      }
+    };
   }, []);
 
   return (
@@ -26,6 +37,7 @@ export const Map = () => {
       center={[57.3553, 12.108]}
       zoom={14}
       scrollWheelZoom={false}
+      id="contact-map"
       style={{ height: "100%", width: "100%" }}
     >
       <TileLayer
