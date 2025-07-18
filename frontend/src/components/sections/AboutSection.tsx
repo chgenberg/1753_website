@@ -124,6 +124,7 @@ export function AboutSection() {
                 src="/Porträtt_hemsidan/Kapitel 17-desktop.png"
                 alt="Naturlig hudvård"
                 fill
+                sizes="100vw"
                 className="object-cover hidden md:block"
               />
               {/* Mobile Image */}
@@ -131,6 +132,7 @@ export function AboutSection() {
                 src="/Porträtt_hemsidan/Kapitel 17.png"
                 alt="Naturlig hudvård"
                 fill
+                sizes="100vw"
                 className="object-cover md:hidden"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-primary)]/20 to-transparent" />
@@ -153,6 +155,7 @@ export function AboutSection() {
                 src="/Porträtt_hemsidan/Kapitel 40-desktop.png"
                 alt="Grundare"
                 fill
+                sizes="100vw"
                 className="object-cover hidden md:block"
               />
               {/* Mobile Image */}
@@ -160,6 +163,7 @@ export function AboutSection() {
                 src="/Porträtt_hemsidan/Kapitel 40.png"
                 alt="Grundare"
                 fill
+                sizes="100vw"
                 className="object-cover md:hidden"
               />
             </div>

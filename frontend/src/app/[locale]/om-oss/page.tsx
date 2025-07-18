@@ -78,6 +78,7 @@ export default function AboutPage() {
                 src="/Porträtt/C_&_E_2.jpg"
                 alt="Christopher och Ebba Genberg - Grundarna av 1753 Skincare"
                 fill
+                sizes="100vw"
                 className="object-cover"
                 priority
               />

@@ -135,12 +135,14 @@ export default function ContactPage() {
               src="/Porträtt_hemsidan/Kapitel 18-desktop.png"
               alt="Background"
               fill
+              sizes="100vw"
               className="object-cover opacity-15 hidden md:block"
             />
             <Image
               src="/Porträtt_hemsidan/Kapitel 18.png"
               alt="Background"
               fill
+              sizes="100vw"
               className="object-cover opacity-15 md:hidden"
             />
           </div>

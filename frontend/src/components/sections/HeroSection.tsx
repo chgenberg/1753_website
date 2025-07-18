@@ -56,6 +56,7 @@ export function HeroSection() {
               src={slide.imageDesktop}
               alt="Hero background"
               fill
+              sizes="100vw"
               className="object-cover hidden md:block"
               priority={index === 0}
               quality={90}
@@ -65,6 +66,7 @@ export function HeroSection() {
               src={slide.imageMobile}
               alt="Hero background"
               fill
+              sizes="100vw"
               className="object-cover md:hidden"
               priority={index === 0}
               quality={90}

@@ -115,6 +115,7 @@ export function BlogSection() {
                       src={blogImages[index]?.desktop || blogImages[0].desktop}
                       alt={post.title}
                       fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
                       className="object-cover group-hover:scale-105 transition-transform duration-500 hidden md:block"
                     />
                     {/* Mobile Image */}
@@ -122,6 +123,7 @@ export function BlogSection() {
                       src={blogImages[index]?.mobile || blogImages[0].mobile}
                       alt={post.title}
                       fill
+                      sizes="100vw"
                       className="object-cover group-hover:scale-105 transition-transform duration-500 md:hidden"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

@@ -157,10 +157,10 @@ export function ProductsSection() {
                 <div className="bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl h-full flex flex-col">
                   {/* Image Container - Fixed aspect ratio */}
                   <div className="relative aspect-square overflow-hidden bg-gray-100">
-                    {product.images[0] && (
+                    {product.images[0]?.url && (
                       <Image
                         src={product.images[0].url}
-                        alt={product.images[0].alt}
+                        alt={product.images[0].alt || product.name}
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
                         className="object-cover transition-transform duration-500 group-hover:scale-110"

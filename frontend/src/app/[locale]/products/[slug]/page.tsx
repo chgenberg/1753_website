@@ -489,7 +489,7 @@ DUO-kit ger dig flexibiliteten att anpassa din hudvård efter dina behov.`,
               transition={{ duration: 0.5 }}
             >
               <AnimatePresence mode="wait">
-                {product.images[selectedImage] && (
+                {product.images[selectedImage]?.url && (
                   <motion.div
                     key={selectedImage}
                     initial={{ opacity: 0 }}
@@ -500,8 +500,9 @@ DUO-kit ger dig flexibiliteten att anpassa din hudvård efter dina behov.`,
                   >
                     <Image
                       src={product.images[selectedImage].url}
-                      alt={product.images[selectedImage].alt}
+                      alt={product.images[selectedImage].alt || product.name}
                       fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 50vw"
                       className="object-cover"
                       priority
                     />
@@ -550,7 +551,7 @@ DUO-kit ger dig flexibiliteten att anpassa din hudvård efter dina behov.`,
             {/* Thumbnail Gallery */}
             {product.images.length > 1 && (
               <div className="flex gap-2 overflow-x-auto pb-2">
-                {product.images.map((image, index) => (
+                {product.images.map((image, index) => image.url && (
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
@@ -562,8 +563,9 @@ DUO-kit ger dig flexibiliteten att anpassa din hudvård efter dina behov.`,
                   >
                     <Image
                       src={image.url}
-                      alt={image.alt}
+                      alt={image.alt || product.name}
                       fill
+                      sizes="100px"
                       className="object-cover"
                     />
                   </button>

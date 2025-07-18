@@ -46,12 +46,14 @@ export function TestimonialsSection() {
           src="/Porträtt_hemsidan/Kapitel 13-desktop.png"
           alt="Background"
           fill
+          sizes="100vw"
           className="object-cover opacity-10 hidden md:block"
         />
         <Image
           src="/Porträtt_hemsidan/Kapitel 13.png"
           alt="Background"
           fill
+          sizes="100vw"
           className="object-cover opacity-10 md:hidden"
         />
       </div>

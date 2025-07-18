@@ -90,6 +90,7 @@ export function GallerySection() {
                   src={image.desktop}
                   alt={image.title}
                   fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   className="object-cover hidden md:block transform transition-transform duration-700 group-hover:scale-110"
                 />
                 {/* Mobile Image */}
@@ -97,6 +98,7 @@ export function GallerySection() {
                   src={image.mobile}
                   alt={image.title}
                   fill
+                  sizes="100vw"
                   className="object-cover md:hidden transform transition-transform duration-700 group-hover:scale-110"
                 />
                 
