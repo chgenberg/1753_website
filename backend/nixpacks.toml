@@ -1,11 +1,17 @@
 [phases.setup]
 nixPkgs = ["nodejs_20"]
+aptPkgs = []
 
 [phases.install]
-cmd = "npm ci"
+cmds = [
+  "npm ci --only=production --no-audit --no-fund",
+]
 
 [phases.build]
-cmd = "npx prisma generate && npm run build"
+cmds = [
+  "npx prisma generate",
+  "npm run build"
+]
 
 [start]
 cmd = "npm start"
