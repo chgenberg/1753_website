@@ -6,10 +6,10 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 
 interface BlogPostPageProps {
-  params: {
+  params: Promise<{
     slug: string
     locale: string
-  }
+  }>
 }
 
 interface BlogPostData {
@@ -74,7 +74,8 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
-  const post = getMockPostBySlug(params.slug)
+  const resolvedParams = await params
+  const post = getMockPostBySlug(resolvedParams.slug)
   
   if (!post) {
     return {
@@ -105,7 +106,8 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
-  const post = getMockPostBySlug(params.slug)
+  const resolvedParams = await params
+  const post = getMockPostBySlug(resolvedParams.slug)
   
   if (!post) {
     notFound()
