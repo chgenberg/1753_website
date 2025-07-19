@@ -7,6 +7,7 @@ import { BlogSection } from '@/components/sections/BlogSection'
 import { ReviewsSection } from '@/components/sections/ReviewsSection'
 import { GallerySection } from '@/components/sections/GallerySection'
 import NewsletterSection from '@/components/sections/NewsletterSection'
+import { EbookSection } from '@/components/sections/EbookSection'
 import { generatePageSEO } from '@/lib/seo-utils'
 import type { Metadata } from 'next'
 
@@ -38,6 +39,7 @@ export default function HomePage() {
         <HeroSection />
         <ProductsSection />
         <ReviewsSection />
+        <EbookSection />
         <AboutSection />
         <GallerySection />
         <BlogSection />
