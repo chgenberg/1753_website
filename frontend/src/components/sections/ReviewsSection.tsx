@@ -138,16 +138,22 @@ export function ReviewsSection() {
         >
           <div className="inline-flex items-center gap-4 bg-white rounded-full px-8 py-4 shadow-lg">
             <div className="flex -space-x-2">
-              {['/Porträtt_hemsidan/Kapitel 24.png', '/Porträtt_hemsidan/Kapitel 26.png', '/Porträtt_hemsidan/Kapitel 28.png'].map((img, i) => (
-                <div key={i} className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-white">
-                  <Image
-                    src={img}
-                    alt="Customer"
-                    fill
-                    sizes="40px"
-                    className="object-cover"
-                  />
-                </div>
+              {[
+                '/Porträtt_hemsidan/Kapitel 24.png',
+                '/Porträtt_hemsidan/Kapitel 23.png',
+                '/Porträtt_hemsidan/Kapitel 22.png'
+              ].map((img, i) => (
+                img && (
+                  <div key={i} className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-white">
+                    <Image
+                      src={img}
+                      alt="Customer"
+                      fill
+                      sizes="40px"
+                      className="object-cover"
+                    />
+                  </div>
+                )
               ))}
             </div>
             <div className="text-left">
