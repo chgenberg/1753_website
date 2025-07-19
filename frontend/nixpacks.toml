@@ -1,5 +1,5 @@
 [build]
-cmd = "npm ci && npm run build"
+cmd = "npm ci --legacy-peer-deps && npm run build"
 
 [start]
 cmd = "npm start"
