@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { questions } from '@/components/quiz/quizData';
 import { motion, AnimatePresence } from 'framer-motion';
+import { LoadingAnimation } from '@/components/quiz/LoadingAnimation';
 
 export default function QuizPage() {
   const t = useTranslations('Quiz');
@@ -245,40 +246,7 @@ export default function QuizPage() {
   }
 
   if (isLoading) {
-    return (
-      <div className="fixed inset-0 bg-black/95 backdrop-blur-xl flex items-center justify-center p-4 z-50">
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-center max-w-md w-full"
-        >
-          <h2 className="text-2xl md:text-3xl font-light tracking-tight text-white mb-8 uppercase">
-            Analyserar dina svar...
-          </h2>
-          <div className="relative mb-6">
-            <div className="w-full h-3 bg-gray-800 rounded-full overflow-hidden">
-              <motion.div 
-                className="h-full rounded-full"
-                style={{
-                  background: 'linear-gradient(90deg, #8B4513 0%, #A0522D 100%)',
-                  width: `${loadingProgress}%`
-                }}
-                transition={{ duration: 0.1 }}
-              />
-            </div>
-            <div className="absolute -top-8 left-0 w-full">
-              <motion.div 
-                className="text-white text-4xl font-light"
-                style={{ left: `${loadingProgress}%` }}
-                transition={{ duration: 0.1 }}
-              >
-                {Math.round(loadingProgress)}%
-              </motion.div>
-            </div>
-          </div>
-        </motion.div>
-      </div>
-    );
+    return <LoadingAnimation progress={loadingProgress} />;
   }
 
   return (
