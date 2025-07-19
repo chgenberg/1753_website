@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { questions } from '@/components/quiz/quizData';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LoadingAnimation } from '@/components/quiz/LoadingAnimation';
-import { QuizResultsMockup } from '@/components/quiz/QuizResultsMockup';
+import { QuizResults } from '@/components/quiz/QuizResults';
 import { User, Mail, Shield, Sparkles, ArrowRight, ArrowLeft } from 'lucide-react';
 import { RegisterModal } from '@/components/auth/RegisterModal';
 
@@ -62,35 +62,56 @@ export default function QuizPage() {
   };
 
   const handleAnswer = (questionId: string, answer: string) => {
-    setAnswers({ ...answers, [questionId]: answer });
+    const currentQuestionData = questions[currentQuestion]
     
-    if (currentQuestion < questions.length - 1) {
-      setTimeout(() => setCurrentQuestion(currentQuestion + 1), 300);
+    if (currentQuestionData.multiSelect) {
+      // For multi-select questions, toggle the answer
+      const currentAnswers = answers[questionId] ? answers[questionId].split(',') : []
+      const answerIndex = currentAnswers.indexOf(answer)
+      
+      if (answerIndex > -1) {
+        // Remove answer if already selected
+        currentAnswers.splice(answerIndex, 1)
+      } else {
+        // Add answer if not selected
+        currentAnswers.push(answer)
+      }
+      
+      setAnswers({ ...answers, [questionId]: currentAnswers.join(',') })
     } else {
-      // All questions answered, start loading
-      setCurrentStep('loading');
-      setIsLoading(true);
+      // For single-select questions, replace the answer and move to next
+      setAnswers({ ...answers, [questionId]: answer })
       
-      // Animate loading progress
-      const duration = 4500;
-      const interval = 50;
-      const steps = duration / interval;
-      const increment = 100 / steps;
-      
-      let currentProgress = 0;
-      const timer = setInterval(() => {
-        currentProgress += increment;
-        setLoadingProgress(Math.min(currentProgress, 100));
-        
-        if (currentProgress >= 100) {
-          clearInterval(timer);
-          setTimeout(() => {
-            calculateResults();
-          }, 500);
-        }
-      }, interval);
+      if (currentQuestion < questions.length - 1) {
+        setTimeout(() => setCurrentQuestion(currentQuestion + 1), 300)
+      } else {
+        // All questions answered, start loading
+        setTimeout(() => {
+          setCurrentStep('loading')
+          setIsLoading(true)
+          
+          // Animate loading progress
+          const duration = 4500
+          const interval = 50
+          const steps = duration / interval
+          const increment = 100 / steps
+          
+          let currentProgress = 0
+          const timer = setInterval(() => {
+            currentProgress += increment
+            setLoadingProgress(Math.min(currentProgress, 100))
+            
+            if (currentProgress >= 100) {
+              clearInterval(timer)
+              setTimeout(() => {
+                calculateResults()
+              }, 500)
+            }
+          }, interval)
+        }, 300)
+      }
     }
-  };
+  }
 
   const calculateResults = async () => {
     try {
@@ -162,7 +183,7 @@ export default function QuizPage() {
   if (currentStep === 'results' && results) {
     return (
       <>
-        <QuizResultsMockup answers={{ ...answers, userName, userEmail, results }} />
+        <QuizResults answers={answers} userName={userName} userEmail={userEmail} results={results} />
         
         {/* Action Buttons Overlay */}
         <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t p-4 z-50">
@@ -370,30 +391,93 @@ export default function QuizPage() {
                 </div>
 
                 <div className="grid gap-3">
-                  {questions[currentQuestion]?.options.map((option) => (
-                    <motion.button
-                      key={option.value}
-                      onClick={() => handleAnswer(questions[currentQuestion].id, option.value)}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className={`p-4 rounded-xl border-2 text-left transition-all duration-300 ${
-                        answers[questions[currentQuestion].id] === option.value
-                          ? 'border-amber-400 bg-amber-50'
-                          : 'border-gray-200 hover:border-amber-200 hover:bg-gray-50'
-                      }`}
-                    >
-                      <div className="flex items-center">
-                        <span className="text-2xl mr-4">{option.emoji}</span>
-                        <div>
-                          <div className="font-medium text-gray-900">{option.label}</div>
-                          {option.description && (
-                            <div className="text-sm text-gray-600 mt-1">{option.description}</div>
+                  {questions[currentQuestion]?.options.map((option) => {
+                    const isMultiSelect = questions[currentQuestion].multiSelect
+                    const currentAnswers = answers[questions[currentQuestion].id]?.split(',') || []
+                    const isSelected = isMultiSelect 
+                      ? currentAnswers.includes(option.value)
+                      : answers[questions[currentQuestion].id] === option.value
+                    
+                    return (
+                      <motion.button
+                        key={option.value}
+                        onClick={() => handleAnswer(questions[currentQuestion].id, option.value)}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className={`p-4 rounded-xl border-2 text-left transition-all duration-300 ${
+                          isSelected
+                            ? 'border-[#8B7355] bg-[#8B7355] text-white'
+                            : 'border-gray-200 hover:border-[#8B7355] bg-white'
+                        }`}
+                      >
+                        <div className="flex items-center">
+                          <span className="text-2xl mr-3">{option.emoji}</span>
+                          <div className="flex-1">
+                            <h3 className={`font-semibold ${isSelected ? 'text-white' : 'text-gray-900'}`}>
+                              {option.label}
+                            </h3>
+                            {option.description && (
+                              <p className={`text-sm mt-1 ${isSelected ? 'text-white/80' : 'text-gray-600'}`}>
+                                {option.description}
+                              </p>
+                            )}
+                          </div>
+                          {isSelected && (
+                            <div className="ml-auto">
+                              <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
+                                <svg className="w-4 h-4 text-[#8B7355]" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                </svg>
+                              </div>
+                            </div>
                           )}
                         </div>
-                      </div>
-                    </motion.button>
-                  ))}
+                      </motion.button>
+                    )
+                  })}
                 </div>
+
+                {/* Continue button for multi-select questions */}
+                {questions[currentQuestion]?.multiSelect && (
+                  <div className="mt-6 flex justify-center">
+                    <motion.button
+                      onClick={() => {
+                        if (currentQuestion < questions.length - 1) {
+                          setCurrentQuestion(currentQuestion + 1)
+                        } else {
+                          // Start loading if this was the last question
+                          setCurrentStep('loading')
+                          setIsLoading(true)
+                          
+                          const duration = 4500
+                          const interval = 50
+                          const steps = duration / interval
+                          const increment = 100 / steps
+                          
+                          let currentProgress = 0
+                          const timer = setInterval(() => {
+                            currentProgress += increment
+                            setLoadingProgress(Math.min(currentProgress, 100))
+                            
+                            if (currentProgress >= 100) {
+                              clearInterval(timer)
+                              setTimeout(() => {
+                                calculateResults()
+                              }, 500)
+                            }
+                          }, interval)
+                        }
+                      }}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      disabled={!answers[questions[currentQuestion].id]}
+                      className="px-8 py-3 bg-[#4A3428] text-white rounded-full font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                    >
+                      <span>Fortsätt</span>
+                      <ArrowRight className="w-5 h-5" />
+                    </motion.button>
+                  </div>
+                )}
               </motion.div>
             </AnimatePresence>
 

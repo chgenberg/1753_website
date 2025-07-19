@@ -14,6 +14,7 @@ export interface QuizQuestion {
   icon?: string;
   question?: string;
   subtitle?: string;
+  multiSelect?: boolean;
 }
 
 export const questions: QuizQuestion[] = [
@@ -56,7 +57,9 @@ export const questions: QuizQuestion[] = [
   },
   {
     id: 'concerns',
-    text: 'Vad är din största hudbekymmer?',
+    text: 'Vilka hudbekymmer har du?',
+    description: 'Du kan välja flera alternativ',
+    multiSelect: true,
     options: [
       {
         value: 'acne',

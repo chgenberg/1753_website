@@ -1,400 +1,908 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { CheckCircle, Star, ShoppingCart, ArrowRight, Sparkles, Loader2, AlertCircle } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { 
+  Sparkles, Heart, Droplets, Leaf, Brain, MessageCircle, 
+  CheckCircle, ArrowRight, ShoppingBag, Sun, Moon, 
+  Award, Target, Users, Send, User, Loader, 
+  Shield, Star, TrendingUp, Activity, Coffee,
+  Smile, CloudRain, Wind, Dumbbell, Apple,
+  Clock, BrainCircuit, Lightbulb
+} from 'lucide-react'
 import Image from 'next/image'
-import { QuizResultsMockup } from './QuizResultsMockup'
+import Link from 'next/link'
+import { RegisterModal } from '@/components/auth/RegisterModal'
 
 interface QuizResultsProps {
-  answers: { [key: string]: string | string[] }
-  onRestart: () => void
-  onClose: () => void
+  answers: Record<string, string>
+  userName: string
+  userEmail: string
+  results?: any
 }
 
-interface ProductRecommendation {
-  id: string
-  name: string
-  image: string
-  price: string
-  description: string
-  benefits: string[]
-  match: number
+type TabType = 'summary' | 'lifestyle' | 'products' | 'nutrition' | 'ai-expert'
+
+interface ChatMessage {
+  role: 'user' | 'assistant'
+  content: string
+  timestamp: Date
 }
 
-interface PersonalizedResult {
-  skinProfile: string
-  recommendations: {
-    products: string[]
-    ingredients: string[]
-    routine: string[]
-  }
-  explanation: string
-  tips: string[]
+// Generate welcome message for AI Expert
+function generateWelcomeMessage(userName: string, results: any, answers: Record<string, string>): string {
+  const skinConcernText = results.skinConcerns.length > 0 
+    ? `Jag ser att du har ${results.skinConcerns.join(', ').toLowerCase()}.` 
+    : 'Du verkar ha en balanserad hud.'
+    
+  return `Hej ${userName}! 👋
+
+Välkommen till din personliga AI Hudexpert. Jag är här för att hjälpa dig med alla dina frågor om hud, hudvård och hudhälsa.
+
+Baserat på dina svar i quizet har jag fått en bra överblick över din hud:
+• ${results.skinType}
+• Hudpoäng: ${results.skinScore}/100
+• ${skinConcernText}
+
+Jag kan hjälpa dig med:
+✨ Personliga hudvårdsråd baserat på dina behov
+🌿 Naturliga och holistiska lösningar
+🧬 Information om hur endocannabinoidsystemet påverkar din hud
+💡 Livsstilstips för bättre hudhälsa
+
+Vad skulle du vilja veta mer om?`
 }
 
-export const QuizResults = ({ answers, onRestart, onClose }: QuizResultsProps) => {
-  const [email, setEmail] = useState('')
-  const [aiResults, setAiResults] = useState<PersonalizedResult | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [showMockup, setShowMockup] = useState(false)
-
-  // Fetch AI-generated results
-  useEffect(() => {
-    const fetchAIResults = async () => {
-      try {
-        setLoading(true)
-        setError(null)
-
-        // Transform answers to match API format
-        const quizAnswers = {
-          skinType: answers.skinType as string || '',
-          concerns: Array.isArray(answers.concerns) ? answers.concerns : [answers.concerns as string].filter(Boolean),
-          lifestyle: Array.isArray(answers.lifestyle) ? answers.lifestyle : [answers.lifestyle as string].filter(Boolean),
-          currentProducts: Array.isArray(answers.currentProducts) ? answers.currentProducts : [answers.currentProducts as string].filter(Boolean),
-          goals: Array.isArray(answers.goals) ? answers.goals : [answers.goals as string].filter(Boolean),
-          age: answers.age as string || '',
-          budget: answers.budget as string || ''
-        }
-
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/quiz/results`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(quizAnswers)
-        })
-
-        if (!response.ok) {
-          throw new Error('Kunde inte hämta personaliserade resultat')
-        }
-
-        const data = await response.json()
-        setAiResults(data.data)
-      } catch (err) {
-        console.error('Error fetching AI results:', err)
-        setError(err instanceof Error ? err.message : 'Ett fel uppstod')
-        setShowMockup(true)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchAIResults()
-  }, [answers])
-
-  // Map product names to product data
-  const getProductRecommendations = (productNames: string[]): ProductRecommendation[] => {
-    const productMap: { [key: string]: ProductRecommendation } = {
-      'THE ONE': {
-        id: 'the-one',
-        name: 'The ONE Facial Oil',
-        image: '/images/products/TheONE.png',
-        price: '649 kr',
-        description: 'Vår bestseller med CBD och CBG för balanserad hud',
-        benefits: ['Stärker hudbarriären', 'Återfuktar', 'Antioxidanter'],
-        match: 95
-      },
-      'NATUREL': {
-        id: 'naturel',
-        name: 'Au Naturel Makeup Remover',
-        image: '/images/products/Naturel.png',
-        price: '399 kr',
-        description: 'Mild makeupborttagare för känslig hud',
-        benefits: ['Lugnar känslig hud', 'Hypoallergen', 'Skonsam rengöring'],
-        match: 92
-      },
-      'TA-DA': {
-        id: 'ta-da',
-        name: 'TA-DA Serum',
-        image: '/images/products/TA-DA.png',
-        price: '699 kr',
-        description: 'Kraftfullt serum för problematisk hud',
-        benefits: ['Minskar inflammation', 'Balanserar oljeproduktion', 'Lugnar irriterad hud'],
-        match: 90
-      },
-      'FUNGTASTIC': {
-        id: 'fungtastic',
-        name: 'Fungtastic Mushroom Extract',
-        image: '/images/products/Fungtastic.png',
-        price: '399 kr',
-        description: 'Med medicinsvampar för anti-aging och fasthet',
-        benefits: ['Stimulerar kollagenproduktion', 'Förbättrar elasticitet', 'Antioxidanter'],
-        match: 88
-      },
-      'I LOVE': {
-        id: 'i-love',
-        name: 'I LOVE Facial Oil',
-        image: '/images/products/ILOVE.png',
-        price: '849 kr',
-        description: 'Komplett ansiktsolja för alla hudtyper',
-        benefits: ['Komplett hudvård', 'Rik på CBD och CBG', 'Djupt återfuktande'],
-        match: 85
-      },
-      'DUO': {
-        id: 'duo',
-        name: 'DUO-kit',
-        image: '/images/products/DUO.png',
-        price: '1099 kr',
-        description: 'Kombinationspaket för komplett hudvård',
-        benefits: ['Två produkter', 'Perfekt kombination', 'Bästa värdet'],
-        match: 87
-      }
-    }
-
-    return productNames.map(name => productMap[name.toUpperCase()] || productMap['THE ONE'])
+// Generate fallback response when AI API fails
+function generateFallbackResponse(message: string): string {
+  const lowerMessage = message.toLowerCase()
+  
+  // Check if it's a skin-related question
+  const skinKeywords = ['hud', 'akne', 'torr', 'fet', 'känslig', 'rynkor', 'rodnad', 'eksem', 'psoriasis', 'cbd', 'cbg', 'serum', 'kräm', 'olja', 'rengöring']
+  const isSkinRelated = skinKeywords.some(keyword => lowerMessage.includes(keyword))
+  
+  if (!isSkinRelated) {
+    return "Jag kan tyvärr inte svara på den frågan men fråga mig gärna något annat om hud, hudvård eller hudhälsa. 😊"
   }
-
-  const handleEmailSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Here you would typically send the email to your backend
-    console.log('Email submitted:', email)
-    // Show success message or redirect
+  
+  // Provide generic but helpful responses for common topics
+  if (lowerMessage.includes('akne')) {
+    return "Akne kan ha många orsaker, från hormoner till kost och stress. Våra CBD-produkter kan hjälpa till att balansera hudens oljeproduktion och minska inflammation. Vill du veta mer om någon specifik produkt?"
   }
+  
+  if (lowerMessage.includes('torr')) {
+    return "Torr hud behöver både fukt och näring. Våra oljor med CBD och CBG hjälper till att återställa hudbarriären. DUO Face Oil är särskilt bra för torr hud. Vill du ha fler tips?"
+  }
+  
+  return "Det är en intressant fråga! Baserat på din hudtyp och behov skulle jag rekommendera att fokusera på att stärka din hudbarriär med naturliga ingredienser som CBD och CBG. Vill du att jag går in mer på detaljer?"
+}
 
-  if (loading) {
-    return (
-      <div className="max-w-4xl mx-auto p-6">
-        <div className="flex flex-col items-center justify-center py-12">
-          <Loader2 className="h-12 w-12 text-green-500 animate-spin mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Analyserar dina svar...
-          </h2>
-          <p className="text-gray-600 text-center">
-            Vår AI skapar personaliserade hudvårdsrekommendationer baserat på dina svar.
-          </p>
-        </div>
+// AI Expert Tab Component
+function AIExpertTab({ messages, input, setInput, onSend, isTyping, chatEndRef }: {
+  messages: ChatMessage[]
+  input: string
+  setInput: (value: string) => void
+  onSend: () => void
+  isTyping: boolean
+  chatEndRef: React.RefObject<HTMLDivElement>
+}) {
+  return (
+    <div className="space-y-6">
+      <div className="text-center mb-8">
+        <BrainCircuit className="w-12 h-12 text-[#8B7355] mx-auto mb-4" />
+        <h3 className="text-2xl font-light text-[#4A3428] mb-2">Din AI Hudexpert</h3>
+        <p className="text-[#6B5D54] font-light">Ställ frågor om din hud och få personliga råd</p>
       </div>
-    )
-  }
-
-  // Show mockup if API fails or is not available
-  if (showMockup || (error && !aiResults)) {
-    return (
-      <div>
-        {error && (
-          <motion.div 
-            initial={{ opacity: 0, y: -20 }}
+      
+      {/* Chat Messages */}
+      <div className="h-[400px] overflow-y-auto space-y-4 p-4 bg-[#FAFAF8] rounded-2xl">
+        {messages.map((message, index) => (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="max-w-4xl mx-auto p-4 mb-4"
+            className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-center">
-              <AlertCircle className="w-5 h-5 text-yellow-600 mr-3" />
-              <div>
-                <p className="text-yellow-800 font-medium">Demo-läge aktiverat</p>
-                <p className="text-yellow-700 text-sm">OpenAI API är inte tillgängligt just nu, så vi visar en mockup av resultaten.</p>
+            <div className={`max-w-[80%] ${message.role === 'user' ? 'order-2' : ''}`}>
+              <div className={`rounded-2xl px-4 py-3 ${
+                message.role === 'user' 
+                  ? 'bg-[#4A3428] text-white' 
+                  : 'bg-white border border-[#E5DDD5]'
+              }`}>
+                <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+              </div>
+              <p className="text-xs text-[#8B7355] mt-1 px-2">
+                {new Date(message.timestamp).toLocaleTimeString('sv-SE', { 
+                  hour: '2-digit', 
+                  minute: '2-digit' 
+                })}
+              </p>
+            </div>
+            {message.role === 'assistant' && (
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#8B7355]/20 to-[#4A3428]/20 flex items-center justify-center mr-2">
+                <BrainCircuit className="w-4 h-4 text-[#8B7355]" />
+              </div>
+            )}
+          </motion.div>
+        ))}
+        
+        {isTyping && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex justify-start"
+          >
+            <div className="bg-white border border-[#E5DDD5] rounded-2xl px-4 py-3">
+              <div className="flex space-x-1">
+                <div className="w-2 h-2 bg-[#8B7355] rounded-full animate-bounce" />
+                <div className="w-2 h-2 bg-[#8B7355] rounded-full animate-bounce delay-100" />
+                <div className="w-2 h-2 bg-[#8B7355] rounded-full animate-bounce delay-200" />
               </div>
             </div>
           </motion.div>
         )}
-        <QuizResultsMockup answers={answers} />
-      </div>
-    )
-  }
-
-  if (!aiResults) return null
-
-  const productRecommendations = getProductRecommendations(aiResults.recommendations.products)
-
-  return (
-    <div className="max-w-4xl mx-auto p-6">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-8"
-      >
-        <div className="flex items-center justify-center mb-4">
-          <CheckCircle className="h-16 w-16 text-green-500 mr-4" />
-          <Sparkles className="h-12 w-12 text-yellow-500" />
-        </div>
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">
-          Dina personliga resultat!
-        </h2>
-        <p className="text-lg text-gray-600">
-          AI-genererade rekommendationer baserat på dina svar
-        </p>
-      </motion.div>
-
-      {/* AI-Generated Skin Profile */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6 mb-8"
-      >
-        <h3 className="text-xl font-semibold text-gray-900 mb-3">
-          {aiResults.skinProfile}
-        </h3>
-        <p className="text-gray-700 mb-4">{aiResults.explanation}</p>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <h4 className="font-medium text-gray-900 mb-2">Rekommenderade ingredienser:</h4>
-            <ul className="space-y-1">
-              {aiResults.recommendations.ingredients.map((ingredient, index) => (
-                <li key={index} className="text-sm text-gray-600 flex items-center">
-                  <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
-                  {ingredient}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-medium text-gray-900 mb-2">Din hudvårdsrutin:</h4>
-            <ol className="space-y-1">
-              {aiResults.recommendations.routine.map((step, index) => (
-                <li key={index} className="text-sm text-gray-600 flex items-start">
-                  <span className="bg-green-100 text-green-800 text-xs rounded-full h-5 w-5 flex items-center justify-center mr-2 mt-0.5 flex-shrink-0">
-                    {index + 1}
-                  </span>
-                  {step}
-                </li>
-              ))}
-            </ol>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* AI Tips */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="bg-yellow-50 rounded-xl p-6 mb-8"
-      >
-        <h3 className="text-xl font-semibold text-gray-900 mb-3 flex items-center">
-          <Sparkles className="h-5 w-5 text-yellow-500 mr-2" />
-          Personliga tips för dig
-        </h3>
-        <ul className="space-y-2">
-          {aiResults.tips.map((tip, index) => (
-            <li key={index} className="text-gray-700 flex items-start">
-              <ArrowRight className="h-4 w-4 text-yellow-500 mr-2 mt-0.5 flex-shrink-0" />
-              {tip}
-            </li>
-          ))}
-        </ul>
-      </motion.div>
-
-      {/* Product Recommendations */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="mb-8"
-      >
-        <h3 className="text-2xl font-bold text-gray-900 mb-6">
-          Rekommenderade produkter för dig
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {productRecommendations.map((product, index) => (
-            <motion.div
-              key={product.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 + index * 0.1 }}
-              className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
-            >
-              <div className="relative">
-                <Image
-                  src={product.image}
-                  alt={product.name}
-                  width={400}
-                  height={192}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-                  {product.match}% match
-                </div>
-              </div>
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-3">
-                  <h4 className="text-xl font-bold text-gray-900">{product.name}</h4>
-                  <div className="flex items-center">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`h-4 w-4 ${
-                          i < 4 ? 'text-yellow-400 fill-current' : 'text-gray-300'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                </div>
-                <p className="text-gray-600 mb-4">{product.description}</p>
-                <div className="mb-4">
-                  <h5 className="font-medium text-gray-900 mb-2">Fördelar:</h5>
-                  <ul className="space-y-1">
-                    {product.benefits.map((benefit, i) => (
-                      <li key={i} className="text-sm text-gray-600 flex items-center">
-                        <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
-                        {benefit}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl font-bold text-gray-900">{product.price}</span>
-                  <button className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center">
-                    <ShoppingCart className="h-4 w-4 mr-2" />
-                    Lägg till
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
-
-      {/* Email Signup */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8 }}
-        className="bg-gray-50 rounded-xl p-6 mb-8"
-      >
-        <h3 className="text-xl font-bold text-gray-900 mb-3">
-          Få dina AI-resultat via email
-        </h3>
-        <p className="text-gray-600 mb-4">
-          Vi skickar dig en sammanfattning av dina personaliserade resultat och hudvårdstips.
-        </p>
-        <form onSubmit={handleEmailSubmit} className="flex flex-col sm:flex-row gap-3">
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Din email-adress"
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-            required
-          />
-          <button
-            type="submit"
-            className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center"
-          >
-            Skicka resultat
-            <ArrowRight className="h-4 w-4 ml-2" />
-          </button>
-        </form>
-      </motion.div>
-
-      {/* Actions */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-center">
-        <button
-          onClick={onRestart}
-          className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+        <div ref={chatEndRef} />
+      </div>
+      
+      {/* Input Field */}
+      <div className="flex space-x-3">
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyPress={(e) => e.key === 'Enter' && onSend()}
+          placeholder="Ställ en fråga om din hud..."
+          className="flex-1 px-4 py-3 rounded-full border border-[#E5DDD5] focus:outline-none focus:border-[#8B7355] transition-colors"
+        />
+        <motion.button
+          onClick={onSend}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          disabled={!input.trim() || isTyping}
+          className="px-6 py-3 bg-[#4A3428] text-white rounded-full disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
         >
-          Gör om testet
-        </button>
-        <button
-          onClick={onClose}
-          className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-        >
-          Stäng och fortsätt handla
-        </button>
+          <Send className="w-4 h-4" />
+          <span className="font-light">Skicka</span>
+        </motion.button>
       </div>
     </div>
   )
+}
+
+export function QuizResults({ answers, userName, userEmail, results }: QuizResultsProps) {
+  const [activeTab, setActiveTab] = useState<TabType>('summary')
+  const [showRegisterModal, setShowRegisterModal] = useState(false)
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
+  const [chatInput, setChatInput] = useState('')
+  const [isTyping, setIsTyping] = useState(false)
+  const chatEndRef = useRef<HTMLDivElement>(null)
+  
+  // Analyze user answers to generate real results
+  const analysisResults = analyzeQuizAnswers(answers)
+
+  // Initialize chat with welcome message
+  useEffect(() => {
+    if (activeTab === 'ai-expert' && chatMessages.length === 0) {
+      const welcomeMessage = generateWelcomeMessage(userName, analysisResults, answers)
+      setChatMessages([{
+        role: 'assistant',
+        content: welcomeMessage,
+        timestamp: new Date()
+      }])
+    }
+  }, [activeTab, userName, analysisResults, answers, chatMessages.length])
+
+  // Scroll to bottom of chat
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [chatMessages])
+
+  const tabs = [
+    { id: 'summary' as TabType, label: 'Översikt', icon: Sparkles },
+    { id: 'lifestyle' as TabType, label: 'Livsstil', icon: Heart },
+    { id: 'nutrition' as TabType, label: 'Kost', icon: Apple },
+    { id: 'products' as TabType, label: 'Produkter', icon: Droplets },
+    { id: 'ai-expert' as TabType, label: 'AI Hudexpert', icon: BrainCircuit }
+  ]
+
+  const handleSendMessage = async () => {
+    if (!chatInput.trim()) return
+
+    const userMessage = chatInput
+    setChatInput('')
+    
+    // Add user message
+    setChatMessages(prev => [...prev, {
+      role: 'user',
+      content: userMessage,
+      timestamp: new Date()
+    }])
+
+    setIsTyping(true)
+
+    try {
+      // Call AI API
+      const response = await fetch('/api/ai-skincare-expert', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: userMessage,
+          context: {
+            userName,
+            skinType: analysisResults.skinType,
+            concerns: analysisResults.skinConcerns,
+            answers
+          }
+        })
+      })
+
+      const data = await response.json()
+      
+      // Add AI response
+      setChatMessages(prev => [...prev, {
+        role: 'assistant',
+        content: data.response || generateFallbackResponse(userMessage),
+        timestamp: new Date()
+      }])
+    } catch (error) {
+      // Fallback response if API fails
+      setChatMessages(prev => [...prev, {
+        role: 'assistant',
+        content: generateFallbackResponse(userMessage),
+        timestamp: new Date()
+      }])
+    } finally {
+      setIsTyping(false)
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-white via-[#FAFAF8] to-white">
+      {/* Minimalist Hero Section */}
+      <div className="relative py-16 md:py-24">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-[#8B7355]/10 to-[#4A3428]/10 rounded-full mb-6"
+          >
+            <Sparkles className="w-10 h-10 text-[#8B7355]" />
+          </motion.div>
+          
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-3xl md:text-5xl font-light text-[#4A3428] mb-4"
+          >
+            Hej {userName}!
+          </motion.h1>
+          
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-lg md:text-xl text-[#6B5D54] font-light max-w-2xl mx-auto"
+          >
+            Din personliga hudanalys är klar. Låt oss utforska dina resultat tillsammans.
+          </motion.p>
+        </div>
+      </div>
+      
+      <div className="max-w-7xl mx-auto px-4 pb-16">
+        {/* Skin Score Card - Minimalist Design */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white rounded-3xl shadow-sm border border-[#F0EDE8] p-8 md:p-12 mb-12"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+            <div className="text-center md:text-left">
+              <h2 className="text-sm uppercase tracking-wider text-[#8B7355] mb-2">Din hudtyp</h2>
+              <p className="text-xl font-light text-[#4A3428]">{analysisResults.skinType}</p>
+            </div>
+            
+            <div className="flex justify-center">
+              <div className="relative">
+                <div className="w-40 h-40 rounded-full bg-gradient-to-br from-[#8B7355]/5 to-[#4A3428]/5 flex items-center justify-center">
+                  <div className="text-center">
+                    <span className="text-5xl font-light text-[#4A3428]">{analysisResults.skinScore}</span>
+                    <span className="text-sm text-[#6B5D54] block mt-1">hudpoäng</span>
+                  </div>
+                </div>
+                <motion.div
+                  className="absolute inset-0 rounded-full"
+                  style={{
+                    background: `conic-gradient(from 0deg, #8B7355 0deg, #8B7355 ${analysisResults.skinScore * 3.6}deg, transparent ${analysisResults.skinScore * 3.6}deg)`,
+                    mask: 'radial-gradient(farthest-side, transparent 65%, black 66%)',
+                    WebkitMask: 'radial-gradient(farthest-side, transparent 65%, black 66%)'
+                  }}
+                  initial={{ rotate: -90 }}
+                  animate={{ rotate: -90 }}
+                />
+              </div>
+            </div>
+            
+            <div className="text-center md:text-right">
+              <h2 className="text-sm uppercase tracking-wider text-[#8B7355] mb-2">Fokusområde</h2>
+              <p className="text-xl font-light text-[#4A3428]">
+                {analysisResults.skinConcerns[0] || 'Balanserad hudvård'}
+              </p>
+            </div>
+          </div>
+        </motion.div>
+        
+        {/* Tab Navigation - Minimalist Pills */}
+        <div className="flex flex-wrap justify-center gap-3 mb-8">
+          {tabs.map((tab) => {
+            const Icon = tab.icon
+            return (
+              <motion.button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className={`px-6 py-3 rounded-full flex items-center space-x-2 transition-all ${
+                  activeTab === tab.id 
+                    ? 'bg-[#4A3428] text-white shadow-lg' 
+                    : 'bg-white text-[#6B5D54] border border-[#E5DDD5] hover:border-[#8B7355]'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                <span className="font-light">{tab.label}</span>
+              </motion.button>
+            )
+          })}
+        </div>
+        
+        {/* Tab Content */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="bg-white rounded-3xl shadow-sm border border-[#F0EDE8] p-8 md:p-12"
+          >
+            {activeTab === 'summary' && (
+              <SummaryTab results={analysisResults} userName={userName} onRegister={() => setShowRegisterModal(true)} />
+            )}
+            {activeTab === 'lifestyle' && (
+              <LifestyleTab results={analysisResults} answers={answers} />
+            )}
+            {activeTab === 'nutrition' && (
+              <NutritionTab results={analysisResults} answers={answers} />
+            )}
+            {activeTab === 'products' && (
+              <ProductsTab results={analysisResults} answers={answers} />
+            )}
+            {activeTab === 'ai-expert' && (
+              <AIExpertTab 
+                messages={chatMessages}
+                input={chatInput}
+                setInput={setChatInput}
+                onSend={handleSendMessage}
+                isTyping={isTyping}
+                chatEndRef={chatEndRef}
+              />
+            )}
+          </motion.div>
+        </AnimatePresence>
+        
+        {/* Register Modal */}
+        {showRegisterModal && (
+          <RegisterModal
+            isOpen={showRegisterModal}
+            onClose={() => setShowRegisterModal(false)}
+            quizData={{
+              answers,
+              results: analysisResults,
+              userName,
+              userEmail
+            }}
+          />
+        )}
+      </div>
+    </div>
+  )
+}
+
+// Function to analyze quiz answers and generate real results
+function analyzeQuizAnswers(answers: Record<string, string>) {
+  // Get skin type from answers
+  const skinType = determineSkinType(answers)
+  const skinConcerns = determineSkinConcerns(answers)
+  const lifestyle = analyzeLifestyle(answers)
+  const skinScore = calculateSkinScore(answers)
+  
+  return {
+    skinType,
+    skinConcerns,
+    lifestyle,
+    skinScore,
+    ecosystemBalance: {
+      microbiome: calculateMicrobiomeScore(answers),
+      endocannabinoid: calculateEndocannabinoidScore(answers),
+      barrier: calculateBarrierScore(answers)
+    }
+  }
+}
+
+function determineSkinType(answers: Record<string, string>): string {
+  const ageAnswer = answers.age
+  const skinConditionAnswer = answers.skinCondition
+  const sensitiveSkinAnswer = answers.sensitiveSkin
+  
+  if (sensitiveSkinAnswer === 'very-sensitive') {
+    return 'Mycket känslig hud som behöver mild, återfuktande vård'
+  }
+  
+  if (skinConditionAnswer === 'dry') {
+    return 'Torr hud som behöver djup återfuktning och nourishing ingredienser'
+  }
+  
+  if (skinConditionAnswer === 'oily') {
+    return 'Fet hud som behöver balansering och rening utan att torka ut'
+  }
+  
+  if (skinConditionAnswer === 'combination') {
+    return 'Kombinationshud som behöver balanserad vård för olika zoner'
+  }
+  
+  return 'Normal hud som behöver grundläggande vård och skydd'
+}
+
+function determineSkinConcerns(answers: Record<string, string>): string[] {
+  const concerns: string[] = []
+  
+  // Handle multi-select concerns
+  if (answers.concerns) {
+    const selectedConcerns = answers.concerns.split(',')
+    
+    selectedConcerns.forEach(concern => {
+      switch(concern) {
+        case 'acne':
+          concerns.push('Akne och oregelbundenheter')
+          break
+        case 'pigmentation':
+          concerns.push('Pigmentfläckar och ojämn hudton')
+          break
+        case 'aging':
+          concerns.push('Åldrande och fina linjer')
+          break
+        case 'redness':
+          concerns.push('Rodnad och irritation')
+          break
+        case 'dryness':
+          concerns.push('Torrhet och uttorkning')
+          break
+      }
+    })
+  }
+  
+  // Also check if skin problems were mentioned (backward compatibility)
+  if (answers.skinProblems) {
+    const problems = answers.skinProblems.split(',')
+    problems.forEach(problem => {
+      switch(problem) {
+        case 'acne':
+          if (!concerns.includes('Akne och oregelbundenheter')) {
+            concerns.push('Akne och oregelbundenheter')
+          }
+          break
+        case 'pigmentation':
+          if (!concerns.includes('Pigmentfläckar och ojämn hudton')) {
+            concerns.push('Pigmentfläckar och ojämn hudton')
+          }
+          break
+        case 'aging':
+          if (!concerns.includes('Åldrande och fina linjer')) {
+            concerns.push('Åldrande och fina linjer')
+          }
+          break
+        case 'redness':
+          if (!concerns.includes('Rodnad och irritation')) {
+            concerns.push('Rodnad och irritation')
+          }
+          break
+      }
+    })
+  }
+  
+  return concerns.length > 0 ? concerns : ['Förebyggande vård']
+}
+
+function analyzeLifestyle(answers: Record<string, string>) {
+  const lifestyle = {
+    stress: answers.stressLevel || 'normal',
+    sleep: answers.sleepQuality || 'good',
+    exercise: answers.exerciseFrequency || 'regular',
+    sun: answers.sunExposure || 'moderate'
+  }
+  
+  return lifestyle
+}
+
+function calculateSkinScore(answers: Record<string, string>): number {
+  let score = 70 // Base score
+  
+  // Positive factors
+  if (answers.sleepQuality === 'excellent') score += 10
+  if (answers.waterIntake === 'high') score += 5
+  if (answers.stressLevel === 'low') score += 8
+  if (answers.exerciseFrequency === 'daily') score += 7
+  
+  // Negative factors
+  if (answers.stressLevel === 'very-high') score -= 15
+  if (answers.sleepQuality === 'poor') score -= 10
+  if (answers.sunExposure === 'excessive') score -= 8
+  if (answers.smoking === 'yes') score -= 12
+  
+  return Math.max(Math.min(score, 100), 30) // Keep between 30-100
+}
+
+function calculateMicrobiomeScore(answers: Record<string, string>): number {
+  let score = 75
+  
+  if (answers.skinCondition === 'sensitive') score -= 10
+  if (answers.stressLevel === 'high') score -= 5
+  if (answers.dietQuality === 'excellent') score += 10
+  
+  return Math.max(Math.min(score, 100), 40)
+}
+
+function calculateEndocannabinoidScore(answers: Record<string, string>): number {
+  let score = 70
+  
+  if (answers.stressLevel === 'low') score += 15
+  if (answers.sleepQuality === 'excellent') score += 10
+  if (answers.exerciseFrequency === 'daily') score += 5
+  
+  return Math.max(Math.min(score, 100), 40)
+}
+
+function calculateBarrierScore(answers: Record<string, string>): number {
+  let score = 80
+  
+  if (answers.skinCondition === 'dry') score -= 15
+  if (answers.climateExposure === 'harsh') score -= 10
+  if (answers.skincareRoutine === 'minimal') score -= 5
+  
+  return Math.max(Math.min(score, 100), 40)
+}
+
+// Tab Components with real data
+function SummaryTab({ results, userName, onRegister }: { results: any, userName: string, onRegister: () => void }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="space-y-8"
+    >
+      {/* Ecosystem Balance */}
+      <div className="text-center mb-8">
+        <h3 className="text-2xl font-light text-[#4A3428] mb-6">Din Hudbalans</h3>
+        <div className="grid grid-cols-3 gap-6">
+          <div className="text-center">
+            <div className="relative mx-auto w-24 h-24 mb-3">
+              <svg className="w-24 h-24">
+                <circle cx="48" cy="48" r="40" fill="none" stroke="#F0EDE8" strokeWidth="8" />
+                <circle 
+                  cx="48" cy="48" r="40" 
+                  fill="none" 
+                  stroke="#8B7355" 
+                  strokeWidth="8"
+                  strokeDasharray={`${2 * Math.PI * 40 * results.ecosystemBalance.microbiome / 100} ${2 * Math.PI * 40}`}
+                  className="transform -rotate-90 origin-center transition-all duration-1000"
+                />
+              </svg>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-lg font-light">{results.ecosystemBalance.microbiome}%</span>
+              </div>
+            </div>
+            <h4 className="font-light text-[#4A3428]">Mikrobiom</h4>
+            <p className="text-xs text-[#6B5D54] mt-1">Hudens bakteriebalans</p>
+          </div>
+          
+          <div className="text-center">
+            <div className="relative mx-auto w-24 h-24 mb-3">
+              <svg className="w-24 h-24">
+                <circle cx="48" cy="48" r="40" fill="none" stroke="#F0EDE8" strokeWidth="8" />
+                <circle 
+                  cx="48" cy="48" r="40" 
+                  fill="none" 
+                  stroke="#8B7355" 
+                  strokeWidth="8"
+                  strokeDasharray={`${2 * Math.PI * 40 * results.ecosystemBalance.endocannabinoid / 100} ${2 * Math.PI * 40}`}
+                  className="transform -rotate-90 origin-center transition-all duration-1000"
+                />
+              </svg>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-lg font-light">{results.ecosystemBalance.endocannabinoid}%</span>
+              </div>
+            </div>
+            <h4 className="font-light text-[#4A3428]">ECS</h4>
+            <p className="text-xs text-[#6B5D54] mt-1">Endocannabinoidsystem</p>
+          </div>
+          
+          <div className="text-center">
+            <div className="relative mx-auto w-24 h-24 mb-3">
+              <svg className="w-24 h-24">
+                <circle cx="48" cy="48" r="40" fill="none" stroke="#F0EDE8" strokeWidth="8" />
+                <circle 
+                  cx="48" cy="48" r="40" 
+                  fill="none" 
+                  stroke="#8B7355" 
+                  strokeWidth="8"
+                  strokeDasharray={`${2 * Math.PI * 40 * results.ecosystemBalance.barrier / 100} ${2 * Math.PI * 40}`}
+                  className="transform -rotate-90 origin-center transition-all duration-1000"
+                />
+              </svg>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-lg font-light">{results.ecosystemBalance.barrier}%</span>
+              </div>
+            </div>
+            <h4 className="font-light text-[#4A3428]">Hudbarriär</h4>
+            <p className="text-xs text-[#6B5D54] mt-1">Skyddande funktion</p>
+          </div>
+        </div>
+      </div>
+      
+      {/* Key Recommendations */}
+      <div className="bg-gradient-to-br from-[#FAFAF8] to-white rounded-2xl p-8 border border-[#F0EDE8]">
+        <h4 className="text-xl font-light text-[#4A3428] mb-6 flex items-center">
+          <Sparkles className="w-5 h-5 mr-2 text-[#8B7355]" />
+          Dina viktigaste åtgärder
+        </h4>
+        <div className="space-y-4">
+          {results.skinConcerns.map((concern: string, index: number) => (
+            <div key={index} className="flex items-start">
+              <div className="w-8 h-8 rounded-full bg-[#8B7355]/10 flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
+                <CheckCircle className="w-4 h-4 text-[#8B7355]" />
+              </div>
+              <div>
+                <p className="text-[#4A3428] font-medium">{concern}</p>
+                <p className="text-sm text-[#6B5D54] mt-1">
+                  {getRecommendationForConcern(concern)}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      {/* CTA for Free Account */}
+      <div className="text-center bg-gradient-to-br from-[#4A3428] to-[#8B7355] rounded-2xl p-8 text-white">
+        <Shield className="w-12 h-12 mx-auto mb-4 text-white/80" />
+        <h4 className="text-2xl font-light mb-3">Skapa ditt gratiskonto</h4>
+        <p className="text-white/90 mb-6 max-w-md mx-auto">
+          Spara dina resultat, få personliga tips varje vecka och exklusiva erbjudanden
+        </p>
+        <motion.button
+          onClick={onRegister}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="bg-white text-[#4A3428] px-8 py-3 rounded-full font-medium hover:shadow-lg transition-shadow"
+        >
+          Registrera dig gratis
+        </motion.button>
+      </div>
+    </motion.div>
+  )
+}
+
+function getRecommendationForConcern(concern: string): string {
+  const recommendations: Record<string, string> = {
+    'Akne och oregelbundenheter': 'CBD hjälper till att balansera talgproduktionen och har antiinflammatoriska egenskaper.',
+    'Pigmentfläckar och ojämn hudton': 'CBG främjar cellförnyelse och kan hjälpa till att jämna ut hudtonen över tid.',
+    'Åldrande och fina linjer': 'Antioxidanter från våra svampextrakt skyddar mot fria radikaler och för tidigt åldrande.',
+    'Rodnad och irritation': 'CBD och Chaga har lugnande egenskaper som minskar rodnad och stärker hudbarriären.',
+    'Förebyggande vård': 'Fokusera på att bibehålla din huds naturliga balans med våra milda, närande produkter.'
+  }
+  return recommendations[concern] || 'Våra naturliga ingredienser arbetar synergistiskt för att stödja din huds hälsa.'
+}
+
+function LifestyleTab({ results, answers }: { results: any, answers: Record<string, string> }) {
+  const lifestyleTips = generateLifestyleTips(answers)
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="space-y-6"
+    >
+      <h3 className="text-2xl font-serif text-[#4A3428] mb-6">Personliga Livsstilsråd</h3>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {lifestyleTips.map((tip, index) => (
+          <div key={index} className="bg-[#F5F3F0] rounded-xl p-6">
+            <div className="flex items-center mb-4">
+              {tip.icon}
+              <h4 className="font-semibold text-[#4A3428] ml-3">{tip.title}</h4>
+            </div>
+            <p className="text-[#6B5D54]">{tip.description}</p>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  )
+}
+
+function ProductsTab({ results, answers }: { results: any, answers: Record<string, string> }) {
+  const recommendedProducts = generateProductRecommendations(answers)
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="space-y-6"
+    >
+      <h3 className="text-2xl font-serif text-[#4A3428] mb-6">Dina Produktrekommendationer</h3>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {recommendedProducts.map((product, index) => (
+          <div key={index} className="bg-white border border-[#E5DDD5] rounded-xl p-6 hover:shadow-lg transition-shadow">
+            <div className="w-16 h-16 bg-[#F5F3F0] rounded-full mx-auto mb-4 flex items-center justify-center">
+              <Droplets className="w-8 h-8 text-[#8B7355]" />
+            </div>
+            <h4 className="font-semibold text-[#4A3428] text-center mb-2">{product.name}</h4>
+            <p className="text-sm text-[#6B5D54] text-center mb-4">{product.description}</p>
+            <p className="text-xs text-[#8B7355] text-center font-medium">{product.reason}</p>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  )
+}
+
+function NutritionTab({ results, answers }: { results: any, answers: Record<string, string> }) {
+  const nutritionTips = generateNutritionTips(answers)
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="space-y-6"
+    >
+      <h3 className="text-2xl font-serif text-[#4A3428] mb-6">Näringsråd för din Hud</h3>
+      
+      <div className="space-y-4">
+        {nutritionTips.map((tip, index) => (
+          <div key={index} className="bg-[#F5F3F0] rounded-xl p-6">
+            <h4 className="font-semibold text-[#4A3428] mb-3">{tip.category}</h4>
+            <p className="text-[#6B5D54] mb-3">{tip.description}</p>
+            <div className="flex flex-wrap gap-2">
+              {tip.foods.map((food, foodIndex) => (
+                <span key={foodIndex} className="bg-white px-3 py-1 rounded-full text-sm text-[#8B7355] border border-[#E5DDD5]">
+                  {food}
+                </span>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  )
+}
+
+function SourcesTab({ results }: { results: any }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="space-y-6"
+    >
+      <h3 className="text-2xl font-serif text-[#4A3428] mb-6">Vetenskapliga Källor</h3>
+      
+      <div className="space-y-4">
+        <div className="bg-[#F5F3F0] rounded-xl p-6">
+          <h4 className="font-semibold text-[#4A3428] mb-3">Endocannabinoidsystemet i Huden</h4>
+          <p className="text-[#6B5D54] text-sm mb-2">
+            "The endocannabinoid system in skin: a potential approach for the treatment of skin disorders"
+          </p>
+          <p className="text-[#8B7355] text-xs">Journal of Clinical Medicine, 2020</p>
+        </div>
+        
+        <div className="bg-[#F5F3F0] rounded-xl p-6">
+          <h4 className="font-semibold text-[#4A3428] mb-3">CBD och Hudbarriären</h4>
+          <p className="text-[#6B5D54] text-sm mb-2">
+            "Cannabidiol in dermatology: a systematic review"
+          </p>
+          <p className="text-[#8B7355] text-xs">Dermatology Online Journal, 2021</p>
+        </div>
+        
+        <div className="bg-[#F5F3F0] rounded-xl p-6">
+          <h4 className="font-semibold text-[#4A3428] mb-3">Hudens Mikrobiom</h4>
+          <p className="text-[#6B5D54] text-sm mb-2">
+            "The skin microbiome: associations between altered microbial communities and disease"
+          </p>
+          <p className="text-[#8B7355] text-xs">Annual Review of Microbiology, 2019</p>
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
+// Helper functions for generating recommendations
+function generateLifestyleTips(answers: Record<string, string>) {
+  const tips = []
+  
+  if (answers.stressLevel === 'high' || answers.stressLevel === 'very-high') {
+    tips.push({
+      icon: <Heart className="w-6 h-6 text-[#8B7355]" />,
+      title: 'Stresshantering',
+      description: 'Din stressnivå påverkar din hud negativt. Prova meditation, yoga eller andningsövningar för att stärka ditt endocannabinoidsystem.'
+    })
+  }
+  
+  if (answers.sleepQuality === 'poor' || answers.sleepQuality === 'fair') {
+    tips.push({
+      icon: <Moon className="w-6 h-6 text-[#8B7355]" />,
+      title: 'Sömnkvalitet',
+      description: 'Bättre sömn är avgörande för hudregenerering. Skapa en avkopplande kvällsrutin och undvik skärmar innan sänggåendet.'
+    })
+  }
+  
+  tips.push({
+    icon: <Sun className="w-6 h-6 text-[#8B7355]" />,
+    title: 'Solskydd',
+    description: 'Använd dagligen SPF för att skydda mot UV-strålning och förhindra för tidigt åldrande och pigmentförändringar.'
+  })
+  
+  return tips
+}
+
+function generateProductRecommendations(answers: Record<string, string>) {
+  const products = []
+  
+  if (answers.skinCondition === 'dry') {
+    products.push({
+      name: 'DUO Face Oil',
+      description: 'Djupt närande ansiktsolja med CBD och CBG',
+      reason: 'Perfekt för torr hud som behöver extra fukt och återställning'
+    })
+  }
+  
+  if (answers.skinCondition === 'oily' || answers.skinProblems?.includes('acne')) {
+    products.push({
+      name: 'THE Serum',
+      description: 'Lättviktig serum med CBD för problemhud',
+      reason: 'Balanserar oljeproduktion utan att torka ut huden'
+    })
+  }
+  
+  products.push({
+    name: 'Au Naturel Cleanser',
+    description: 'Mild rengöring som respekterar hudbarriären',
+    reason: 'Grundläggande för alla hudtyper'
+  })
+  
+  return products
+}
+
+function generateNutritionTips(answers: Record<string, string>) {
+  const tips = [
+    {
+      category: 'Omega-3 Fettsyror',
+      description: 'Stärker hudbarriären och minskar inflammation',
+      foods: ['Lax', 'Valnötter', 'Chia-frön', 'Avokado']
+    },
+    {
+      category: 'Antioxidanter',
+      description: 'Skyddar mot fria radikaler och för tidigt åldrande',
+      foods: ['Blåbär', 'Spenat', 'Mörk choklad', 'Grönt te']
+    },
+    {
+      category: 'Probiotika',
+      description: 'Stödjer hudens mikrobiom via tarm-hud-axeln',
+      foods: ['Kimchi', 'Kefir', 'Yoghurt', 'Kombucha']
+    }
+  ]
+  
+  return tips
 } 
