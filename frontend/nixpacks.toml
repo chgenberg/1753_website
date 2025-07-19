@@ -8,4 +8,4 @@ cmd = "npm start"
 NODE_ENV = "production"
 
 [phases.setup]
-nixPkgs = ["nodejs_18", "npm-9_x"] 
+nixPkgs = ["nodejs_20"] 
