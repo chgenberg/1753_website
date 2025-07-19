@@ -47,7 +47,7 @@ app.use(limiter)
 
 // CORS - more permissive for production
 const corsOrigins = process.env.NODE_ENV === 'production' 
-  ? ['https://1753skincare.com', 'https://www.1753skincare.com', 'https://1753-website-production.up.railway.app']
+  ? ['https://1753skincare.com', 'https://www.1753skincare.com', 'https://1753website-production.up.railway.app']
   : ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002']
 
 app.use(cors({
