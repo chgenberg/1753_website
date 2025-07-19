@@ -13,13 +13,13 @@ interface SkinCareQuizModalProps {
 
 export const SkinCareQuizModal: React.FC<SkinCareQuizModalProps> = ({ onClose }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0)
-  const [answers, setAnswers] = useState<Record<number, string>>({})
+  const [answers, setAnswers] = useState<Record<string, string>>({})
   const [showResults, setShowResults] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
   const progress = ((currentQuestion + 1) / questions.length) * 100
 
-  const handleAnswer = (questionId: number, value: string) => {
+  const handleAnswer = (questionId: string, value: string) => {
     setAnswers(prev => ({
       ...prev,
       [questionId]: value
@@ -109,7 +109,7 @@ export const SkinCareQuizModal: React.FC<SkinCareQuizModalProps> = ({ onClose })
                 </h2>
                 {!showResults && (
                   <p className="text-sm text-[#112A12]">
-                    Fråga {currentQuestion + 1} av {quizQuestions.length}
+                    Fråga {currentQuestion + 1} av {questions.length}
                   </p>
                 )}
               </div>
@@ -170,7 +170,7 @@ export const SkinCareQuizModal: React.FC<SkinCareQuizModalProps> = ({ onClose })
             </button>
 
             <div className="flex items-center gap-2">
-              {quizQuestions.map((_, index) => (
+              {questions.map((_: any, index: number) => (
                 <div
                   key={index}
                   className={`w-2 h-2 rounded-full transition-colors ${
@@ -185,7 +185,7 @@ export const SkinCareQuizModal: React.FC<SkinCareQuizModalProps> = ({ onClose })
               disabled={!hasAnswered}
               className="flex items-center gap-2 px-6 py-3 bg-[#014421] text-white rounded-lg hover:bg-[#112A12] transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
             >
-              {currentQuestion === quizQuestions.length - 1 ? 'Få Mina Rekommendationer' : 'Nästa'}
+              {currentQuestion === questions.length - 1 ? 'Få Mina Rekommendationer' : 'Nästa'}
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>

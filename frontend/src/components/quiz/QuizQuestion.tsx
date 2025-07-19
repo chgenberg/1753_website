@@ -7,7 +7,7 @@ import { Check } from 'lucide-react'
 interface QuizQuestionProps {
   question: QuizQuestionData
   selectedValue?: string
-  onAnswer: (questionId: number, value: string) => void
+  onAnswer: (questionId: string, value: string) => void
 }
 
 export const QuizQuestion: React.FC<QuizQuestionProps> = ({
@@ -51,7 +51,7 @@ export const QuizQuestion: React.FC<QuizQuestionProps> = ({
             transition={{ delay: index * 0.05, duration: 0.2 }}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onClick={() => onAnswer(question.id as any, option.value)}
+            onClick={() => onAnswer(question.id, option.value)}
             className={`relative p-4 md:p-5 rounded-2xl border-2 transition-all duration-300 text-left group ${
               selectedValue === option.value
                 ? 'border-black bg-black text-white shadow-xl'
