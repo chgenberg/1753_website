@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { QuizQuestion } from './QuizQuestion'
 import { QuizResults } from './QuizResults'
-import { quizQuestions } from './quizData'
+import { questions } from './quizData'
 
 interface SkinCareQuizModalProps {
   onClose: () => void
@@ -17,7 +17,7 @@ export const SkinCareQuizModal: React.FC<SkinCareQuizModalProps> = ({ onClose })
   const [showResults, setShowResults] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
-  const progress = ((currentQuestion + 1) / quizQuestions.length) * 100
+  const progress = ((currentQuestion + 1) / questions.length) * 100
 
   const handleAnswer = (questionId: number, value: string) => {
     setAnswers(prev => ({
@@ -27,7 +27,7 @@ export const SkinCareQuizModal: React.FC<SkinCareQuizModalProps> = ({ onClose })
   }
 
   const goToNext = () => {
-    if (currentQuestion < quizQuestions.length - 1) {
+    if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(prev => prev + 1)
     } else {
       // Quiz completed, show results
@@ -52,7 +52,7 @@ export const SkinCareQuizModal: React.FC<SkinCareQuizModalProps> = ({ onClose })
     setIsLoading(false)
   }
 
-  const currentQuestionData = quizQuestions[currentQuestion]
+  const currentQuestionData = questions[currentQuestion]
   const hasAnswered = answers[currentQuestionData?.id] !== undefined
 
   // Prevent body scroll when modal is open

@@ -31,13 +31,13 @@ export const QuizQuestion: React.FC<QuizQuestionProps> = ({
           transition={{ type: "spring", stiffness: 200, damping: 20 }}
           className="w-14 h-14 md:w-16 md:h-16 bg-black rounded-full flex items-center justify-center text-2xl md:text-3xl mx-auto mb-4"
         >
-          <span className="filter grayscale-0">{question.icon}</span>
+          <span className="filter grayscale-0">{question.icon || '🎯'}</span>
         </motion.div>
         <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">
-          {question.question}
+          {question.question || question.text}
         </h3>
         <p className="text-gray-600 text-sm md:text-base">
-          {question.subtitle}
+          {question.subtitle || question.description}
         </p>
       </div>
 
@@ -51,7 +51,7 @@ export const QuizQuestion: React.FC<QuizQuestionProps> = ({
             transition={{ delay: index * 0.05, duration: 0.2 }}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onClick={() => onAnswer(question.id, option.value)}
+            onClick={() => onAnswer(question.id as any, option.value)}
             className={`relative p-4 md:p-5 rounded-2xl border-2 transition-all duration-300 text-left group ${
               selectedValue === option.value
                 ? 'border-black bg-black text-white shadow-xl'
@@ -65,7 +65,7 @@ export const QuizQuestion: React.FC<QuizQuestionProps> = ({
                   ? 'bg-white/20'
                   : 'bg-gray-100 group-hover:bg-gray-200'
               }`}>
-                <span className="text-lg">{option.icon}</span>
+                <span className="text-lg">{option.icon || option.emoji}</span>
               </div>
 
               {/* Option Content - Compact */}

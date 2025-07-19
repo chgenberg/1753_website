@@ -3,6 +3,7 @@ export interface QuizOption {
   label: string;
   emoji: string;
   description?: string;
+  icon?: string;
 }
 
 export interface QuizQuestion {
@@ -10,6 +11,9 @@ export interface QuizQuestion {
   text: string;
   description?: string;
   options: QuizOption[];
+  icon?: string;
+  question?: string;
+  subtitle?: string;
 }
 
 export const questions: QuizQuestion[] = [
@@ -483,4 +487,8 @@ export const questions: QuizQuestion[] = [
       }
     ]
   }
-]; 
+];
+
+// Export aliases for backward compatibility
+export const quizQuestions = questions;
+export type QuizQuestionData = QuizQuestion;
