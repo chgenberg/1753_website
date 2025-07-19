@@ -36,7 +36,7 @@ const mockReviews = [
       id: '2',
       name: 'Au Naturel Makeup Remover',
       slug: 'au-naturel',
-      images: ['/images/products/AuNaturel.png']
+              images: ['/images/products/Naturel.png']
     }
   },
   {

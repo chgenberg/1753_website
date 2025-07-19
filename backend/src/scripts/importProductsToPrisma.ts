@@ -121,7 +121,7 @@ const products = [
     sku: "NATUREL-001",
     category: "Cleanser",
     tags: ["makeup remover", "rengöring", "naturlig", "mild", "ansiktsrengöring"],
-    images: ["/images/products/AuNaturel.png"],
+            images: ["/images/products/Naturel.png"],
     variants: [],
     inventory: 35,
     trackInventory: true,
