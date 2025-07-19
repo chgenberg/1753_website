@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { questions } from '@/components/quiz/quizData';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LoadingAnimation } from '@/components/quiz/LoadingAnimation';
+import { QuizResultsMockup } from '@/components/quiz/QuizResultsMockup';
 import { User, Mail, Shield, Sparkles, ArrowRight, ArrowLeft } from 'lucide-react';
 import { RegisterModal } from '@/components/auth/RegisterModal';
 
@@ -160,123 +161,37 @@ export default function QuizPage() {
 
   if (currentStep === 'results' && results) {
     return (
-      <div className="fixed inset-0 bg-black/95 backdrop-blur-xl overflow-y-auto z-50">
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="min-h-screen py-12 px-4"
-        >
-          <div className="max-w-4xl mx-auto">
-            {/* Header */}
-            <div className="text-center mb-12">
-              <motion.h1 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-4xl md:text-5xl font-light tracking-tight text-white mb-4 uppercase"
-              >
-                Din Personliga Hudanalys
-              </motion.h1>
-              <p className="text-xl text-white/80">Hej {userName}, här är dina resultat</p>
-            </div>
-
-            {/* Analysis Content */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="bg-white rounded-2xl p-8 md:p-12 mb-8"
+      <>
+        <QuizResultsMockup answers={{ ...answers, userName, userEmail, results }} />
+        
+        {/* Action Buttons Overlay */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t p-4 z-50">
+          <div className="max-w-4xl mx-auto flex flex-col sm:flex-row gap-4 justify-center">
+            <button
+              onClick={() => setShowRegisterModal(true)}
+              className="flex items-center justify-center px-8 py-4 bg-gradient-to-r from-amber-400 to-orange-400 text-black rounded-xl font-medium hover:from-amber-300 hover:to-orange-300 transition-all duration-300 transform hover:scale-105"
             >
-              {results.analysis ? (
-                <div 
-                  className="prose prose-lg max-w-none"
-                  dangerouslySetInnerHTML={{ 
-                    __html: results.analysis.replace(/\*\*(.*?)\*\*/g, '<strong class="text-black uppercase tracking-wide">$1</strong>')
-                      .replace(/\n\n/g, '</p><p class="mb-6">')
-                      .replace(/^/, '<p class="mb-6">')
-                      .replace(/$/, '</p>')
-                      .replace(/\n(\d+\.)/g, '</p><h3 class="text-xl font-medium mt-8 mb-4 uppercase">$1')
-                      .replace(/(\d+\.\s.*?):/g, '$1</h3><p class="mb-6">')
-                  }}
-                />
-              ) : (
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-xl font-medium uppercase mb-2">Din hudtyp</h3>
-                    <p className="text-gray-600">{results.skinType}</p>
-                  </div>
-                  {results.tips && (
-                    <div>
-                      <h3 className="text-xl font-medium uppercase mb-2">Tips för dig</h3>
-                      <ul className="list-disc list-inside space-y-2">
-                        {results.tips.map((tip: string, index: number) => (
-                          <li key={index} className="text-gray-600">{tip}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              )}
-            </motion.div>
-
-            {/* Recommended Products */}
-            {results.recommendedProducts && results.recommendedProducts.length > 0 && (
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="mb-12"
-              >
-                <h2 className="text-2xl md:text-3xl font-light tracking-tight text-white mb-6 uppercase text-center">
-                  Rekommenderade Produkter
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {results.recommendedProducts.map((productSlug: string) => {
-                    const productNames: Record<string, string> = {
-                      'duo-kit': 'DUO Kit',
-                      'face-oil': 'Face Oil', 
-                      'the-serum': 'The Serum',
-                      'the-cream': 'The Cream',
-                      'body-oil': 'Body Oil',
-                      'oil-cleanser': 'Oil Cleanser',
-                      'gua-sha': 'Gua Sha'
-                    };
-                    
-                    return (
-                      <div key={productSlug} className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center">
-                        <div className="w-24 h-24 bg-white/20 rounded-full mx-auto mb-4"></div>
-                        <h3 className="text-white font-medium uppercase tracking-wide">
-                          {productNames[productSlug] || productSlug}
-                        </h3>
-                      </div>
-                    );
-                  })}
-                </div>
-              </motion.div>
-            )}
-
-            {/* Action Buttons */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center"
+              <User className="w-5 h-5 mr-2" />
+              Spara Resultat & Skapa Konto
+            </button>
+            
+            <button
+              onClick={() => {
+                setCurrentStep('welcome');
+                setCurrentQuestion(0);
+                setAnswers({});
+                setResults(null);
+                setUserName('');
+                setUserEmail('');
+                setPrivacyAccepted(false);
+              }}
+              className="px-8 py-4 bg-gray-100 text-gray-800 rounded-xl font-medium hover:bg-gray-200 transition-colors"
             >
-              <button 
-                onClick={() => setShowRegisterModal(true)}
-                className="px-8 py-4 bg-gradient-to-r from-amber-400 to-orange-400 text-black rounded-full font-medium hover:from-amber-300 hover:to-orange-300 transition-all duration-300 uppercase tracking-wide"
-              >
-                Skapa Kostnadsfritt Konto
-              </button>
-              <button 
-                onClick={() => window.location.href = '/'}
-                className="px-8 py-4 bg-transparent text-white border-2 border-white/30 rounded-full hover:bg-white/10 transition-all duration-300 uppercase tracking-wide"
-              >
-                Tillbaka till Hemsidan
-              </button>
-            </motion.div>
+              Gör Om Quiz
+            </button>
           </div>
-        </motion.div>
-      </div>
+        </div>
+      </>
     );
   }
 
