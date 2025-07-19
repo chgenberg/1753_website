@@ -1,3 +1,7 @@
+// TEMPORARILY DISABLED - Auth controller using mongoose User model removed
+// TODO: Implement authentication with Prisma User model when needed
+
+/*
 import { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
@@ -348,4 +352,22 @@ export const refreshToken = async (
   } catch (error) {
     next(error)
   }
+} 
+*/
+
+// Export empty functions to prevent import errors
+export const register = (req: any, res: any) => {
+  res.status(501).json({ message: 'Authentication not implemented yet' })
+}
+
+export const login = (req: any, res: any) => {
+  res.status(501).json({ message: 'Authentication not implemented yet' })
+}
+
+export const logout = (req: any, res: any) => {
+  res.status(501).json({ message: 'Authentication not implemented yet' })
+}
+
+export const getMe = (req: any, res: any) => {
+  res.status(501).json({ message: 'Authentication not implemented yet' })
 } 

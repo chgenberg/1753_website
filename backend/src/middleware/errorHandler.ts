@@ -37,19 +37,16 @@ export const errorHandler = (
     userAgent: req.get('User-Agent'),
   })
 
-  // Mongoose validation error
-  if (err.name === 'ValidationError') {
+  // Prisma validation errors
+  if (err.name === 'PrismaClientValidationError') {
     statusCode = 400
-    message = Object.values((err as any).errors)
-      .map((val: any) => val.message)
-      .join(', ')
+    message = 'Invalid data provided'
   }
 
-  // Mongoose duplicate key error
-  if ((err as any).code === 11000) {
+  // Prisma unique constraint error
+  if ((err as any).code === 'P2002') {
     statusCode = 400
-    const field = Object.keys((err as any).keyValue)[0]
-    message = `${field} already exists`
+    message = 'Duplicate entry - resource already exists'
   }
 
   // JWT errors
@@ -63,10 +60,10 @@ export const errorHandler = (
     message = 'Token expired'
   }
 
-  // Mongoose CastError
-  if (err.name === 'CastError') {
-    statusCode = 400
-    message = 'Invalid ID format'
+  // Prisma record not found
+  if ((err as any).code === 'P2025') {
+    statusCode = 404
+    message = 'Resource not found'
   }
 
   // Don't expose internal errors in production

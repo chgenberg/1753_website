@@ -1,7 +1,6 @@
 import express from 'express'
 import { query } from 'express-validator'
 import { validate } from '../middleware/validate'
-import { optionalAuth } from '../middleware/auth'
 import {
   getProducts,
   getProductBySlug,
@@ -54,7 +53,7 @@ const limitValidation = [
 ]
 
 // Routes
-router.get('/', getProductsValidation, validate, optionalAuth, getProducts)
+router.get('/', getProductsValidation, validate, getProducts)
 router.get('/featured', limitValidation, validate, getFeaturedProducts)
 router.get('/:slug', getProductBySlug)
 
