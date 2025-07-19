@@ -140,6 +140,6 @@ export class ProductService {
   }
 }
 
-// Export a default interface that matches the old Mongoose model
+// Export a default interface for product data operations
 export { Product }
 export default ProductService 
