@@ -68,9 +68,13 @@ export function Header() {
       icon: <Package className="w-5 h-5" />
     },
     {
-      name: 'BLOGG',
-      href: '/blogg',
-      icon: <BookOpen className="w-5 h-5" />
+      name: 'KUNSKAP',
+      href: '/kunskap',
+      icon: <BookOpen className="w-5 h-5" />,
+      children: [
+        { name: 'Blogg', href: '/blogg', icon: <BookOpen className="w-4 h-4" /> },
+        { name: 'E-BOK', href: '/kunskap/e-bok', icon: <BookOpen className="w-4 h-4" /> }
+      ]
     },
     {
       name: 'KONTAKTA OSS',
