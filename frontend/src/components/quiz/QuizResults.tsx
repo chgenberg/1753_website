@@ -16,9 +16,11 @@ import { RegisterModal } from '@/components/auth/RegisterModal'
 
 interface QuizResultsProps {
   answers: Record<string, string>
-  userName: string
-  userEmail: string
+  userName?: string
+  userEmail?: string
   results?: any
+  onRestart?: () => void
+  onClose?: () => void
 }
 
 type TabType = 'summary' | 'lifestyle' | 'products' | 'nutrition' | 'ai-expert'
@@ -170,7 +172,7 @@ function AIExpertTab({ messages, input, setInput, onSend, isTyping, chatEndRef }
   )
 }
 
-export function QuizResults({ answers, userName, userEmail, results }: QuizResultsProps) {
+export function QuizResults({ answers, userName = 'Användare', userEmail = '', results, onRestart, onClose }: QuizResultsProps) {
   const [activeTab, setActiveTab] = useState<TabType>('summary')
   const [showRegisterModal, setShowRegisterModal] = useState(false)
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
@@ -229,7 +231,7 @@ export function QuizResults({ answers, userName, userEmail, results }: QuizResul
         body: JSON.stringify({
           message: userMessage,
           context: {
-            userName,
+            userName: userName || 'Du',
             skinType: analysisResults.skinType,
             concerns: analysisResults.skinConcerns,
             answers
@@ -275,7 +277,7 @@ export function QuizResults({ answers, userName, userEmail, results }: QuizResul
             animate={{ opacity: 1, y: 0 }}
             className="text-3xl md:text-5xl font-light text-[#4A3428] mb-4"
           >
-            Hej {userName}!
+            Hej {userName || 'Du'}!
           </motion.h1>
           
           <motion.p 
@@ -365,7 +367,7 @@ export function QuizResults({ answers, userName, userEmail, results }: QuizResul
             className="bg-white rounded-3xl shadow-sm border border-[#F0EDE8] p-8 md:p-12"
           >
             {activeTab === 'summary' && (
-              <SummaryTab results={analysisResults} userName={userName} onRegister={() => setShowRegisterModal(true)} />
+              <SummaryTab results={analysisResults} userName={userName || 'Du'} onRegister={() => setShowRegisterModal(true)} />
             )}
             {activeTab === 'lifestyle' && (
               <LifestyleTab results={analysisResults} answers={answers} />
@@ -389,6 +391,32 @@ export function QuizResults({ answers, userName, userEmail, results }: QuizResul
           </motion.div>
         </AnimatePresence>
         
+        {/* Action buttons for modal usage */}
+        {(onRestart || onClose) && (
+          <div className="flex justify-center gap-4 mt-8">
+            {onRestart && (
+              <motion.button
+                onClick={onRestart}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-6 py-3 bg-white border border-[#E5DDD5] text-[#6B5D54] rounded-full font-light hover:border-[#8B7355] transition-colors"
+              >
+                Gör om quiz
+              </motion.button>
+            )}
+            {onClose && (
+              <motion.button
+                onClick={onClose}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-6 py-3 bg-[#4A3428] text-white rounded-full font-light hover:bg-[#8B7355] transition-colors"
+              >
+                Stäng
+              </motion.button>
+            )}
+          </div>
+        )}
+        
         {/* Register Modal */}
         {showRegisterModal && (
           <RegisterModal
@@ -397,8 +425,8 @@ export function QuizResults({ answers, userName, userEmail, results }: QuizResul
             quizData={{
               answers,
               results: analysisResults,
-              userName,
-              userEmail
+              userName: userName || 'Du',
+              userEmail: userEmail
             }}
           />
         )}
