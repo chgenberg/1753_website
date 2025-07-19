@@ -211,9 +211,11 @@ export default function IngredientsPage() {
                 className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group"
               >
                 <div className="relative h-48 overflow-hidden">
-                  <img
+                  <Image
                     src="/Mushrooms/chaga.png"
                     alt="Chaga svamp"
+                    width={400}
+                    height={192}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
@@ -249,9 +251,11 @@ export default function IngredientsPage() {
                 className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group"
               >
                 <div className="relative h-48 overflow-hidden">
-                  <img
-                    src="/Mushrooms/reiki.png"
+                  <Image
+                    src="/Mushrooms/reishi.png"
                     alt="Reishi svamp"
+                    width={400}
+                    height={192}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
@@ -287,9 +291,11 @@ export default function IngredientsPage() {
                 className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group"
               >
                 <div className="relative h-48 overflow-hidden">
-                  <img
+                  <Image
                     src="/Mushrooms/lionsmane.png"
                     alt="Lion's Mane svamp"
+                    width={400}
+                    height={192}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
@@ -325,9 +331,11 @@ export default function IngredientsPage() {
                 className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group"
               >
                 <div className="relative h-48 overflow-hidden">
-                  <img
+                  <Image
                     src="/Mushrooms/cordyceps.png"
                     alt="Cordyceps svamp"
+                    width={400}
+                    height={192}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />

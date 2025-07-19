@@ -8,4 +8,9 @@ healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
 
 [variables]
-NODE_ENV = "production" 
+NODE_ENV = "production"
+PORT = "8080"
+
+[networking]
+public = true
+port = 8080 

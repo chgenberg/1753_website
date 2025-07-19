@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "optimize-images": "node scripts/optimize-images.js"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.4",
@@ -46,6 +47,7 @@
     "eslint": "^8.54.0",
     "eslint-config-next": "14.0.3",
     "postcss": "^8.4.32",
+    "sharp": "^0.34.3",
     "tailwindcss": "^3.3.6",
     "typescript": "^5.3.2"
   }

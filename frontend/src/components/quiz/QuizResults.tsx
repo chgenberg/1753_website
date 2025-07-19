@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { CheckCircle, Star, ShoppingCart, ArrowRight, Sparkles, Loader2, AlertCircle } from 'lucide-react'
+import Image from 'next/image'
 import { QuizResultsMockup } from './QuizResultsMockup'
 
 interface QuizResultsProps {
@@ -297,9 +298,11 @@ export const QuizResults = ({ answers, onRestart, onClose }: QuizResultsProps) =
               className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
             >
               <div className="relative">
-                <img
+                <Image
                   src={product.image}
                   alt={product.name}
+                  width={400}
+                  height={192}
                   className="w-full h-48 object-cover"
                 />
                 <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">

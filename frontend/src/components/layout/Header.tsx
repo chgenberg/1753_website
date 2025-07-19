@@ -53,7 +53,7 @@ export function Header() {
     },
     {
       name: 'OM OSS',
-      href: '#', // Prevent navigation when hovering
+      href: '/om-oss', // Navigate to Om oss page when clicked directly
       icon: <Info className="w-5 h-5" />,
       children: [
         { name: 'Vilka är vi?', href: '/om-oss', icon: <Users className="w-4 h-4" /> },
@@ -120,9 +120,11 @@ export function Header() {
                 whileHover={{ scale: 1.05 }}
                 className="bg-white rounded-full p-3 hover:bg-gray-100 transition-all duration-300"
               >
-                <img
+                <Image
                   src="/1753.png"
                   alt="1753 Skincare"
+                  width={32}
+                  height={32}
                   className="h-8 w-auto opacity-100"
                 />
               </motion.div>

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { useCart } from '@/contexts/CartContext'
@@ -422,9 +423,11 @@ export default function CheckoutPage() {
                     <div key={`${item.productId}-${item.variantId}`} className="flex gap-4">
                       <div className="relative w-16 h-16 bg-gray-100 rounded overflow-hidden flex-shrink-0">
                         {item.product.images && item.product.images[0] && (
-                          <img
+                          <Image
                             src={item.product.images[0].url}
                             alt={item.product.name}
+                            width={64}
+                            height={64}
                             className="w-full h-full object-cover"
                           />
                         )}
