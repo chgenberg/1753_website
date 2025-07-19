@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <title>Hitta rätt innehåll</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .controls { margin: 20px 0; }
+        button { padding: 10px 20px; margin: 5px; font-size: 16px; }
+        #pageNum { font-size: 20px; font-weight: bold; }
+        iframe { width: 100%; height: 600px; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+    <h1>Hitta rätt innehåll i PDF:en</h1>
+    <div class="controls">
+        <button onclick="changePage(-10)">-10</button>
+        <button onclick="changePage(-1)">Föregående</button>
+        <span id="pageNum">Sida: 1</span>
+        <button onclick="changePage(1)">Nästa</button>
+        <button onclick="changePage(10)">+10</button>
+        <button onclick="goToPage(prompt('Gå till sida:'))">Gå till sida...</button>
+    </div>
+    <iframe id="pdfFrame" src="/e-book_weedyourskin_backup.pdf#page=1"></iframe>
+    
+    <script>
+        let currentPage = 1;
+        
+        function updatePage() {
+            document.getElementById('pdfFrame').src = `/e-book_weedyourskin_backup.pdf#page=${currentPage}`;
+            document.getElementById('pageNum').textContent = `Sida: ${currentPage}`;
+        }
+        
+        function changePage(delta) {
+            currentPage = Math.max(1, currentPage + delta);
+            updatePage();
+        }
+        
+        function goToPage(page) {
+            const pageNum = parseInt(page);
+            if (!isNaN(pageNum) && pageNum > 0) {
+                currentPage = pageNum;
+                updatePage();
+            }
+        }
+    </script>
+</body>
+</html> 

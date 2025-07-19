@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Test - 1753 Skincare</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .info {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .pdf-frame {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ddd;
+            margin: 20px 0;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PDF Test - 1753 Skincare E-book</h1>
+        
+        <div class="info">
+            <h2>Problem identifierat:</h2>
+            <p>PDF-filerna innehåller fel innehåll (cannabis-bilder) istället för hudvårdsinformation från 1753 Skincare.</p>
+        </div>
+        
+        <div class="error">
+            <h3>Nuvarande filer:</h3>
+            <ul>
+                <li><strong>e-book_weedyourskin.pdf</strong> (172MB) - Innehåller cannabis-relaterade bilder</li>
+                <li><strong>omslag-complete.pdf</strong> (23MB) - Innehåller också cannabis-relaterade bilder</li>
+            </ul>
+        </div>
+        
+        <h2>Lösning:</h2>
+        <p>För att få din e-book reader att fungera korrekt behöver du:</p>
+        <ol>
+            <li>Ladda upp rätt PDF-fil för din hudvårdsbok från 1753 Skincare</li>
+            <li>Byta namn på filen till <code>e-book_weedyourskin.pdf</code> eller uppdatera koden</li>
+            <li>Se till att PDF-filen innehåller rätt innehåll om hudvård</li>
+        </ol>
+        
+        <h2>Test av nuvarande PDF:</h2>
+        <iframe src="/e-book_weedyourskin.pdf#page=1" class="pdf-frame"></iframe>
+    </div>
+</body>
+</html> 

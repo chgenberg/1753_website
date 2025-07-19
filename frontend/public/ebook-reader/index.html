@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weed Your Skin - E-book</title>
+    <meta name="description" content="Interaktiv e-bok från 1753 Skincare - Weed Your Skin">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Favicon (inline SVG to avoid extra request) -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='%23303030'%3E%3Cpath d='M4 6h12v20H4zM16 6h12v20H16z'/%3E%3C/svg%3E" />
+
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/e-book_weedyourskin_backup.pdf" as="document" type="application/pdf">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading" class="loading-screen">
+        <div class="loader">
+            <div class="loader-ring"></div>
+            <div class="loader-text">Laddar din e-bok...</div>
+            <div class="loader-progress">
+                <div class="loader-progress-bar">
+                    <div class="loader-progress-fill"></div>
+                </div>
+                <div class="loader-progress-text">0%</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div id="app" class="app-container">
+        <!-- Logo Header -->
+        <header class="logo-header">
+            <a href="https://www.1753skincare.com" target="_blank" class="logo-link">
+                <img src="1753.png" alt="1753 Skincare" class="logo">
+            </a>
+        </header>
+
+        <!-- Navigation Arrows -->
+        <button id="prevBtn" class="nav-arrow nav-prev" title="Föregående sida">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15,18 9,12 15,6"></polyline>
+            </svg>
+        </button>
+        
+        <button id="nextBtn" class="nav-arrow nav-next" title="Nästa sida">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9,18 15,12 9,6"></polyline>
+            </svg>
+        </button>
+
+        <!-- E-book Reader -->
+        <main class="reader-container">
+            <!-- Book Container -->
+            <div class="book-container">
+                <div class="book" id="book">
+                    <div class="page-container">
+                        <!-- Left Page -->
+                        <div class="page left-page" id="leftPage">
+                            <canvas id="leftCanvas"></canvas>
+                        </div>
+                        
+                        <!-- Right Page -->
+                        <div class="page right-page" id="rightPage">
+                            <canvas id="rightCanvas"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Click Areas for Navigation -->
+            <div class="click-area click-left" id="clickLeft"></div>
+            <div class="click-area click-right" id="clickRight"></div>
+        </main>
+        
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <div class="control-group">
+                <button id="firstBtn" class="control-btn" title="Första sidan">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="11,17 6,12 11,7"></polyline>
+                        <polyline points="18,17 13,12 18,7"></polyline>
+                    </svg>
+                </button>
+                
+                <button id="prevPageBtn" class="control-btn" title="Föregående">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15,18 9,12 15,6"></polyline>
+                    </svg>
+                </button>
+                
+                <div class="page-info">
+                    <span id="currentPage">1</span>
+                    <span>/</span>
+                    <span id="totalPages">0</span>
+                </div>
+                
+                <button id="nextPageBtn" class="control-btn" title="Nästa">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9,18 15,12 9,6"></polyline>
+                    </svg>
+                </button>
+                
+                <button id="lastBtn" class="control-btn" title="Sista sidan">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="13,17 18,12 13,7"></polyline>
+                        <polyline points="6,17 11,12 6,7"></polyline>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Zoom Controls -->
+            <div class="zoom-controls">
+                <button id="zoomOutBtn" class="control-btn" title="Zooma ut (Ctrl+-)">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="8" y1="11" x2="14" y2="11"></line>
+                    </svg>
+                </button>
+                
+                <span id="zoomLevel" class="zoom-level">100%</span>
+                
+                <button id="zoomInBtn" class="control-btn" title="Zooma in (Ctrl++)">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="11" y1="8" x2="11" y2="14"></line>
+                        <line x1="8" y1="11" x2="14" y2="11"></line>
+                    </svg>
+                </button>
+                
+                <button id="zoomResetBtn" class="control-btn" title="Återställ zoom (Ctrl+0)">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="M11,11 L11,6 M11,11 L14,11"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="action-controls">
+                <button id="downloadBtn" class="control-btn download-btn" title="Ladda ner PDF">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                </button>
+                
+                <button id="fullscreenBtn" class="control-btn" title="Fullskärm">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Recommendations Section -->
+    <section class="product-recommendations">
+        <div class="recommendations-container">
+            <h2 class="recommendations-title">VILL DU TA HAND OM HUDENS HÄLSA PÅ RIKTIGT?</h2>
+            
+            <div class="products-grid">
+                <!-- Product 1: DUO-kit + TA-DA Serum -->
+                <div class="product-card">
+                    <a href="https://www.1753skincare.com/products/duo-ta-da" target="_blank" class="product-link">
+                        <div class="product-image-wrapper">
+                            <img src="DUOTADA.png" alt="DUO-kit + TA-DA Serum" class="product-image">
+                        </div>
+                        <h3 class="product-name">DUO-kit + TA-DA Serum</h3>
+                        <p class="product-description">
+                            Våra bästsäljare – Nu som komplett rutinpaket för 1498 kr
+                            Vill du ge din hud ett verkligt lyft – utan att kompromissa med ingredienser, filosofi eller resultat? Då är det här paketet för dig.
+                        </p>
+                        <span class="product-cta">Läs mer →</span>
+                    </a>
+                </div>
+
+                <!-- Product 2: Au Naturel Makeup Remover -->
+                <div class="product-card">
+                    <a href="https://www.1753skincare.com/products/makeup-remover-au-naturel" target="_blank" class="product-link">
+                        <div class="product-image-wrapper">
+                            <img src="Naturel.png" alt="Au Naturel Makeup Remover" class="product-image">
+                        </div>
+                        <h3 class="product-name">Au Naturel Makeup Remover</h3>
+                        <p class="product-description">
+                            Vill du avlägsna smuts, luftföroreningar och makeup utan att skada din huds naturliga balans? Au Naturel Makeup Remover är lösningen du har letat efter
+                        </p>
+                        <span class="product-cta">Läs mer →</span>
+                    </a>
+                </div>
+
+                <!-- Product 3: Fungtastic Mushroom Extract -->
+                <div class="product-card">
+                    <a href="https://www.1753skincare.com/products/fungtastic-extract" target="_blank" class="product-link">
+                        <div class="product-image-wrapper">
+                            <img src="Fungtastic.png" alt="Fungtastic Mushroom Extract" class="product-image">
+                        </div>
+                        <h3 class="product-name">Fungtastic Mushroom Extract</h3>
+                        <p class="product-description">
+                            Upplev naturens kraft med Fungtastic Mushroom Extract - Fungtastic Mushroom Extract kombinerar fyra av naturens mest potenta medicinska svampar
+                        </p>
+                        <span class="product-cta">Läs mer →</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scripts -->
+    <script src="app.js"></script>
+</body>
+</html> 

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PDF Debug Test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body>
+    <h1>PDF Loading Test</h1>
+    <div id="status"></div>
+    <canvas id="testCanvas" style="border: 1px solid black;"></canvas>
+    
+    <script>
+        const status = document.getElementById('status');
+        
+        // Configure PDF.js
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        
+        status.innerHTML = 'Starting test...<br>';
+        
+        // Test loading the cover PDF
+        async function testPDF() {
+            try {
+                status.innerHTML += 'Loading cover PDF...<br>';
+                const coverTask = pdfjsLib.getDocument('/omslag-complete.pdf');
+                const coverDoc = await coverTask.promise;
+                status.innerHTML += `Cover loaded! Pages: ${coverDoc.numPages}<br>`;
+                
+                status.innerHTML += 'Loading main PDF...<br>';
+                const mainTask = pdfjsLib.getDocument('/e-book_weedyourskin.pdf');
+                const mainDoc = await mainTask.promise;
+                status.innerHTML += `Main PDF loaded! Pages: ${mainDoc.numPages}<br>`;
+                
+                // Try to render first page
+                status.innerHTML += 'Rendering first page of cover...<br>';
+                const page = await coverDoc.getPage(1);
+                const viewport = page.getViewport({ scale: 0.5 });
+                
+                const canvas = document.getElementById('testCanvas');
+                const context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                
+                await page.render({
+                    canvasContext: context,
+                    viewport: viewport
+                }).promise;
+                
+                status.innerHTML += 'SUCCESS! Page rendered.<br>';
+                
+            } catch (error) {
+                status.innerHTML += `ERROR: ${error.message}<br>`;
+                console.error('Full error:', error);
+            }
+        }
+        
+        testPDF();
+    </script>
+</body>
+</html> 
