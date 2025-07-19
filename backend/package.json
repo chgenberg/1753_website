@@ -12,11 +12,6 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "seed": "ts-node --transpile-only src/scripts/seedProducts.ts",
-    "scrape": "ts-node --transpile-only src/scripts/productScraper.ts",
-    "scrape-and-seed": "npm run scrape && npm run seed",
-    "import": "ts-node --transpile-only src/scripts/importProducts.ts",
-
     "import:products": "ts-node --transpile-only src/scripts/importProductsToPrisma.ts",
     "import:reviews": "ts-node --transpile-only src/scripts/importReviewsFromCSV.ts",
     "import:all": "npm run import:products && npm run import:reviews",
@@ -28,6 +23,7 @@
     "@prisma/client": "^6.12.0",
     "axios": "^1.6.2",
     "bcryptjs": "^2.4.3",
+    "cheerio": "^1.0.0-rc.12",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
@@ -40,10 +36,12 @@
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
+    "mongoose": "^8.0.0",
     "morgan": "^1.10.0",
     "openai": "^5.8.2",
     "prisma": "^6.12.0",
-    "winston": "^3.11.0"
+    "winston": "^3.11.0",
+    "zod": "^3.22.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
