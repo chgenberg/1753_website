@@ -1,6 +1,5 @@
 [build]
-builder = "nixpacks"
-buildCommand = "rm -rf node_modules .next && npm ci --legacy-peer-deps && npm run build"
+builder = "dockerfile"
 
 [deploy]
 startCommand = "npm start"
