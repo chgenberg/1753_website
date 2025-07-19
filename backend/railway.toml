@@ -1,5 +1,6 @@
 [build]
 builder = "nixpacks"
+buildCommand = "rm -rf node_modules dist && npm ci && npx prisma generate && npm run build"
 
 [deploy]
 startCommand = "npm start"
