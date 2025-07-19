@@ -6,6 +6,7 @@ import { questions } from '@/components/quiz/quizData';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LoadingAnimation } from '@/components/quiz/LoadingAnimation';
 import { User, Mail, Shield, Sparkles, ArrowRight, ArrowLeft } from 'lucide-react';
+import { RegisterModal } from '@/components/auth/RegisterModal';
 
 export default function QuizPage() {
   const t = useTranslations('Quiz');
@@ -19,6 +20,7 @@ export default function QuizPage() {
   const [userEmail, setUserEmail] = useState('');
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [errors, setErrors] = useState<{name?: string, email?: string, privacy?: string}>({});
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
 
   const totalQuestions = questions.length;
   const progress = currentStep === 'questions' ? ((currentQuestion + 1) / totalQuestions) * 100 : 0;
@@ -259,7 +261,10 @@ export default function QuizPage() {
               transition={{ delay: 0.6 }}
               className="flex flex-col sm:flex-row gap-4 justify-center"
             >
-              <button className="px-8 py-4 bg-gradient-to-r from-amber-400 to-orange-400 text-black rounded-full font-medium hover:from-amber-300 hover:to-orange-300 transition-all duration-300 uppercase tracking-wide">
+              <button 
+                onClick={() => setShowRegisterModal(true)}
+                className="px-8 py-4 bg-gradient-to-r from-amber-400 to-orange-400 text-black rounded-full font-medium hover:from-amber-300 hover:to-orange-300 transition-all duration-300 uppercase tracking-wide"
+              >
                 Skapa Kostnadsfritt Konto
               </button>
               <button 
@@ -499,6 +504,18 @@ export default function QuizPage() {
             </div>
           </>
         )}
+
+        {/* Register Modal */}
+        <RegisterModal
+          isOpen={showRegisterModal}
+          onClose={() => setShowRegisterModal(false)}
+          quizData={{
+            answers,
+            results,
+            userName,
+            userEmail
+          }}
+        />
       </div>
     </div>
   );
