@@ -15,8 +15,8 @@ const envSchema = z.object({
   
   // CORS
   CORS_ORIGIN: z.string().default('*'),
-  FRONTEND_URL: z.string().default('https://1753skincare.com'),
-  BACKEND_URL: z.string().default('https://backend-production-url.railway.app'),
+  FRONTEND_URL: z.string().default('https://1753-website-production.up.railway.app'),
+  BACKEND_URL: z.string().default('https://1753-website-backend-production.up.railway.app'),
   
   // Rate limiting
   RATE_LIMIT_WINDOW_MS: z.string().default('900000'),
