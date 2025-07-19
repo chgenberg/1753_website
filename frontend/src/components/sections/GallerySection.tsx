@@ -7,43 +7,43 @@ import { useState } from 'react'
 const galleryImages = [
   {
     id: 1,
-    desktop: '/Porträtt_hemsidan/Kapitel 4-desktop.png',
-    mobile: '/Porträtt_hemsidan/Kapitel 4.png',
+    desktop: '/Porträtt_hemsidan/kapitel-4-desktop.png',
+    mobile: '/Porträtt_hemsidan/kapitel-4.png',
     title: 'Naturlig skönhet',
     description: 'Ren och tidlös elegans'
   },
   {
     id: 2,
-    desktop: '/Porträtt_hemsidan/Kapitel 3-desktop.png',
-    mobile: '/Porträtt_hemsidan/Kapitel 3.png',
+    desktop: '/Porträtt_hemsidan/kapitel-3-desktop.png',
+    mobile: '/Porträtt_hemsidan/kapitel-3.png',
     title: 'Naturens kraft',
     description: 'Upptäck balansen i naturen'
   },
   {
     id: 3,
-    desktop: '/Porträtt_hemsidan/Kapitel 5-desktop.png',
-    mobile: '/Porträtt_hemsidan/Kapitel 5.png',
+    desktop: '/Porträtt_hemsidan/kapitel-5-desktop.png',
+    mobile: '/Porträtt_hemsidan/kapitel-5.png',
     title: 'Harmoni',
     description: 'I balans med naturen'
   },
   {
     id: 4,
-    desktop: '/Porträtt_hemsidan/Kapitel 7-desktop.png',
-    mobile: '/Porträtt_hemsidan/Kapitel 7.png',
+    desktop: '/Porträtt_hemsidan/kapitel-7-desktop.png',
+    mobile: '/Porträtt_hemsidan/kapitel-7.png',
     title: 'Vetenskap',
     description: 'Forskning möter tradition'
   },
   {
     id: 5,
-    desktop: '/Porträtt_hemsidan/Kapitel 12-desktop.png',
-    mobile: '/Porträtt_hemsidan/Kapitel 12.png',
+    desktop: '/Porträtt_hemsidan/kapitel-12-desktop.png',
+    mobile: '/Porträtt_hemsidan/kapitel-12.png',
     title: 'Innovation',
     description: 'Framtidens hudvård'
   },
   {
     id: 6,
-    desktop: '/Porträtt_hemsidan/Kapitel 14-desktop.png',
-    mobile: '/Porträtt_hemsidan/Kapitel 14.png',
+    desktop: '/Porträtt_hemsidan/kapitel-14-desktop.png',
+    mobile: '/Porträtt_hemsidan/kapitel-14.png',
     title: 'Tradition',
     description: 'Tidlös kunskap'
   }

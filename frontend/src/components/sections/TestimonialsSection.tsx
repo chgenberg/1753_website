@@ -43,14 +43,14 @@ export function TestimonialsSection() {
       {/* Background image with overlay */}
       <div className="absolute inset-0 z-0">
         <Image
-          src="/Porträtt_hemsidan/Kapitel 13-desktop.png"
+          src="/Porträtt_hemsidan/kapitel-13-desktop.png"
           alt="Background"
           fill
           sizes="100vw"
           className="object-cover opacity-10 hidden md:block"
         />
         <Image
-          src="/Porträtt_hemsidan/Kapitel 13.png"
+          src="/Porträtt_hemsidan/kapitel-13.png"
           alt="Background"
           fill
           sizes="100vw"

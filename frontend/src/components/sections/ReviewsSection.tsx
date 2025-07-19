@@ -14,7 +14,7 @@ const reviews = [
     rating: 5,
     comment: 'Fantastiska produkter! Min hud har aldrig känt sig så mjuk och balanserad.',
           product: 'The ONE Facial Oil',
-    image: '/Porträtt_hemsidan/Kapitel 16.png'
+    image: '/Porträtt_hemsidan/kapitel-16.png'
   },
   {
     id: 2,
@@ -22,7 +22,7 @@ const reviews = [
     rating: 5,
     comment: 'CBD-oljan har verkligen hjälpt min känsliga hud. Rekommenderar starkt!',
           product: 'Au Naturel Makeup Remover',
-    image: '/Porträtt_hemsidan/Kapitel 18.png'
+    image: '/Porträtt_hemsidan/kapitel-18.png'
   },
   {
     id: 3,
@@ -30,7 +30,7 @@ const reviews = [
     rating: 5,
     comment: 'Älskar konsistensen och doften. Ser redan resultat efter två veckor!',
           product: 'TA-DA Serum',
-    image: '/Porträtt_hemsidan/Kapitel 22.png'
+    image: '/Porträtt_hemsidan/kapitel-22.png'
   }
 ]
 
@@ -139,9 +139,9 @@ export function ReviewsSection() {
           <div className="inline-flex items-center gap-4 bg-white rounded-full px-8 py-4 shadow-lg">
             <div className="flex -space-x-2">
               {[
-                '/Porträtt_hemsidan/Kapitel 24.png',
-                '/Porträtt_hemsidan/Kapitel 23.png',
-                '/Porträtt_hemsidan/Kapitel 22.png'
+                '/Porträtt_hemsidan/kapitel-24.png',
+                '/Porträtt_hemsidan/kapitel-23.png',
+                '/Porträtt_hemsidan/kapitel-22.png'
               ].map((img, i) => (
                 img && (
                   <div key={i} className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-white">

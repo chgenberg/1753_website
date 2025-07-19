@@ -63,9 +63,9 @@ export function BlogSection() {
 
   // Images for blog posts with responsive versions
   const blogImages = [
-    { desktop: '/Porträtt_hemsidan/Kapitel 22-desktop.png', mobile: '/Porträtt_hemsidan/Kapitel 22.png' },
-    { desktop: '/Porträtt_hemsidan/Kapitel 24-desktop.png', mobile: '/Porträtt_hemsidan/Kapitel 24.png' },
-    { desktop: '/Porträtt_hemsidan/Kapitel 37-desktop.png', mobile: '/Porträtt_hemsidan/Kapitel 37.png' }
+    { desktop: '/Porträtt_hemsidan/kapitel-22-desktop.png', mobile: '/Porträtt_hemsidan/kapitel-22.png' },
+    { desktop: '/Porträtt_hemsidan/kapitel-24-desktop.png', mobile: '/Porträtt_hemsidan/kapitel-24.png' },
+    { desktop: '/Porträtt_hemsidan/kapitel-37-desktop.png', mobile: '/Porträtt_hemsidan/kapitel-37.png' }
   ]
 
   if (loading) {

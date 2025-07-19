@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
-    "optimize-images": "node scripts/optimize-images.js"
+    "optimize-images": "node scripts/optimize-images.js",
+    "fix-filenames": "node scripts/fix-filenames.js",
+    "update-image-refs": "node scripts/update-image-references.js"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.4",
@@ -46,6 +48,7 @@
     "autoprefixer": "^10.4.16",
     "eslint": "^8.54.0",
     "eslint-config-next": "14.0.3",
+    "glob": "^11.0.3",
     "postcss": "^8.4.32",
     "sharp": "^0.34.3",
     "tailwindcss": "^3.3.6",

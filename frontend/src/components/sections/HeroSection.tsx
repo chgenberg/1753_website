@@ -8,16 +8,16 @@ import { ArrowRight, ChevronDown } from 'lucide-react'
 
 const heroSlides = [
   {
-    imageDesktop: '/Porträtt_hemsidan/Kapitel 15-desktop.png',
-    imageMobile: '/Porträtt_hemsidan/Kapitel 15.png',
+    imageDesktop: '/Porträtt_hemsidan/kapitel-15-desktop.png',
+    imageMobile: '/Porträtt_hemsidan/kapitel-15.png',
   },
   {
-    imageDesktop: '/Porträtt_hemsidan/Kapitel 4-desktop.png',
-    imageMobile: '/Porträtt_hemsidan/Kapitel 4.png',
+    imageDesktop: '/Porträtt_hemsidan/kapitel-4-desktop.png',
+    imageMobile: '/Porträtt_hemsidan/kapitel-4.png',
   },
   {
-    imageDesktop: '/Porträtt_hemsidan/Kapitel 43-desktop.png',
-    imageMobile: '/Porträtt_hemsidan/Kapitel 43.png',
+    imageDesktop: '/Porträtt_hemsidan/kapitel-43-desktop.png',
+    imageMobile: '/Porträtt_hemsidan/kapitel-43.png',
   }
 ]
 

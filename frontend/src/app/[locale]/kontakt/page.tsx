@@ -132,14 +132,14 @@ export default function ContactPage() {
           {/* Background Image */}
           <div className="absolute inset-0 z-0">
             <Image
-              src="/Porträtt_hemsidan/Kapitel 18-desktop.png"
+              src="/Porträtt_hemsidan/kapitel-18-desktop.png"
               alt="Background"
               fill
               sizes="100vw"
               className="object-cover opacity-15 hidden md:block"
             />
             <Image
-              src="/Porträtt_hemsidan/Kapitel 18.png"
+              src="/Porträtt_hemsidan/kapitel-18.png"
               alt="Background"
               fill
               sizes="100vw"

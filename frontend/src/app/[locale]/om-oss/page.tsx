@@ -75,7 +75,7 @@ export default function AboutPage() {
               className="absolute inset-0"
             >
               <Image
-                src="/Porträtt/C_&_E_2.jpg"
+                src="/Porträtt/c-and-e-2.jpg"
                 alt="Christopher och Ebba Genberg - Grundarna av 1753 Skincare"
                 fill
                 sizes="100vw"

@@ -121,7 +121,7 @@ export function AboutSection() {
             <div className="relative h-[500px] lg:h-[600px] rounded-2xl overflow-hidden">
               {/* Desktop Image */}
               <Image
-                src="/Porträtt_hemsidan/Kapitel 17-desktop.png"
+                src="/Porträtt_hemsidan/kapitel-17-desktop.png"
                 alt="Naturlig hudvård"
                 fill
                 sizes="100vw"
@@ -129,7 +129,7 @@ export function AboutSection() {
               />
               {/* Mobile Image */}
               <Image
-                src="/Porträtt_hemsidan/Kapitel 17.png"
+                src="/Porträtt_hemsidan/kapitel-17.png"
                 alt="Naturlig hudvård"
                 fill
                 sizes="100vw"
@@ -152,7 +152,7 @@ export function AboutSection() {
             <div className="relative h-[400px] rounded-2xl overflow-hidden">
               {/* Desktop Image */}
               <Image
-                src="/Porträtt_hemsidan/Kapitel 40-desktop.png"
+                src="/Porträtt_hemsidan/kapitel-40-desktop.png"
                 alt="Grundare"
                 fill
                 sizes="100vw"
@@ -160,7 +160,7 @@ export function AboutSection() {
               />
               {/* Mobile Image */}
               <Image
-                src="/Porträtt_hemsidan/Kapitel 40.png"
+                src="/Porträtt_hemsidan/kapitel-40.png"
                 alt="Grundare"
                 fill
                 sizes="100vw"

@@ -45,7 +45,7 @@ export function QuizResultsMockup({ answers }: QuizResultsMockupProps) {
       {/* Hero Section with Background Image */}
       <div className="relative h-[400px] md:h-[500px] overflow-hidden">
         <Image
-          src="/Porträtt_hemsidan/Kapitel 22-desktop.png"
+          src="/Porträtt_hemsidan/kapitel-22-desktop.png"
           alt="Skin ecosystem"
           fill
           sizes="100vw"
@@ -53,7 +53,7 @@ export function QuizResultsMockup({ answers }: QuizResultsMockupProps) {
           priority
         />
         <Image
-          src="/Porträtt_hemsidan/Kapitel 22.png"
+          src="/Porträtt_hemsidan/kapitel-22.png"
           alt="Skin ecosystem"
           fill
           sizes="100vw"
