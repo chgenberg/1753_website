@@ -19,6 +19,8 @@ import productRoutes from './routes/products'
 import quizRoutes from './routes/quiz'
 import reviewRoutes from './routes/reviews'
 import newsletterRoutes from './routes/newsletter'
+import progressRoutes from './routes/progress'
+import knowledgeRoutes from './routes/knowledge'
 
 // Validate environment variables
 const envConfig = validateEnv()
@@ -97,6 +99,8 @@ app.use('/api/products', productRoutes)
 app.use('/api/quiz', quizRoutes)
 app.use('/api/newsletter', newsletterRoutes)
 app.use('/api/reviews', reviewRoutes)
+app.use('/api/progress', progressRoutes)
+app.use('/api/knowledge', knowledgeRoutes)
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

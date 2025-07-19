@@ -43,8 +43,352 @@ model User {
   reviews              Review[]
   addresses            Address[]
   skinJourneyEntries   SkinJourneyEntry[]
+  progressReports      ProgressReport[]
+  learningProgress     LearningProgress[]
+  videoWatchHistory    VideoWatchHistory[]
+  expertConsultations  ExpertConsultation[]
+  personalizedSuggestions PersonalizedSuggestion[]
   
   @@map("users")
+}
+
+// Enhanced Skin Journey Entry
+model SkinJourneyEntry {
+  id                String   @id @default(cuid())
+  userId            String
+  date              DateTime @default(now())
+  skinCondition     Int      // 1-10 rating
+  notes             String?
+  photos            String[] // Array of photo URLs
+  photoType         String   // before, progress, after
+  
+  // Enhanced tracking
+  mood              Int?     // 1-10 how user feels about skin
+  productSatisfaction Int?   // 1-10 satisfaction with current products
+  lifestyle         Json?    // sleep, stress, diet, exercise data
+  weather           String?  // weather conditions
+  season            String?  // spring, summer, autumn, winter
+  menstrualCycle    String?  // for hormonal tracking
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("skin_journey_entries")
+}
+
+// Progress Reports (AI-generated monthly summaries)
+model ProgressReport {
+  id                String   @id @default(cuid())
+  userId            String
+  month             String   // YYYY-MM format
+  
+  // AI-generated insights
+  overallProgress   Float    // -10 to 10 scale
+  keyInsights       String[] // AI-generated insights
+  improvements      String[] // What got better
+  concerns          String[] // What needs attention
+  recommendations   String[] // Personalized recommendations
+  
+  // Statistics
+  averageSkinCondition Float
+  moodTrend         Float    // Mood improvement/decline
+  consistencyScore  Float    // How consistent user was with routine
+  
+  // Generated content
+  summaryText       String   // AI-generated summary
+  achievements      String[] // User achievements this month
+  nextMonthGoals    String[] // Suggested goals
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, month])
+  @@map("progress_reports")
+}
+
+// Dynamic Product Suggestions
+model PersonalizedSuggestion {
+  id              String   @id @default(cuid())
+  userId          String
+  type            String   // product, routine, lifestyle, seasonal
+  
+  // Suggestion content
+  title           String
+  description     String
+  reason          String   // Why this suggestion was made
+  urgency         String   // low, medium, high
+  category        String   // skincare, lifestyle, nutrition, etc.
+  
+  // Targeting
+  triggers        String[] // What triggered this suggestion
+  seasonalFactor  String?  // If seasonal
+  weatherFactor   String?  // If weather-based
+  skinDataFactor  Json?    // Based on skin journey data
+  
+  // Product recommendations (if type = product)
+  productIds      String[] // Array of product IDs
+  routineSteps    Json?    // Specific routine recommendations
+  
+  // Engagement
+  isRead          Boolean  @default(false)
+  isAccepted      Boolean  @default(false)
+  isHidden        Boolean  @default(false)
+  rating          Int?     // 1-5 how helpful was this suggestion
+  
+  // Validity
+  validFrom       DateTime @default(now())
+  validUntil      DateTime?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("personalized_suggestions")
+}
+
+// Knowledge Center - Educational Content
+model EducationalContent {
+  id              String   @id @default(cuid())
+  title           String
+  slug            String   @unique
+  
+  // Content
+  content         String   // Rich text/markdown content
+  excerpt         String?  // Short description
+  
+  // Categorization
+  category        String   // skincare-basics, ingredients, routines, problems, etc.
+  skinTypes       String[] // Which skin types this applies to
+  skinConcerns    String[] // Which skin concerns this addresses
+  difficulty      String   // beginner, intermediate, advanced
+  readTime        Int      // Estimated read time in minutes
+  
+  // Media
+  featuredImage   String?
+  images          String[] // Additional images
+  
+  // SEO
+  metaTitle       String?
+  metaDescription String?
+  keywords        String[]
+  
+  // Status
+  isPublished     Boolean  @default(false)
+  publishedAt     DateTime?
+  
+  // Author info
+  authorName      String?
+  authorTitle     String?  // Dermatologist, Skin Expert, etc.
+  authorImage     String?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  learningProgress LearningProgress[]
+  ingredients     IngredientInfo[]
+  
+  @@map("educational_content")
+}
+
+// User Learning Progress
+model LearningProgress {
+  id              String   @id @default(cuid())
+  userId          String
+  contentId       String
+  
+  // Progress tracking
+  status          String   // not_started, in_progress, completed
+  progressPercent Int      @default(0) // 0-100
+  timeSpent       Int      @default(0) // Time in seconds
+  
+  // Engagement
+  rating          Int?     // 1-5 how helpful
+  feedback        String?  // User feedback
+  bookmarked      Boolean  @default(false)
+  
+  // Timestamps
+  startedAt       DateTime?
+  completedAt     DateTime?
+  lastAccessedAt  DateTime @default(now())
+  createdAt       DateTime @default(now())
+
+  // Relations
+  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content         EducationalContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, contentId])
+  @@map("learning_progress")
+}
+
+// Video Guides
+model VideoGuide {
+  id              String   @id @default(cuid())
+  title           String
+  slug            String   @unique
+  
+  // Video content
+  videoUrl        String   // YouTube, Vimeo, or hosted URL
+  thumbnailUrl    String?
+  duration        Int      // Duration in seconds
+  transcript      String?  // Video transcript
+  
+  // Content details
+  description     String
+  category        String   // product-usage, routine, technique, etc.
+  difficulty      String   // beginner, intermediate, advanced
+  
+  // Targeting
+  skinTypes       String[] // Which skin types this applies to
+  skinConcerns    String[] // Which skin concerns this addresses
+  productIds      String[] // Related products
+  
+  // Instructor
+  instructorName  String
+  instructorTitle String?  // Skin Expert, Brand Ambassador, etc.
+  instructorImage String?
+  
+  // SEO & Discovery
+  keywords        String[]
+  isPublished     Boolean  @default(false)
+  publishedAt     DateTime?
+  viewCount       Int      @default(0)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  watchHistory    VideoWatchHistory[]
+  
+  @@map("video_guides")
+}
+
+// Video Watch History
+model VideoWatchHistory {
+  id              String   @id @default(cuid())
+  userId          String
+  videoId         String
+  
+  // Watch progress
+  watchedDuration Int      @default(0) // Seconds watched
+  completed       Boolean  @default(false)
+  
+  // Engagement
+  rating          Int?     // 1-5 stars
+  feedback        String?
+  bookmarked      Boolean  @default(false)
+  
+  // Timestamps
+  firstWatchedAt  DateTime @default(now())
+  lastWatchedAt   DateTime @default(now())
+  createdAt       DateTime @default(now())
+
+  // Relations
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video           VideoGuide @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, videoId])
+  @@map("video_watch_history")
+}
+
+// Expert Consultations
+model ExpertConsultation {
+  id              String   @id @default(cuid())
+  userId          String
+  
+  // Expert info
+  expertName      String
+  expertTitle     String   // Dermatologist, Esthetician, etc.
+  expertImage     String?
+  expertBio       String?
+  
+  // Consultation details
+  type            String   // chat, video, phone
+  status          String   // requested, scheduled, completed, cancelled
+  duration        Int?     // Duration in minutes
+  
+  // Scheduling
+  requestedAt     DateTime @default(now())
+  scheduledFor    DateTime?
+  completedAt     DateTime?
+  
+  // Content
+  userQuestions   String[] // Questions user submitted
+  expertAdvice    String?  // Expert's advice/response
+  followUpTasks   String[] // Recommended actions
+  
+  // Satisfaction
+  userRating      Int?     // 1-5 stars
+  userFeedback    String?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("expert_consultations")
+}
+
+// Ingredient Encyclopedia
+model IngredientInfo {
+  id              String   @id @default(cuid())
+  name            String   @unique
+  slug            String   @unique
+  
+  // Basic info
+  displayName     String   // User-friendly name
+  scientificName  String?  // Chemical/INCI name
+  category        String   // active, moisturizer, antioxidant, etc.
+  
+  // Content
+  description     String   // Detailed description
+  benefits        String[] // Array of benefits
+  suitableFor     String[] // Skin types/concerns
+  notSuitableFor  String[] // Contraindications
+  
+  // Usage
+  concentration   String?  // Typical concentration range
+  pHRange         String?  // Optimal pH range
+  timeOfDay       String?  // morning, evening, both
+  frequency       String?  // daily, weekly, as needed
+  
+  // Interactions
+  worksWellWith   String[] // Ingredient names that pair well
+  avoidWith       String[] // Ingredients to avoid mixing
+  
+  // Safety
+  safetyRating    String   // low-risk, medium-risk, high-risk
+  pregnancySafe   Boolean  @default(true)
+  sensitivityRisk String   // low, medium, high
+  
+  // Research
+  evidenceLevel   String   // strong, moderate, limited
+  studyLinks      String[] // Links to research
+  
+  // Media
+  image           String?
+  
+  // SEO
+  metaDescription String?
+  keywords        String[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  products        Product[] @relation("ProductIngredients")
+  educationalContent EducationalContent[]
+  
+  @@map("ingredient_info")
 }
 
 // Address model (separated from User for better normalization)
@@ -72,25 +416,7 @@ model Address {
   @@map("addresses")
 }
 
-// Skin Journey model (separated for better structure)
-model SkinJourneyEntry {
-  id             String   @id @default(cuid())
-  userId         String
-  date           DateTime @default(now())
-  skinCondition  Int      // 1-10 rating
-  notes          String?
-  photos         String[] // Array of photo URLs
-  photoType      String   // before, progress, after
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  // Relations
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  @@map("skin_journey_entries")
-}
-
-// Product model
+// Product model (enhanced)
 model Product {
   id            String   @id @default(cuid())
   name          String
@@ -115,6 +441,14 @@ model Product {
   metaTitle     String?
   metaDescription String?
   seoKeywords   String[]
+  
+  // Enhanced product info
+  keyIngredients String[] // Main ingredients
+  howToUse      String?   // Usage instructions
+  skinTypes     String[]  // Suitable skin types
+  skinConcerns  String[]  // Addresses these concerns
+  timeOfDay     String?   // morning, evening, both
+  
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -122,6 +456,7 @@ model Product {
   orderItems    OrderItem[]
   reviews       Review[]
   discounts     ProductDiscount[]
+  ingredients   IngredientInfo[] @relation("ProductIngredients")
   
   @@map("products")
 }
