@@ -96,7 +96,7 @@ export function HeroSection() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 h-full flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-16">
+      <div className="relative z-10 h-full flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-24 md:pt-20">
         <div className="text-center max-w-5xl mx-auto">
           {/* Main Headline */}
           <motion.div
@@ -105,7 +105,7 @@ export function HeroSection() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="mb-6"
           >
-            <span className="inline-block px-6 py-2 bg-gradient-to-r from-amber-400/20 to-orange-400/20 rounded-full text-amber-300 text-sm font-medium tracking-wider uppercase mb-6 backdrop-blur-sm border border-amber-400/20">
+            <span className="inline-block px-6 py-2 bg-gradient-to-r from-amber-400/20 to-orange-400/20 rounded-full text-amber-300 text-sm font-medium tracking-wider uppercase mb-8 backdrop-blur-sm border border-amber-400/20">
               ✨ Kostnadsfritt & Personligt
             </span>
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-light text-white mb-4 tracking-tight leading-tight">
@@ -132,7 +132,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8 md:mb-12 max-w-5xl mx-auto px-4"
+            className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8 md:mb-12 max-w-6xl mx-auto px-4"
           >
             {benefits.map((benefit, index) => (
               <motion.div
@@ -145,10 +145,10 @@ export function HeroSection() {
                 <div className="text-amber-300 mb-3 flex justify-center">
                   {benefit.icon}
                 </div>
-                <h3 className="text-white font-medium text-base md:text-lg mb-2 break-words">
+                <h3 className="text-white font-medium text-sm md:text-base lg:text-lg mb-2 leading-tight hyphens-auto" style={{ wordBreak: 'break-word' }}>
                   {benefit.title}
                 </h3>
-                <p className="text-white/80 text-xs md:text-sm leading-relaxed break-words">
+                <p className="text-white/80 text-xs md:text-sm leading-relaxed">
                   {benefit.description}
                 </p>
               </motion.div>
