@@ -372,9 +372,9 @@ export default function ReishiPage() {
                     <li>• Ökad ångest</li>
                   </ul>
                 </div>
-                <div className="bg-green-50 border-l-4 border-green-400 p-6 rounded-r-lg">
-                  <h4 className="font-semibold text-green-800 mb-3">Med Reishi-reglering:</h4>
-                  <ul className="text-green-700 text-sm space-y-2">
+                <div className="bg-[#F5F3F0] border-l-4 border-[#8B7355] p-6 rounded-r-lg">
+                  <h4 className="font-semibold text-[#2A1A14] mb-3">Med Reishi-reglering:</h4>
+                  <ul className="text-[#3A2A1E] text-sm space-y-2">
                     <li>• Klarare, mer strålande hud</li>
                     <li>• Minskad inflammation</li>
                     <li>• Förbättrad sömn</li>

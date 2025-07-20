@@ -444,7 +444,7 @@ DUO-kit ger dig flexibiliteten att anpassa din hudvård efter dina behov.`,
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-green-600"></div>
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#4A3428]"></div>
       </div>
     )
   }
@@ -468,9 +468,9 @@ DUO-kit ger dig flexibiliteten att anpassa din hudvård efter dina behov.`,
       {/* Breadcrumbs */}
       <div className="container mx-auto px-4 py-4">
         <nav className="flex items-center gap-2 text-sm text-gray-600">
-          <Link href="/" className="hover:text-green-600 transition-colors">Hem</Link>
+          <Link href="/" className="hover:text-[#4A3428] transition-colors">Hem</Link>
           <ChevronRight className="w-4 h-4" />
-          <Link href="/products" className="hover:text-green-600 transition-colors">Produkter</Link>
+          <Link href="/products" className="hover:text-[#4A3428] transition-colors">Produkter</Link>
           <ChevronRight className="w-4 h-4" />
           <span className="text-gray-900">{product.name}</span>
         </nav>
@@ -483,7 +483,7 @@ DUO-kit ger dig flexibiliteten att anpassa din hudvård efter dina behov.`,
           <div className="space-y-4">
             {/* Main Image */}
             <motion.div 
-              className="relative aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-green-50 to-emerald-50"
+              className="relative aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-[#F5F3F0] to-[#F5F3F0]"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
@@ -557,7 +557,7 @@ DUO-kit ger dig flexibiliteten att anpassa din hudvård efter dina behov.`,
                     onClick={() => setSelectedImage(index)}
                     className={`relative flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden transition-all ${
                       selectedImage === index 
-                        ? 'ring-2 ring-green-600 ring-offset-2' 
+                        ? 'ring-2 ring-[#4A3428] ring-offset-2' 
                         : 'opacity-70 hover:opacity-100'
                     }`}
                   >
@@ -611,7 +611,7 @@ DUO-kit ger dig flexibiliteten att anpassa din hudvård efter dina behov.`,
               transition={{ delay: 0.3 }}
               className="flex items-center gap-4"
             >
-              <span className="text-3xl font-bold text-green-600">
+              <span className="text-3xl font-bold text-[#4A3428]">
                 {product.price} kr
               </span>
               {product.compareAtPrice && (
@@ -619,7 +619,7 @@ DUO-kit ger dig flexibiliteten att anpassa din hudvård efter dina behov.`,
                   <span className="text-xl text-gray-400 line-through">
                     {product.compareAtPrice} kr
                   </span>
-                  <span className="bg-green-100 text-green-700 text-sm px-2 py-1 rounded">
+                  <span className="bg-[#E5DDD5] text-[#3A2A1E] text-sm px-2 py-1 rounded">
                     Du sparar {product.compareAtPrice - product.price} kr
                   </span>
                 </>
@@ -636,7 +636,7 @@ DUO-kit ger dig flexibiliteten att anpassa din hudvård efter dina behov.`,
                 <h3 className="text-sm font-semibold text-gray-700 mb-2">Passar hudtyper:</h3>
                 <div className="flex flex-wrap gap-2">
                   {product.skinTypes.map((type) => (
-                    <span key={type} className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
+                    <span key={type} className="bg-[#E5DDD5] text-[#3A2A1E] px-3 py-1 rounded-full text-sm">
                       {skinTypeTranslations[type]}
                     </span>
                   ))}
@@ -680,8 +680,8 @@ DUO-kit ger dig flexibiliteten att anpassa din hudvård efter dina behov.`,
                   disabled={addedToCart}
                   className={`flex-1 py-4 px-6 rounded-xl font-semibold transition-all transform ${
                     addedToCart
-                      ? 'bg-green-600 text-white scale-105'
-                      : 'bg-green-600 text-white hover:bg-green-700 hover:scale-105 active:scale-100'
+                      ? 'bg-[#4A3428] text-white scale-105'
+                      : 'bg-[#4A3428] text-white hover:bg-[#3A2A1E] hover:scale-105 active:scale-100'
                   }`}
                 >
                   {addedToCart ? (
@@ -718,15 +718,15 @@ DUO-kit ger dig flexibiliteten att anpassa din hudvård efter dina behov.`,
               className="grid grid-cols-3 gap-4 text-center"
             >
               <div className="space-y-2">
-                <Truck className="w-6 h-6 mx-auto text-green-600" />
+                <Truck className="w-6 h-6 mx-auto text-[#4A3428]" />
                 <p className="text-xs text-gray-600">Fri frakt över 500 kr</p>
               </div>
               <div className="space-y-2">
-                <Shield className="w-6 h-6 mx-auto text-green-600" />
+                <Shield className="w-6 h-6 mx-auto text-[#4A3428]" />
                 <p className="text-xs text-gray-600">100% säker betalning</p>
               </div>
               <div className="space-y-2">
-                <Leaf className="w-6 h-6 mx-auto text-green-600" />
+                <Leaf className="w-6 h-6 mx-auto text-[#4A3428]" />
                 <p className="text-xs text-gray-600">100% naturligt</p>
               </div>
             </motion.div>
@@ -742,7 +742,7 @@ DUO-kit ger dig flexibiliteten att anpassa din hudvård efter dina behov.`,
             onClick={() => setActiveTab('description')}
             className={`px-6 py-3 font-semibold transition-all relative ${
               activeTab === 'description'
-                ? 'text-green-600'
+                ? 'text-[#4A3428]'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
@@ -750,7 +750,7 @@ DUO-kit ger dig flexibiliteten att anpassa din hudvård efter dina behov.`,
             {activeTab === 'description' && (
               <motion.div
                 layoutId="activeTab"
-                className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-600"
+                className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#4A3428]"
               />
             )}
           </button>
@@ -758,7 +758,7 @@ DUO-kit ger dig flexibiliteten att anpassa din hudvård efter dina behov.`,
             onClick={() => setActiveTab('ingredients')}
             className={`px-6 py-3 font-semibold transition-all relative ${
               activeTab === 'ingredients'
-                ? 'text-green-600'
+                ? 'text-[#4A3428]'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
@@ -766,7 +766,7 @@ DUO-kit ger dig flexibiliteten att anpassa din hudvård efter dina behov.`,
             {activeTab === 'ingredients' && (
               <motion.div
                 layoutId="activeTab"
-                className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-600"
+                className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#4A3428]"
               />
             )}
           </button>
@@ -774,7 +774,7 @@ DUO-kit ger dig flexibiliteten att anpassa din hudvård efter dina behov.`,
             onClick={() => setActiveTab('usage')}
             className={`px-6 py-3 font-semibold transition-all relative ${
               activeTab === 'usage'
-                ? 'text-green-600'
+                ? 'text-[#4A3428]'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
@@ -782,7 +782,7 @@ DUO-kit ger dig flexibiliteten att anpassa din hudvård efter dina behov.`,
             {activeTab === 'usage' && (
               <motion.div
                 layoutId="activeTab"
-                className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-600"
+                className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#4A3428]"
               />
             )}
           </button>
@@ -790,7 +790,7 @@ DUO-kit ger dig flexibiliteten att anpassa din hudvård efter dina behov.`,
             onClick={() => setActiveTab('reviews')}
             className={`px-6 py-3 font-semibold transition-all relative ${
               activeTab === 'reviews'
-                ? 'text-green-600'
+                ? 'text-[#4A3428]'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
@@ -798,7 +798,7 @@ DUO-kit ger dig flexibiliteten att anpassa din hudvård efter dina behov.`,
             {activeTab === 'reviews' && (
               <motion.div
                 layoutId="activeTab"
-                className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-600"
+                className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#4A3428]"
               />
             )}
           </button>
@@ -825,7 +825,7 @@ DUO-kit ger dig flexibiliteten att anpassa din hudvård efter dina behov.`,
                     <ul className="space-y-2">
                       {product.benefits.map((benefit, index) => (
                         <li key={index} className="flex items-start gap-3">
-                          <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                          <Check className="w-5 h-5 text-[#4A3428] flex-shrink-0 mt-0.5" />
                           <span className="text-gray-700">{benefit}</span>
                         </li>
                       ))}
@@ -845,7 +845,7 @@ DUO-kit ger dig flexibiliteten att anpassa din hudvård efter dina behov.`,
               className="space-y-6"
             >
               {product.ingredients.map((ingredient, index) => (
-                <div key={index} className="bg-green-50 rounded-xl p-6">
+                <div key={index} className="bg-[#F5F3F0] rounded-xl p-6">
                   <div className="flex items-start gap-6">
                     {ingredient.image ? (
                       <div className="relative w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
@@ -857,7 +857,7 @@ DUO-kit ger dig flexibiliteten att anpassa din hudvård efter dina behov.`,
                         />
                       </div>
                     ) : (
-                      <div className="bg-green-600 text-white p-3 rounded-lg">
+                      <div className="bg-[#4A3428] text-white p-3 rounded-lg">
                         <Info className="w-6 h-6" />
                       </div>
                     )}
@@ -865,7 +865,7 @@ DUO-kit ger dig flexibiliteten att anpassa din hudvård efter dina behov.`,
                       <h4 className="text-lg font-semibold mb-2">
                         {ingredient.name}
                         {ingredient.concentration && (
-                          <span className="ml-2 text-sm font-normal text-green-600">
+                          <span className="ml-2 text-sm font-normal text-[#4A3428]">
                             ({ingredient.concentration})
                           </span>
                         )}
@@ -877,7 +877,7 @@ DUO-kit ger dig flexibiliteten att anpassa din hudvård efter dina behov.`,
                           <ul className="text-sm text-gray-600 space-y-1">
                             {ingredient.benefits.map((benefit, i) => (
                               <li key={i} className="flex items-center gap-2">
-                                <span className="w-1.5 h-1.5 bg-green-600 rounded-full"></span>
+                                <span className="w-1.5 h-1.5 bg-[#4A3428] rounded-full"></span>
                                 {benefit}
                               </li>
                             ))}
@@ -891,7 +891,7 @@ DUO-kit ger dig flexibiliteten att anpassa din hudvård efter dina behov.`,
               
               {/* Special mushroom showcase for Fungtastic */}
               {product.slug === 'fungtastic-svampextrakt' && (
-                <div className="mt-12 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-8">
+                <div className="mt-12 bg-gradient-to-r from-[#F5F3F0] to-[#F5F3F0] rounded-xl p-8">
                   <h3 className="text-2xl font-bold text-center mb-8 text-gray-900">
                     Fyra kraftfulla medicinska svampar
                   </h3>
@@ -932,7 +932,7 @@ DUO-kit ger dig flexibiliteten att anpassa din hudvård efter dina behov.`,
               exit={{ opacity: 0, y: -20 }}
               className="max-w-3xl"
             >
-              <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-8">
+              <div className="bg-gradient-to-r from-[#F5F3F0] to-[#F5F3F0] rounded-xl p-8">
                 <h3 className="text-xl font-semibold mb-4">Så här använder du {product.name}</h3>
                 <p className="text-gray-700 whitespace-pre-line">
                   {product.howToUse}

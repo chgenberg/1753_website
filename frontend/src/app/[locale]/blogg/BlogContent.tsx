@@ -61,7 +61,7 @@ export default function BlogContent({ posts }: BlogContentProps) {
   return (
     <main className="pt-20 pb-20">
       {/* Hero Section */}
-      <section className="relative py-20 bg-gradient-to-br from-green-50 to-blue-50">
+      <section className="relative py-20 bg-gradient-to-br from-[#F5F3F0] to-blue-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -193,7 +193,7 @@ export default function BlogContent({ posts }: BlogContentProps) {
                     <div className="aspect-w-16 aspect-h-9 bg-gray-200">
                       {/* Gradient placeholder with category-based colors */}
                       <div className={`w-full h-48 flex items-center justify-center ${
-                        post.category === 'Cannabinoider' ? 'bg-gradient-to-br from-green-500 to-emerald-600' :
+                        post.category === 'Cannabinoider' ? 'bg-gradient-to-br from-[#F5F3F0]0 to-[#6B5D54]' :
                         post.category === 'Endocannabinoidsystem' ? 'bg-gradient-to-br from-blue-500 to-indigo-600' :
                         post.category === 'Medicinska Svampar' ? 'bg-gradient-to-br from-amber-500 to-orange-600' :
                         post.category === 'Hudproblem' ? 'bg-gradient-to-br from-red-500 to-pink-600' :

@@ -117,7 +117,7 @@ export function ProductsSection() {
     return (
       <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-4 text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#064400] mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#4A3428] mx-auto"></div>
         </div>
       </section>
     )
@@ -213,7 +213,7 @@ export function ProductsSection() {
                             key={i} 
                             className={`w-4 h-4 ${
                               i < Math.round(product.rating!.average)
-                                ? 'fill-[#064400] text-[#064400]'
+                                ? 'fill-[#4A3428] text-[#4A3428]'
                                 : 'text-gray-300'
                             }`} 
                           />
@@ -239,7 +239,7 @@ export function ProductsSection() {
                       <motion.button
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.95 }}
-                        className="bg-[#064400] text-white p-2 rounded-full"
+                        className="bg-[#4A3428] text-white p-2 rounded-full"
                       >
                         <ArrowRight className="w-5 h-5" />
                       </motion.button>

@@ -396,8 +396,8 @@ export default function ReviewsPageContent() {
                     </p>
                     {review.isVerified && (
                       <div className="flex items-center gap-1 mt-1">
-                        <Check className="w-3 h-3 text-green-600" />
-                        <span className="text-xs text-green-600">
+                        <Check className="w-3 h-3 text-[#4A3428]" />
+                        <span className="text-xs text-[#4A3428]">
                           {t('verifiedPurchase')}
                         </span>
                       </div>

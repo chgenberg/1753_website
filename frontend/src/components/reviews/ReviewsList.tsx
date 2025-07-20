@@ -250,7 +250,7 @@ export const ReviewsList: React.FC<ReviewsListProps> = ({
             
             <div className="flex justify-center gap-3 mt-4">
               <motion.div 
-                className="flex items-center gap-2 bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-medium"
+                className="flex items-center gap-2 bg-[#E5DDD5] text-[#3A2A1E] px-4 py-2 rounded-full text-sm font-medium"
                 whileHover={{ scale: 1.05 }}
               >
                 <TrendingUp className="w-4 h-4" />
@@ -413,7 +413,7 @@ export const ReviewsList: React.FC<ReviewsListProps> = ({
                   {review.reviewer.name.charAt(0).toUpperCase()}
                 </div>
                 {review.isVerifiedPurchase && (
-                  <div className="absolute -bottom-1 -right-1 bg-green-500 rounded-full p-1 shadow-md">
+                  <div className="absolute -bottom-1 -right-1 bg-[#F5F3F0]0 rounded-full p-1 shadow-md">
                     <CheckCircle className="w-3 h-3 text-white" />
                   </div>
                 )}
@@ -422,7 +422,7 @@ export const ReviewsList: React.FC<ReviewsListProps> = ({
                 <div className="flex items-center gap-3">
                   <h4 className="font-semibold text-gray-900 text-lg">{review.reviewer.name}</h4>
                   {review.isVerifiedPurchase && (
-                    <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs font-medium">
+                    <span className="bg-[#E5DDD5] text-[#3A2A1E] px-2 py-0.5 rounded-full text-xs font-medium">
                       Verifierat köp
                     </span>
                   )}

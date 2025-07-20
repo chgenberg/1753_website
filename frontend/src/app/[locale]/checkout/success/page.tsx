@@ -51,8 +51,8 @@ export default function CheckoutSuccessPage() {
           >
             {/* Success Icon */}
             <div className="flex justify-center mb-6">
-              <div className="bg-green-100 rounded-full p-6">
-                <CheckCircle className="w-16 h-16 text-green-600" />
+              <div className="bg-[#E5DDD5] rounded-full p-6">
+                <CheckCircle className="w-16 h-16 text-[#4A3428]" />
               </div>
             </div>
 
@@ -76,8 +76,8 @@ export default function CheckoutSuccessPage() {
               <h2 className="text-xl font-semibold mb-6">Vad händer nu?</h2>
               <div className="space-y-6 text-left">
                 <div className="flex items-start">
-                  <div className="bg-green-100 rounded-full p-2 mr-4 flex-shrink-0">
-                    <Mail className="w-5 h-5 text-green-600" />
+                  <div className="bg-[#E5DDD5] rounded-full p-2 mr-4 flex-shrink-0">
+                    <Mail className="w-5 h-5 text-[#4A3428]" />
                   </div>
                   <div>
                     <h3 className="font-medium text-gray-900">Orderbekräftelse</h3>
@@ -88,8 +88,8 @@ export default function CheckoutSuccessPage() {
                 </div>
 
                 <div className="flex items-start">
-                  <div className="bg-green-100 rounded-full p-2 mr-4 flex-shrink-0">
-                    <Package className="w-5 h-5 text-green-600" />
+                  <div className="bg-[#E5DDD5] rounded-full p-2 mr-4 flex-shrink-0">
+                    <Package className="w-5 h-5 text-[#4A3428]" />
                   </div>
                   <div>
                     <h3 className="font-medium text-gray-900">Packning och leverans</h3>
@@ -100,8 +100,8 @@ export default function CheckoutSuccessPage() {
                 </div>
 
                 <div className="flex items-start">
-                  <div className="bg-green-100 rounded-full p-2 mr-4 flex-shrink-0">
-                    <CheckCircle className="w-5 h-5 text-green-600" />
+                  <div className="bg-[#E5DDD5] rounded-full p-2 mr-4 flex-shrink-0">
+                    <CheckCircle className="w-5 h-5 text-[#4A3428]" />
                   </div>
                   <div>
                     <h3 className="font-medium text-gray-900">Leverans</h3>
@@ -117,7 +117,7 @@ export default function CheckoutSuccessPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/products"
-                className="bg-green-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+                className="bg-[#4A3428] text-white px-8 py-3 rounded-lg font-medium hover:bg-[#3A2A1E] transition-colors flex items-center justify-center gap-2"
               >
                 Fortsätt handla
                 <ArrowRight className="w-5 h-5" />
@@ -135,11 +135,11 @@ export default function CheckoutSuccessPage() {
             <div className="mt-12 p-6 bg-gray-100 rounded-lg">
               <p className="text-sm text-gray-600">
                 Har du frågor om din beställning? Kontakta oss på{' '}
-                <a href="mailto:kundservice@1753skincare.com" className="text-green-600 hover:text-green-700 font-medium">
+                <a href="mailto:kundservice@1753skincare.com" className="text-[#4A3428] hover:text-[#3A2A1E] font-medium">
                   kundservice@1753skincare.com
                 </a>{' '}
                 eller ring{' '}
-                <a href="tel:0732305521" className="text-green-600 hover:text-green-700 font-medium">
+                <a href="tel:0732305521" className="text-[#4A3428] hover:text-[#3A2A1E] font-medium">
                   0732-305521
                 </a>
               </p>

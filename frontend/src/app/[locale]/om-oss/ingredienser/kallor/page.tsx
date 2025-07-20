@@ -279,7 +279,7 @@ const sourceCategories = [
   {
     title: "CBD & CBG",
     icon: <Leaf className="w-6 h-6" />,
-    color: "from-green-500 to-emerald-600",
+    color: "from-[#F5F3F0]0 to-[#6B5D54]",
     sources: cannabinoidSources,
     description: "Vetenskapliga studier om cannabinoider och hudvård"
   },

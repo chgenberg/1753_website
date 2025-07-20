@@ -227,9 +227,9 @@ export default function CBGPage() {
                       tillräckligt många endocannabinoider. Detta leder till negativa hudtillstånd och inflammationer.
                     </p>
                   </div>
-                  <div className="bg-green-50 border-l-4 border-green-400 p-6 rounded-r-lg">
-                    <h4 className="font-semibold text-green-800 mb-2">Lösningen: CBG</h4>
-                    <p className="text-green-700">
+                  <div className="bg-[#F5F3F0] border-l-4 border-[#8B7355] p-6 rounded-r-lg">
+                    <h4 className="font-semibold text-[#2A1A14] mb-2">Lösningen: CBG</h4>
+                    <p className="text-[#3A2A1E]">
                       CBG är en <strong>identisk kopia</strong> av de endocannabinoider som vår hud själv producerar. 
                       CBG kan fungera som "nycklar" för våra hudreceptorer när vi inte har tillräckligt med egna.
                     </p>
@@ -274,7 +274,7 @@ export default function CBGPage() {
                     CBG
                   </div>
                   <Zap className="w-8 h-8 text-yellow-500 mx-4" />
-                  <div className="w-20 h-20 bg-green-600 rounded-full flex items-center justify-center text-white font-bold text-xl ml-4">
+                  <div className="w-20 h-20 bg-[#4A3428] rounded-full flex items-center justify-center text-white font-bold text-xl ml-4">
                     CBD
                   </div>
                 </div>

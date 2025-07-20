@@ -36,7 +36,7 @@ export function LifestyleTab({ results }: LifestyleTabProps) {
       {/* Träning */}
       <div className="bg-white rounded-2xl p-8 shadow-lg border border-[#E5DDD5]">
         <div className="flex items-center mb-4">
-          <Activity className="w-6 h-6 text-green-600 mr-3" />
+          <Activity className="w-6 h-6 text-[#4A3428] mr-3" />
           <h3 className="text-2xl font-serif text-[#4A3428]">Fysisk Aktivitet</h3>
         </div>
         <p className="text-[#4A3428] mb-4">

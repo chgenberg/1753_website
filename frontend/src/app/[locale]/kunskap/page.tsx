@@ -209,9 +209,9 @@ export default function KunskapPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-green-50 rounded-xl p-6 border border-green-200"
+              className="bg-[#F5F3F0] rounded-xl p-6 border border-[#D5CCC4]"
             >
-              <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mb-4">
+              <div className="w-12 h-12 bg-[#F5F3F0]0 rounded-lg flex items-center justify-center mb-4">
                 <Users className="w-6 h-6 text-white" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">Nybörjare</h3>

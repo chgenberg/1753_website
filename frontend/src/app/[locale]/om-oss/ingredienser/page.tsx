@@ -309,7 +309,7 @@ export default function IngredientsPage() {
                     <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">
                       Kognition
                     </span>
-                    <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+                    <span className="px-3 py-1 bg-[#E5DDD5] text-[#2A1A14] rounded-full text-sm">
                       Fokus
                     </span>
                   </div>

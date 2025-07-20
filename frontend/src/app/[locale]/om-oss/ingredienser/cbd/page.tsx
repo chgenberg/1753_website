@@ -73,7 +73,7 @@ export default function CBDPage() {
       <Header />
       <main className="pt-20">
         {/* Hero Section */}
-        <section className="relative py-20 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
+        <section className="relative py-20 bg-gradient-to-br from-[#F5F3F0] via-[#F5F3F0] to-[#F5F3F0]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               <motion.div
@@ -261,7 +261,7 @@ export default function CBDPage() {
               
               {/* Decorative elements */}
               <div className="absolute -top-4 -right-4 w-20 h-20 bg-[#00937c]/20 rounded-full blur-xl"></div>
-              <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-green-400/20 rounded-full blur-xl"></div>
+              <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-[#8B7355]/20 rounded-full blur-xl"></div>
             </motion.div>
 
             <motion.div

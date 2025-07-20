@@ -325,7 +325,7 @@ export default function QuizPage() {
               {/* Trust Indicators */}
               <div className="flex items-center justify-center gap-6 text-white/60 text-xs mt-6">
                 <span className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                  <div className="w-2 h-2 bg-[#8B7355] rounded-full"></div>
                   100% Kostnadsfritt
                 </span>
                 <span className="flex items-center gap-1">

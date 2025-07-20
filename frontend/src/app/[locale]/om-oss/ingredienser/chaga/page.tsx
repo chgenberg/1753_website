@@ -238,9 +238,9 @@ export default function ChagaPage() {
                     <li>• Accelerera hudåldrande</li>
                   </ul>
                 </div>
-                <div className="bg-green-50 border-l-4 border-green-400 p-4 rounded-r-lg">
-                  <h4 className="font-semibold text-green-800 mb-2">Med Chaga SOD:</h4>
-                  <ul className="text-green-700 text-sm space-y-1">
+                <div className="bg-[#F5F3F0] border-l-4 border-[#8B7355] p-4 rounded-r-lg">
+                  <h4 className="font-semibold text-[#2A1A14] mb-2">Med Chaga SOD:</h4>
+                  <ul className="text-[#3A2A1E] text-sm space-y-1">
                     <li>• Skyddar kollagen och elastin</li>
                     <li>• Bevarar hudens fasthet</li>
                     <li>• Främjar ungdomlig hudton</li>

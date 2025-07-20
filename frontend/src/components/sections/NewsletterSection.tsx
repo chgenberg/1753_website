@@ -122,10 +122,10 @@ export default function NewsletterSection({
 
   if (variant === 'minimal') {
     return (
-      <div className={`bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-6 ${className}`}>
+      <div className={`bg-gradient-to-r from-[#F5F3F0] to-blue-50 rounded-2xl p-6 ${className}`}>
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mb-4">
-            <Mail className="w-6 h-6 text-green-600" />
+          <div className="inline-flex items-center justify-center w-12 h-12 bg-[#E5DDD5] rounded-full mb-4">
+            <Mail className="w-6 h-6 text-[#4A3428]" />
           </div>
           <h3 className="text-xl font-bold text-gray-900 mb-2">Få våra senaste nyheter</h3>
           <p className="text-gray-600">
@@ -139,8 +139,8 @@ export default function NewsletterSection({
             animate={{ opacity: 1, scale: 1 }}
             className="text-center py-8"
           >
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
-              <Check className="w-8 h-8 text-green-600" />
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-[#E5DDD5] rounded-full mb-4">
+              <Check className="w-8 h-8 text-[#4A3428]" />
             </div>
             <h4 className="text-lg font-semibold text-gray-900 mb-2">Tack!</h4>
             <p className="text-gray-600">Vi skickar snart vårt välkomstmail till dig.</p>
@@ -153,7 +153,7 @@ export default function NewsletterSection({
               value={formData.email}
               onChange={handleInputChange}
               placeholder="Din e-postadress"
-              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F5F3F0]0 focus:border-transparent"
               required
               disabled={isSubmitting}
             />
@@ -162,7 +162,7 @@ export default function NewsletterSection({
               disabled={isSubmitting}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-3 bg-[#4A3428] text-white rounded-lg font-semibold hover:bg-[#3A2A1E] transition-colors duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -209,7 +209,7 @@ export default function NewsletterSection({
               <span className="text-sm font-medium">Personliga tips</span>
             </div>
             <div className="flex items-center bg-white rounded-full px-4 py-2 shadow-sm">
-              <Sparkles className="w-5 h-5 text-green-500 mr-2" />
+              <Sparkles className="w-5 h-5 text-[#F5F3F0]0 mr-2" />
               <span className="text-sm font-medium">Exklusiva produkter</span>
             </div>
           </div>
@@ -221,15 +221,15 @@ export default function NewsletterSection({
             animate={{ opacity: 1, scale: 1 }}
             className="bg-white rounded-2xl shadow-xl p-8 text-center"
           >
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-6">
-              <Check className="w-10 h-10 text-green-600" />
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-[#E5DDD5] rounded-full mb-6">
+              <Check className="w-10 h-10 text-[#4A3428]" />
             </div>
             <h3 className="text-2xl font-bold text-gray-900 mb-4">Välkommen till familjen! 🎉</h3>
             <p className="text-gray-600 mb-6">
               Tack {formData.firstName || 'för din prenumeration'}! Vi skickar snart ditt välkomstmail med en exklusiv rabattkod.
             </p>
-            <div className="bg-green-50 rounded-xl p-4">
-              <p className="text-green-800 font-medium">
+            <div className="bg-[#F5F3F0] rounded-xl p-4">
+              <p className="text-[#2A1A14] font-medium">
                 Kolla din inkorg inom några minuter för din 20% välkomstrabatt!
               </p>
             </div>

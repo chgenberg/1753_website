@@ -194,8 +194,8 @@ export default function DashboardPage() {
               className="bg-white rounded-xl p-6 shadow-sm"
             >
               <div className="flex items-center">
-                <div className="p-3 bg-green-100 rounded-lg">
-                  <TrendingUp className="w-6 h-6 text-green-600" />
+                <div className="p-3 bg-[#E5DDD5] rounded-lg">
+                  <TrendingUp className="w-6 h-6 text-[#4A3428]" />
                 </div>
                 <div className="ml-4">
                   <p className="text-sm text-gray-500">Nuvarande Kondition</p>
@@ -348,7 +348,7 @@ export default function DashboardPage() {
                           <span className={`px-2 py-1 text-xs rounded-full ${
                             suggestion.urgency === 'high' ? 'bg-red-100 text-red-800' :
                             suggestion.urgency === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                            'bg-green-100 text-green-800'
+                            'bg-[#E5DDD5] text-[#2A1A14]'
                           }`}>
                             {suggestion.urgency}
                           </span>
@@ -380,7 +380,7 @@ export default function DashboardPage() {
                   </button>
                   
                   <button className="w-full flex items-center p-3 text-left hover:bg-gray-50 rounded-lg transition-colors">
-                    <BookOpen className="w-5 h-5 text-green-600 mr-3" />
+                    <BookOpen className="w-5 h-5 text-[#4A3428] mr-3" />
                     <span className="text-gray-900">Utforska kunskapscentral</span>
                   </button>
                   

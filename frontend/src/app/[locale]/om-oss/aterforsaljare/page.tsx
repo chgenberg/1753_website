@@ -544,7 +544,7 @@ export default function RetailersPage() {
       <Header />
       <main className="pt-20">
         {/* Hero Section */}
-        <section className="relative bg-gradient-to-br from-green-50 to-emerald-50 py-20">
+        <section className="relative bg-gradient-to-br from-[#F5F3F0] to-[#F5F3F0] py-20">
           <div className="container mx-auto px-4 text-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -566,7 +566,7 @@ export default function RetailersPage() {
                   placeholder="Sök stad eller återförsäljare..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F5F3F0]0"
                 />
               </div>
             </motion.div>
@@ -593,7 +593,7 @@ export default function RetailersPage() {
                     {/* City Header */}
                     <div className="border-b border-gray-200 pb-4 mb-8">
                       <h2 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-                        <MapPin className="w-8 h-8 text-green-600" />
+                        <MapPin className="w-8 h-8 text-[#4A3428]" />
                         {city}
                         <span className="text-lg font-normal text-gray-500">
                           ({cityRetailers.length} {cityRetailers.length === 1 ? 'återförsäljare' : 'återförsäljare'})
@@ -620,7 +620,7 @@ export default function RetailersPage() {
 
                             {/* Address */}
                             <div className="flex items-start gap-2 text-gray-600">
-                              <MapPin className="w-4 h-4 mt-1 text-green-600 flex-shrink-0" />
+                              <MapPin className="w-4 h-4 mt-1 text-[#4A3428] flex-shrink-0" />
                               <div className="text-sm">
                                 <p>{retailer.address}</p>
                                 {retailer.postalCode && (
@@ -634,7 +634,7 @@ export default function RetailersPage() {
                               {retailer.phone && (
                                 <a
                                   href={`tel:${retailer.phone}`}
-                                  className="flex items-center gap-2 text-sm text-gray-600 hover:text-green-600 transition-colors"
+                                  className="flex items-center gap-2 text-sm text-gray-600 hover:text-[#4A3428] transition-colors"
                                 >
                                   <Phone className="w-4 h-4" />
                                   {retailer.phone}
@@ -646,7 +646,7 @@ export default function RetailersPage() {
                                   href={formatWebsite(retailer.website)!}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="flex items-center gap-2 text-sm text-green-600 hover:text-green-700 transition-colors"
+                                  className="flex items-center gap-2 text-sm text-[#4A3428] hover:text-[#3A2A1E] transition-colors"
                                 >
                                   <Globe className="w-4 h-4" />
                                   Besök webbplats
@@ -665,7 +665,7 @@ export default function RetailersPage() {
         </section>
 
         {/* Contact Section */}
-        <section className="bg-gradient-to-br from-green-50 to-emerald-50 py-16">
+        <section className="bg-gradient-to-br from-[#F5F3F0] to-[#F5F3F0] py-16">
           <div className="container mx-auto px-4 text-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -682,7 +682,7 @@ export default function RetailersPage() {
               </p>
               <a
                 href="/kontakt"
-                className="inline-flex items-center px-8 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors"
+                className="inline-flex items-center px-8 py-3 bg-[#4A3428] text-white font-semibold rounded-lg hover:bg-[#3A2A1E] transition-colors"
               >
                 Kontakta oss
               </a>

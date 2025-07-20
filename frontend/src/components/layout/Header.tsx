@@ -178,7 +178,7 @@ export function Header() {
         >
           <ShoppingBag className="w-5 h-5" />
           {cartCount > 0 && (
-            <span className="absolute -top-1 -right-1 bg-[#064400] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
+            <span className="absolute -top-1 -right-1 bg-[#4A3428] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
               {cartCount}
             </span>
           )}
@@ -263,7 +263,7 @@ export function Header() {
                       href={item.href}
                       className={`flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 ${
                         pathname === item.href
-                          ? 'bg-[#064400] text-white'
+                          ? 'bg-[#4A3428] text-white'
                           : isScrolled 
                             ? 'text-gray-600 hover:text-black hover:bg-gray-200'
                             : 'text-white hover:text-white hover:bg-white/20'

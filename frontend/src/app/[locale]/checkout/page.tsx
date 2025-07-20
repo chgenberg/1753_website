@@ -170,20 +170,20 @@ export default function CheckoutPage() {
           <div className="flex items-center justify-center mb-8">
             <div className="flex items-center">
               <div className={`flex items-center justify-center w-10 h-10 rounded-full ${
-                currentStep >= 1 ? 'bg-green-600 text-white' : 'bg-gray-300 text-gray-600'
+                currentStep >= 1 ? 'bg-[#4A3428] text-white' : 'bg-gray-300 text-gray-600'
               }`}>
                 {currentStep > 1 ? <Check className="w-5 h-5" /> : '1'}
               </div>
               <span className="ml-2 text-sm font-medium">Information</span>
             </div>
             <div className="w-24 h-1 mx-4 bg-gray-300">
-              <div className={`h-full bg-green-600 transition-all duration-300 ${
+              <div className={`h-full bg-[#4A3428] transition-all duration-300 ${
                 currentStep >= 2 ? 'w-full' : 'w-0'
               }`} />
             </div>
             <div className="flex items-center">
               <div className={`flex items-center justify-center w-10 h-10 rounded-full ${
-                currentStep >= 2 ? 'bg-green-600 text-white' : 'bg-gray-300 text-gray-600'
+                currentStep >= 2 ? 'bg-[#4A3428] text-white' : 'bg-gray-300 text-gray-600'
               }`}>
                 2
               </div>
@@ -211,7 +211,7 @@ export default function CheckoutPage() {
                           value={form.email}
                           onChange={handleInputChange}
                           placeholder="E-postadress *"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F5F3F0]0"
                           required
                         />
                         <div className="flex items-center">
@@ -241,7 +241,7 @@ export default function CheckoutPage() {
                             value={form.firstName}
                             onChange={handleInputChange}
                             placeholder="Förnamn *"
-                            className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                            className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F5F3F0]0"
                             required
                           />
                           <input
@@ -250,7 +250,7 @@ export default function CheckoutPage() {
                             value={form.lastName}
                             onChange={handleInputChange}
                             placeholder="Efternamn *"
-                            className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                            className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F5F3F0]0"
                             required
                           />
                         </div>
@@ -260,7 +260,7 @@ export default function CheckoutPage() {
                           value={form.phone}
                           onChange={handleInputChange}
                           placeholder="Telefonnummer *"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F5F3F0]0"
                           required
                         />
                         <input
@@ -269,7 +269,7 @@ export default function CheckoutPage() {
                           value={form.address}
                           onChange={handleInputChange}
                           placeholder="Gatuadress *"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F5F3F0]0"
                           required
                         />
                         <input
@@ -278,7 +278,7 @@ export default function CheckoutPage() {
                           value={form.apartment}
                           onChange={handleInputChange}
                           placeholder="Lägenhet, svit, etc. (valfritt)"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F5F3F0]0"
                         />
                         <div className="grid grid-cols-2 gap-4">
                           <input
@@ -287,7 +287,7 @@ export default function CheckoutPage() {
                             value={form.postalCode}
                             onChange={handleInputChange}
                             placeholder="Postnummer *"
-                            className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                            className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F5F3F0]0"
                             required
                           />
                           <input
@@ -296,7 +296,7 @@ export default function CheckoutPage() {
                             value={form.city}
                             onChange={handleInputChange}
                             placeholder="Stad *"
-                            className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                            className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F5F3F0]0"
                             required
                           />
                         </div>
@@ -304,7 +304,7 @@ export default function CheckoutPage() {
                           name="country"
                           value={form.country}
                           onChange={handleInputChange}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F5F3F0]0"
                         >
                           <option value="SE">Sverige</option>
                           <option value="NO">Norge</option>
@@ -316,7 +316,7 @@ export default function CheckoutPage() {
 
                     <button
                       type="submit"
-                      className="w-full bg-green-600 text-white py-4 rounded-lg font-medium hover:bg-green-700 transition-colors"
+                      className="w-full bg-[#4A3428] text-white py-4 rounded-lg font-medium hover:bg-[#3A2A1E] transition-colors"
                     >
                       Fortsätt till betalning
                     </button>
@@ -331,7 +331,7 @@ export default function CheckoutPage() {
                     <div className="bg-white rounded-lg shadow-sm p-6">
                       <h2 className="text-xl font-semibold mb-4">Betalningsmetod</h2>
                       <div className="space-y-4">
-                        <label className="flex items-center p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-green-500 transition-colors">
+                        <label className="flex items-center p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-[#F5F3F0]0 transition-colors">
                           <input
                             type="radio"
                             name="paymentMethod"
@@ -347,7 +347,7 @@ export default function CheckoutPage() {
                           </div>
                         </label>
                         
-                        <label className="flex items-center p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-green-500 transition-colors">
+                        <label className="flex items-center p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-[#F5F3F0]0 transition-colors">
                           <input
                             type="radio"
                             name="paymentMethod"
@@ -356,7 +356,7 @@ export default function CheckoutPage() {
                             onChange={handleInputChange}
                             className="mr-3"
                           />
-                          <div className="w-6 h-6 mr-3 bg-green-600 rounded-full flex items-center justify-center text-white font-bold text-xs">
+                          <div className="w-6 h-6 mr-3 bg-[#4A3428] rounded-full flex items-center justify-center text-white font-bold text-xs">
                             S
                           </div>
                           <div className="flex-1">
@@ -392,7 +392,7 @@ export default function CheckoutPage() {
                       <button
                         type="submit"
                         disabled={isProcessing}
-                        className="flex-1 bg-green-600 text-white py-4 rounded-lg font-medium hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        className="flex-1 bg-[#4A3428] text-white py-4 rounded-lg font-medium hover:bg-[#3A2A1E] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                       >
                         {isProcessing ? (
                           <>

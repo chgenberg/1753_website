@@ -62,7 +62,7 @@ export default function PrivacyPolicyPage() {
                 className="bg-white rounded-xl p-8 shadow-lg mb-8"
               >
                 <div className="flex items-center mb-4">
-                  <Eye className="w-6 h-6 text-green-600 mr-3" />
+                  <Eye className="w-6 h-6 text-[#4A3428] mr-3" />
                   <h2 className="text-2xl font-semibold text-gray-900">Hur vi använder din information</h2>
                 </div>
                 <p className="text-gray-700 mb-4">

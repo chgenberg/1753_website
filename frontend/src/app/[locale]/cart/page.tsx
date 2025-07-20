@@ -60,7 +60,7 @@ export default function CartPage() {
             </p>
             <Link
               href="/products"
-              className="inline-flex items-center gap-2 bg-green-600 text-white px-8 py-4 rounded-lg hover:bg-green-700 transition-colors"
+              className="inline-flex items-center gap-2 bg-[#4A3428] text-white px-8 py-4 rounded-lg hover:bg-[#3A2A1E] transition-colors"
             >
               <ArrowLeft className="h-5 w-5" />
               Fortsätt handla
@@ -110,7 +110,7 @@ export default function CartPage() {
                         <div>
                           <Link
                             href={`/products/${item.product.slug}`}
-                            className="text-lg font-semibold text-gray-900 hover:text-green-600 transition-colors"
+                            className="text-lg font-semibold text-gray-900 hover:text-[#4A3428] transition-colors"
                           >
                             {item.product.name}
                           </Link>
@@ -185,7 +185,7 @@ export default function CartPage() {
                       value={discountCode}
                       onChange={(e) => setDiscountCode(e.target.value)}
                       placeholder="Ange kod"
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F5F3F0]0"
                     />
                     <button
                       onClick={applyDiscountCode}
@@ -204,7 +204,7 @@ export default function CartPage() {
                   </div>
                   
                   {appliedDiscount > 0 && (
-                    <div className="flex justify-between text-green-600">
+                    <div className="flex justify-between text-[#4A3428]">
                       <span className="flex items-center gap-1">
                         <Tag className="h-4 w-4" />
                         Rabatt
@@ -230,7 +230,7 @@ export default function CartPage() {
                 {/* Checkout Button */}
                 <Link
                   href="/checkout"
-                  className="w-full bg-green-600 text-white py-3 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+                  className="w-full bg-[#4A3428] text-white py-3 rounded-lg font-medium hover:bg-[#3A2A1E] transition-colors flex items-center justify-center gap-2"
                 >
                   Gå till kassan
                   <ArrowRight className="h-5 w-5" />
@@ -239,15 +239,15 @@ export default function CartPage() {
                 {/* Trust Badges */}
                 <div className="mt-6 pt-6 border-t space-y-3">
                   <div className="flex items-center gap-3 text-sm text-gray-600">
-                    <Shield className="h-5 w-5 text-green-600" />
+                    <Shield className="h-5 w-5 text-[#4A3428]" />
                     <span>Säker betalning med Viva Wallet</span>
                   </div>
                   <div className="flex items-center gap-3 text-sm text-gray-600">
-                    <Truck className="h-5 w-5 text-green-600" />
+                    <Truck className="h-5 w-5 text-[#4A3428]" />
                     <span>Fri frakt över 500 kr</span>
                   </div>
                   <div className="flex items-center gap-3 text-sm text-gray-600">
-                    <CreditCard className="h-5 w-5 text-green-600" />
+                    <CreditCard className="h-5 w-5 text-[#4A3428]" />
                     <span>Betala med kort eller Swish</span>
                   </div>
                 </div>
@@ -256,7 +256,7 @@ export default function CartPage() {
                 <div className="mt-6 pt-6 border-t">
                   <Link
                     href="/products"
-                    className="text-green-600 hover:text-green-700 font-medium flex items-center gap-2"
+                    className="text-[#4A3428] hover:text-[#3A2A1E] font-medium flex items-center gap-2"
                   >
                     <ArrowLeft className="h-4 w-4" />
                     Fortsätt handla
