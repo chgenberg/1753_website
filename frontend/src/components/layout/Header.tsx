@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useCart } from '@/contexts/CartContext'
+import { useAuth } from '@/contexts/AuthContext'
 import { 
   Home, 
   Info, 
@@ -16,7 +17,9 @@ import {
   Leaf,
   HelpCircle,
   Store,
-  BookOpen
+  BookOpen,
+  User,
+  LogOut
 } from 'lucide-react'
 
 interface MenuItem {
@@ -33,12 +36,14 @@ interface MenuItem {
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [hoveredItem, setHoveredItem] = useState<string | null>(null)
+  const [showAccountMenu, setShowAccountMenu] = useState(false)
   const pathname = usePathname()
   const { cartCount, openCart } = useCart()
+  const { user, logout } = useAuth()
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 300)
+      setIsScrolled(window.scrollY > 100)
     }
 
     window.addEventListener('scroll', handleScroll)
@@ -85,6 +90,101 @@ export function Header() {
 
   return (
     <>
+      {/* Top Bar with Account and Cart */}
+      <div className={`fixed top-0 right-0 z-[70] flex items-center gap-4 p-4 transition-all duration-300 ${
+        isScrolled ? 'bg-white/95 backdrop-blur-md shadow-md' : 'bg-black/10 backdrop-blur-sm'
+      }`}>
+        {/* Account Icon */}
+        <div className="relative">
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowAccountMenu(!showAccountMenu)}
+            className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 ${
+              isScrolled 
+                ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' 
+                : 'bg-white/20 text-white hover:bg-white/30'
+            }`}
+          >
+            <User className="w-5 h-5" />
+          </motion.button>
+
+          {/* Account Dropdown */}
+          <AnimatePresence>
+            {showAccountMenu && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden"
+              >
+                {user ? (
+                  <>
+                    <div className="px-4 py-3 border-b border-gray-200">
+                      <p className="text-sm font-medium text-gray-900">{user.firstName}</p>
+                      <p className="text-xs text-gray-500">{user.email}</p>
+                    </div>
+                    <Link
+                      href="/dashboard"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={() => setShowAccountMenu(false)}
+                    >
+                      Min profil
+                    </Link>
+                    <button
+                      onClick={() => {
+                        logout()
+                        setShowAccountMenu(false)
+                      }}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Logga ut
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href="/auth/login"
+                      className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={() => setShowAccountMenu(false)}
+                    >
+                      Logga in
+                    </Link>
+                    <Link
+                      href="/auth/register"
+                      className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 border-t border-gray-200"
+                      onClick={() => setShowAccountMenu(false)}
+                    >
+                      Skapa konto
+                    </Link>
+                  </>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Cart Icon */}
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={openCart}
+          className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 ${
+            isScrolled 
+              ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' 
+              : 'bg-white/20 text-white hover:bg-white/30'
+          }`}
+        >
+          <ShoppingBag className="w-5 h-5" />
+          {cartCount > 0 && (
+            <span className="absolute -top-1 -right-1 bg-[#064400] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
+              {cartCount}
+            </span>
+          )}
+        </motion.button>
+      </div>
+
       {/* Scrolling Banner */}
       <div className="fixed top-0 left-0 right-0 z-[60] h-10 overflow-hidden bg-black">
         <div className="absolute inset-0">
@@ -109,9 +209,9 @@ export function Header() {
         </div>
       </div>
 
-      {/* Vertical Navigation on Left - Always visible with glassmorphism */}
+      {/* Vertical Navigation on Left - More opaque */}
       <nav className={`fixed left-0 top-0 h-full z-50 transition-all duration-500 pt-10 ${
-        isScrolled ? 'bg-white/90 backdrop-blur-md shadow-lg' : 'bg-black/20 backdrop-blur-sm'
+        isScrolled ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-black/40 backdrop-blur-md'
       }`}>
         <div className="flex flex-col h-full py-6 px-4">
           {/* Logo integrated in navigation */}
@@ -122,7 +222,7 @@ export function Header() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
                 whileHover={{ scale: 1.05 }}
-                className="bg-white rounded-full p-3 hover:bg-gray-100 transition-all duration-300"
+                className="bg-white rounded-full p-3 hover:bg-gray-100 transition-all duration-300 shadow-md"
               >
                 <Image
                   src="/1753.png"
@@ -153,7 +253,7 @@ export function Header() {
                       className={`flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 cursor-pointer ${
                         isScrolled 
                           ? 'text-gray-600 hover:text-black hover:bg-gray-200'
-                          : 'text-white/80 hover:text-black hover:bg-white'
+                          : 'text-white hover:text-white hover:bg-white/20'
                       }`}
                     >
                       {item.icon}
@@ -166,7 +266,7 @@ export function Header() {
                           ? 'bg-[#064400] text-white'
                           : isScrolled 
                             ? 'text-gray-600 hover:text-black hover:bg-gray-200'
-                            : 'text-white/80 hover:text-black hover:bg-white'
+                            : 'text-white hover:text-white hover:bg-white/20'
                       }`}
                     >
                       {item.icon}
@@ -174,7 +274,7 @@ export function Header() {
                   )}
                 </motion.div>
 
-                {/* Glassmorphism tooltip */}
+                {/* Tooltip */}
                 <AnimatePresence>
                   {hoveredItem === item.name && !item.children && (
                     <motion.div
@@ -185,8 +285,8 @@ export function Header() {
                     >
                       <div className={`backdrop-blur-md px-4 py-2 rounded-lg shadow-lg border ${
                         isScrolled 
-                          ? 'bg-white/90 border-gray-200/50 text-black' 
-                          : 'bg-white/90 border-white/20 text-black'
+                          ? 'bg-white/95 border-gray-200 text-black' 
+                          : 'bg-black/80 border-white/20 text-white'
                       }`}>
                         <span className="text-sm font-medium">{item.name}</span>
                       </div>
@@ -206,14 +306,14 @@ export function Header() {
                     >
                       <div className={`backdrop-blur-md rounded-lg shadow-xl border py-2 min-w-[200px] ${
                         isScrolled 
-                          ? 'bg-white/95 border-gray-200/50' 
-                          : 'bg-white/90 border-white/20'
+                          ? 'bg-white/95 border-gray-200' 
+                          : 'bg-black/90 border-white/20'
                       }`}>
                         <div className={`px-4 py-2 mb-2 border-b ${
-                          isScrolled ? 'border-gray-200/50' : 'border-gray-200/30'
+                          isScrolled ? 'border-gray-200' : 'border-white/20'
                         }`}>
                           <span className={`text-sm font-semibold ${
-                            isScrolled ? 'text-black' : 'text-black'
+                            isScrolled ? 'text-black' : 'text-white'
                           }`}>{item.name}</span>
                         </div>
                         {item.children.map((child) => (
@@ -223,7 +323,7 @@ export function Header() {
                             className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-all duration-200 ${
                               isScrolled 
                                 ? 'text-gray-600 hover:text-black hover:bg-gray-100' 
-                                : 'text-gray-700 hover:text-black hover:bg-gray-100'
+                                : 'text-gray-300 hover:text-white hover:bg-white/10'
                             }`}
                           >
                             {child.icon}
@@ -236,30 +336,6 @@ export function Header() {
                 </AnimatePresence>
               </div>
             ))}
-          </div>
-
-          {/* Cart Icon at Bottom */}
-          <div className="mt-auto flex justify-center">
-            <motion.div
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <button
-                onClick={openCart}
-                className={`relative flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 ${
-                  isScrolled 
-                    ? 'text-gray-600 hover:text-black hover:bg-gray-200'
-                    : 'text-white/80 hover:text-black hover:bg-white'
-                }`}
-              >
-                <ShoppingBag className="w-5 h-5" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-[#064400] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                    {cartCount}
-                  </span>
-                )}
-              </button>
-            </motion.div>
           </div>
         </div>
       </nav>
