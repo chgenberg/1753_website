@@ -82,330 +82,69 @@ export default function ProductPage() {
   }, [params.slug])
 
   const fetchProduct = async () => {
-    // Mock product data - replace with API call later
-    const mockProducts = [
-      {
-        id: '1',
-        name: 'The ONE Facial Oil',
-        slug: 'the-one-facial-oil',
-        description: 'Vår populäraste ansiktsolja med CBD och CBG för alla hudtyper',
-        longDescription: `The ONE Facial Oil är vår mest populära ansiktsolja, utvecklad för att passa alla hudtyper. Med en kraftfull kombination av CBD och CBG ger denna olja din hud den balans och näring den behöver.
-
-Denna unika formula innehåller:
-• 500mg CBD för anti-inflammatorisk effekt
-• 200mg CBG för antibakteriella egenskaper  
-• Jojoba-olja för djup återfuktning
-• MCT-kokosolja som bärarolja
-
-The ONE har hjälpt tusentals kunder att uppnå en friskare, mer balanserad hud. Perfekt för daglig användning, morgon och kväll.`,
-        price: 649,
-        images: [
-          { url: '/images/products/TheONE.png', alt: 'THE ONE Ansiktsolja', position: 0 }
-        ],
-        category: { name: 'Ansiktsolja', slug: 'ansiktsolja' },
-        tags: ['CBD', 'CBG', 'Ansiktsolja'],
-        ingredients: [
-          {
-            name: 'CBD (Cannabidiol)',
-            description: 'Kraftfull anti-inflammatorisk ingrediens som lugnar huden',
-            benefits: ['Minskar inflammationer', 'Lugnar irriterad hud', 'Balanserar sebumproduktion'],
-            concentration: '500mg'
-          },
-          {
-            name: 'CBG (Cannabigerol)', 
-            description: 'Antibakteriell cannabinoid som förebygger orenheter',
-            benefits: ['Antibakteriell effekt', 'Antioxidant', 'Stödjer hudens naturliga skydd'],
-            concentration: '200mg'
-          },
-          {
-            name: 'Jojoba-olja',
-            description: 'Naturlig olja som efterliknar hudens egen sebum',
-            benefits: ['Djup återfuktning', 'Icke-komedogen', 'Balanserar huden']
+    setLoading(true)
+    try {
+      // Fetch product from API
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002'}/api/products`)
+      const data = await response.json()
+      
+      if (data.success) {
+        // Find product by slug
+        const foundProduct = data.data.find((p: any) => p.slug === params.slug)
+        
+        if (foundProduct) {
+          // Transform API product to match our interface
+          const transformedProduct: Product = {
+            id: foundProduct.id,
+            name: foundProduct.name,
+            slug: foundProduct.slug,
+            description: foundProduct.description || '',
+            longDescription: foundProduct.description || 'En fantastisk produkt från 1753 Skincare.',
+            price: foundProduct.price,
+            compareAtPrice: foundProduct.compareAtPrice,
+            images: foundProduct.images?.map((img: string, index: number) => ({
+              url: img,
+              alt: `${foundProduct.name} bild ${index + 1}`,
+              position: index
+            })) || [{ url: '/images/products/default.png', alt: foundProduct.name, position: 0 }],
+            category: { name: foundProduct.category || 'Hudvård', slug: foundProduct.category?.toLowerCase() || 'hudvard' },
+            tags: foundProduct.tags || [],
+            ingredients: foundProduct.keyIngredients?.map((ing: string) => ({
+              name: ing,
+              description: `${ing} är en kraftfull ingrediens för huden.`,
+              benefits: ['Närande', 'Återfuktande', 'Lugnande'],
+              concentration: '2-5%'
+            })) || [],
+            skinTypes: foundProduct.skinTypes || ['normal', 'dry', 'oily', 'combination', 'sensitive'],
+            benefits: foundProduct.skinConcerns?.map((c: string) => `Hjälper mot ${c.toLowerCase()}`) || [
+              'Ger djup återfuktning',
+              'Stärker hudbarriären', 
+              'Ger naturlig lyster'
+            ],
+            howToUse: foundProduct.howToUse || 'Applicera på ren hud morgon och kväll. Massera försiktigt tills produkten absorberats.',
+            featured: foundProduct.isFeatured || false,
+            bestseller: foundProduct.tags?.includes('bestseller') || false,
+            newProduct: foundProduct.tags?.includes('new') || false,
+            seo: {
+              title: foundProduct.metaTitle || foundProduct.name,
+              description: foundProduct.metaDescription || foundProduct.description || '',
+              keywords: foundProduct.seoKeywords || []
+            }
           }
-        ],
-        skinTypes: ['normal', 'dry', 'oily', 'combination', 'sensitive'],
-        benefits: [
-          'Minskar inflammationer och rodnad',
-          'Balanserar hudens sebumproduktion', 
-          'Återfuktar utan att täppa till porer',
-          'Lugnar irriterad och känslig hud',
-          'Förebygger orenheter och finnar'
-        ],
-        howToUse: 'Applicera 2-3 droppar på ren hud, morgon och kväll. Massera försiktigt tills oljan absorberats helt.',
-        featured: true,
-        bestseller: true,
-        newProduct: false,
-        seo: {
-          title: 'THE ONE - Ansiktsolja med CBD & CBG',
-          description: 'Vår populäraste ansiktsolja med CBD och CBG för alla hudtyper',
-          keywords: ['cbd ansiktsolja', 'cbg hudvård', 'naturlig ansiktsolja']
-        }
-      },
-      {
-        id: '2',
-        name: 'Au Naturel Makeup Remover',
-        slug: 'au-naturel-makeup-remover',
-        description: 'Mild makeupborttagare för känslig hud med naturliga ingredienser',
-        longDescription: `Au Naturel Makeup Remover är speciellt utvecklad för känslig hud som behöver extra omtanke. Denna milda formula tar effektivt bort makeup utan att irritera huden.
-
-Perfekt för dig som har:
-• Känslig hud som reagerar på starka ingredienser
-• Behov av skonsam men effektiv rengöring
-• Önskan om naturlig makeupborttagning
-
-Med sin milda sammansättning är Au Naturel idealisk för daglig användning, även på den mest känsliga huden.`,
-        price: 399,
-        images: [
-          { url: '/images/products/Naturel.png', alt: 'NATUREL Ansiktsolja', position: 0 }
-        ],
-        category: { name: 'Ansiktsolja', slug: 'ansiktsolja' },
-        tags: ['CBD', 'Känslig hud', 'Naturlig'],
-        ingredients: [
-          {
-            name: 'CBD (Cannabidiol)',
-            description: 'Mild anti-inflammatorisk ingrediens',
-            benefits: ['Lugnar känslig hud', 'Minskar rodnad', 'Stärker hudbarriären'],
-            concentration: '300mg'
-          },
-          {
-            name: 'Kamomillolja',
-            description: 'Traditionell lugnande ingrediens',
-            benefits: ['Anti-inflammatorisk', 'Lugnar irritation', 'Mjukgör huden']
-          }
-        ],
-        skinTypes: ['sensitive'],
-        benefits: [
-          'Extra mild för känslig hud',
-          'Minskar rodnad och irritation',
-          'Stärker hudens naturliga barriär',
-          'Lugnar och mjukgör huden'
-        ],
-        howToUse: 'Applicera 2-3 droppar på ren hud. Perfekt för känslig hud, morgon och kväll.',
-        featured: true,
-        bestseller: false,
-        newProduct: false,
-        seo: {
-          title: 'NATUREL - Mild ansiktsolja för känslig hud',
-          description: 'Mild ansiktsolja med CBD för känslig hud',
-          keywords: ['känslig hud', 'mild ansiktsolja', 'cbd känslig hud']
-        }
-      },
-      {
-        id: '3',
-        name: 'TA-DA Serum',
-        slug: 'ta-da-serum',
-        description: 'Kraftfullt serum för problematisk hud',
-        longDescription: `TA-DA Serum är utvecklat för dig som kämpar med problematisk hud och behöver extra kraft för att bekämpa orenheter och inflammationer.
-
-Denna kraftfulla formula innehåller:
-• Hög koncentration CBD för anti-inflammatorisk effekt
-• CBG för antibakteriell verkan
-• Tea Tree olja för djuprengöring
-• Salicylsyra för pordjuprengöring
-
-TA-DA hjälper dig att ta kontroll över din hud och säga "TA-DA!" till en klarare, friskare hy.`,
-        price: 699,
-        images: [
-          { url: '/images/products/TA-DA.png', alt: 'TA-DA Ansiktsolja', position: 0 }
-        ],
-        category: { name: 'Ansiktsolja', slug: 'ansiktsolja' },
-        tags: ['CBD', 'CBG', 'Problematisk hud'],
-        ingredients: [
-          {
-            name: 'CBD (Cannabidiol)',
-            description: 'Kraftfull anti-inflammatorisk ingrediens',
-            benefits: ['Minskar inflammationer', 'Lugnar irriterad hud'],
-            concentration: '600mg'
-          },
-          {
-            name: 'Tea Tree olja',
-            description: 'Naturlig antibakteriell ingrediens',
-            benefits: ['Djuprengöring', 'Antibakteriell effekt', 'Minskar orenheter']
-          }
-        ],
-        skinTypes: ['oily', 'acne', 'combination'],
-        benefits: [
-          'Bekämpar orenheter effektivt',
-          'Minskar inflammationer',
-          'Djuprengör porerna',
-          'Förebygger nya utbrott'
-        ],
-        howToUse: 'Applicera på ren hud, främst på kvällen. Börja med 2-3 gånger per vecka.',
-        featured: false,
-        bestseller: false,
-        newProduct: true,
-        seo: {
-          title: 'TA-DA - Ansiktsolja för problematisk hud',
-          description: 'Kraftfull ansiktsolja för problematisk hud med CBD och CBG',
-          keywords: ['problematisk hud', 'akne', 'cbd ansiktsolja']
-        }
-      },
-      {
-        id: '4',
-        name: 'Fungtastic Mushroom Extract',
-        slug: 'fungtastic-mushroom-extract',
-        description: 'Kraftfulla medicinska svampar för hud och hälsa',
-        longDescription: `Fungtastic Mushroom Extract innehåller fyra av världens mest kraftfulla medicinska svampar för optimal hud- och kroppshälsa.
-
-Denna unika blandning innehåller:
-• Chaga - "Skogens diamant" med antioxidanter
-• Reishi - "Odödlighetens svamp" för stress och sömn
-• Lion's Mane - "Den smarta svampen" för hjärnhälsa
-• Cordyceps - "Energisvampen" för uthållighet
-
-Fungtastic stödjer din hud inifrån och ut genom att stärka immunsystemet och minska inflammation.`,
-        price: 399,
-        images: [
-          { url: '/images/products/Fungtastic.png', alt: 'FUNGTASTIC Svampextrakt', position: 0 }
-        ],
-        category: { name: 'Kosttillskott', slug: 'kosttillskott' },
-        tags: ['Svamp', 'Kosttillskott', 'Antioxidanter'],
-        ingredients: [
-          {
-            name: 'Chaga',
-            description: '"Skogens diamant" - En kraftfull antioxidant från björkträd som stärker immunförsvaret',
-            benefits: ['Stärker immunförsvaret', 'Minskar inflammation', 'Skyddar mot fria radikaler', 'Förbättrar hudens utseende'],
-            image: '/Mushrooms/chaga.png'
-          },
-          {
-            name: 'Reishi',
-            description: '"Odödlighetens svamp" - Adaptogen som balanserar stress och förbättrar sömn',
-            benefits: ['Minskar stress', 'Förbättrar sömn', 'Stärker immunsystemet', 'Balanserar cortisol'],
-            image: '/Mushrooms/reiki.png'
-          },
-          {
-            name: 'Lion\'s Mane',
-            description: '"Den smarta svampen" - Stödjer kognitiv funktion och hjärnhälsa',
-            benefits: ['Förbättrar fokus', 'Stödjer neuroplasticitet', 'Minskar stress', 'Hjärn-hud kopplingen'],
-            image: '/Mushrooms/lionsmane.png'
-          },
-          {
-            name: 'Cordyceps',
-            description: '"Energisvampen" - Ökar uthållighet och syreupptagning i kroppen',
-            benefits: ['Ökar energi', 'Förbättrar uthållighet', 'Stärker immunförsvaret', 'Förbättrar cirkulationen'],
-            image: '/Mushrooms/cordyceps.png'
-          }
-        ],
-        skinTypes: ['normal', 'dry', 'oily', 'combination', 'sensitive'],
-        benefits: [
-          'Stärker immunförsvaret',
-          'Minskar inflammation i kroppen',
-          'Förbättrar hudens utseende inifrån',
-          'Ökar energi och uthållighet'
-        ],
-        howToUse: 'Ta 2 kapslar dagligen med mat. Bäst resultat efter 4-6 veckors användning.',
-        featured: true,
-        bestseller: false,
-        newProduct: false,
-        seo: {
-          title: 'FUNGTASTIC - Medicinska svampar för hud och hälsa',
-          description: 'Kraftfulla medicinska svampar för optimal hud- och kroppshälsa',
-          keywords: ['medicinska svampar', 'chaga', 'reishi', 'kosttillskott']
-        }
-      },
-      {
-        id: '5',
-        name: 'I LOVE Facial Oil',
-        slug: 'i-love-facial-oil',
-        description: 'Komplett ansiktsolja för alla hudtyper',
-        longDescription: `I LOVE Facial Oil är vår mest omfattande ansiktsolja, perfekt för dig som vill ge din hud det allra bästa. Denna lyxiga formula kombinerar det bästa från alla våra oljor.
-
-Fördelar:
-• Komplett hudvård i en flaska
-• Passar alla hudtyper
-• Rik på CBD och CBG
-• Djupt återfuktande
-
-Med I LOVE får du en lyxig hudupplevelse varje dag.`,
-        price: 849,
-        images: [
-          { url: '/images/products/ILOVE.png', alt: 'I LOVE Hudvårdskit', position: 0 }
-        ],
-        category: { name: 'Kit', slug: 'kit' },
-        tags: ['Kit', 'Nybörjare', 'Komplett'],
-        ingredients: [
-          {
-            name: 'THE ONE ansiktsolja',
-            description: 'Vår populäraste ansiktsolja',
-            benefits: ['Passar alla hudtyper', 'CBD & CBG', 'Balanserar huden']
-          },
-          {
-            name: 'NATUREL ansiktsolja',
-            description: 'Mild olja för känslig hud',
-            benefits: ['Extra mild', 'Lugnar irritation', 'Perfekt för känslig hud']
-          }
-        ],
-        skinTypes: ['normal', 'dry', 'oily', 'combination', 'sensitive'],
-        benefits: [
-          'Komplett hudvårdsrutin',
-          'Perfekt för nybörjare',
-          'Fantastiskt värde',
-          'Detaljerad guide inkluderad'
-        ],
-        howToUse: 'Följ den inkluderade guiden för optimal hudvårdsrutin.',
-        featured: true,
-        bestseller: true,
-        newProduct: false,
-        seo: {
-          title: 'I LOVE - Komplett hudvårdskit för nybörjare',
-          description: 'Komplett hudvårdskit med THE ONE och NATUREL',
-          keywords: ['hudvårdskit', 'nybörjare', 'komplett hudvård']
-        }
-      },
-      {
-        id: '6',
-        name: 'DUO-kit',
-        slug: 'duo-kit',
-        description: 'Perfekt kombination för optimal hudvård',
-        longDescription: `DUO-kit är den perfekta kombinationen av våra mest effektiva produkter för dig som vill maximera din hudvård.
-
-Detta kit innehåller:
-• The ONE Facial Oil (50ml) - För daglig användning
-• TA-DA Serum (30ml) - För intensiv behandling
-• Appliceringsguide
-• Hudvårdsschema
-
-DUO-kit ger dig flexibiliteten att anpassa din hudvård efter dina behov.`,
-        price: 1099,
-        images: [
-          { url: '/images/products/DUO.png', alt: 'DUO Hudvårdskit', position: 0 }
-        ],
-        category: { name: 'Kit', slug: 'kit' },
-        tags: ['Kit', 'Kombination', 'Flexibel'],
-        ingredients: [
-          {
-            name: 'THE ONE ansiktsolja',
-            description: 'Daglig hudvård för alla hudtyper',
-            benefits: ['Balanserar huden', 'CBD & CBG', 'Daglig användning']
-          },
-          {
-            name: 'TA-DA ansiktsolja',
-            description: 'Intensiv behandling för problematisk hud',
-            benefits: ['Kraftfull formula', 'Bekämpar orenheter', 'Intensiv vård']
-          }
-        ],
-        skinTypes: ['normal', 'dry', 'oily', 'combination', 'acne'],
-        benefits: [
-          'Flexibel hudvårdsrutin',
-          'Daglig och intensiv vård',
-          'Anpassningsbar efter behov',
-          'Bästa värdet för erfarna användare'
-        ],
-        howToUse: 'Använd THE ONE dagligen och TA-DA 2-3 gånger per vecka eller vid behov.',
-        featured: false,
-        bestseller: false,
-        newProduct: false,
-        seo: {
-          title: 'DUO - Flexibelt hudvårdskit',
-          description: 'Perfekt kombination av THE ONE och TA-DA för optimal hudvård',
-          keywords: ['hudvårdskit', 'kombination', 'flexibel hudvård']
+          
+          setProduct(transformedProduct)
+        } else {
+          // Product not found, redirect to products page
+          window.location.href = '/products'
         }
       }
-    ]
-
-    const foundProduct = mockProducts.find(p => p.slug === params.slug)
-    setProduct(foundProduct || null)
-    setLoading(false)
+    } catch (error) {
+      console.error('Error fetching product:', error)
+      // Fallback to products page
+      window.location.href = '/products'
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleAddToCart = () => {
