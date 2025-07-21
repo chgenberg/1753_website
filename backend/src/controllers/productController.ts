@@ -261,4 +261,130 @@ export const getFeaturedProducts = async (
   } catch (error) {
     next(new AppError('Error fetching featured products', 500))
   }
+}
+
+// @desc    Get related products for a specific product
+// @route   GET /api/products/:slug/related
+// @access  Public
+export const getRelatedProducts = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { slug } = req.params
+    const limit = parseInt(req.query.limit as string) || 4
+
+    // First get the current product
+    const currentProduct = await prisma.product.findUnique({
+      where: { slug, isActive: true }
+    })
+
+    if (!currentProduct) {
+      return next(new AppError('Product not found', 404))
+    }
+
+    // Build scoring query for related products
+    const relatedProducts = await prisma.product.findMany({
+      where: {
+        isActive: true,
+        id: { not: currentProduct.id } // Exclude current product
+      },
+      include: {
+        reviews: {
+          where: { status: 'APPROVED' },
+          select: { rating: true }
+        },
+        _count: {
+          select: {
+            reviews: {
+              where: { status: 'APPROVED' }
+            }
+          }
+        }
+      }
+    })
+
+    // Score and sort products by relevance
+    const scoredProducts = relatedProducts.map(product => {
+      let score = 0
+
+      // Category match (highest weight)
+      if (currentProduct.category && product.category === currentProduct.category) {
+        score += 50
+      }
+
+      // Skin types overlap
+      const currentSkinTypes = currentProduct.skinTypes || []
+      const productSkinTypes = product.skinTypes || []
+      const skinTypeOverlap = currentSkinTypes.filter(type => productSkinTypes.includes(type)).length
+      score += skinTypeOverlap * 15
+
+      // Skin concerns overlap
+      const currentConcerns = currentProduct.skinConcerns || []
+      const productConcerns = product.skinConcerns || []
+      const concernsOverlap = currentConcerns.filter(concern => productConcerns.includes(concern)).length
+      score += concernsOverlap * 10
+
+      // Key ingredients overlap
+      const currentIngredients = currentProduct.keyIngredients || []
+      const productIngredients = product.keyIngredients || []
+      const ingredientsOverlap = currentIngredients.filter(ing => productIngredients.includes(ing)).length
+      score += ingredientsOverlap * 8
+
+      // Tags overlap
+      const currentTags = currentProduct.tags || []
+      const productTags = product.tags || []
+      const tagsOverlap = currentTags.filter(tag => productTags.includes(tag)).length
+      score += tagsOverlap * 5
+
+      // Price similarity (products in similar price range)
+      const priceDiff = Math.abs(currentProduct.price - product.price)
+      if (priceDiff <= 200) score += 10
+      else if (priceDiff <= 500) score += 5
+
+      // Featured products get small boost
+      if (product.isFeatured) score += 3
+
+      // Calculate rating for final sorting
+      const approvedReviews = product.reviews || []
+      const reviewCount = product._count.reviews
+      
+      let averageRating = 0
+      if (approvedReviews.length > 0) {
+        const totalRating = approvedReviews.reduce((sum, review) => sum + review.rating, 0)
+        averageRating = totalRating / approvedReviews.length
+      }
+
+      const { reviews, _count, ...productData } = product
+      
+      return {
+        ...productData,
+        rating: {
+          average: Math.round(averageRating * 10) / 10,
+          count: reviewCount
+        },
+        relevanceScore: score
+      }
+    })
+
+    // Sort by relevance score (descending) and take top results
+    const topRelatedProducts = scoredProducts
+      .sort((a, b) => b.relevanceScore - a.relevanceScore)
+      .slice(0, limit)
+      .map(({ relevanceScore, ...product }) => product) // Remove score from final result
+
+    res.status(200).json({
+      success: true,
+      data: topRelatedProducts,
+      meta: {
+        currentProduct: currentProduct.name,
+        totalAvailable: relatedProducts.length,
+        returned: topRelatedProducts.length
+      }
+    })
+  } catch (error) {
+    console.error('Error fetching related products:', error)
+    next(new AppError('Error fetching related products', 500))
+  }
 } 

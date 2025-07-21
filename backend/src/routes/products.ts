@@ -5,6 +5,7 @@ import {
   getProducts,
   getProductBySlug,
   getFeaturedProducts,
+  getRelatedProducts,
 } from '../controllers/productController'
 
 const router = express.Router()
@@ -56,5 +57,6 @@ const limitValidation = [
 router.get('/', getProductsValidation, validate, getProducts)
 router.get('/featured', limitValidation, validate, getFeaturedProducts)
 router.get('/:slug', getProductBySlug)
+router.get('/:slug/related', limitValidation, validate, getRelatedProducts)
 
 export default router 
