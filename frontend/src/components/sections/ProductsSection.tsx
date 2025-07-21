@@ -39,19 +39,35 @@ export function ProductsSection() {
       
       if (result.success && result.data) {
         // Transform data to match expected structure
-        const transformedProducts = result.data.map((product: any) => ({
-          id: product.id,
-          name: product.name,
-          slug: product.slug,
-          description: product.description,
-          price: product.price,
-          compareAtPrice: product.compareAtPrice,
-          images: product.images || [{ url: `/images/products/${product.slug}.png`, alt: product.name }],
-          category: { name: product.category },
-          bestseller: product.isBestseller || false,
-          newProduct: product.isNew || false,
-          rating: product.rating || { average: 0, count: 0 }
-        }))
+        const transformedProducts = result.data
+          // Remove store-review type entries
+          .filter((p: any) => p.category?.toLowerCase() !== 'store')
+          .map((product: any) => {
+            // Ensure images array is in the expected object format
+            let images = product.images
+            if (Array.isArray(images) && images.length > 0) {
+              // If backend returns an array of strings, convert to objects
+              if (typeof images[0] === 'string') {
+                images = images.map((url: string) => ({ url, alt: product.name }))
+              }
+            } else {
+              images = [{ url: `/images/products/${product.slug}.png`, alt: product.name }]
+            }
+
+            return {
+              id: product.id,
+              name: product.name,
+              slug: product.slug,
+              description: product.description,
+              price: product.price,
+              compareAtPrice: product.compareAtPrice,
+              images,
+              category: { name: product.category },
+              bestseller: product.isBestseller || false,
+              newProduct: product.isNew || false,
+              rating: product.rating || { average: 0, count: 0 }
+            }
+          })
         setProducts(transformedProducts)
       } else {
         setProducts(mockProducts)
