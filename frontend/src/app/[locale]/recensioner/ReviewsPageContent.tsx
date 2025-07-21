@@ -68,7 +68,8 @@ export default function ReviewsPageContent() {
         limit: ITEMS_PER_PAGE.toString(),
         ...(selectedRating && { rating: selectedRating.toString() }),
         ...(selectedProduct && { productId: selectedProduct }),
-        sort: sortBy
+        sort: sortBy,
+        includePending: 'true'
       })
 
       const response = await fetch(`/api/reviews?${params}`)

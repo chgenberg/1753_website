@@ -11,6 +11,7 @@ export default function EbookPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(0)
   const [pdfLoaded, setPdfLoaded] = useState(false)
+  const [showFallback, setShowFallback] = useState(false)
 
   useEffect(() => {
     // Add the original CSS
@@ -24,11 +25,21 @@ export default function EbookPage() {
     }
   }, [])
 
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (isLoading) {
+        setShowFallback(true)
+      }
+    }, 10000) // 10 sekunders timeout
+    return () => clearTimeout(timeout)
+  }, [isLoading])
+
   return (
     <>
       <Script 
         src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"
         onLoad={() => setPdfLoaded(true)}
+        crossOrigin="anonymous"
       />
       
       {pdfLoaded && (
@@ -51,6 +62,19 @@ export default function EbookPage() {
           </div>
         </div>
       </div>
+
+      {/* Fallback embed om läsaren inte laddas */}
+      {showFallback && (
+        <div className="max-w-6xl mx-auto my-12">
+          <iframe
+            src="/ebook-reader/e-book_weedyourskin_backup.pdf#toolbar=0&navpanes=0"
+            className="w-full h-[80vh] border"
+          />
+          <p className="text-center text-sm text-gray-600 mt-4">
+            Om interaktiva läsaren inte laddas kan du läsa PDF:en här ovan 🡱 eller <a href="/ebook-reader/e-book_weedyourskin_backup.pdf" className="underline text-[#4A3428]" download>ladda ner e-boken</a> istället.
+          </p>
+        </div>
+      )}
 
       {/* Main Container */}
       <div id="app" className={`app-container ${!isLoading ? 'loaded' : ''}`}>

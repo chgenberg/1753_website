@@ -220,7 +220,8 @@ router.get('/', async (req: Request, res: Response) => {
       limit = 12, 
       rating, 
       productId, 
-      sort = 'newest' 
+      sort = 'newest',
+      includePending
     } = req.query
 
     const pageNum = parseInt(page as string)
@@ -228,7 +229,10 @@ router.get('/', async (req: Request, res: Response) => {
     const skip = (pageNum - 1) * limitNum
 
     // Build where clause
-    const where: any = { status: 'APPROVED' }
+    const where: any = {}
+    if (!includePending) {
+      where.status = 'APPROVED'
+    }
     if (rating) where.rating = parseInt(rating as string)
     if (productId) where.productId = productId
 
@@ -285,8 +289,10 @@ router.get('/', async (req: Request, res: Response) => {
  */
 router.get('/stats', async (req: Request, res: Response) => {
   try {
+    const includePending = req.query.includePending !== undefined
+
     const stats = await prisma.review.aggregate({
-      where: { status: 'APPROVED' },
+      where: includePending ? {} : { status: 'APPROVED' },
       _count: true,
       _avg: {
         rating: true
