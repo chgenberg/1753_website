@@ -13,27 +13,30 @@ interface BlogContentProps {
 }
 
 export default function BlogContent({ posts }: BlogContentProps) {
+  // Handle case where posts might be undefined or null
+  const safePosts = posts || [];
+  
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [selectedTag, setSelectedTag] = useState<string | null>(null)
 
   // Extract unique categories and tags
   const categories = useMemo(() => {
-    const cats = new Set(posts.map(post => post.category || 'Hudvård'))
+    const cats = new Set(safePosts.map(post => post.category || 'Hudvård'))
     return Array.from(cats).sort()
-  }, [posts])
+  }, [safePosts])
 
   const allTags = useMemo(() => {
     const tags = new Set<string>()
-    posts.forEach(post => {
+    safePosts.forEach(post => {
       post.tags?.forEach(tag => tags.add(tag))
     })
     return Array.from(tags).sort()
-  }, [posts])
+  }, [safePosts])
 
   // Filter posts based on search and filters
   const filteredPosts = useMemo(() => {
-    return posts.filter(post => {
+    return safePosts.filter(post => {
       const matchesSearch = !searchQuery || 
         post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         post.content.toLowerCase().includes(searchQuery.toLowerCase())
@@ -44,7 +47,7 @@ export default function BlogContent({ posts }: BlogContentProps) {
       
       return matchesSearch && matchesCategory && matchesTag
     })
-  }, [posts, searchQuery, selectedCategory, selectedTag])
+  }, [safePosts, searchQuery, selectedCategory, selectedTag])
 
   return (
     <main className="pt-20 pb-20">
@@ -155,7 +158,7 @@ export default function BlogContent({ posts }: BlogContentProps) {
 
           {/* Results Count */}
           <div className="mt-6 text-gray-600">
-            Visar {filteredPosts.length} av {posts.length} artiklar
+            Visar {filteredPosts.length} av {safePosts.length} artiklar
           </div>
         </div>
       </section>
@@ -163,7 +166,25 @@ export default function BlogContent({ posts }: BlogContentProps) {
       {/* Blog Posts Grid */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {filteredPosts.length === 0 ? (
+          {safePosts.length === 0 ? (
+            <div className="text-center py-16">
+              <div className="max-w-md mx-auto">
+                <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <span className="text-gray-400 text-2xl font-bold">1753</span>
+                </div>
+                <h3 className="text-2xl font-semibold text-gray-900 mb-4">Inga artiklar än</h3>
+                <p className="text-gray-600 mb-8">
+                  Vi arbetar på att skapa fantastiskt innehåll för dig. Kom tillbaka snart!
+                </p>
+                <Link 
+                  href="/products" 
+                  className="inline-flex items-center px-6 py-3 bg-[#4A3428] text-white rounded-lg hover:bg-[#3A2A1E] transition-colors"
+                >
+                  Utforska våra produkter istället
+                </Link>
+              </div>
+            </div>
+          ) : filteredPosts.length === 0 ? (
             <div className="text-center py-16">
               <p className="text-xl text-gray-600">Inga artiklar hittades. Prova att ändra dina filter.</p>
             </div>

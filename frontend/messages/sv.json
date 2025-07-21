@@ -174,5 +174,17 @@
       "loading": "Förbereder din personliga hudanalys...",
       "error": "Kunde inte ladda resultaten. Vänligen försök igen."
     }
+  },
+  "Blog": {
+    "metaTitle": "Blogg - 1753 Skincare",
+    "metaDescription": "Läs våra senaste artiklar om hudvård, CBD och naturlig skönhet. Expertråd och tips för en hälsosam hud.",
+    "title": "Blogg",
+    "subtitle": "Inspiration, tips och kunskap om naturlig hudvård",
+    "readMore": "Läs mer",
+    "shareArticle": "Dela artikel",
+    "relatedArticles": "Relaterade artiklar",
+    "backToBlog": "Tillbaka till bloggen",
+    "noArticles": "Inga artiklar publicerade än",
+    "loading": "Laddar artiklar..."
   }
 } 

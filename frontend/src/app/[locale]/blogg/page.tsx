@@ -19,7 +19,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 async function fetchBlogPosts() {
   // Use internal Next.js API proxy to backend so it works in all envs
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/api/blog`, {
+  const baseUrl = process.env.NODE_ENV === 'production' 
+    ? 'https://1753website-production.up.railway.app' 
+    : 'http://localhost:3000';
+  const res = await fetch(`${baseUrl}/api/blog`, {
     next: { revalidate: 3600 },
   });
   if (!res.ok) {
