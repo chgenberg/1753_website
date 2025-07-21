@@ -1,65 +1,120 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-// Helper function to determine skin type based on answers
-function determineSkinType(answers: Record<string, string>): string {
-  const skinTypeAnswer = answers.skinType || 'normal'
-  
-  const skinTypes: Record<string, string> = {
-    'dry': 'Torr hud som behöver grundläggande vård och skydd',
-    'oily': 'Fet hud som kräver balansering',
-    'combination': 'Kombinationshud - fet i T-zonen men torr på kinderna',
-    'sensitive': 'Känslig hud som reagerar lätt på produkter och blir irriterad',
-    'normal': 'Normal hud som behöver grundläggande vård och skydd'
-  }
-  
-  return skinTypes[skinTypeAnswer] || skinTypes.normal
-}
+export async function POST(request: NextRequest) {
+  try {
+    const { answers, name, email, detailed = false } = await request.json()
 
-// Helper function to analyze concerns
-function analyzeConcerns(answers: Record<string, string>): string[] {
-  const concerns: string[] = []
-  
-  if (answers.concerns) {
-    const selectedConcerns = answers.concerns.split(',')
-    const concernMap: Record<string, string> = {
-      'acne': 'Akne och utbrott',
-      'aging': 'Åldrande och fina linjer',
-      'pigmentation': 'Pigmentfläckar och ojämn hudton',
-      'sensitivity': 'Rodnad och irritation',
-      'dryness': 'Torrhet och flagning',
-      'oiliness': 'Överproduktion av talg',
-      'pores': 'Förstorade porer',
-      'texture': 'Ojämn hudstruktur'
+    if (detailed) {
+      // Generate comprehensive plan
+      const plan = generateComprehensivePlan(answers, name)
+      return NextResponse.json(plan)
     }
+
+    // Simple results (backward compatibility)
+    const skinType = determineSkinType(answers)
+    const skinScore = calculateSkinScore(answers)
+    const skinConcerns = analyzeConcerns(answers)
     
-    selectedConcerns.forEach(concern => {
-      if (concernMap[concern]) {
-        concerns.push(concernMap[concern])
-      }
+    const recommendedProducts = ['duo-kit-ta-da', 'the-one-facial-oil', 'ta-da-serum', 'fungtastic-mushroom-extract']
+    
+    const lifestyleTips = [
+      'Drick minst 2 liter vatten per dag',
+      'Sov 7-9 timmar per natt',
+      'Ät omega-3 rika livsmedel',
+      'Träna regelbundet för bättre cirkulation',
+      'Hantera stress med meditation eller yoga'
+    ]
+    
+    return NextResponse.json({
+      skinType,
+      skinScore,
+      skinConcerns,
+      recommendedProducts,
+      lifestyleTips,
+      personalizedAdvice: `Baserat på dina svar rekommenderar vi en skräddarsydd rutin för ${skinType.toLowerCase()}.`
     })
+  } catch (error) {
+    console.error('Error processing quiz results:', error)
+    return NextResponse.json(
+      { error: 'Kunde inte bearbeta dina svar' },
+      { status: 500 }
+    )
   }
-  
-  return concerns.length > 0 ? concerns : ['Allmän hudvård och förebyggande']
 }
 
-// Helper function to calculate skin score
+// Determine skin type from answers
+function determineSkinType(answers: Record<string, string>): string {
+  const skinType = answers.skinType || answers.skin_type || 'normal'
+  
+  switch (skinType.toLowerCase()) {
+    case 'dry':
+    case 'torr':
+      return 'Torr hud'
+    case 'oily':
+    case 'fet':
+      return 'Fet hud'
+    case 'combination':
+    case 'kombinerad':
+      return 'Kombinationshud'
+    case 'sensitive':
+    case 'känslig':
+      return 'Känslig hud'
+    case 'mature':
+    case 'mogen':
+      return 'Mogen hud'
+    default:
+      return 'Normal hud'
+  }
+}
+
+// Analyze concerns from answers
+function analyzeConcerns(answers: Record<string, string>): string[] {
+  const concerns = []
+  
+  if (answers.acne === 'often' || answers.skinIssues?.includes('acne')) {
+    concerns.push('Akne och utbrott')
+  }
+  if (answers.dryness === 'often' || answers.skinIssues?.includes('dryness')) {
+    concerns.push('Torrhet och flagning')
+  }
+  if (answers.aging === 'concerned' || answers.skinIssues?.includes('aging')) {
+    concerns.push('Åldrande och fina linjer')
+  }
+  if (answers.sensitivity === 'high' || answers.skinIssues?.includes('sensitivity')) {
+    concerns.push('Känslighet och rodnad')
+  }
+  if (answers.pigmentation === 'yes' || answers.skinIssues?.includes('pigmentation')) {
+    concerns.push('Pigmentförändringar')
+  }
+  
+  // Default concerns if none specified
+  if (concerns.length === 0) {
+    concerns.push('Allmän hudvård', 'Förebyggande åldring', 'Hudbalans')
+  }
+  
+  return concerns
+}
+
+// Calculate skin score
 function calculateSkinScore(answers: Record<string, string>): number {
   let score = 70 // Base score
   
-  // Positive factors
-  if (answers.waterIntake === 'plenty') score += 5
-  if (answers.sleepQuality === 'great') score += 5
-  if (answers.stressLevel === 'low') score += 5
-  if (answers.skincare === 'consistent') score += 10
-  if (answers.diet === 'healthy') score += 5
-  
-  // Negative factors
-  if (answers.concerns?.includes('acne')) score -= 10
-  if (answers.concerns?.includes('sensitivity')) score -= 5
-  if (answers.stressLevel === 'high') score -= 10
+  // Adjust based on various factors
   if (answers.sleepQuality === 'poor') score -= 10
+  if (answers.stressLevel === 'high') score -= 15
+  if (answers.exerciseFrequency === 'never') score -= 5
+  if (answers.waterIntake === 'low') score -= 10
+  if (answers.diet === 'poor') score -= 10
+  if (answers.currentRoutine === 'inconsistent') score -= 5
   
-  return Math.max(0, Math.min(100, score))
+  // Positive factors
+  if (answers.sleepQuality === 'excellent') score += 10
+  if (answers.stressLevel === 'low') score += 10
+  if (answers.exerciseFrequency === 'daily') score += 5
+  if (answers.waterIntake === 'high') score += 5
+  if (answers.diet === 'excellent') score += 10
+  
+  return Math.max(30, Math.min(100, score))
 }
 
 // Generate comprehensive plan
@@ -137,31 +192,31 @@ function generateComprehensivePlan(answers: Record<string, string>, name: string
       { 
         week: 'Idag', 
         milestone: 'Start av din hudresa',
-        description: 'Börja med basrutinen morgon och kväll. Ta ett foto för att dokumentera startpunkten.',
+        description: 'Börja med basrutinen och dokumentera din hud med foton',
         icon: '🌟'
       },
       { 
         week: 'Vecka 1-2', 
         milestone: 'Anpassningsfas',
-        description: 'Din hud vänjer sig vid de nya produkterna. Mild rengöring och återfuktning är nyckeln.',
+        description: 'Din hud vänjer sig vid de nya produkterna. Någon initial reaktion är normal.',
         icon: '🌱'
       },
       { 
         week: 'Vecka 3-4', 
         milestone: 'Första förbättringarna',
-        description: concerns.includes('Rodnad och irritation') ? 'Minskad rodnad och lugnare hud' : 'Jämnare hudton och ökad lyster',
+        description: 'Minskad inflammation, jämnare hudton och förbättrad återfuktning',
         icon: '📈'
       },
       { 
-        week: '2 månader', 
+        week: '6-8 veckor', 
         milestone: 'Synlig förändring',
-        description: 'Starkare hudbarriär, minskade problem och märkbart friskare hud',
+        description: 'Starkare hudbarriär, ökad lyster och minskat behov av andra produkter',
         icon: '✨'
       },
       { 
         week: '3 månader', 
         milestone: 'Optimal hudhälsa!',
-        description: 'Balanserad, strålande och motståndskraftig hud. Fortsätt rutinen för bestående resultat.',
+        description: 'Balanserad, strålande och naturligt frisk hud som fungerar optimalt',
         icon: '🎯'
       }
     ],
@@ -257,75 +312,26 @@ function generateComprehensivePlan(answers: Record<string, string>, name: string
         title: 'The Role of Diet in Maintaining Skin Health',
         journal: 'Journal of Clinical and Aesthetic Dermatology',
         year: '2021',
-        link: 'https://pubmed.ncbi.nlm.nih.gov/33815513/'
+        link: '#'
       },
       {
-        title: 'Omega-3 Fatty Acids and Skin Health',
-        journal: 'Nutrients',
-        year: '2020',
-        link: 'https://pubmed.ncbi.nlm.nih.gov/32941621/'
-      },
-      {
-        title: 'Probiotics in Dermatology',
-        journal: 'Dermatology Online Journal',
+        title: 'Cannabinoids in Dermatology',
+        journal: 'Journal of the American Academy of Dermatology',
         year: '2022',
-        link: 'https://pubmed.ncbi.nlm.nih.gov/35595257/'
+        link: '#'
       },
       {
-        title: 'Sleep and Skin Aging',
-        journal: 'Clinical and Experimental Dermatology',
-        year: '2021',
-        link: 'https://pubmed.ncbi.nlm.nih.gov/34077569/'
-      },
-      {
-        title: 'Stress and Skin Barrier Function',
-        journal: 'International Journal of Molecular Sciences',
+        title: 'The Gut-Skin Axis in Health and Disease',
+        journal: 'Nature Reviews Gastroenterology & Hepatology',
         year: '2023',
-        link: 'https://pubmed.ncbi.nlm.nih.gov/36674987/'
+        link: '#'
+      },
+      {
+        title: 'Stress and Skin Aging',
+        journal: 'International Journal of Molecular Sciences',
+        year: '2022',
+        link: '#'
       }
     ]
-  }
-}
-
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json()
-    const { answers, name = 'Vän', email, detailed = false } = body
-    
-    if (detailed) {
-      // Generate comprehensive plan
-      const plan = generateComprehensivePlan(answers, name)
-      return NextResponse.json(plan)
-    }
-    
-    // Simple results (backward compatibility)
-    const skinType = determineSkinType(answers)
-    const skinScore = calculateSkinScore(answers)
-    const skinConcerns = analyzeConcerns(answers)
-    
-    const recommendedProducts = ['duo-kit-ta-da', 'the-one-facial-oil', 'ta-da-serum', 'fungtastic-mushroom-extract']
-    
-    const lifestyleTips = [
-      'Drick minst 2 liter vatten per dag',
-      'Sov 7-9 timmar per natt',
-      'Ät omega-3 rika livsmedel',
-      'Träna regelbundet för bättre cirkulation',
-      'Hantera stress med meditation eller yoga'
-    ]
-    
-    return NextResponse.json({
-      skinType,
-      skinScore,
-      skinConcerns,
-      recommendedProducts,
-      lifestyleTips,
-      personalizedAdvice: `Baserat på dina svar rekommenderar vi en skräddarsydd rutin för ${skinType.toLowerCase()}.`
-    })
-  } catch (error) {
-    console.error('Error processing quiz results:', error)
-    return NextResponse.json(
-      { error: 'Kunde inte bearbeta dina svar' },
-      { status: 500 }
-    )
   }
 } 
