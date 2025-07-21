@@ -358,7 +358,7 @@ export function QuizResults({ answers, userName = '', userEmail = '', results, o
                     <div className="mb-6">
                       <h3 className="text-lg font-medium text-gray-900 mb-3">Fokusområden</h3>
                       <div className="flex flex-wrap gap-2">
-                        {(generatedPlan?.summary?.mainConcerns || ['Rodnad', 'Torrhet', 'Fina linjer']).map((concern, index) => (
+                        {(generatedPlan?.summary?.mainConcerns || ['Rodnad', 'Torrhet', 'Fina linjer']).map((concern: string, index: number) => (
                           <span key={index} className="px-4 py-2 bg-[#8B6B47]/10 text-[#8B6B47] rounded-full text-sm">
                             {concern}
                           </span>
@@ -374,7 +374,7 @@ export function QuizResults({ answers, userName = '', userEmail = '', results, o
                           'Fokusera på återfuktning och barriärstärkande',
                           'Använd milda, lugnande ingredienser',
                           'Bygg upp en konsekvent rutin'
-                        ]).map((rec, index) => (
+                        ]).map((rec: string, index: number) => (
                           <li key={index} className="flex items-start gap-2">
                             <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
                             <span className="text-gray-600">{rec}</span>
@@ -436,7 +436,7 @@ export function QuizResults({ answers, userName = '', userEmail = '', results, o
                       
                       {/* Timeline Items */}
                       <div className="space-y-8">
-                        {(generatedPlan?.timeline || generateDefaultTimeline()).map((item, index) => (
+                        {(generatedPlan?.timeline || generateDefaultTimeline()).map((item: any, index: number) => (
                           <motion.div
                             key={index}
                             initial={{ opacity: 0, x: -20 }}
@@ -484,7 +484,7 @@ export function QuizResults({ answers, userName = '', userEmail = '', results, o
                       {generatedPlan?.lifestyle?.sleep?.recommendation || '7-9 timmar kvalitetssömn'}
                     </p>
                     <ul className="space-y-2">
-                      {(generatedPlan?.lifestyle?.sleep?.tips || generateDefaultLifestyle().sleep.tips).map((tip, index) => (
+                      {(generatedPlan?.lifestyle?.sleep?.tips || generateDefaultLifestyle().sleep.tips).map((tip: string, index: number) => (
                         <li key={index} className="flex items-start gap-2">
                           <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
                           <span className="text-gray-600">{tip}</span>
@@ -503,7 +503,7 @@ export function QuizResults({ answers, userName = '', userEmail = '', results, o
                       {generatedPlan?.lifestyle?.stress?.recommendation || 'Daglig stresshantering'}
                     </p>
                     <ul className="space-y-2">
-                      {(generatedPlan?.lifestyle?.stress?.tips || generateDefaultLifestyle().stress.tips).map((tip, index) => (
+                      {(generatedPlan?.lifestyle?.stress?.tips || generateDefaultLifestyle().stress.tips).map((tip: any, index: number) => (
                         <li key={index} className="flex items-start gap-2">
                           <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
                           <span className="text-gray-600">{tip}</span>
@@ -522,7 +522,7 @@ export function QuizResults({ answers, userName = '', userEmail = '', results, o
                       {generatedPlan?.lifestyle?.exercise?.recommendation || '30 min rörelse dagligen'}
                     </p>
                     <ul className="space-y-2">
-                      {(generatedPlan?.lifestyle?.exercise?.tips || generateDefaultLifestyle().exercise.tips).map((tip, index) => (
+                      {(generatedPlan?.lifestyle?.exercise?.tips || generateDefaultLifestyle().exercise.tips).map((tip: any, index: number) => (
                         <li key={index} className="flex items-start gap-2">
                           <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
                           <span className="text-gray-600">{tip}</span>
@@ -549,7 +549,7 @@ export function QuizResults({ answers, userName = '', userEmail = '', results, o
                     </div>
                     
                     <div className="space-y-4">
-                      {(generatedPlan?.products?.morning || generateDefaultProducts().morning).map((step, index) => (
+                      {(generatedPlan?.products?.morning || generateDefaultProducts().morning).map((step: any, index: number) => (
                         <motion.div
                           key={index}
                           initial={{ opacity: 0, x: -20 }}
@@ -583,7 +583,7 @@ export function QuizResults({ answers, userName = '', userEmail = '', results, o
                     </div>
                     
                     <div className="space-y-4">
-                      {(generatedPlan?.products?.evening || generateDefaultProducts().evening).map((step, index) => (
+                      {(generatedPlan?.products?.evening || generateDefaultProducts().evening).map((step: any, index: number) => (
                         <motion.div
                           key={index}
                           initial={{ opacity: 0, x: -20 }}
@@ -632,12 +632,12 @@ export function QuizResults({ answers, userName = '', userEmail = '', results, o
                     <h3 className="text-xl font-medium text-gray-900 mb-6">Nyckellivsmedel för din hud</h3>
                     
                     <div className="space-y-6">
-                      {(generatedPlan?.nutrition?.keyFoods || generateDefaultNutrition().keyFoods).map((category, index) => (
+                      {(generatedPlan?.nutrition?.keyFoods || generateDefaultNutrition().keyFoods).map((category: any, index: number) => (
                         <div key={index}>
                           <h4 className="font-medium text-[#8B6B47] mb-2">{category.category}</h4>
                           <div className="mb-2">
                             <div className="flex flex-wrap gap-2">
-                              {category.foods.map((food, foodIndex) => (
+                              {category.foods.map((food: any, foodIndex: number) => (
                                 <span key={foodIndex} className="px-3 py-1 bg-gray-100 rounded-full text-sm text-gray-700">
                                   {food}
                                 </span>
@@ -655,7 +655,7 @@ export function QuizResults({ answers, userName = '', userEmail = '', results, o
                     <h3 className="text-xl font-medium text-gray-900 mb-6">Exempel på dagsmeny</h3>
                     
                     <div className="space-y-4">
-                      {Object.entries(generatedPlan?.nutrition?.mealPlan || generateDefaultNutrition().mealPlan).map(([meal, description]) => (
+                      {Object.entries(generatedPlan?.nutrition?.mealPlan || generateDefaultNutrition().mealPlan).map(([meal, description]: [string, any]) => (
                         <div key={meal} className="flex gap-4">
                           <div className="w-24 text-sm font-medium text-gray-500 capitalize">{meal}:</div>
                           <div className="flex-1 text-gray-700">{description}</div>
@@ -678,7 +678,7 @@ export function QuizResults({ answers, userName = '', userEmail = '', results, o
                     <h3 className="text-xl font-medium text-gray-900 mb-6">Vetenskapliga källor</h3>
                     
                     <div className="space-y-4">
-                      {(generatedPlan?.sources || generateDefaultSources()).map((source, index) => (
+                      {(generatedPlan?.sources || generateDefaultSources()).map((source: any, index: number) => (
                         <div key={index} className="border-l-4 border-[#8B6B47] pl-4">
                           <h4 className="font-medium text-gray-900">{source.title}</h4>
                           <p className="text-sm text-gray-600">
