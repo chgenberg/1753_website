@@ -4,6 +4,8 @@ import React from 'react'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
+import { Header } from '@/components/layout/Header'
+import { Footer } from '@/components/layout/Footer'
 import { 
   BookOpen, 
   FileText, 
@@ -45,7 +47,9 @@ export default function KunskapPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <>
+      <Header />
+      <div className="min-h-screen bg-gray-50 pt-24">
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-amber-50 to-orange-50 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -304,5 +308,7 @@ export default function KunskapPage() {
         </div>
       </section>
     </div>
+    <Footer />
+  </>
   )
 } 

@@ -3,7 +3,10 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ChevronRight, Leaf, Heart, Brain, Shield } from 'lucide-react'
+import { Header } from '@/components/layout/Header'
+import { Footer } from '@/components/layout/Footer'
+import { ChevronDown, ChevronUp, ChevronRight, Leaf, Heart, Brain, Shield, Sparkles, Apple } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface RawMaterial {
   id: string
@@ -14,6 +17,8 @@ interface RawMaterial {
   slug: string
   description: string
   thumbnail?: string
+  healthBenefits?: string[]
+  nutrients?: string[]
 }
 
 // Temporary data until we fetch from API
@@ -91,6 +96,7 @@ export default function FunctionalRawMaterialsPage() {
   const [rawMaterials, setRawMaterials] = useState<RawMaterial[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     fetchRawMaterials()
@@ -121,8 +127,22 @@ export default function FunctionalRawMaterialsPage() {
   const handleCategoryChange = (categoryId: string) => {
     setSelectedCategory(categoryId)
   }
+
+  const toggleExpanded = (materialId: string) => {
+    setExpandedItems(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(materialId)) {
+        newSet.delete(materialId)
+      } else {
+        newSet.add(materialId)
+      }
+      return newSet
+    })
+  }
   return (
-    <div className="min-h-screen bg-gray-50">
+    <>
+      <Header />
+      <div className="min-h-screen bg-gray-50 pt-24">
       {/* Hero Section */}
       <section className="relative bg-gradient-to-b from-amber-50 to-white py-20">
         <div className="container mx-auto px-4">
@@ -177,42 +197,113 @@ export default function FunctionalRawMaterialsPage() {
               <p className="text-gray-600">Inga råvaror hittades för den valda kategorin.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {rawMaterials.map((material) => (
-              <Link
-                key={material.id}
-                href={`/kunskap/funktionella-ravaror/${material.slug}`}
-                className="group bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden"
-              >
-                <div className="aspect-[4/3] relative bg-gradient-to-br from-amber-50 to-amber-100">
-                  {/* Placeholder for image */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Leaf className="w-16 h-16 text-amber-300" />
-                  </div>
-                </div>
+            <div className="space-y-4 max-w-4xl mx-auto">
+              {rawMaterials.map((material) => {
+                const isExpanded = expandedItems.has(material.id)
+                const categoryIcon = {
+                  berry: <Heart className="w-5 h-5" />,
+                  herb: <Leaf className="w-5 h-5" />,
+                  fermented: <Brain className="w-5 h-5" />,
+                  tea: <Sparkles className="w-5 h-5" />,
+                  vegetable: <Shield className="w-5 h-5" />,
+                  fruit: <Apple className="w-5 h-5" />,
+                  default: <Leaf className="w-5 h-5" />
+                }[material.category] || <Leaf className="w-5 h-5" />
                 
-                <div className="p-6">
-                  <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
-                    <span className="capitalize">{material.category}</span>
-                    <span>•</span>
-                    <span>{material.origin}</span>
-                  </div>
-                  
-                  <h3 className="text-xl font-medium text-gray-900 mb-2 group-hover:text-amber-600 transition-colors">
-                    {material.swedishName}
-                  </h3>
-                  
-                  <p className="text-gray-600 mb-4">
-                    {material.description}
-                  </p>
-                  
-                  <div className="flex items-center gap-2 text-amber-600 font-medium">
-                    <span>Läs mer</span>
-                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </div>
-              </Link>
-            ))}
+                return (
+                  <motion.div
+                    key={material.id}
+                    layout
+                    className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300"
+                  >
+                    <button
+                      onClick={() => toggleExpanded(material.id)}
+                      className="w-full p-6 text-left focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 rounded-2xl"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-start gap-4 flex-1">
+                          <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                            material.category === 'berry' ? 'bg-red-100 text-red-600' :
+                            material.category === 'herb' ? 'bg-green-100 text-green-600' :
+                            material.category === 'fermented' ? 'bg-purple-100 text-purple-600' :
+                            material.category === 'tea' ? 'bg-amber-100 text-amber-600' :
+                            material.category === 'vegetable' ? 'bg-orange-100 text-orange-600' :
+                            'bg-gray-100 text-gray-600'
+                          }`}>
+                            {categoryIcon}
+                          </div>
+                          
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-1">
+                              <h3 className="text-lg font-semibold text-gray-900">
+                                {material.swedishName}
+                              </h3>
+                              <span className="text-sm text-gray-500">
+                                {material.origin}
+                              </span>
+                            </div>
+                            <p className="text-gray-600">
+                              {material.description}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <div className="ml-4 flex-shrink-0">
+                          {isExpanded ? (
+                            <ChevronUp className="w-5 h-5 text-gray-400" />
+                          ) : (
+                            <ChevronDown className="w-5 h-5 text-gray-400" />
+                          )}
+                        </div>
+                      </div>
+                    </button>
+                    
+                    <AnimatePresence>
+                      {isExpanded && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="px-6 pb-6 border-t border-gray-100 pt-4">
+                            {material.healthBenefits && material.healthBenefits.length > 0 && (
+                              <div className="mb-4">
+                                <h4 className="font-semibold text-gray-900 mb-2">Hälsofördelar:</h4>
+                                <ul className="space-y-1">
+                                  {material.healthBenefits.map((benefit, index) => (
+                                    <li key={index} className="flex items-start gap-2">
+                                      <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-1.5 flex-shrink-0"></div>
+                                      <span className="text-sm text-gray-700">{benefit}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                            
+                            {material.nutrients && material.nutrients.length > 0 && (
+                              <div>
+                                <h4 className="font-semibold text-gray-900 mb-2">Nyckelämnen:</h4>
+                                <div className="flex flex-wrap gap-2">
+                                  {material.nutrients.map((nutrient, index) => (
+                                    <span
+                                      key={index}
+                                      className="px-3 py-1 bg-amber-50 text-amber-700 rounded-full text-sm"
+                                    >
+                                      {nutrient}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                )
+              })}
             </div>
           )}
         </div>
@@ -241,5 +332,7 @@ export default function FunctionalRawMaterialsPage() {
         </div>
       </section>
     </div>
+    <Footer />
+  </>
   )
 } 

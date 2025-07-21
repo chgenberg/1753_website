@@ -5,6 +5,8 @@ import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import Script from 'next/script'
+import { Header } from '@/components/layout/Header'
+import { Footer } from '@/components/layout/Footer'
 
 export default function EbookPage() {
   const [isLoading, setIsLoading] = useState(true)
@@ -36,7 +38,9 @@ export default function EbookPage() {
 
   return (
     <>
-      <Script 
+      <Header />
+      <div className="pt-24">
+        <Script 
         src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"
         onLoad={() => setPdfLoaded(true)}
         crossOrigin="anonymous"
@@ -280,6 +284,8 @@ export default function EbookPage() {
           </div>
         </div>
       </section>
-    </>
+    </div>
+    <Footer />
+  </>
   )
 } 
