@@ -130,7 +130,7 @@ export function ProductsSection() {
               transition={{ delay: index * 0.1 }}
               className="group"
             >
-              <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+              <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 h-full flex flex-col">
                 {/* Product Image */}
                 <Link href={`/products/${product.slug}`}>
                   <div className="relative aspect-square overflow-hidden bg-gray-100">
@@ -166,7 +166,7 @@ export function ProductsSection() {
                 </Link>
 
                 {/* Product Info */}
-                <div className="p-6">
+                <div className="p-6 flex-1 flex flex-col">
                   <Link href={`/products/${product.slug}`}>
                     <h3 className="font-bold text-lg mb-2 group-hover:text-[#8B6B47] transition-colors">
                       {product.name}
@@ -195,7 +195,7 @@ export function ProductsSection() {
                   )}
 
                   {/* Price and Add to Cart */}
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between mt-auto">
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="text-2xl font-bold text-[#4A3428]">

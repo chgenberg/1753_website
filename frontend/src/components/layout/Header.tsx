@@ -85,39 +85,198 @@ export function Header() {
         isScrolled ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-white shadow-md'
       }`}>
         <div className="container mx-auto px-4">
-          {/* Upper section with logo */}
-          <div className="flex items-center py-4 border-b border-gray-100">
-            {/* Left side - Mobile menu button (invisible spacer on desktop) */}
-            <div className="flex items-center w-16 md:w-0">
-              <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                aria-label="Toggle menu"
-              >
-                {isMobileMenuOpen ? (
-                  <X className="w-6 h-6" />
-                ) : (
-                  <Menu className="w-6 h-6" />
-                )}
-              </button>
-            </div>
+          {/* Compact header with navigation, logo, and user/cart on same line */}
+          <div className="flex items-center justify-between py-3">
+            {/* Mobile menu button */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              aria-label="Toggle menu"
+            >
+              {isMobileMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
+            </button>
 
-            {/* Logo - Perfectly Centered */}
-            <div className="flex-1 flex justify-center">
-              <Link href="/" className="flex items-center">
-                <Image
-                  src="/1753.png"
-                  alt="1753 Skincare"
-                  width={200}
-                  height={70}
-                  className="h-16 w-auto md:h-20"
-                  priority
-                />
-              </Link>
-            </div>
+            {/* Desktop Navigation - Left side */}
+            <nav className="hidden md:block">
+              <ul className="flex items-center gap-6">
+                {/* Hem */}
+                <li>
+                  <Link
+                    href="/"
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all text-sm ${
+                      isActive('/') 
+                        ? 'bg-[#4A3428] text-white' 
+                        : 'hover:bg-gray-100 text-gray-700'
+                    }`}
+                  >
+                    <Home className="w-4 h-4" />
+                    <span className="font-medium">Hem</span>
+                  </Link>
+                </li>
 
-            {/* Right side - User & Cart */}
-            <div className="flex items-center gap-3 w-16 md:w-auto justify-end">
+                {/* Produkter */}
+                <li>
+                  <Link
+                    href="/products"
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all text-sm ${
+                      isActive('/products') 
+                        ? 'bg-[#4A3428] text-white' 
+                        : 'hover:bg-gray-100 text-gray-700'
+                    }`}
+                  >
+                    <Package className="w-4 h-4" />
+                    <span className="font-medium">Produkter</span>
+                  </Link>
+                </li>
+
+                {/* Om oss - with dropdown */}
+                <li className="relative">
+                  <button
+                    onMouseEnter={() => setActiveDropdown('om-oss')}
+                    onMouseLeave={() => setActiveDropdown(null)}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all text-sm ${
+                      isActive('/om-oss') 
+                        ? 'bg-[#4A3428] text-white' 
+                        : 'hover:bg-gray-100 text-gray-700'
+                    }`}
+                  >
+                    <Info className="w-4 h-4" />
+                    <span className="font-medium">Om oss</span>
+                    <ChevronDown className="w-3 h-3" />
+                  </button>
+
+                  {/* Dropdown */}
+                  <AnimatePresence>
+                    {activeDropdown === 'om-oss' && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        onMouseEnter={() => setActiveDropdown('om-oss')}
+                        onMouseLeave={() => setActiveDropdown(null)}
+                        className="absolute top-full left-0 mt-1 w-64 bg-white rounded-lg shadow-lg py-2 border border-gray-200"
+                      >
+                        <Link
+                          href="/om-oss"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          Om 1753 Skincare
+                        </Link>
+                        <Link
+                          href="/om-oss/ingredienser"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          Våra ingredienser
+                        </Link>
+                        <Link
+                          href="/om-oss/aterforsaljare"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          Återförsäljare
+                        </Link>
+                        <Link
+                          href="/om-oss/faq"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          Vanliga frågor
+                        </Link>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </li>
+
+                {/* Kunskap - with dropdown */}
+                <li className="relative">
+                  <button
+                    onMouseEnter={() => setActiveDropdown('kunskap')}
+                    onMouseLeave={() => setActiveDropdown(null)}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all text-sm ${
+                      isActive('/kunskap') || isActive('/quiz')
+                        ? 'bg-[#4A3428] text-white' 
+                        : 'hover:bg-gray-100 text-gray-700'
+                    }`}
+                  >
+                    <BookOpen className="w-4 h-4" />
+                    <span className="font-medium">Kunskap</span>
+                    <ChevronDown className="w-3 h-3" />
+                  </button>
+
+                  {/* Dropdown */}
+                  <AnimatePresence>
+                    {activeDropdown === 'kunskap' && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        onMouseEnter={() => setActiveDropdown('kunskap')}
+                        onMouseLeave={() => setActiveDropdown(null)}
+                        className="absolute top-full left-0 mt-1 w-64 bg-white rounded-lg shadow-lg py-2 border border-gray-200"
+                      >
+                        <Link
+                          href="/kunskap"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          Kunskapsbanken
+                        </Link>
+                        <Link
+                          href="/kunskap/e-bok"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          E-bok: Weed Your Skin
+                        </Link>
+                        <Link
+                          href="/quiz"
+                          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          Hudanalys
+                          <Sparkles className="w-4 h-4 text-amber-600" />
+                        </Link>
+                        <Link
+                          href="/kunskap/funktionella-ravaror"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          Funktionella råvaror
+                        </Link>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </li>
+
+                {/* Kontakt */}
+                <li>
+                  <Link
+                    href="/kontakt"
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all text-sm ${
+                      isActive('/kontakt') 
+                        ? 'bg-[#4A3428] text-white' 
+                        : 'hover:bg-gray-100 text-gray-700'
+                    }`}
+                  >
+                    <Phone className="w-4 h-4" />
+                    <span className="font-medium">Kontakt</span>
+                  </Link>
+                </li>
+              </ul>
+            </nav>
+
+            {/* Logo - Right side */}
+            <Link href="/" className="absolute left-1/2 transform -translate-x-1/2 md:relative md:left-auto md:transform-none md:ml-auto md:mr-4">
+              <Image
+                src="/1753.png"
+                alt="1753 Skincare"
+                width={140}
+                height={50}
+                className="h-12 w-auto md:h-14"
+                priority
+              />
+            </Link>
+
+            {/* User & Cart - Far right */}
+            <div className="flex items-center gap-2">
               {/* User Account */}
               <div className="relative">
                 {user ? (
@@ -192,169 +351,6 @@ export function Header() {
               </button>
             </div>
           </div>
-
-          {/* Navigation Menu */}
-          <nav className="py-4 hidden md:block">
-            <ul className="flex items-center justify-center gap-8 flex-wrap">
-              {/* Hem */}
-              <li>
-                <Link
-                  href="/"
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                    isActive('/') 
-                      ? 'bg-[#4A3428] text-white' 
-                      : 'hover:bg-gray-100 text-gray-700'
-                  }`}
-                >
-                  <Home className="w-4 h-4" />
-                  <span className="font-medium">Hem</span>
-                </Link>
-              </li>
-
-              {/* Produkter */}
-              <li>
-                <Link
-                  href="/products"
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                    isActive('/products') 
-                      ? 'bg-[#4A3428] text-white' 
-                      : 'hover:bg-gray-100 text-gray-700'
-                  }`}
-                >
-                  <Package className="w-4 h-4" />
-                  <span className="font-medium">Produkter</span>
-                </Link>
-              </li>
-
-              {/* Om oss - with dropdown */}
-              <li className="relative">
-                <button
-                  onMouseEnter={() => setActiveDropdown('om-oss')}
-                  onMouseLeave={() => setActiveDropdown(null)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                    isActive('/om-oss') 
-                      ? 'bg-[#4A3428] text-white' 
-                      : 'hover:bg-gray-100 text-gray-700'
-                  }`}
-                >
-                  <Info className="w-4 h-4" />
-                  <span className="font-medium">Om oss</span>
-                  <ChevronDown className="w-4 h-4" />
-                </button>
-
-                {/* Dropdown */}
-                <AnimatePresence>
-                  {activeDropdown === 'om-oss' && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      onMouseEnter={() => setActiveDropdown('om-oss')}
-                      onMouseLeave={() => setActiveDropdown(null)}
-                      className="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-lg py-2 border border-gray-200"
-                    >
-                      <Link
-                        href="/om-oss"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      >
-                        Vilka är vi?
-                      </Link>
-                      <Link
-                        href="/om-oss/ingredienser"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      >
-                        Våra ingredienser
-                      </Link>
-                      <Link
-                        href="/om-oss/faq"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      >
-                        Vanliga frågor (FAQ)
-                      </Link>
-                      <Link
-                        href="/om-oss/aterforsaljare"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      >
-                        Återförsäljare
-                      </Link>
-                      <Link
-                        href="/recensioner"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      >
-                        Recensioner
-                      </Link>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </li>
-
-              {/* Kunskap - with dropdown */}
-              <li className="relative">
-                <button
-                  onMouseEnter={() => setActiveDropdown('kunskap')}
-                  onMouseLeave={() => setActiveDropdown(null)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                    isActive('/kunskap') || isActive('/blogg') || isActive('/quiz')
-                      ? 'bg-[#4A3428] text-white' 
-                      : 'hover:bg-gray-100 text-gray-700'
-                  }`}
-                >
-                  <BookOpen className="w-4 h-4" />
-                  <span className="font-medium">Kunskap</span>
-                  <ChevronDown className="w-4 h-4" />
-                </button>
-
-                {/* Dropdown */}
-                <AnimatePresence>
-                  {activeDropdown === 'kunskap' && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      onMouseEnter={() => setActiveDropdown('kunskap')}
-                      onMouseLeave={() => setActiveDropdown(null)}
-                      className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 border border-gray-200"
-                    >
-                      <Link
-                        href="/quiz"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                      >
-                        <Sparkles className="w-4 h-4 text-amber-600" />
-                        Hudanalys
-                      </Link>
-                      <Link
-                        href="/blogg"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      >
-                        Blogg
-                      </Link>
-                      <Link
-                        href="/kunskap/e-bok"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      >
-                        E-bok
-                      </Link>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </li>
-
-              {/* Kontakt */}
-              <li>
-                <Link
-                  href="/kontakt"
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                    isActive('/kontakt') 
-                      ? 'bg-[#4A3428] text-white' 
-                      : 'hover:bg-gray-100 text-gray-700'
-                  }`}
-                >
-                  <Phone className="w-4 h-4" />
-                  <span className="font-medium">Kontakt</span>
-                </Link>
-              </li>
-            </ul>
-          </nav>
 
           {/* Mobile Navigation Menu */}
           <AnimatePresence>
@@ -491,7 +487,7 @@ export function Header() {
       </header>
 
       {/* Spacer to prevent content from going under fixed header */}
-      <div className="h-40" />
+      <div className="h-24" />
 
       {/* Cart Drawer */}
       <CartDrawer />
