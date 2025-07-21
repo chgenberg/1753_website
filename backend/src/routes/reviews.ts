@@ -214,69 +214,42 @@ router.get('/featured', async (req, res) => {
  * Hämta alla godkända recensioner med filtrering
  */
 router.get('/', async (req: Request, res: Response) => {
+  const { page = 1, limit = 10, includePending } = req.query;
+  const pageNum = parseInt(page as string, 10);
+  const limitNum = parseInt(limit as string, 10);
+
+  const where: any = {};
+  if (!includePending || includePending !== 'true') {
+    where.status = 'APPROVED';
+  }
+
   try {
-    const { 
-      page = 1, 
-      limit = 12, 
-      rating, 
-      productId, 
-      sort = 'newest',
-      includePending
-    } = req.query
-
-    const pageNum = parseInt(page as string)
-    const limitNum = parseInt(limit as string)
-    const skip = (pageNum - 1) * limitNum
-
-    // Build where clause
-    const where: any = {}
-    if (!includePending) {
-      where.status = 'APPROVED'
-    }
-    if (rating) where.rating = parseInt(rating as string)
-    if (productId) where.productId = productId
-
-    // Build order by
-    let orderBy: any = {}
-    switch (sort) {
-      case 'newest':
-        orderBy = { createdAt: 'desc' }
-        break
-      case 'highest':
-        orderBy = { rating: 'desc' }
-        break
-      case 'lowest':
-        orderBy = { rating: 'asc' }
-        break
-    }
-
-    const [reviews, totalCount] = await Promise.all([
-      prisma.review.findMany({
-        where,
-        include: {
-          product: {
-            select: {
-              id: true,
-              name: true,
-              slug: true,
-              images: true
-            }
+    const reviews = await prisma.review.findMany({
+      where,
+      take: limitNum,
+      skip: (pageNum - 1) * limitNum,
+      orderBy: {
+        createdAt: 'desc',
+      },
+      include: {
+        product: {
+          select: {
+            name: true,
+            slug: true,
           }
-        },
-        orderBy,
-        skip,
-        take: limitNum
-      }),
-      prisma.review.count({ where })
-    ])
+        }
+      }
+    });
+
+    const totalCount = await prisma.review.count({ where });
 
     res.json({
       reviews,
       totalCount,
-      hasMore: skip + reviews.length < totalCount,
+      hasMore: (pageNum * limitNum) < totalCount,
       currentPage: pageNum,
       totalPages: Math.ceil(totalCount / limitNum)
-    })
+    });
   } catch (error) {
     logger.error('Error fetching reviews:', error)
     res.status(500).json({ error: 'Failed to fetch reviews' })
