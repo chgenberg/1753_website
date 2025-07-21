@@ -5,20 +5,8 @@ import { Calendar, Clock, User, Tag, Search, Filter } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useMemo } from 'react'
 import NewsletterSection from '@/components/sections/NewsletterSection'
+import { BlogPost } from '@/types'
 
-interface BlogPost {
-  title: string
-  content: string
-  date?: string
-  author?: string
-  slug: string
-  url?: string
-  tags?: string[]
-  category?: string
-  readingTime?: number
-  metaDescription?: string
-  keywords?: string[]
-}
 
 interface BlogContentProps {
   posts: BlogPost[]

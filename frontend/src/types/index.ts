@@ -250,20 +250,20 @@ export interface BlogPost {
 
 // Review types (Judge.me)
 export interface Review {
-  id: string
-  productId: string
-  userId: string
-  rating: number
-  title: string
-  content: string
-  verified: boolean
-  helpful: number
-  photos?: string[]
-  user: {
-    name: string
-    avatar?: string
-  }
-  createdAt: string
+  id: number;
+  rating: number;
+  title: string;
+  body: string;
+  author: string;
+  email: string;
+  status: 'PENDING' | 'APPROVED';
+  createdAt: string;
+  product: {
+    name: string;
+    slug: string;
+    images?: any[];
+    price?: number;
+  };
 }
 
 // API Response types

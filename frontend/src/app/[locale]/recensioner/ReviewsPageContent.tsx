@@ -3,23 +3,15 @@
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Star, StarHalf, Check, ChevronDown } from 'lucide-react'
+import { Star, StarHalf, Check, ChevronDown, ShoppingBag, Heart } from 'lucide-react'
 import Image from 'next/image'
+import Link from 'next/link'
+import { Review } from '@/types'
 
-interface Review {
-  id: string
-  productId: string
-  rating: number
-  title: string
-  body: string
-  reviewerName: string
-  isVerified: boolean
-  createdAt: string
-  product?: {
-    name: string
-    slug: string
-    images: string[]
-  }
+function capitalize(str: string): string {
+  if (!str) return ''
+  // Endast första bokstaven stor i hela strängen
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
 }
 
 interface ReviewStats {
@@ -34,7 +26,7 @@ interface ReviewStats {
   }
 }
 
-const ITEMS_PER_PAGE = 12 
+const ITEMS_PER_PAGE = 12
 
 export default function ReviewsPageContent() {
   const t = useTranslations('Reviews')
@@ -43,32 +35,34 @@ export default function ReviewsPageContent() {
   const [loading, setLoading] = useState(true)
   const [selectedRating, setSelectedRating] = useState<number | null>(null)
   const [selectedProduct, setSelectedProduct] = useState<string>('')
-  const [sortBy, setSortBy] = useState<'newest' | 'highest' | 'lowest'>('newest')
+  const [sortBy, setSortBy] = useState<'createdAt' | 'rating'>('createdAt')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
   const [products, setProducts] = useState<{id: string, name: string}[]>([])
 
-  // Fetch reviews and stats
   useEffect(() => {
     fetchReviews()
     fetchStats()
     fetchProducts()
-  }, [selectedRating, selectedProduct, sortBy, page])
+  }, [])
 
   useEffect(() => {
     setPage(1)
     setReviews([])
-  }, [selectedRating, selectedProduct, sortBy])
+    fetchReviews(1)
+  }, [selectedRating, selectedProduct, sortBy, sortOrder])
 
-  const fetchReviews = async () => {
+  const fetchReviews = async (currentPage = page) => {
     try {
       setLoading(true)
       const params = new URLSearchParams({
-        page: page.toString(),
+        page: currentPage.toString(),
         limit: ITEMS_PER_PAGE.toString(),
         ...(selectedRating && { rating: selectedRating.toString() }),
         ...(selectedProduct && { productId: selectedProduct }),
-        sort: sortBy,
+        sortBy,
+        sortOrder,
         includePending: 'true'
       })
 
@@ -79,7 +73,7 @@ export default function ReviewsPageContent() {
       
       const data = await response.json()
       
-      if (page === 1) {
+      if (currentPage === 1) {
         setReviews(data.reviews || [])
       } else {
         setReviews(prev => [...(prev || []), ...(data.reviews || [])])
@@ -96,7 +90,7 @@ export default function ReviewsPageContent() {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch('/api/reviews/stats')
+      const response = await fetch('/api/reviews/stats?includePending=true')
       if (!response.ok) {
         throw new Error('Failed to fetch stats')
       }
@@ -125,8 +119,24 @@ export default function ReviewsPageContent() {
   const resetFilters = () => {
     setSelectedRating(null)
     setSelectedProduct('')
-    setSortBy('newest')
-    setPage(1)
+    setSortBy('createdAt')
+    setSortOrder('desc')
+  }
+
+  const handleSortChange = (value: string) => {
+    if (value === 'newest') {
+      setSortBy('createdAt')
+      setSortOrder('desc')
+    } else if (value === 'oldest') {
+      setSortBy('createdAt')
+      setSortOrder('asc')
+    } else if (value === 'highest') {
+      setSortBy('rating')
+      setSortOrder('desc')
+    } else if (value === 'lowest') {
+      setSortBy('rating')
+      setSortOrder('asc')
+    }
   }
 
   const renderStars = (rating: number, size: 'sm' | 'md' | 'lg' = 'md') => {
@@ -141,29 +151,41 @@ export default function ReviewsPageContent() {
 
     for (let i = 0; i < fullStars; i++) {
       stars.push(
-        <Star key={i} className={`${sizes[size]} fill-amber-400 text-amber-400`} />
+        <Star key={i} className={`${sizes[size]} fill-[#4A3428] text-[#4A3428]`} />
       )
     }
 
     if (hasHalfStar) {
       stars.push(
-        <StarHalf key="half" className={`${sizes[size]} fill-amber-400 text-amber-400`} />
+        <StarHalf key="half" className={`${sizes[size]} fill-[#4A3428] text-[#4A3428]`} />
       )
     }
 
     const emptyStars = 5 - Math.ceil(rating)
     for (let i = 0; i < emptyStars; i++) {
       stars.push(
-        <Star key={`empty-${i}`} className={`${sizes[size]} text-gray-300`} />
+        <Star key={`empty-${i}`} className={`${sizes[size]} text-gray-200`} />
       )
     }
 
     return <div className="flex gap-0.5">{stars}</div>
   }
 
+  const getProductImage = (product: any) => {
+    if (product?.images && Array.isArray(product.images) && product.images.length > 0) {
+      const firstImage = product.images[0]
+      if (typeof firstImage === 'string') {
+        return firstImage
+      } else if (firstImage && typeof firstImage === 'object' && firstImage.url) {
+        return firstImage.url
+      }
+    }
+    return '/images/products/placeholder.png'
+  }
+
   if (loading && page === 1) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-[#FAF8F5]">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A3428]"></div>
       </div>
     )
@@ -172,7 +194,7 @@ export default function ReviewsPageContent() {
   return (
     <div className="min-h-screen bg-[#FAF8F5]">
       {/* Hero Section */}
-      <section className="bg-gradient-to-b from-[#F5F0E8] to-[#FAF8F5] py-20">
+      <section className="bg-gradient-to-b from-[#F5F0E8] to-[#FAF8F5] py-16">
         <div className="container mx-auto px-4">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -188,12 +210,12 @@ export default function ReviewsPageContent() {
             
             {/* Stats Overview */}
             {stats && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
-                  className="bg-white rounded-2xl p-6 shadow-sm"
+                  className="bg-white/80 backdrop-blur rounded-2xl p-6 shadow-sm"
                 >
                   <div className="text-3xl font-light text-[#4A3428] mb-2">
                     {stats.totalReviews}+
@@ -205,7 +227,7 @@ export default function ReviewsPageContent() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="bg-white rounded-2xl p-6 shadow-sm"
+                  className="bg-white/80 backdrop-blur rounded-2xl p-6 shadow-sm"
                 >
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <span className="text-3xl font-light text-[#4A3428]">
@@ -220,7 +242,7 @@ export default function ReviewsPageContent() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
-                  className="bg-white rounded-2xl p-6 shadow-sm"
+                  className="bg-white/80 backdrop-blur rounded-2xl p-6 shadow-sm"
                 >
                   <div className="text-3xl font-light text-[#4A3428] mb-2">
                     {Math.round((stats.ratingDistribution[5] / stats.totalReviews) * 100)}%
@@ -233,15 +255,14 @@ export default function ReviewsPageContent() {
         </div>
       </section>
 
-      {/* Filters Section */}
-      <section className="container mx-auto px-4 py-8">
-        <div className="bg-white rounded-2xl p-6 shadow-sm">
+      {/* Filters Section - körs här också... */}
+      <section className="container mx-auto px-4 py-6">
+        <div className="bg-white/80 backdrop-blur rounded-2xl p-4 shadow-sm">
           <div className="flex flex-wrap gap-4 items-center justify-between">
-            {/* Rating Filter */}
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setSelectedRating(null)}
-                className={`px-4 py-2 rounded-full text-sm transition-all ${
+                className={`px-3 py-1.5 rounded-full text-sm transition-all ${
                   selectedRating === null 
                     ? 'bg-[#4A3428] text-white' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -253,7 +274,7 @@ export default function ReviewsPageContent() {
                 <button
                   key={rating}
                   onClick={() => setSelectedRating(rating)}
-                  className={`px-4 py-2 rounded-full text-sm transition-all flex items-center gap-1 ${
+                  className={`px-3 py-1.5 rounded-full text-sm transition-all flex items-center gap-1 ${
                     selectedRating === rating
                       ? 'bg-[#4A3428] text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -264,70 +285,32 @@ export default function ReviewsPageContent() {
               ))}
             </div>
 
-            {/* Product Filter */}
-            <select
-              value={selectedProduct}
-              onChange={(e) => setSelectedProduct(e.target.value)}
-              className="px-4 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#4A3428] focus:ring-opacity-20"
-            >
-              <option value="">{t('allProducts')}</option>
-              {products.map((product) => (
-                <option key={product.id} value={product.id}>
-                  {product.name}
-                </option>
-              ))}
-            </select>
-
-            {/* Sort Options */}
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
-              className="px-4 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#4A3428] focus:ring-opacity-20"
-            >
-              <option value="newest">{t('sortNewest')}</option>
-              <option value="highest">{t('sortHighest')}</option>
-              <option value="lowest">{t('sortLowest')}</option>
-            </select>
-
-            {/* Reset Button */}
-            {(selectedRating || selectedProduct || sortBy !== 'newest') && (
-              <button
-                onClick={resetFilters}
-                className="px-4 py-2 text-sm text-[#4A3428] hover:text-[#6B5D54] transition-colors"
+            <div className="flex gap-2">
+              <select
+                value={selectedProduct}
+                onChange={(e) => setSelectedProduct(e.target.value)}
+                className="px-3 py-1.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#4A3428] focus:ring-opacity-20"
               >
-                {t('resetFilters')}
-              </button>
-            )}
-          </div>
-
-          {/* Rating Distribution */}
-          {stats && (
-            <div className="mt-6 pt-6 border-t border-gray-100">
-              <div className="max-w-md">
-                {[5, 4, 3, 2, 1].map((rating) => (
-                  <div key={rating} className="flex items-center gap-3 mb-2">
-                    <button
-                      onClick={() => setSelectedRating(rating)}
-                      className="flex items-center gap-1 text-sm text-gray-600 hover:text-[#4A3428] transition-colors"
-                    >
-                      {rating} <Star className="w-3 h-3 fill-current" />
-                    </button>
-                    <div className="flex-1 bg-gray-200 rounded-full h-2 overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${(stats.ratingDistribution[rating as keyof typeof stats.ratingDistribution] / stats.totalReviews) * 100}%` }}
-                        transition={{ duration: 0.5, delay: rating * 0.1 }}
-                        className="h-full bg-amber-400"
-                      />
-                    </div>
-                    <span className="text-sm text-gray-500 w-12 text-right">
-                      {stats.ratingDistribution[rating as keyof typeof stats.ratingDistribution]}
-                    </span>
-                  </div>
+                <option value="">{t('allProducts')}</option>
+                {products.map((product) => (
+                  <option key={product.id} value={product.id}>
+                    {product.name}
+                  </option>
                 ))}
-              </div>
+              </select>
+
+              <select
+                value={`${sortBy}-${sortOrder}`}
+                onChange={(e) => handleSortChange(e.target.value)}
+                className="px-3 py-1.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#4A3428] focus:ring-opacity-20"
+              >
+                <option value="createdAt-desc">{t('sortNewest')}</option>
+                <option value="createdAt-asc">{t('sortOldest')}</option>
+                <option value="rating-desc">{t('sortHighest')}</option>
+                <option value="rating-asc">{t('sortLowest')}</option>
+              </select>
             </div>
-          )}
+          </div>
         </div>
       </section>
 
@@ -335,7 +318,7 @@ export default function ReviewsPageContent() {
       <section className="container mx-auto px-4 pb-20">
         <AnimatePresence mode="wait">
           <motion.div
-            key={`${selectedRating}-${selectedProduct}-${sortBy}`}
+            key={`${selectedRating}-${selectedProduct}-${sortBy}-${sortOrder}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -347,63 +330,71 @@ export default function ReviewsPageContent() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow"
+                className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group"
               >
-                {/* Rating and Date */}
-                <div className="flex items-center justify-between mb-4">
-                  {renderStars(review.rating)}
-                  <span className="text-sm text-gray-500">
-                    {new Date(review.createdAt).toLocaleDateString('sv-SE')}
-                  </span>
-                </div>
-
-                {/* Title */}
-                {review.title && (
-                  <h3 className="font-medium text-[#4A3428] mb-2">
-                    {review.title}
-                  </h3>
-                )}
-
-                {/* Review Body */}
-                <p className="text-gray-700 text-sm mb-4 line-clamp-4">
-                  {review.body}
-                </p>
-
-                {/* Product Info */}
+                {/* Product Header with Image */}
                 {review.product && (
-                  <div className="flex items-center gap-3 mb-4 p-3 bg-gray-50 rounded-lg">
-                    {review.product.images?.[0] && (
+                  <Link href={`/sv/products/${review.product.slug}`} className="block">
+                    <div className="relative h-48 bg-gradient-to-br from-[#F5F0E8] to-[#FAF8F5] overflow-hidden">
                       <Image
-                        src={review.product.images[0]}
+                        src={getProductImage(review.product)}
                         alt={review.product.name}
-                        width={50}
-                        height={50}
-                        className="rounded-lg object-cover"
+                        fill
+                        className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
                       />
-                    )}
-                    <div>
-                      <p className="text-sm font-medium text-[#4A3428]">
-                        {review.product.name}
-                      </p>
+                      <div className="absolute top-3 right-3 bg-white/90 backdrop-blur rounded-full px-3 py-1 text-sm font-medium text-[#4A3428]">
+                        {review.product.price} kr
+                      </div>
                     </div>
-                  </div>
+                  </Link>
                 )}
 
-                {/* Reviewer Info */}
-                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">
-                      {review.reviewerName}
+                <div className="p-5">
+                  {/* Rating and Date */}
+                  <div className="flex items-center justify-between mb-3">
+                    {renderStars(review.rating)}
+                    <span className="text-xs text-gray-500">
+                      {new Date(review.createdAt).toLocaleDateString('sv-SE')}
+                    </span>
+                  </div>
+
+                  {/* Title - mindre och normal kapitalisering */}
+                  {review.title && (
+                    <h3 className="text-base font-medium text-[#4A3428] mb-2 line-clamp-1">
+                      {capitalize(review.title)}
+                    </h3>
+                  )}
+
+                  {/* Review Body */}
+                  <p className="text-sm text-gray-600 mb-3 line-clamp-3">
+                    {review.body}
+                  </p>
+
+                  {/* Author */}
+                  <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                    <p className="text-sm text-gray-500">
+                      {review.author}
                     </p>
-                    {review.isVerified && (
-                      <div className="flex items-center gap-1 mt-1">
-                        <Check className="w-3 h-3 text-[#4A3428]" />
-                        <span className="text-xs text-[#4A3428]">
-                          {t('verifiedPurchase')}
-                        </span>
+                    {review.status === 'APPROVED' && (
+                      <div className="flex items-center gap-1">
+                        <Check className="w-3 h-3 text-green-600" />
+                        <span className="text-xs text-green-600">Verifierad</span>
                       </div>
                     )}
                   </div>
+
+                  {/* Product Link */}
+                  {review.product && (
+                    <Link 
+                      href={`/sv/products/${review.product.slug}`}
+                      className="mt-3 flex items-center justify-between w-full px-3 py-2 bg-[#F5F0E8] rounded-lg hover:bg-[#E5DDD5] transition-colors group/link"
+                    >
+                      <span className="text-sm font-medium text-[#4A3428]">
+                        {review.product.name}
+                      </span>
+                      <ShoppingBag className="w-4 h-4 text-[#4A3428] group-hover/link:translate-x-1 transition-transform" />
+                    </Link>
+                  )}
                 </div>
               </motion.div>
             ))}
@@ -418,9 +409,12 @@ export default function ReviewsPageContent() {
             className="text-center mt-12"
           >
             <button
-              onClick={() => setPage(prev => prev + 1)}
+              onClick={() => {
+                setPage(prev => prev + 1)
+                fetchReviews(page + 1)
+              }}
               disabled={loading}
-              className="inline-flex items-center gap-2 px-8 py-3 bg-[#4A3428] text-white rounded-full hover:bg-[#6B5D54] transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-[#4A3428] text-white rounded-full hover:bg-[#6B5D54] transition-colors disabled:opacity-50"
             >
               {loading ? (
                 <>
@@ -445,9 +439,6 @@ export default function ReviewsPageContent() {
             className="text-center py-20"
           >
             <p className="text-gray-500">{t('noReviews')}</p>
-            {!Array.isArray(reviews) && (
-              <p className="text-red-500 text-sm mt-2">Kunde inte ladda recensioner. Kontrollera API-anslutningen.</p>
-            )}
           </motion.div>
         )}
       </section>

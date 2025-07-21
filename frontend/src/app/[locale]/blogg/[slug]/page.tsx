@@ -1,128 +1,55 @@
-import { Header } from '@/components/layout/Header'
-import { Footer } from '@/components/layout/Footer'
-import { BlogPost } from '@/components/blog/BlogPost'
-import { generateBlogPostSEO } from '@/lib/seo-utils'
-import { notFound } from 'next/navigation'
-import type { Metadata } from 'next'
+import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 
-interface BlogPostPageProps {
-  params: Promise<{
-    slug: string
-    locale: string
-  }>
-}
+type Props = {
+  params: { slug: string; locale: string };
+};
 
-interface BlogPostData {
-  title: string
-  content: string
-  date: string
-  slug: string
-  readingTime?: number
-}
+async function getPost(slug: string) {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blog/${slug}`, { next: { revalidate: 3600 } });
 
-// Mock blog posts - replace with API call later
-const mockPosts: BlogPostData[] = [
-  {
-    title: '10 tips för akne',
-    content: `# 10 tips för akne
-
-Akne är ett vanligt hudproblem som påverkar många människor. Här är våra bästa tips för att hantera akne naturligt:
-
-## 1. Använd CBD-baserade produkter
-CBD har visat sig ha anti-inflammatoriska egenskaper som kan hjälpa till att minska rodnad och svullnad.
-
-## 2. Håll huden ren
-Rengör huden varsamt två gånger dagligen med en mild rengöringsprodukt.
-
-## 3. Undvik att peta på finnar
-Detta kan leda till ärrbildning och förvärra inflammationen.
-
-## 4. Använd icke-komedogena produkter
-Välj produkter som inte täpper till porerna.
-
-## 5. Håll håret rent
-Smutsigt hår kan överföra oljor och bakterier till ansiktet.
-
-## 6. Byt örngott regelbundet
-Bakterier kan samlas på örngottet och orsaka utbrott.
-
-## 7. Undvik att röra ansiktet
-Händerna kan överföra bakterier och smuts.
-
-## 8. Ät en balanserad kost
-Undvik för mycket socker och bearbetat mat.
-
-## 9. Hantera stress
-Stress kan förvärra akne genom att öka kortisolnivåerna.
-
-## 10. Var tålmodig
-Hudförbättringar tar tid - ge det minst 6-8 veckor.`,
-    date: '2024-01-15',
-    slug: '10-tips-for-akne',
-    readingTime: 5
+  if (res.status === 404) {
+    return null;
   }
-]
 
-function getMockPostBySlug(slug: string): BlogPostData | null {
-  return mockPosts.find(post => post.slug === slug) || null
+  if (!res.ok) {
+    throw new Error('Failed to fetch post');
+  }
+
+  return res.json();
 }
 
-export async function generateStaticParams() {
-  return mockPosts.map((post) => ({
-    slug: post.slug,
-  }))
-}
 
-export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
-  const resolvedParams = await params
-  const post = getMockPostBySlug(resolvedParams.slug)
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const post = await getPost(params.slug);
   
   if (!post) {
     return {
-      title: 'Artikel hittades inte | 1753 Skincare',
-      description: 'Den begärda artikeln kunde inte hittas.',
+      title: 'Inlägg hittades inte',
     }
   }
 
-  const seoData = generateBlogPostSEO({
-    title: post.title,
-    metaDescription: post.content.substring(0, 160),
-    slug: post.slug,
-    date: post.date
-  })
-  
   return {
-    title: seoData.title,
-    description: seoData.description,
-    keywords: seoData.keywords,
-    openGraph: {
-      title: seoData.openGraph.title,
-      description: seoData.openGraph.description,
-      type: seoData.openGraph.type,
-      url: seoData.openGraph.url,
-      siteName: seoData.openGraph.siteName,
-    },
-  }
+    title: post.title,
+    description: post.content.substring(0, 160),
+  };
 }
 
-export default async function BlogPostPage({ params }: BlogPostPageProps) {
-  const resolvedParams = await params
-  const post = getMockPostBySlug(resolvedParams.slug)
-  
+
+export default async function BlogPostPage({ params }: Props) {
+  const post = await getPost(params.slug);
+
   if (!post) {
-    notFound()
+    notFound();
   }
 
   return (
-    <>
-      <Header />
-      <BlogPost 
-        title={post.title}
-        content={post.content}
-        date={post.date}
-        readingTime={post.readingTime}
-      />
-      <Footer />
-    </>
-  )
+    <article className="prose lg:prose-xl mx-auto py-8 px-4">
+      <h1>{post.title}</h1>
+      <p className="text-sm text-gray-500">
+        Publicerad: {new Date(post.publishedAt).toLocaleDateString(params.locale)}
+      </p>
+      <div dangerouslySetInnerHTML={{ __html: post.content.replace(/\n/g, '<br />') }} />
+    </article>
+  );
 } 

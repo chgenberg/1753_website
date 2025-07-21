@@ -7,8 +7,6 @@ import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { JudgeMeWidget } from '@/components/reviews/JudgeMeWidget'
-import { ReviewsList } from '@/components/reviews/ReviewsList'
 import { useCart } from '@/contexts/CartContext'
 import { 
   Heart, 
@@ -22,8 +20,12 @@ import {
   Leaf,
   Info,
   Plus,
-  Minus
+  Minus,
+  Share2,
+  Package,
+  MessageCircle
 } from 'lucide-react'
+import ProductReviews from '@/components/reviews/ProductReviews'
 
 interface Product {
   id: string
@@ -686,30 +688,12 @@ export default function ProductPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="max-w-4xl"
+              className="max-w-4xl mx-auto w-full"
             >
-              <div className="space-y-8">
-                {/* Review Stats */}
-                <div className="text-center">
-                  <JudgeMeWidget
-                    shopDomain="1753skincare.myshopify.com"
-                    productHandle={product.slug}
-                    widgetType="preview-badge"
-                    className="justify-center"
-                  />
-                </div>
-                
-                {/* Reviews List */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                  <h3 className="text-xl font-semibold mb-6">Kundrecensioner</h3>
-                  <ReviewsList
-                    productId={product.slug}
-                    showAll={true}
-                    maxReviews={20}
-                    showStats={true}
-                  />
-                </div>
-              </div>
+              <ProductReviews 
+                productId={product.id}
+                productSlug={product.slug}
+              />
             </motion.div>
           )}
         </AnimatePresence>

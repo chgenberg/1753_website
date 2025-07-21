@@ -1,53 +1,30 @@
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import type { Metadata } from 'next'
-import BlogContent from './BlogContent'
-import { generatePageSEO } from '@/lib/seo-utils'
+import BlogContent from './BlogContent';
+import { getTranslations } from 'next-intl/server';
+import { Metadata } from 'next';
 
-const seoData = generatePageSEO('blog')
+type Props = {
+  params: { locale: string };
+};
 
-export const metadata: Metadata = {
-  title: seoData.title,
-  description: seoData.description,
-  keywords: seoData.keywords,
-  openGraph: {
-    title: seoData.openGraph.title,
-    description: seoData.openGraph.description,
-    type: seoData.openGraph.type,
-    url: seoData.openGraph.url,
-    siteName: seoData.openGraph.siteName,
-  },
-  twitter: {
-    card: seoData.twitter.card,
-    title: seoData.twitter.title,
-    description: seoData.twitter.description,
-  },
+export async function generateMetadata({ params: { locale } }: Props): Promise<Metadata> {
+  const t = await getTranslations({ locale, namespace: 'Blog' });
+  return {
+    title: t('metaTitle'),
+    description: t('metaDescription'),
+  };
+}
+
+async function fetchBlogPosts() {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blog`, { next: { revalidate: 3600 } });
+  if (!res.ok) {
+    throw new Error('Failed to fetch blog posts');
+  }
+  return res.json();
 }
 
 export default async function BlogPage() {
-  // Mock blog posts - replace with API call later
-  const mockPosts = [
-    {
-      title: '10 tips för akne',
-      content: 'Upptäck de bästa metoderna för att hantera akne naturligt med CBD och CBG...',
-      date: '2024-01-15',
-      slug: '10-tips-for-akne',
-      readingTime: 5
-    },
-    {
-      title: 'CBD och CBG - Cellförnyelseprocessen',
-      content: 'Förstå hur CBD och CBG påverkar hudens naturliga cellförnyelse...',
-      date: '2024-01-12',
-      slug: 'cbd-och-cbg-cellfornyelse',
-      readingTime: 7
-    }
-  ]
-  
-  return (
-    <>
-      <Header />
-      <BlogContent posts={mockPosts} />
-      <Footer />
-    </>
-  )
+  const posts = await fetchBlogPosts();
+  return <BlogContent posts={posts} />;
 } 
