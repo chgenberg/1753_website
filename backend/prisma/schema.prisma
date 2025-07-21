@@ -449,6 +449,12 @@ model Product {
   skinConcerns  String[]  // Addresses these concerns
   timeOfDay     String?   // morning, evening, both
   
+  // Detailed content from 1753-products-blocks.txt
+  longDescription String? @db.Text // Rich detailed description
+  benefitsDetails Json?   // Structured benefits information
+  ingredientsDetails Json? // Detailed ingredient information with concentrations
+  imagesData      Json?   // Detailed image data with alt texts and positions
+  
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 

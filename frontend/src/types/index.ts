@@ -60,33 +60,61 @@ export interface Product {
   name: string
   slug: string
   description: string
-  longDescription: string
+  shortDescription?: string
+  longDescription?: string
   price: number
   compareAtPrice?: number
-  images: ProductImage[]
-  variants: ProductVariant[]
-  category: ProductCategory
+  sku?: string
+  barcode?: string
+  category?: string
   tags: string[]
-  ingredients: Ingredient[]
-  skinTypes: SkinType[]
-  benefits: string[]
-  howToUse: string
-  featured: boolean
-  bestseller: boolean
-  newProduct: boolean
-  saleProduct: boolean
-  inventory: {
-    quantity: number
-    sku: string
-    trackQuantity: boolean
+  images: any[] // Raw image data from Prisma
+  variants: any[] // Raw variant data from Prisma
+  inventory: number
+  trackInventory: boolean
+  allowBackorder: boolean
+  isActive: boolean
+  isFeatured: boolean
+  metaTitle?: string
+  metaDescription?: string
+  seoKeywords: string[]
+  keyIngredients: string[]
+  howToUse?: string
+  skinTypes: string[]
+  skinConcerns: string[]
+  timeOfDay?: string
+  
+  // New detailed fields from 1753-products-blocks.txt
+  benefitsDetails?: DetailedBenefit[]
+  ingredientsDetails?: DetailedIngredient[]
+  imagesData?: DetailedImage[]
+  
+  // Rating data from API
+  rating: {
+    average: number
+    count: number
   }
-  seo: {
-    title: string
-    description: string
-    keywords: string[]
-  }
+  
   createdAt: string
   updatedAt: string
+}
+
+export interface DetailedIngredient {
+  name: string
+  description: string
+  benefits: string[]
+  concentration?: string
+}
+
+export interface DetailedBenefit {
+  title: string
+  description: string
+}
+
+export interface DetailedImage {
+  url: string
+  alt: string
+  position: number
 }
 
 export interface ProductImage {
