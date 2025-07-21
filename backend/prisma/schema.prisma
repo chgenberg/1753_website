@@ -754,3 +754,40 @@ model RawMaterial {
   
   @@map("raw_materials")
 }
+
+// Contact form submissions for learning customer patterns
+model ContactSubmission {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  subject     String
+  message     String   @db.Text
+  
+  // Metadata for analysis
+  userAgent   String?  // Browser/device info
+  ipAddress   String?  // For geographic analysis
+  referrer    String?  // Where they came from
+  
+  // Status tracking
+  status      String   @default("new")  // new, read, replied, resolved
+  category    String?  // Auto-categorized: product_question, order_issue, general, etc.
+  priority    String   @default("normal") // low, normal, high, urgent
+  
+  // Response tracking
+  respondedAt DateTime?
+  respondedBy String?  // Who responded
+  responseTime Int?    // Minutes to first response
+  
+  // Analytics
+  sessionData Json?    // Store additional session/tracking data
+  tags        String[] // For categorization and analysis
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("contact_submissions")
+  @@index([email])
+  @@index([status])
+  @@index([createdAt])
+  @@index([category])
+}
