@@ -33,5 +33,11 @@ async function fetchBlogPosts() {
 
 export default async function BlogPage() {
   const posts = await fetchBlogPosts();
-  return <BlogContent posts={posts} />;
+  return (
+    <>
+      <Header />
+      <BlogContent posts={posts} />
+      <Footer />
+    </>
+  );
 } 

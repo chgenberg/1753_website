@@ -225,7 +225,27 @@ export default function BlogContent({ posts }: BlogContentProps) {
                       </h2>
                       
                       <p className="text-gray-600 mb-4 line-clamp-3 flex-1">
-                        {post.content.replace(/<[^>]*>/g, '').substring(0, 150)}...
+                        {(() => {
+                          // Clean HTML content more thoroughly
+                          let cleanText = post.content
+                            .replace(/<[^>]*>/g, '') // Remove HTML tags
+                            .replace(/class\s*=\s*["'][^"']*["']/gi, '') // Remove class attributes
+                            .replace(/mb-\d+|text-\w+-\d+|leading-\w+|font-\w+/g, '') // Remove common Tailwind classes
+                            .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+                            .trim();
+                          
+                          // If still too long, truncate
+                          if (cleanText.length > 150) {
+                            cleanText = cleanText.substring(0, 150);
+                            // Try to end at a word boundary
+                            const lastSpace = cleanText.lastIndexOf(' ');
+                            if (lastSpace > 100) {
+                              cleanText = cleanText.substring(0, lastSpace);
+                            }
+                          }
+                          
+                          return cleanText + (cleanText.length < post.content.replace(/<[^>]*>/g, '').length ? '...' : '');
+                        })()}
                       </p>
 
                       {/* Tags */}

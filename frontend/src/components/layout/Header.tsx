@@ -100,8 +100,8 @@ export function Header() {
               )}
             </button>
 
-            {/* Desktop Navigation - Left side */}
-            <nav className="hidden md:block">
+            {/* Desktop Navigation - Center */}
+            <nav className="hidden md:block mx-auto">
               <ul className="flex items-center gap-6">
                 {/* Hem */}
                 <li>
@@ -263,14 +263,14 @@ export function Header() {
               </ul>
             </nav>
 
-            {/* Logo - Right side */}
-            <Link href="/" className="absolute left-1/2 transform -translate-x-1/2 md:relative md:left-auto md:transform-none md:ml-auto md:mr-4">
+            {/* Logo - Left side */}
+            <Link href="/" className="order-first mr-auto">
               <Image
                 src="/1753.png"
                 alt="1753 Skincare"
-                width={140}
-                height={50}
-                className="h-12 w-auto md:h-14"
+                width={180}
+                height={60}
+                className="h-14 w-auto md:h-16"
                 priority
               />
             </Link>
