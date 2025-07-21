@@ -232,7 +232,7 @@ export default function ContactPage() {
                         required
                         value={formData.name}
                         onChange={handleChange}
-                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00937c] focus:border-transparent outline-none transition-colors"
+                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8B6B47] focus:border-transparent outline-none transition-colors"
                         placeholder="Ditt fullständiga namn"
                       />
                     </div>
@@ -251,7 +251,7 @@ export default function ContactPage() {
                         required
                         value={formData.email}
                         onChange={handleChange}
-                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00937c] focus:border-transparent outline-none transition-colors"
+                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8B6B47] focus:border-transparent outline-none transition-colors"
                         placeholder="din@email.com"
                       />
                     </div>
@@ -268,7 +268,7 @@ export default function ContactPage() {
                     required
                     value={formData.subject}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00937c] focus:border-transparent outline-none transition-colors"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8B6B47] focus:border-transparent outline-none transition-colors"
                   >
                     <option value="">Välj ett ämne</option>
                     <option value="product-question">Produktfråga</option>
@@ -292,7 +292,7 @@ export default function ContactPage() {
                       rows={6}
                       value={formData.message}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00937c] focus:border-transparent outline-none transition-colors resize-none"
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8B6B47] focus:border-transparent outline-none transition-colors resize-none"
                       placeholder="Berätta vad vi kan hjälpa dig med..."
                     />
                   </div>
@@ -302,7 +302,7 @@ export default function ContactPage() {
                   type="submit"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full px-6 py-4 bg-[#00937c] text-white rounded-lg font-semibold hover:bg-[#007363] transition-colors duration-300 flex items-center justify-center text-lg"
+                  className="w-full px-6 py-4 bg-[#8B6B47] text-white rounded-lg font-semibold hover:bg-[#6B5337] transition-colors duration-300 flex items-center justify-center text-lg"
                 >
                   <Send className="w-5 h-5 mr-2" />
                   Skicka
@@ -316,7 +316,7 @@ export default function ContactPage() {
                       href="https://www.hcaptcha.com/privacy" 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="text-[#00937c] hover:text-[#007363] underline"
+                      className="text-[#8B6B47] hover:text-[#6B5337] underline"
                     >
                       integritetspolicy
                     </a>
@@ -325,7 +325,7 @@ export default function ContactPage() {
                       href="https://www.hcaptcha.com/terms" 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="text-[#00937c] hover:text-[#007363] underline"
+                      className="text-[#8B6B47] hover:text-[#6B5337] underline"
                     >
                       användarvillkor
                     </a>
@@ -347,18 +347,18 @@ export default function ContactPage() {
               transition={{ duration: 0.6 }}
               className="text-center"
             >
-              <Clock className="w-16 h-16 text-[#00937c] mx-auto mb-6" />
+              <Clock className="w-16 h-16 text-[#8B6B47] mx-auto mb-6" />
               <h2 className="text-3xl font-bold mb-8">Öppettider</h2>
               
               <div className="grid md:grid-cols-3 gap-8">
                 <div className="bg-gray-50 rounded-xl p-6">
                   <h3 className="font-semibold text-lg mb-3">Måndag - Fredag</h3>
-                  <p className="text-2xl font-bold text-[#00937c]">08:00 - 18:00</p>
+                  <p className="text-2xl font-bold text-[#8B6B47]">08:00 - 18:00</p>
                 </div>
                 
                 <div className="bg-gray-50 rounded-xl p-6">
                   <h3 className="font-semibold text-lg mb-3">Lördag</h3>
-                  <p className="text-2xl font-bold text-[#00937c]">10:00 - 14:00</p>
+                  <p className="text-2xl font-bold text-[#8B6B47]">10:00 - 14:00</p>
                 </div>
                 
                 <div className="bg-gray-50 rounded-xl p-6">
