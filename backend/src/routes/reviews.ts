@@ -259,6 +259,61 @@ router.get('/', async (req: Request, res: Response) => {
   }
 });
 
+// GET reviews for a specific product by slug
+router.get('/product/:productSlug', async (req, res) => {
+  const { productSlug } = req.params;
+  try {
+    const reviews = await prisma.review.findMany({
+      where: {
+        product: { slug: productSlug },
+        status: 'APPROVED',
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    res.json({ reviews });
+  } catch (error) {
+    console.error(`Error fetching reviews for ${productSlug}:`, error);
+    res.status(500).json({ error: 'Failed to fetch product reviews' });
+  }
+});
+
+// GET review stats for a specific product by slug
+router.get('/product/:productSlug/stats', async (req, res) => {
+  const { productSlug } = req.params;
+  try {
+    const reviews = await prisma.review.findMany({
+      where: {
+        product: { slug: productSlug },
+        status: 'APPROVED',
+      },
+      select: { rating: true },
+    });
+
+    if (reviews.length === 0) {
+      return res.json({
+        totalReviews: 0,
+        averageRating: 0,
+        ratingDistribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+      });
+    }
+
+    const totalReviews = reviews.length;
+    const averageRating = reviews.reduce((acc, r) => acc + r.rating, 0) / totalReviews;
+    const ratingDistribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+    reviews.forEach(r => {
+      if (r.rating >= 1 && r.rating <= 5) {
+        ratingDistribution[r.rating]++;
+      }
+    });
+
+    res.json({ totalReviews, averageRating, ratingDistribution });
+  } catch (error) {
+    console.error(`Error fetching review stats for ${productSlug}:`, error);
+    res.status(500).json({ error: 'Failed to fetch product review stats' });
+  }
+});
+
+
 /**
  * GET /api/reviews/stats
  * Hämta statistik för alla godkända recensioner
