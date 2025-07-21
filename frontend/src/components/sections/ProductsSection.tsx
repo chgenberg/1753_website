@@ -136,8 +136,8 @@ export function ProductsSection() {
                   <div className="relative aspect-square overflow-hidden bg-gray-100">
                     {product.images && product.images[0] ? (
                       <Image
-                        src={product.images[0].src}
-                        alt={product.images[0].alt || product.name}
+                        src={typeof product.images[0] === 'string' ? product.images[0] : product.images[0].src}
+                        alt={typeof product.images[0] === 'string' ? product.name : (product.images[0].alt || product.name)}
                         width={400}
                         height={400}
                         className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700"
