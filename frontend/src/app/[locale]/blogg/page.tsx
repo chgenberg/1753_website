@@ -18,7 +18,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 async function fetchBlogPosts() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blog`, { next: { revalidate: 3600 } });
+  // Use internal Next.js API proxy to backend so it works in all envs
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/api/blog`, {
+    next: { revalidate: 3600 },
+  });
   if (!res.ok) {
     throw new Error('Failed to fetch blog posts');
   }
