@@ -217,24 +217,35 @@ export default function QuizPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-white/40 to-white/60" />
       </div>
 
-      <div className="relative z-10 max-w-2xl w-full p-4">
-        {/* Logo and Back to Home */}
-        <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-20">
-          <Link href="/" className="flex items-center gap-2">
-            <Image
-              src="/1753.png"
-              alt="1753 Skincare"
-              width={120}
-              height={40}
-              className="h-10 w-auto"
-            />
-          </Link>
+      {/* Logo and Back to Home - Outside main container for desktop */}
+      <div className="fixed top-4 left-4 z-20 flex items-center gap-4">
+        <Link href="/" className="flex items-center">
+          <Image
+            src="/1753.png"
+            alt="1753 Skincare"
+            width={120}
+            height={40}
+            className="h-10 w-auto"
+          />
+        </Link>
+        <Link 
+          href="/" 
+          className="hidden md:flex items-center gap-2 text-sm text-[#8B6B47] hover:text-[#6B5337] transition-colors"
+        >
+          <Home className="w-4 h-4" />
+          <span>Tillbaka till startsida</span>
+        </Link>
+      </div>
+
+      <div className="relative z-10 max-w-2xl md:max-w-4xl lg:max-w-5xl w-full p-4">
+        {/* Mobile Back Button */}
+        <div className="md:hidden absolute top-4 right-4 z-20">
           <Link 
             href="/" 
             className="flex items-center gap-2 text-sm text-[#8B6B47] hover:text-[#6B5337] transition-colors"
           >
             <Home className="w-4 h-4" />
-            <span className="hidden md:inline">Tillbaka till startsida</span>
+            <span>Hem</span>
           </Link>
         </div>
 

@@ -24,25 +24,25 @@ export const QuizQuestion: React.FC<QuizQuestionProps> = ({
       className="w-full"
     >
       {/* Question Header - More Compact */}
-      <div className="text-center mb-6 md:mb-8">
+      <div className="text-center mb-6 md:mb-8 lg:mb-12">
         <motion.div 
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: "spring", stiffness: 200, damping: 20 }}
-          className="w-14 h-14 md:w-16 md:h-16 bg-black rounded-full flex items-center justify-center text-2xl md:text-3xl mx-auto mb-4"
+          className="w-14 h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 bg-black rounded-full flex items-center justify-center text-2xl md:text-3xl lg:text-4xl mx-auto mb-4 md:mb-6"
         >
           <span className="filter grayscale-0">{question.icon || '🎯'}</span>
         </motion.div>
-        <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">
+        <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
           {question.question || question.text}
         </h3>
-        <p className="text-gray-600 text-sm md:text-base">
+        <p className="text-gray-600 text-sm md:text-base lg:text-lg">
           {question.subtitle || question.description}
         </p>
       </div>
 
       {/* Options Grid - Responsive Layout */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 max-w-4xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-3 md:gap-4 lg:gap-6 max-w-5xl mx-auto">
         {question.options.map((option, index) => (
           <motion.button
             key={option.value}
@@ -52,7 +52,7 @@ export const QuizQuestion: React.FC<QuizQuestionProps> = ({
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => onAnswer(question.id, option.value)}
-            className={`relative p-4 md:p-5 rounded-2xl border-2 transition-all duration-300 text-left group ${
+            className={`relative p-4 md:p-6 lg:p-8 rounded-2xl border-2 transition-all duration-300 text-left group ${
               selectedValue === option.value
                 ? 'border-black bg-black text-white shadow-xl'
                 : 'border-gray-200 hover:border-gray-400 hover:shadow-lg bg-white'
@@ -60,24 +60,24 @@ export const QuizQuestion: React.FC<QuizQuestionProps> = ({
           >
             <div className="flex items-start gap-3">
               {/* Option Icon - Smaller and Cleaner */}
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-all ${
+              <div className={`w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 rounded-xl flex items-center justify-center flex-shrink-0 transition-all ${
                 selectedValue === option.value
                   ? 'bg-white/20'
                   : 'bg-gray-100 group-hover:bg-gray-200'
               }`}>
-                <span className="text-lg">{option.icon || option.emoji}</span>
+                <span className="text-lg md:text-xl lg:text-2xl">{option.icon || option.emoji}</span>
               </div>
 
               {/* Option Content - Compact */}
               <div className="flex-1 min-w-0">
-                <h4 className={`font-semibold text-sm md:text-base mb-1 ${
+                <h4 className={`font-semibold text-sm md:text-base lg:text-lg mb-1 ${
                   selectedValue === option.value
                     ? 'text-white'
                     : 'text-gray-900'
                 }`}>
                   {option.label}
                 </h4>
-                <p className={`text-xs md:text-sm leading-relaxed ${
+                <p className={`text-xs md:text-sm lg:text-base leading-relaxed ${
                   selectedValue === option.value
                     ? 'text-white/80'
                     : 'text-gray-600'

@@ -291,9 +291,9 @@ export function QuizResults({ answers, userName = '', userEmail = '', results, o
 
       {/* Content */}
       <div className="relative z-10 h-full flex flex-col">
-        {/* Logo and Back to Home */}
-        <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-20">
-          <Link href="/" className="flex items-center gap-2">
+        {/* Logo and Back to Home - Fixed position for desktop */}
+        <div className="fixed top-4 left-4 z-30 flex items-center gap-4">
+          <Link href="/" className="flex items-center">
             <Image
               src="/1753.png"
               alt="1753 Skincare"
@@ -304,10 +304,21 @@ export function QuizResults({ answers, userName = '', userEmail = '', results, o
           </Link>
           <Link 
             href="/" 
+            className="hidden md:flex items-center gap-2 text-sm text-[#8B6B47] hover:text-[#6B5337] transition-colors"
+          >
+            <Home className="w-4 h-4" />
+            <span>Tillbaka till startsida</span>
+          </Link>
+        </div>
+        
+        {/* Mobile Back Button */}
+        <div className="md:hidden absolute top-4 right-4 z-30">
+          <Link 
+            href="/" 
             className="flex items-center gap-2 text-sm text-[#8B6B47] hover:text-[#6B5337] transition-colors"
           >
             <Home className="w-4 h-4" />
-            <span className="hidden md:inline">Tillbaka till startsida</span>
+            <span>Hem</span>
           </Link>
         </div>
 
