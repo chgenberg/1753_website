@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 type Props = {
-  params: { slug: string; locale: string };
+  params: Promise<{ slug: string; locale: string }>;
 };
 
 async function getPost(slug: string) {
@@ -21,7 +21,8 @@ async function getPost(slug: string) {
 
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const post = await getPost(params.slug);
+  const { slug } = await params;
+  const post = await getPost(slug);
   
   if (!post) {
     return {
@@ -37,7 +38,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 
 export default async function BlogPostPage({ params }: Props) {
-  const post = await getPost(params.slug);
+  const { slug, locale } = await params;
+  const post = await getPost(slug);
 
   if (!post) {
     notFound();
@@ -47,7 +49,7 @@ export default async function BlogPostPage({ params }: Props) {
     <article className="prose lg:prose-xl mx-auto py-8 px-4">
       <h1>{post.title}</h1>
       <p className="text-sm text-gray-500">
-        Publicerad: {new Date(post.publishedAt).toLocaleDateString(params.locale)}
+        Publicerad: {new Date(post.publishedAt).toLocaleDateString(locale)}
       </p>
       <div dangerouslySetInnerHTML={{ __html: post.content.replace(/\n/g, '<br />') }} />
     </article>
