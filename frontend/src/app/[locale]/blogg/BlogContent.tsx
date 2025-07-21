@@ -225,7 +225,7 @@ export default function BlogContent({ posts }: BlogContentProps) {
                       </h2>
                       
                       <p className="text-gray-600 mb-4 line-clamp-3 flex-1">
-                        {post.content.substring(0, 150)}...
+                        {post.content.replace(/<[^>]*>/g, '').substring(0, 150)}...
                       </p>
 
                       {/* Tags */}
