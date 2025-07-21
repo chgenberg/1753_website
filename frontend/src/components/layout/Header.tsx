@@ -133,6 +133,7 @@ export function Header() {
                     href="/auth/login"
                     className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-2"
                   >
+                    <Sparkles className="w-5 h-5 text-amber-600" />
                     <User className="w-5 h-5" />
                     <span className="hidden lg:inline text-sm">Logga in</span>
                   </Link>
@@ -285,24 +286,13 @@ export function Header() {
                 </AnimatePresence>
               </li>
 
-              {/* Quiz - Highlighted */}
-              <li>
-                <Link
-                  href="/quiz"
-                  className="flex items-center gap-2 px-6 py-3 bg-amber-50 border-2 border-amber-300 hover:bg-amber-100 rounded-full font-semibold text-gray-700 transition-all transform hover:scale-105"
-                >
-                  <Sparkles className="w-4 h-4 text-amber-600" />
-                  <span>Hudanalys</span>
-                </Link>
-              </li>
-
               {/* Kunskap - with dropdown */}
               <li className="relative">
                 <button
                   onMouseEnter={() => setActiveDropdown('kunskap')}
                   onMouseLeave={() => setActiveDropdown(null)}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                    isActive('/kunskap') || isActive('/blogg')
+                    isActive('/kunskap') || isActive('/blogg') || isActive('/quiz')
                       ? 'bg-[#4A3428] text-white' 
                       : 'hover:bg-gray-100 text-gray-700'
                   }`}
@@ -323,6 +313,13 @@ export function Header() {
                       onMouseLeave={() => setActiveDropdown(null)}
                       className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 border border-gray-200"
                     >
+                      <Link
+                        href="/quiz"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                      >
+                        <Sparkles className="w-4 h-4 text-amber-600" />
+                        Hudanalys
+                      </Link>
                       <Link
                         href="/blogg"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -440,21 +437,18 @@ export function Header() {
                     </div>
                   </li>
 
-                  <li className="px-4">
-                    <Link
-                      href="/quiz"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center justify-center gap-2 px-6 py-3 bg-amber-50 border-2 border-amber-300 hover:bg-amber-100 rounded-full font-semibold text-gray-700 transition-all"
-                    >
-                      <Sparkles className="w-4 h-4 text-amber-600" />
-                      <span>Hudanalys</span>
-                    </Link>
-                  </li>
-
                   <li>
                     <div className="px-4 py-2">
                       <p className="text-sm font-semibold text-gray-600 mb-2">Kunskap</p>
                       <div className="space-y-1 ml-4">
+                        <Link
+                          href="/quiz"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="flex items-center gap-2 py-2 text-sm text-gray-700 hover:text-[#4A3428]"
+                        >
+                          <Sparkles className="w-4 h-4 text-amber-600" />
+                          Hudanalys
+                        </Link>
                         <Link
                           href="/blogg"
                           onClick={() => setIsMobileMenuOpen(false)}
