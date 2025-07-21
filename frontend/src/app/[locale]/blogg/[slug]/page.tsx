@@ -157,7 +157,48 @@ export default async function BlogPostPage({ params }: Props) {
                           prose-ul:my-6 prose-li:my-2
                           prose-strong:text-gray-900 prose-strong:font-semibold
                           prose-blockquote:border-l-4 prose-blockquote:border-[#4A3428] prose-blockquote:pl-6 prose-blockquote:italic">
-              <div dangerouslySetInnerHTML={{ __html: post.content }} />
+              {/* Check if content has HTML tags, if not format it as simple paragraphs */}
+              {post.content.includes('<p>') || post.content.includes('<h2>') ? (
+                <div dangerouslySetInnerHTML={{ __html: post.content }} />
+              ) : (
+                <div>
+                  {post.content
+                    .split('\n')
+                    .filter((line: string) => line.trim().length > 0)
+                    .filter((line: string, index: number) => {
+                      // Skip duplicate headers and author info
+                      if (index === 0) return false; // Skip first line (title)
+                      if (line.match(/^\d{1,2}\s+(januari|februari|mars|april|maj|juni|juli|augusti|september|oktober|november|december)\s+\d{4}$/i)) return false;
+                      if (['Christopher Genberg', 'Ebba Genberg', '1753 Skincare'].includes(line.trim())) return false;
+                      return line.trim().length > 30;
+                    })
+                    .map((paragraph: string, index: number) => {
+                      const cleanText = paragraph.trim();
+                      
+                      // Check if it might be a heading
+                      const isHeading = (
+                        cleanText.length < 80 && 
+                        (cleanText.endsWith('!') || cleanText.endsWith('?') || cleanText.endsWith(':') ||
+                         cleanText.match(/^\d+\s+(tips|steg|sätt|fördelar|nycklar)/i))
+                      );
+                      
+                      if (isHeading) {
+                        return (
+                          <h2 key={index} className="text-3xl font-bold mt-10 mb-6 text-gray-900">
+                            {cleanText}
+                          </h2>
+                        );
+                      } else {
+                        return (
+                          <p key={index} className="mb-6 text-gray-700 leading-relaxed">
+                            {cleanText}
+                          </p>
+                        );
+                      }
+                    })
+                  }
+                </div>
+              )}
             </div>
 
             {/* Call to Action */}
