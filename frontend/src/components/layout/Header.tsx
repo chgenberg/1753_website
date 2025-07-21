@@ -167,12 +167,6 @@ export function Header() {
                           Om 1753 Skincare
                         </Link>
                         <Link
-                          href="/om-oss/ingredienser"
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        >
-                          Våra ingredienser
-                        </Link>
-                        <Link
                           href="/om-oss/aterforsaljare"
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         >
@@ -221,6 +215,12 @@ export function Header() {
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         >
                           Kunskapsbanken
+                        </Link>
+                        <Link
+                          href="/om-oss/ingredienser"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          Våra ingredienser
                         </Link>
                         <Link
                           href="/kunskap/e-bok"
@@ -404,13 +404,6 @@ export function Header() {
                           Vilka är vi?
                         </Link>
                         <Link
-                          href="/om-oss/ingredienser"
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
-                        >
-                          Våra ingredienser
-                        </Link>
-                        <Link
                           href="/om-oss/faq"
                           onClick={() => setIsMobileMenuOpen(false)}
                           className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
@@ -446,6 +439,13 @@ export function Header() {
                         >
                           <Sparkles className="w-4 h-4 text-amber-600" />
                           Hudanalys
+                        </Link>
+                        <Link
+                          href="/om-oss/ingredienser"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
+                        >
+                          Våra ingredienser
                         </Link>
                         <Link
                           href="/blogg"
