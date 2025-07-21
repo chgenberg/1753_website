@@ -33,20 +33,17 @@ export default function LoginPage() {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center overflow-hidden">
-      {/* Vimeo Background */}
+      {/* Background Image */}
       <div className="absolute inset-0 z-0">
-        <iframe
-          src="https://player.vimeo.com/video/708122282?h=0&background=1&autoplay=1&loop=1&badge=0&autopause=0&player_id=0&app_id=58479#t=5.595"
-          frameBorder="0"
-          allow="autoplay; fullscreen; picture-in-picture"
-          className="absolute inset-0 w-full h-full object-cover"
-          style={{ pointerEvents: 'none' }}
+        <div 
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: 'url(/Cannabis/CBG.jpg)' }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60" />
       </div>
 
       {/* Content */}
-      <div className="relative z-10 w-full max-w-md mx-auto p-4">
+      <div className="relative z-10 w-full max-w-lg mx-auto p-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
