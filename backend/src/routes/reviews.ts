@@ -236,25 +236,28 @@ router.get('/', async (req: Request, res: Response) => {
           select: {
             name: true,
             slug: true,
+            images: true,
+            price: true,
           }
         }
       }
     });
 
-    const totalCount = await prisma.review.count({ where });
+    const total = await prisma.review.count({ where });
+    const hasMore = (pageNum * limitNum) < total;
 
     res.json({
       reviews,
-      totalCount,
-      hasMore: (pageNum * limitNum) < totalCount,
+      total,
+      hasMore,
       currentPage: pageNum,
-      totalPages: Math.ceil(totalCount / limitNum)
+      totalPages: Math.ceil(total / limitNum),
     });
   } catch (error) {
-    logger.error('Error fetching reviews:', error)
-    res.status(500).json({ error: 'Failed to fetch reviews' })
+    console.error('Error fetching reviews:', error);
+    res.status(500).json({ error: 'Failed to fetch reviews' });
   }
-})
+});
 
 /**
  * GET /api/reviews/stats
