@@ -10,6 +10,9 @@ interface DripSubscriber {
     skin_concerns?: string[]
     source?: string
     interests?: string
+    contact_subject?: string
+    last_contact?: string
+    [key: string]: any // Allow additional custom fields
   }
   tags?: string[]
 }

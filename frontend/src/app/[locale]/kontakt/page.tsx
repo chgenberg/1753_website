@@ -85,34 +85,33 @@ export default function ContactPage() {
     e.preventDefault()
     
     try {
-      // Track contact form submission in Drip
-      if (formData.email) {
-        try {
-          await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002'}/api/newsletter/track`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              email: formData.email,
-              action: 'contact_form_submitted',
-              data: {
-                subject: formData.subject,
-                name: formData.name
-              }
-            })
-          });
-        } catch (trackingError) {
-          console.error('Contact tracking error:', trackingError);
-        }
+      // Send contact form to backend
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002'}/api/contact/send`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        // Show success message
+        alert('Tack för ditt meddelande! Vi svarar så snart som möjligt.')
+        
+        // Reset form
+        setFormData({
+          name: '',
+          email: '',
+          subject: '',
+          message: ''
+        })
+      } else {
+        throw new Error(result.message || 'Kunde inte skicka meddelandet')
       }
-      
-      // Handle form submission here
-      console.log('Form submitted:', formData)
-      
-      // Show success message
-      // toast.success('Tack för ditt meddelande! Vi svarar så snart som möjligt.')
       
     } catch (error) {
       console.error('Form submission error:', error)
+      alert('Ett fel uppstod när meddelandet skulle skickas. Försök igen senare.')
     }
   }
 

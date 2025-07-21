@@ -15,6 +15,65 @@ interface EmailTemplate {
 
 // Email templates
 const templates: Record<string, (data: Record<string, any>) => EmailTemplate> = {
+  contactForm: (data) => ({
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Nytt meddelande från kontaktformulär</title>
+                 <style>
+           body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+           .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+           .header { background: linear-gradient(135deg, #8B6B47 0%, #6B5337 100%); padding: 30px; text-align: center; color: white; }
+           .content { padding: 30px; background: #f9f9f9; }
+           .footer { padding: 20px; text-align: center; color: #666; font-size: 14px; }
+         </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>Nytt meddelande från kontaktformulär</h1>
+          </div>
+          <div class="content">
+            <h2>Kontaktinformation:</h2>
+            <p><strong>Namn:</strong> ${data.name}</p>
+            <p><strong>E-post:</strong> ${data.email}</p>
+            <p><strong>Ämne:</strong> ${data.subject}</p>
+            <p><strong>Datum:</strong> ${data.timestamp}</p>
+            
+            <h2>Meddelande:</h2>
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+              <p style="margin: 0; white-space: pre-wrap;">${data.message}</p>
+            </div>
+            
+            <p style="margin-top: 30px;"><strong>Svara genom att använda:</strong> ${data.email}</p>
+          </div>
+          <div class="footer">
+            <p>Detta meddelande skickades via kontaktformuläret på 1753skincare.com</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `,
+    text: `
+      Nytt meddelande från kontaktformulär - 1753 Skincare
+      
+      Kontaktinformation:
+      Namn: ${data.name}
+      E-post: ${data.email}
+      Ämne: ${data.subject}
+      Datum: ${data.timestamp}
+      
+      Meddelande:
+      ${data.message}
+      
+      ---
+      Detta meddelande skickades via kontaktformuläret på 1753skincare.com
+      Svara genom att använda: ${data.email}
+    `
+  }),
   emailVerification: (data) => ({
     html: `
       <!DOCTYPE html>

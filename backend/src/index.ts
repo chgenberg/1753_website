@@ -23,6 +23,7 @@ import progressRoutes from './routes/progress'
 import knowledgeRoutes from './routes/knowledge'
 import blogRoutes from './routes/blog'
 import rawMaterialsRoutes from './routes/rawMaterials'
+import contactRoutes from './routes/contact'
 
 // Validate environment variables
 const envConfig = validateEnv()
@@ -105,6 +106,7 @@ app.use('/api/progress', progressRoutes)
 app.use('/api/knowledge', knowledgeRoutes)
 app.use('/api/blog', blogRoutes)
 app.use('/api/raw-materials', rawMaterialsRoutes)
+app.use('/api/contact', contactRoutes)
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
