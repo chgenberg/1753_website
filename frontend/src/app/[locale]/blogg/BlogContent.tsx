@@ -220,18 +220,16 @@ export default function BlogContent({ posts }: BlogContentProps) {
                       
                       <div className="flex items-center justify-between text-sm text-gray-500 mt-auto">
                         <div className="flex items-center space-x-4">
-                          {post.date && (
+                          {post.publishedAt && (
                             <div className="flex items-center">
                               <Calendar className="w-4 h-4 mr-1" />
-                              <span>{post.date}</span>
+                              <span>{new Date(post.publishedAt).toLocaleDateString('sv-SE')}</span>
                             </div>
                           )}
-                          {post.readingTime && (
-                            <div className="flex items-center">
-                              <Clock className="w-4 h-4 mr-1" />
-                              <span>{post.readingTime} min</span>
-                            </div>
-                          )}
+                          <div className="flex items-center">
+                            <Clock className="w-4 h-4 mr-1" />
+                            <span>{Math.ceil(post.content.length / 1000)} min</span>
+                          </div>
                         </div>
                       </div>
                     </div>
