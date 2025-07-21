@@ -88,7 +88,7 @@ router.get('/product/:productSlug',
       const skip = (parseInt(page as string) - 1) * parseInt(limit as string)
 
       // Get reviews and stats
-      const [reviews, totalReviews, stats] = await Promise.all([
+      const [rawReviews, totalReviews, stats] = await Promise.all([
         prisma.review.findMany({
           where,
           orderBy,
@@ -98,6 +98,12 @@ router.get('/product/:productSlug',
         prisma.review.count({ where }),
         getProductStats(product.id)
       ])
+
+      // Map reviewerName to author for frontend compatibility
+      const reviews = rawReviews.map(review => ({
+        ...review,
+        author: review.reviewerName
+      }))
 
       const pagination = {
         page: parseInt(page as string),
@@ -176,7 +182,7 @@ router.get('/featured', async (req, res) => {
   try {
     const limit = parseInt(req.query.limit as string) || 6
 
-    const reviews = await prisma.review.findMany({
+    const rawReviews = await prisma.review.findMany({
       where: {
         status: 'APPROVED',
         rating: { gte: 4 } // Endast 4-5 stjärnor
@@ -195,6 +201,12 @@ router.get('/featured', async (req, res) => {
         }
       }
     })
+
+    // Map reviewerName to author for frontend compatibility
+    const reviews = rawReviews.map(review => ({
+      ...review,
+      author: review.reviewerName
+    }))
 
     res.json({
       success: true,
@@ -224,7 +236,7 @@ router.get('/', async (req: Request, res: Response) => {
   }
 
   try {
-    const reviews = await prisma.review.findMany({
+    const rawReviews = await prisma.review.findMany({
       where,
       take: limitNum,
       skip: (pageNum - 1) * limitNum,
@@ -243,6 +255,12 @@ router.get('/', async (req: Request, res: Response) => {
       }
     });
 
+    // Map reviewerName to author for frontend compatibility
+    const reviews = rawReviews.map(review => ({
+      ...review,
+      author: review.reviewerName
+    }))
+
     const total = await prisma.review.count({ where });
     const hasMore = (pageNum * limitNum) < total;
 
@@ -251,7 +269,7 @@ router.get('/', async (req: Request, res: Response) => {
       total,
       hasMore,
       currentPage: pageNum,
-      totalPages: Math.ceil(total / limitNum),
+      totalPages: Math.ceil(total / limitNum)
     });
   } catch (error) {
     console.error('Error fetching reviews:', error);
