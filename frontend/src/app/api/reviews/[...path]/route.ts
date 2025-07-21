@@ -1,13 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ path: string[] }> }
-) {
+// Extract dynamic path segments from the URL to comply with the latest
+// Next.js route-handler types.
+
+export async function GET(request: NextRequest) {
   try {
-    const { path } = await params;
-    const { searchParams } = new URL(request.url);
-    const apiPath = path.join('/');
+    // Parse the URL to get pathname and query params
+    const { pathname, searchParams } = new URL(request.url);
+
+    // Remove the "/api/reviews/" prefix and split the remainder into segments
+    const pathSegments = pathname.replace(/^\/api\/reviews\//, '').split('/').filter(Boolean);
+
+    const apiPath = pathSegments.join('/');
     const queryString = searchParams.toString();
     
     const backendUrl = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002';
@@ -37,13 +41,12 @@ export async function GET(
   }
 }
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ path: string[] }> }
-) {
+export async function POST(request: NextRequest) {
   try {
-    const { path } = await params;
-    const apiPath = path.join('/');
+    const { pathname } = new URL(request.url);
+    const pathSegments = pathname.replace(/^\/api\/reviews\//, '').split('/').filter(Boolean);
+    const apiPath = pathSegments.join('/');
+
     const body = await request.json();
     
     const backendUrl = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002';

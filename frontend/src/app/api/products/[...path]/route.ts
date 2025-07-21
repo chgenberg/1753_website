@@ -1,12 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { path: string[] } }
-) {
+// Derive the dynamic path from the URL instead of using the context param to
+// maintain compatibility with the latest Next.js Route Handler typing.
+
+export async function GET(request: NextRequest) {
+  // Extract the pathname (e.g. "/api/products/duo/related") and query params
+  const { pathname, searchParams } = new URL(request.url)
+
+  // Remove the "/api/products/" prefix to obtain the dynamic segments
+  const apiPath = pathname.replace(/^\/api\/products\//, '')
+
+  // Split the rest of the path into segments
+  const path = apiPath.split('/').filter(Boolean)
+
   try {
-    const { path } = params
-    const { searchParams } = new URL(request.url)
+    // "path" now contains the dynamic segments previously supplied via params
     
     // Build backend URL
     const backendUrl = process.env.BACKEND_URL || 'http://localhost:5002'
