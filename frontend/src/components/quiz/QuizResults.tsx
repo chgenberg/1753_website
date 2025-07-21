@@ -291,24 +291,84 @@ export function QuizResults({ answers, userName = '', userEmail = '', results, o
 
       {/* Content */}
       <div className="relative z-10 h-full flex flex-col">
-        {/* Header */}
+        {/* Header with Skin Score */}
         <div className="bg-white/90 backdrop-blur-sm border-b">
-          <div className="max-w-6xl mx-auto px-4 py-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-light text-gray-900">
-                  {generatedPlan?.summary?.greeting || `Hej ${userName}!`}
-                </h1>
-                <p className="text-sm text-gray-600 mt-1">Din personliga hudvårdsplan är klar</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="text-center">
-                  <div className="text-3xl font-light text-[#8B6B47]">
+          <div className="max-w-6xl mx-auto px-4 py-6">
+            {/* Skin Score Circle */}
+            <motion.div 
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.5, type: "spring" }}
+              className="flex flex-col items-center mb-4"
+            >
+              <div className="relative">
+                <svg className="w-32 h-32 transform -rotate-90">
+                  <circle
+                    cx="64"
+                    cy="64"
+                    r="56"
+                    stroke="#E5DDD5"
+                    strokeWidth="12"
+                    fill="none"
+                  />
+                  <motion.circle
+                    cx="64"
+                    cy="64"
+                    r="56"
+                    stroke="#8B6B47"
+                    strokeWidth="12"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeDasharray={`${2 * Math.PI * 56}`}
+                    initial={{ strokeDashoffset: 2 * Math.PI * 56 }}
+                    animate={{ strokeDashoffset: 2 * Math.PI * 56 * (1 - (generatedPlan?.summary?.skinScore || 70) / 100) }}
+                    transition={{ duration: 1.5, ease: "easeOut", delay: 0.3 }}
+                  />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.8 }}
+                    className="text-4xl font-light text-[#8B6B47]"
+                  >
                     {generatedPlan?.summary?.skinScore || 70}
-                  </div>
-                  <div className="text-xs text-gray-500">hudpoäng</div>
+                  </motion.div>
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 1 }}
+                    className="text-xs text-gray-500 uppercase tracking-wider"
+                  >
+                    hudpoäng
+                  </motion.div>
                 </div>
               </div>
+              
+              {/* Score Description */}
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.2 }}
+                className="text-center mt-4 max-w-md"
+              >
+                <p className="text-sm text-gray-600">
+                  {generatedPlan?.summary?.skinScore >= 80 
+                    ? "Utmärkt! Din hud är i mycket god kondition med minimal obalans."
+                    : generatedPlan?.summary?.skinScore >= 60
+                    ? "Bra! Din hud har potential för förbättring med rätt rutiner."
+                    : generatedPlan?.summary?.skinScore >= 40
+                    ? "Din hud behöver extra omsorg för att återställa balansen."
+                    : "Din hud kräver omfattande vård för att återfå optimal hälsa."}
+                </p>
+              </motion.div>
+            </motion.div>
+            
+            <div className="text-center">
+              <h1 className="text-2xl font-light text-gray-900">
+                {generatedPlan?.summary?.greeting || `Hej ${userName}!`}
+              </h1>
+              <p className="text-sm text-gray-600 mt-1">Din personliga hudvårdsplan är klar</p>
             </div>
           </div>
         </div>
@@ -316,21 +376,34 @@ export function QuizResults({ answers, userName = '', userEmail = '', results, o
         {/* Tabs */}
         <div className="bg-white/90 backdrop-blur-sm border-b sticky top-0 z-20">
           <div className="max-w-6xl mx-auto px-4">
-            <div className="flex overflow-x-auto scrollbar-hide">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as TabType)}
-                  className={`flex items-center gap-2 px-6 py-3 text-sm font-medium transition-all whitespace-nowrap ${
-                    activeTab === tab.id
-                      ? 'text-[#8B6B47] border-b-2 border-[#8B6B47]'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  {tab.icon}
-                  {tab.label}
-                </button>
-              ))}
+            <div className="flex items-center justify-between">
+              <div className="flex overflow-x-auto scrollbar-hide">
+                {tabs.map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as TabType)}
+                    className={`flex items-center gap-2 px-6 py-3 text-sm font-medium transition-all whitespace-nowrap ${
+                      activeTab === tab.id
+                        ? 'text-[#8B6B47] border-b-2 border-[#8B6B47]'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    {tab.icon}
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+              
+              {/* Save Results Button - moved to the right */}
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setShowRegisterModal(true)}
+                className="ml-4 px-6 py-2 bg-[#8B6B47] text-white rounded-full text-sm font-medium hover:bg-[#6B5337] transition-colors flex items-center gap-2"
+              >
+                <User className="w-4 h-4" />
+                Spara resultat
+              </motion.button>
             </div>
           </div>
         </div>
@@ -382,39 +455,6 @@ export function QuizResults({ answers, userName = '', userEmail = '', results, o
                         ))}
                       </ul>
                     </div>
-                  </div>
-
-                  {/* Quick Actions */}
-                  <div className="grid md:grid-cols-3 gap-4">
-                    <button
-                      onClick={() => setActiveTab('timeline')}
-                      className="bg-white/90 backdrop-blur-sm rounded-xl p-6 text-left hover:shadow-md transition-all group"
-                    >
-                      <Calendar className="w-8 h-8 text-[#8B6B47] mb-3" />
-                      <h3 className="font-medium text-gray-900 mb-1">Se din tidslinje</h3>
-                      <p className="text-sm text-gray-600">Följ din hudresa steg för steg</p>
-                      <ChevronRight className="w-5 h-5 text-gray-400 mt-2 group-hover:translate-x-1 transition-transform" />
-                    </button>
-                    
-                    <button
-                      onClick={() => setActiveTab('products')}
-                      className="bg-white/90 backdrop-blur-sm rounded-xl p-6 text-left hover:shadow-md transition-all group"
-                    >
-                      <ShoppingBag className="w-8 h-8 text-[#8B6B47] mb-3" />
-                      <h3 className="font-medium text-gray-900 mb-1">Dina produkter</h3>
-                      <p className="text-sm text-gray-600">Komplett rutin morgon & kväll</p>
-                      <ChevronRight className="w-5 h-5 text-gray-400 mt-2 group-hover:translate-x-1 transition-transform" />
-                    </button>
-                    
-                    <button
-                      onClick={() => setActiveTab('nutrition')}
-                      className="bg-white/90 backdrop-blur-sm rounded-xl p-6 text-left hover:shadow-md transition-all group"
-                    >
-                      <Apple className="w-8 h-8 text-[#8B6B47] mb-3" />
-                      <h3 className="font-medium text-gray-900 mb-1">Kostplan</h3>
-                      <p className="text-sm text-gray-600">Mat som medicin för din hud</p>
-                      <ChevronRight className="w-5 h-5 text-gray-400 mt-2 group-hover:translate-x-1 transition-transform" />
-                    </button>
                   </div>
                 </motion.div>
               )}
