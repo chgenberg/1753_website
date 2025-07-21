@@ -10,7 +10,7 @@ export async function GET() {
       headers: {
         'Content-Type': 'application/json',
       },
-      next: { revalidate: 3600 }, // Cache for 1 hour
+      cache: 'no-store', // Disable cache to avoid 2MB limit
     });
 
     if (!response.ok) {

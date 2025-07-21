@@ -23,7 +23,7 @@ async function fetchBlogPosts() {
     ? 'https://1753website-production.up.railway.app' 
     : 'http://localhost:3000';
   const res = await fetch(`${baseUrl}/api/blog`, {
-    next: { revalidate: 3600 },
+    cache: 'no-store', // Disable cache to avoid 2MB limit
   });
   if (!res.ok) {
     throw new Error('Failed to fetch blog posts');

@@ -1,11 +1,19 @@
-import { Metadata } from 'next'
+'use client'
+
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ChevronRight, Leaf, Heart, Brain, Shield } from 'lucide-react'
 
-export const metadata: Metadata = {
-  title: 'Funktionella Råvaror för Hudhälsa | 1753 Skincare',
-  description: 'Upptäck vetenskapligt bevisade råvaror som stödjer din hudhälsa via gut-skin-axeln. Lär dig om nordiska bär, fermenterade livsmedel och andra funktionella ingredienser.',
+interface RawMaterial {
+  id: string
+  name: string
+  swedishName: string
+  category: string
+  origin: string
+  slug: string
+  description: string
+  thumbnail?: string
 }
 
 // Temporary data until we fetch from API
@@ -80,6 +88,39 @@ const categories = [
 ]
 
 export default function FunctionalRawMaterialsPage() {
+  const [rawMaterials, setRawMaterials] = useState<RawMaterial[]>([])
+  const [loading, setLoading] = useState(true)
+  const [selectedCategory, setSelectedCategory] = useState<string>('all')
+
+  useEffect(() => {
+    fetchRawMaterials()
+  }, [selectedCategory])
+
+  const fetchRawMaterials = async () => {
+    try {
+      setLoading(true)
+      const params = selectedCategory !== 'all' ? `?category=${selectedCategory}` : ''
+      const response = await fetch(`/api/raw-materials${params}`)
+      
+      if (response.ok) {
+        const data = await response.json()
+        setRawMaterials(data)
+      } else {
+        console.error('Failed to fetch raw materials')
+        // Fallback to empty array
+        setRawMaterials([])
+      }
+    } catch (error) {
+      console.error('Error fetching raw materials:', error)
+      setRawMaterials([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleCategoryChange = (categoryId: string) => {
+    setSelectedCategory(categoryId)
+  }
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
@@ -99,7 +140,12 @@ export default function FunctionalRawMaterialsPage() {
               {categories.map((category) => (
                 <button
                   key={category.id}
-                  className="flex items-center gap-2 px-6 py-3 bg-white border border-gray-200 rounded-full hover:border-amber-500 hover:bg-amber-50 transition-colors"
+                  onClick={() => handleCategoryChange(category.id)}
+                  className={`flex items-center gap-2 px-6 py-3 border rounded-full transition-colors ${
+                    selectedCategory === category.id
+                      ? 'bg-amber-500 text-white border-amber-500'
+                      : 'bg-white border-gray-200 hover:border-amber-500 hover:bg-amber-50'
+                  }`}
                 >
                   {category.icon}
                   <span>{category.name}</span>
@@ -113,8 +159,26 @@ export default function FunctionalRawMaterialsPage() {
       {/* Raw Materials Grid */}
       <section className="py-16">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {rawMaterials.map((material) => (
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="bg-white rounded-2xl shadow-sm overflow-hidden animate-pulse">
+                  <div className="aspect-[4/3] bg-gray-200"></div>
+                  <div className="p-6">
+                    <div className="h-4 bg-gray-200 rounded w-1/3 mb-2"></div>
+                    <div className="h-6 bg-gray-200 rounded w-2/3 mb-4"></div>
+                    <div className="h-4 bg-gray-200 rounded w-full"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : rawMaterials.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-600">Inga råvaror hittades för den valda kategorin.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {rawMaterials.map((material) => (
               <Link
                 key={material.id}
                 href={`/kunskap/funktionella-ravaror/${material.slug}`}
@@ -149,7 +213,8 @@ export default function FunctionalRawMaterialsPage() {
                 </div>
               </Link>
             ))}
-          </div>
+            </div>
+          )}
         </div>
       </section>
 
