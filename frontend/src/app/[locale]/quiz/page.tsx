@@ -6,8 +6,10 @@ import { questions } from '@/components/quiz/quizData';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LoadingAnimation } from '@/components/quiz/LoadingAnimation';
 import { QuizResults } from '@/components/quiz/QuizResults';
-import { User, Mail, Shield, Sparkles, ArrowRight, ArrowLeft } from 'lucide-react';
+import { User, Mail, Shield, Sparkles, ArrowRight, ArrowLeft, Home } from 'lucide-react';
 import { RegisterModal } from '@/components/auth/RegisterModal';
+import Link from 'next/link';
+import Image from 'next/image';
 
 export default function QuizPage() {
   const t = useTranslations('Quiz');
@@ -216,6 +218,26 @@ export default function QuizPage() {
       </div>
 
       <div className="relative z-10 max-w-2xl w-full p-4">
+        {/* Logo and Back to Home */}
+        <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-20">
+          <Link href="/" className="flex items-center gap-2">
+            <Image
+              src="/1753.png"
+              alt="1753 Skincare"
+              width={120}
+              height={40}
+              className="h-10 w-auto"
+            />
+          </Link>
+          <Link 
+            href="/" 
+            className="flex items-center gap-2 text-sm text-[#8B6B47] hover:text-[#6B5337] transition-colors"
+          >
+            <Home className="w-4 h-4" />
+            <span className="hidden md:inline">Tillbaka till startsida</span>
+          </Link>
+        </div>
+
         {/* Welcome Screen */}
         {currentStep === 'welcome' && (
           <motion.div 

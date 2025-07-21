@@ -719,3 +719,38 @@ model BlogPost {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
+
+// Raw Material model for functional foods and ingredients
+model RawMaterial {
+  id               String   @id @default(cuid())
+  name             String   @unique
+  swedishName      String   
+  origin           String   // Nordisk, Asiatisk, Global, etc.
+  category         String   // berry, vegetable, herb, fermented, etc.
+  
+  // Health effects
+  healthBenefits   String[] // Array of health benefits
+  description      String   @db.Text // Detailed description
+  nutrients        String[] // Key nutrients/compounds
+  
+  // Usage information
+  howToUse         String?  @db.Text
+  dosage           String?
+  precautions      String?  @db.Text
+  
+  // SEO and display
+  slug             String   @unique
+  metaTitle        String?
+  metaDescription  String?
+  thumbnail        String?  // Image URL
+  
+  // Scientific backing
+  references       String[] // Scientific references
+  studies          String[] // Specific studies mentioned
+  
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  @@map("raw_materials")
+}

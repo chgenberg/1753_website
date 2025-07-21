@@ -9,7 +9,7 @@ import {
   Shield, Star, TrendingUp, Activity, Coffee,
   Smile, CloudRain, Wind, Dumbbell, Apple,
   Clock, BrainCircuit, Lightbulb, ChevronRight,
-  Calendar, Zap, BookOpen, Utensils
+  Calendar, Zap, BookOpen, Utensils, Home
 } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -291,8 +291,28 @@ export function QuizResults({ answers, userName = '', userEmail = '', results, o
 
       {/* Content */}
       <div className="relative z-10 h-full flex flex-col">
+        {/* Logo and Back to Home */}
+        <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-20">
+          <Link href="/" className="flex items-center gap-2">
+            <Image
+              src="/1753.png"
+              alt="1753 Skincare"
+              width={120}
+              height={40}
+              className="h-10 w-auto"
+            />
+          </Link>
+          <Link 
+            href="/" 
+            className="flex items-center gap-2 text-sm text-[#8B6B47] hover:text-[#6B5337] transition-colors"
+          >
+            <Home className="w-4 h-4" />
+            <span className="hidden md:inline">Tillbaka till startsida</span>
+          </Link>
+        </div>
+
         {/* Header with Skin Score */}
-        <div className="bg-white/90 backdrop-blur-sm border-b">
+        <div className="bg-white/90 backdrop-blur-sm border-b mt-16">
           <div className="max-w-6xl mx-auto px-4 py-6">
             {/* Skin Score Circle */}
             <motion.div 
