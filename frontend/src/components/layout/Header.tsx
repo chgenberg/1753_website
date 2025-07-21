@@ -4,354 +4,284 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
+import { CartDrawer } from '@/components/cart/CartDrawer'
 import { useCart } from '@/contexts/CartContext'
 import { useAuth } from '@/contexts/AuthContext'
 import { 
-  Home, 
-  Info, 
-  Package, 
-  Phone, 
-  ShoppingBag,
-  Users,
-  Leaf,
-  HelpCircle,
-  Store,
-  BookOpen,
-  User,
-  LogOut
+  Menu, X, Search, ShoppingBag, User, 
+  ChevronDown, Globe, Heart, LogOut,
+  Sparkles, Leaf, ShieldCheck
 } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 
-interface MenuItem {
-  name: string
-  href: string
-  icon: React.ReactNode
-  children?: {
-    name: string
-    href: string
-    icon?: React.ReactNode
-  }[]
-}
+const navigation = [
+  { name: 'Hem', href: '/' },
+  { name: 'Produkter', href: '/products' },
+  { name: 'Om oss', href: '/om-oss' },
+  { name: 'Quiz', href: '/quiz', highlight: true },
+  { name: 'Kunskap', href: '/kunskap' },
+  { name: 'Kontakt', href: '/kontakt' },
+]
+
+const topBarMessages = [
+  { icon: <Sparkles className="w-4 h-4" />, text: "✨ KOSTNADSFRITT & PERSONLIGT" },
+  { icon: <Leaf className="w-4 h-4" />, text: "🌿 NATURLIGA INGREDIENSER" },
+  { icon: <ShieldCheck className="w-4 h-4" />, text: "🛡️ 30 DAGARS ÖPPET KÖP" },
+]
 
 export function Header() {
+  const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
-  const [hoveredItem, setHoveredItem] = useState<string | null>(null)
-  const [showAccountMenu, setShowAccountMenu] = useState(false)
+  const [currentMessageIndex, setCurrentMessageIndex] = useState(0)
+  const [showUserDropdown, setShowUserDropdown] = useState(false)
   const pathname = usePathname()
   const { cartCount, openCart } = useCart()
   const { user, logout } = useAuth()
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 100)
+      setIsScrolled(window.scrollY > 10)
     }
-
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  const menuItems: MenuItem[] = [
-    {
-      name: 'HEM',
-      href: '/',
-      icon: <Home className="w-5 h-5" />
-    },
-    {
-      name: 'OM OSS',
-      href: '/om-oss', // Navigate to Om oss page when clicked directly
-      icon: <Info className="w-5 h-5" />,
-      children: [
-        { name: 'Vilka är vi?', href: '/om-oss', icon: <Users className="w-4 h-4" /> },
-        { name: 'Våra ingredienser', href: '/om-oss/ingredienser', icon: <Leaf className="w-4 h-4" /> },
-        { name: 'Q & A', href: '/om-oss/faq', icon: <HelpCircle className="w-4 h-4" /> },
-        { name: 'Återförsäljare', href: '/om-oss/aterforsaljare', icon: <Store className="w-4 h-4" /> }
-      ]
-    },
-    {
-      name: 'PRODUKTER',
-      href: '/products',
-      icon: <Package className="w-5 h-5" />
-    },
-    {
-      name: 'KUNSKAP',
-      href: '/kunskap',
-      icon: <BookOpen className="w-5 h-5" />,
-      children: [
-        { name: 'Blogg', href: '/blogg', icon: <BookOpen className="w-4 h-4" /> },
-        { name: 'E-BOK', href: '/kunskap/e-bok', icon: <BookOpen className="w-4 h-4" /> }
-      ]
-    },
-    {
-      name: 'KONTAKTA OSS',
-      href: '/kontakt',
-      icon: <Phone className="w-5 h-5" />
-    }
-  ]
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentMessageIndex((prev) => (prev + 1) % topBarMessages.length)
+    }, 4000)
+    return () => clearInterval(interval)
+  }, [])
+
+  const handleLogout = async () => {
+    await logout()
+    setShowUserDropdown(false)
+  }
 
   return (
     <>
-      {/* Top Bar with Account and Cart */}
-      <div className={`fixed top-0 right-0 z-[70] flex items-center gap-4 p-4 transition-all duration-300 ${
-        isScrolled ? 'bg-white/95 backdrop-blur-md shadow-md' : 'bg-black/10 backdrop-blur-sm'
-      }`}>
-        {/* Account Icon */}
-        <div className="relative">
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setShowAccountMenu(!showAccountMenu)}
-            className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 ${
-              isScrolled 
-                ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' 
-                : 'bg-white/20 text-white hover:bg-white/30'
-            }`}
-          >
-            <User className="w-5 h-5" />
-          </motion.button>
-
-          {/* Account Dropdown */}
-          <AnimatePresence>
-            {showAccountMenu && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden"
-              >
-                {user ? (
-                  <>
-                    <div className="px-4 py-3 border-b border-gray-200">
-                      <p className="text-sm font-medium text-gray-900">{user.firstName}</p>
-                      <p className="text-xs text-gray-500">{user.email}</p>
-                    </div>
-                    <Link
-                      href="/dashboard"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      onClick={() => setShowAccountMenu(false)}
-                    >
-                      Min profil
-                    </Link>
-                    <button
-                      onClick={() => {
-                        logout()
-                        setShowAccountMenu(false)
-                      }}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      Logga ut
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <Link
-                      href="/auth/login"
-                      className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
-                      onClick={() => setShowAccountMenu(false)}
-                    >
-                      Logga in
-                    </Link>
-                    <Link
-                      href="/auth/register"
-                      className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 border-t border-gray-200"
-                      onClick={() => setShowAccountMenu(false)}
-                    >
-                      Skapa konto
-                    </Link>
-                  </>
-                )}
-              </motion.div>
-            )}
+      {/* Fixed Top Bar */}
+      <div className="fixed top-0 left-0 right-0 bg-black text-white text-xs sm:text-sm py-2 z-50">
+        <div className="container mx-auto px-4">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentMessageIndex}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.3 }}
+              className="flex items-center justify-center gap-2"
+            >
+              {topBarMessages[currentMessageIndex].icon}
+              <span className="font-medium tracking-wider">
+                FRI FRAKT ÖVER 500 KR • {topBarMessages[currentMessageIndex].text}
+              </span>
+            </motion.div>
           </AnimatePresence>
         </div>
-
-        {/* Cart Icon */}
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={openCart}
-          className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 ${
-            isScrolled 
-              ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' 
-              : 'bg-white/20 text-white hover:bg-white/30'
-          }`}
-        >
-          <ShoppingBag className="w-5 h-5" />
-          {cartCount > 0 && (
-            <span className="absolute -top-1 -right-1 bg-[#4A3428] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
-              {cartCount}
-            </span>
-          )}
-        </motion.button>
       </div>
 
-      {/* Scrolling Banner */}
-      <div className="fixed top-0 left-0 right-0 z-[60] h-10 overflow-hidden bg-black">
-        <div className="absolute inset-0">
-          <svg
-            className="absolute bottom-0 w-full h-3"
-            preserveAspectRatio="none"
-            viewBox="0 0 1200 40"
-          >
-            <path
-              d="M0,20 Q150,5 300,20 T600,20 T900,20 T1200,20 L1200,40 L0,40 Z"
-              fill="#000000"
-              className="animate-pulse"
-            />
-          </svg>
-        </div>
-        <div className="relative z-10 flex h-full items-center overflow-hidden">
-          <div className="animate-marquee whitespace-nowrap">
-            <span className="text-white text-sm font-medium tracking-wider px-8">
-              FRI FRAKT ÖVER 500 KR • FRI FRAKT ÖVER 500 KR • FRI FRAKT ÖVER 500 KR • FRI FRAKT ÖVER 500 KR • FRI FRAKT ÖVER 500 KR • FRI FRAKT ÖVER 500 KR • FRI FRAKT ÖVER 500 KR • FRI FRAKT ÖVER 500 KR •
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Vertical Navigation on Left - More opaque */}
-      <nav className={`fixed left-0 top-0 h-full z-50 transition-all duration-500 pt-10 ${
-        isScrolled ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-black/40 backdrop-blur-md'
+      {/* Main Header */}
+      <header className={`fixed top-8 left-0 right-0 z-40 transition-all duration-300 ${
+        isScrolled ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-white'
       }`}>
-        <div className="flex flex-col h-full py-6 px-4">
-          {/* Logo integrated in navigation */}
-          <div className="flex justify-center mb-6">
-            <Link href="/" className="relative">
-              <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                whileHover={{ scale: 1.05 }}
-                className="bg-white rounded-full p-3 hover:bg-gray-100 transition-all duration-300 shadow-md"
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between h-20">
+            
+            {/* Left - Menu Button */}
+            <div className="flex items-center">
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                aria-label="Toggle menu"
               >
+                {isOpen ? (
+                  <X className="w-6 h-6" />
+                ) : (
+                  <Menu className="w-6 h-6" />
+                )}
+              </button>
+            </div>
+
+            {/* Center - Logo */}
+            <div className="absolute left-1/2 transform -translate-x-1/2">
+              <Link href="/" className="flex items-center">
                 <Image
                   src="/1753.png"
                   alt="1753 Skincare"
-                  width={32}
-                  height={32}
-                  className="h-8 w-auto opacity-100"
+                  width={120}
+                  height={40}
+                  className="h-10 w-auto"
+                  priority
                 />
-              </motion.div>
-            </Link>
-          </div>
-          
-          <div className="flex-1 flex flex-col items-center space-y-6">
-            {menuItems.map((item) => (
-              <div 
-                key={item.name} 
-                className="relative group"
-                onMouseEnter={() => setHoveredItem(item.name)}
-                onMouseLeave={() => setHoveredItem(null)}
-              >
-                <motion.div
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="relative"
-                >
-                  {item.children ? (
-                    <div
-                      className={`flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 cursor-pointer ${
-                        isScrolled 
-                          ? 'text-gray-600 hover:text-black hover:bg-gray-200'
-                          : 'text-white hover:text-white hover:bg-white/20'
-                      }`}
-                    >
-                      {item.icon}
-                    </div>
-                  ) : (
-                    <Link
-                      href={item.href}
-                      className={`flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 ${
-                        pathname === item.href
-                          ? 'bg-[#4A3428] text-white'
-                          : isScrolled 
-                            ? 'text-gray-600 hover:text-black hover:bg-gray-200'
-                            : 'text-white hover:text-white hover:bg-white/20'
-                      }`}
-                    >
-                      {item.icon}
-                    </Link>
-                  )}
-                </motion.div>
+              </Link>
+            </div>
 
-                {/* Tooltip */}
-                <AnimatePresence>
-                  {hoveredItem === item.name && !item.children && (
-                    <motion.div
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -10 }}
-                      className="absolute left-16 top-1/2 -translate-y-1/2 whitespace-nowrap pointer-events-none"
-                    >
-                      <div className={`backdrop-blur-md px-4 py-2 rounded-lg shadow-lg border ${
-                        isScrolled 
-                          ? 'bg-white/95 border-gray-200 text-black' 
-                          : 'bg-black/80 border-white/20 text-white'
-                      }`}>
-                        <span className="text-sm font-medium">{item.name}</span>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+            {/* Right - User & Cart */}
+            <div className="flex items-center gap-2">
+              {/* User Account */}
+              <div className="relative">
+                {user ? (
+                  <button
+                    onClick={() => setShowUserDropdown(!showUserDropdown)}
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-2"
+                  >
+                    <User className="w-5 h-5" />
+                    <span className="hidden md:inline text-sm">
+                      {user.firstName || 'Mitt konto'}
+                    </span>
+                  </button>
+                ) : (
+                  <Link
+                    href="/auth/login"
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-2"
+                  >
+                    <User className="w-5 h-5" />
+                    <span className="hidden md:inline text-sm">Logga in</span>
+                  </Link>
+                )}
 
-                {/* Submenu - Shows on hover */}
+                {/* User Dropdown */}
                 <AnimatePresence>
-                  {hoveredItem === item.name && item.children && (
+                  {showUserDropdown && user && (
                     <motion.div
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -10 }}
-                      transition={{ duration: 0.2 }}
-                      className="absolute left-16 top-0 ml-2"
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 border border-gray-200"
                     >
-                      <div className={`backdrop-blur-md rounded-lg shadow-xl border py-2 min-w-[200px] ${
-                        isScrolled 
-                          ? 'bg-white/95 border-gray-200' 
-                          : 'bg-black/90 border-white/20'
-                      }`}>
-                        <div className={`px-4 py-2 mb-2 border-b ${
-                          isScrolled ? 'border-gray-200' : 'border-white/20'
-                        }`}>
-                          <span className={`text-sm font-semibold ${
-                            isScrolled ? 'text-black' : 'text-white'
-                          }`}>{item.name}</span>
-                        </div>
-                        {item.children.map((child) => (
-                          <Link
-                            key={child.name}
-                            href={child.href}
-                            className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-all duration-200 ${
-                              isScrolled 
-                                ? 'text-gray-600 hover:text-black hover:bg-gray-100' 
-                                : 'text-gray-300 hover:text-white hover:bg-white/10'
-                            }`}
-                          >
-                            {child.icon}
-                            <span>{child.name}</span>
-                          </Link>
-                        ))}
-                      </div>
+                      <Link
+                        href="/dashboard"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setShowUserDropdown(false)}
+                      >
+                        Min profil
+                      </Link>
+                      <Link
+                        href="/dashboard/orders"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setShowUserDropdown(false)}
+                      >
+                        Mina beställningar
+                      </Link>
+                      <hr className="my-2" />
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Logga ut
+                      </button>
                     </motion.div>
                   )}
                 </AnimatePresence>
               </div>
-            ))}
+
+              {/* Cart */}
+              <button
+                onClick={openCart}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors relative"
+                aria-label="Varukorg"
+              >
+                <ShoppingBag className="w-5 h-5" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-[#4A3428] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
+                    {cartCount}
+                  </span>
+                )}
+              </button>
+            </div>
           </div>
         </div>
-      </nav>
 
-      {/* Main content padding */}
-      <style jsx global>{`
-        @keyframes marquee {
-          0% { transform: translateX(0%); }
-          100% { transform: translateX(-50%); }
-        }
-        
-        .animate-marquee {
-          display: inline-block;
-          animation: marquee 30s linear infinite;
-        }
-      `}</style>
+        {/* Mobile/Desktop Menu */}
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="overflow-hidden border-t border-gray-200"
+            >
+              <nav className="container mx-auto px-4 py-6">
+                <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+                  {navigation.map((item) => (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      onClick={() => setIsOpen(false)}
+                      className={`
+                        px-4 py-3 rounded-lg text-center transition-all duration-200
+                        ${pathname === item.href 
+                          ? 'bg-[#4A3428] text-white' 
+                          : 'hover:bg-gray-100'
+                        }
+                        ${item.highlight 
+                          ? 'bg-amber-50 border-2 border-amber-300 hover:bg-amber-100 font-semibold' 
+                          : ''
+                        }
+                      `}
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                </div>
+
+                {/* Additional Menu Items */}
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <Link
+                      href="/om-oss/ingredienser"
+                      onClick={() => setIsOpen(false)}
+                      className="text-gray-600 hover:text-[#4A3428] transition-colors"
+                    >
+                      Ingredienser
+                    </Link>
+                    <Link
+                      href="/om-oss/faq"
+                      onClick={() => setIsOpen(false)}
+                      className="text-gray-600 hover:text-[#4A3428] transition-colors"
+                    >
+                      Vanliga frågor
+                    </Link>
+                    <Link
+                      href="/recensioner"
+                      onClick={() => setIsOpen(false)}
+                      className="text-gray-600 hover:text-[#4A3428] transition-colors"
+                    >
+                      Recensioner
+                    </Link>
+                    <Link
+                      href="/om-oss/aterforsaljare"
+                      onClick={() => setIsOpen(false)}
+                      className="text-gray-600 hover:text-[#4A3428] transition-colors"
+                    >
+                      Återförsäljare
+                    </Link>
+                  </div>
+                </div>
+              </nav>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </header>
+
+      {/* Spacer to prevent content from going under fixed header */}
+      <div className="h-28" />
+
+      {/* Cart Drawer */}
+      <CartDrawer />
+
+      {/* Overlay for dropdown menus */}
+      {(showUserDropdown) && (
+        <div 
+          className="fixed inset-0 z-30" 
+          onClick={() => {
+            setShowUserDropdown(false)
+          }}
+        />
+      )}
     </>
   )
 } 
