@@ -3,13 +3,18 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function POST(request: NextRequest) {
   try {
     const { answers, name, email, detailed = false } = await request.json()
+    
+    console.log('Quiz API called with detailed:', detailed, 'name:', name)
 
     if (detailed) {
+      console.log('Generating comprehensive plan...')
       // Generate comprehensive plan
       const plan = generateComprehensivePlan(answers, name)
+      console.log('Plan generated, summary keys:', Object.keys(plan.summary || {}))
       return NextResponse.json(plan)
     }
 
+    console.log('Using simple results fallback')
     // Simple results (backward compatibility)
     const skinType = determineSkinType(answers)
     const skinScore = calculateSkinScore(answers)
