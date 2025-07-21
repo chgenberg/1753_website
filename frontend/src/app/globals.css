@@ -253,3 +253,117 @@ textarea:focus-visible {
     max-width: 1536px;
   }
 } 
+
+/* Product description styles */
+.product-description h2 {
+  @apply text-2xl font-bold mb-4 text-gray-900;
+}
+
+.product-description h3 {
+  @apply text-xl font-semibold mb-3 mt-6 text-gray-800;
+}
+
+.product-description h4 {
+  @apply text-lg font-semibold mb-2 text-gray-800;
+}
+
+.product-description p {
+  @apply mb-4 text-gray-700 leading-relaxed;
+}
+
+.product-description ul {
+  @apply list-disc list-inside mb-4 space-y-2;
+}
+
+.product-description ol {
+  @apply list-decimal list-inside mb-4 space-y-2;
+}
+
+.product-description li {
+  @apply text-gray-700;
+}
+
+.product-description strong {
+  @apply font-semibold text-gray-900;
+}
+
+.product-description blockquote {
+  @apply border-l-4 border-[#4A3428] pl-4 my-4 italic text-gray-600;
+}
+
+.product-description .tip-box {
+  @apply bg-[#F5F3F0] border-l-4 border-[#4A3428] p-4 my-6 rounded-r-lg;
+}
+
+.product-description .guarantee-box {
+  @apply bg-gradient-to-r from-[#F5F3F0] to-[#E5DDD5] p-6 rounded-xl my-6;
+}
+
+.product-description .customer-reviews {
+  @apply bg-white p-6 rounded-xl shadow-md my-6;
+}
+
+.product-description .customer-reviews blockquote {
+  @apply border-l-4 border-[#8B7355] bg-[#F5F3F0] p-4 my-4 rounded-r-lg;
+}
+
+.product-description .customer-reviews cite {
+  @apply text-sm text-gray-600 not-italic;
+}
+
+.product-description .story-box {
+  @apply bg-gradient-to-br from-[#F5F3F0] via-white to-[#E5DDD5] p-6 rounded-xl my-6 border border-[#E5DDD5];
+}
+
+.product-description .mushroom-benefits {
+  @apply grid md:grid-cols-2 gap-6 my-6;
+}
+
+.product-description .mushroom {
+  @apply bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow;
+}
+
+/* Usage instructions styles */
+.usage-instructions h3 {
+  @apply text-xl font-semibold mb-4 text-gray-900;
+}
+
+.usage-instructions h4 {
+  @apply text-lg font-semibold mb-2 text-gray-800;
+}
+
+.usage-instructions .routine-section {
+  @apply bg-white p-4 rounded-lg mb-4 border border-gray-200;
+}
+
+.usage-instructions ol {
+  @apply list-decimal list-inside space-y-2;
+}
+
+.usage-instructions p {
+  @apply text-gray-700 mb-3;
+}
+
+.usage-instructions em {
+  @apply text-gray-600 text-sm;
+}
+
+.usage-content {
+  @apply max-w-3xl;
+}
+
+.usage-content h3 {
+  @apply text-xl font-semibold mb-4 text-gray-900;
+}
+
+.usage-content h4 {
+  @apply text-lg font-semibold mb-2 mt-4 text-gray-800;
+}
+
+.usage-content ul {
+  @apply list-disc list-inside space-y-2 mb-4;
+}
+
+.usage-content .routine-section {
+  @apply bg-gradient-to-r from-[#F5F3F0] to-[#F5F3F0] p-6 rounded-xl mb-4;
+} 

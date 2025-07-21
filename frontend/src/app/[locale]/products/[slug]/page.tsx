@@ -27,6 +27,7 @@ import {
 } from 'lucide-react'
 import ProductReviews from '@/components/reviews/ProductReviews'
 import RelatedProducts from '@/components/sections/RelatedProducts'
+import FloatingReviews from '@/components/reviews/FloatingReviews'
 
 interface Product {
   id: string
@@ -102,7 +103,7 @@ export default function ProductPage() {
             name: foundProduct.name,
             slug: foundProduct.slug,
             description: foundProduct.description || '',
-            longDescription: foundProduct.description || 'En fantastisk produkt från 1753 Skincare.',
+            longDescription: foundProduct.longDescription || foundProduct.description || 'En fantastisk produkt från 1753 Skincare.',
             price: foundProduct.price,
             compareAtPrice: foundProduct.compareAtPrice,
             images: foundProduct.images?.map((img: string, index: number) => ({
@@ -452,11 +453,24 @@ export default function ProductPage() {
               </div>
             </motion.div>
 
-            {/* Trust Badges */}
+            {/* Floating Reviews Section */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
+              className="mt-6"
+            >
+              <FloatingReviews 
+                productSlug={product.slug} 
+                productName={product.name} 
+              />
+            </motion.div>
+
+            {/* Trust Badges */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
               className="grid grid-cols-3 gap-4 text-center"
             >
               <div className="space-y-2">
@@ -556,10 +570,19 @@ export default function ProductPage() {
               exit={{ opacity: 0, y: -20 }}
               className="max-w-3xl"
             >
-              <div className="prose prose-lg">
-                <p className="text-gray-700 whitespace-pre-line">
-                  {product.longDescription}
-                </p>
+              {/* Render HTML content if longDescription contains HTML */}
+              {product.longDescription.includes('<') ? (
+                <div 
+                  className="prose prose-lg max-w-none"
+                  dangerouslySetInnerHTML={{ __html: product.longDescription }}
+                />
+              ) : (
+                <div className="prose prose-lg">
+                  <p className="text-gray-700 whitespace-pre-line">
+                    {product.longDescription}
+                  </p>
+                </div>
+              )}
                 
                 {product.benefits.length > 0 && (
                   <div className="mt-8">
@@ -574,7 +597,6 @@ export default function ProductPage() {
                     </ul>
                   </div>
                 )}
-              </div>
             </motion.div>
           )}
 
@@ -674,12 +696,20 @@ export default function ProductPage() {
               exit={{ opacity: 0, y: -20 }}
               className="max-w-3xl"
             >
-              <div className="bg-gradient-to-r from-[#F5F3F0] to-[#F5F3F0] rounded-xl p-8">
-                <h3 className="text-xl font-semibold mb-4">Så här använder du {product.name}</h3>
-                <p className="text-gray-700 whitespace-pre-line">
-                  {product.howToUse}
-                </p>
-              </div>
+              {/* Render HTML content if howToUse contains HTML */}
+              {product.howToUse.includes('<') ? (
+                <div 
+                  className="usage-content"
+                  dangerouslySetInnerHTML={{ __html: product.howToUse }}
+                />
+              ) : (
+                <div className="bg-gradient-to-r from-[#F5F3F0] to-[#F5F3F0] rounded-xl p-8">
+                  <h3 className="text-xl font-semibold mb-4">Så här använder du {product.name}</h3>
+                  <p className="text-gray-700 whitespace-pre-line">
+                    {product.howToUse}
+                  </p>
+                </div>
+              )}
             </motion.div>
           )}
 
