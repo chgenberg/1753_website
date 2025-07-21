@@ -54,7 +54,17 @@ class EBookReader {
     async init() {
         try {
             // Configure PDF.js
+            // Configure worker source. Safari often blocks cross-origin workers, so we fall back
+            // to disabling the worker entirely on Safari/iOS to ensure the reader still loads.
             pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+            
+            // Detect Safari (desktop & iOS) – both often restrict cross-origin web-workers.
+            const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+            
+            if (isSafari) {
+                console.warn('Safari detected – disabling PDF.js worker to avoid cross-origin issues')
+                pdfjsLib.disableWorker = true
+            }
             
             // Load PDF
             await this.loadPDF();
