@@ -8,20 +8,11 @@ import { CartDrawer } from '@/components/cart/CartDrawer'
 import { useCart } from '@/contexts/CartContext'
 import { useAuth } from '@/contexts/AuthContext'
 import { 
-  Menu, X, Search, ShoppingBag, User, 
-  ChevronDown, Globe, Heart, LogOut,
-  Sparkles, Leaf, ShieldCheck
+  ShoppingBag, User, ChevronDown, LogOut,
+  Sparkles, Leaf, ShieldCheck, Package,
+  BookOpen, Phone, Info, Home, Menu, X
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-
-const navigation = [
-  { name: 'Hem', href: '/' },
-  { name: 'Produkter', href: '/products' },
-  { name: 'Om oss', href: '/om-oss' },
-  { name: 'Quiz', href: '/quiz', highlight: true },
-  { name: 'Kunskap', href: '/kunskap' },
-  { name: 'Kontakt', href: '/kontakt' },
-]
 
 const topBarMessages = [
   { icon: <Sparkles className="w-4 h-4" />, text: "✨ KOSTNADSFRITT & PERSONLIGT" },
@@ -30,10 +21,11 @@ const topBarMessages = [
 ]
 
 export function Header() {
-  const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0)
   const [showUserDropdown, setShowUserDropdown] = useState(false)
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const pathname = usePathname()
   const { cartCount, openCart } = useCart()
   const { user, logout } = useAuth()
@@ -56,6 +48,13 @@ export function Header() {
   const handleLogout = async () => {
     await logout()
     setShowUserDropdown(false)
+  }
+
+  const isActive = (href: string) => {
+    if (href === '/') {
+      return pathname === '/' || pathname === '/sv'
+    }
+    return pathname.includes(href)
   }
 
   return (
@@ -83,42 +82,40 @@ export function Header() {
 
       {/* Main Header */}
       <header className={`fixed top-8 left-0 right-0 z-40 transition-all duration-300 ${
-        isScrolled ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-white'
+        isScrolled ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-white shadow-md'
       }`}>
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-20">
-            
-            {/* Left - Menu Button */}
-            <div className="flex items-center">
-              <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                aria-label="Toggle menu"
-              >
-                {isOpen ? (
-                  <X className="w-6 h-6" />
-                ) : (
-                  <Menu className="w-6 h-6" />
-                )}
-              </button>
-            </div>
+          {/* Upper section with logo */}
+          <div className="flex items-center justify-between py-4 border-b border-gray-100">
+            {/* Mobile menu button */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              aria-label="Toggle menu"
+            >
+              {isMobileMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
+            </button>
 
-            {/* Center - Logo */}
-            <div className="absolute left-1/2 transform -translate-x-1/2">
+            {/* Logo - Bigger and Centered */}
+            <div className="flex-1 flex justify-center">
               <Link href="/" className="flex items-center">
                 <Image
                   src="/1753.png"
                   alt="1753 Skincare"
-                  width={120}
-                  height={40}
-                  className="h-10 w-auto"
+                  width={180}
+                  height={60}
+                  className="h-14 w-auto md:h-16"
                   priority
                 />
               </Link>
             </div>
 
-            {/* Right - User & Cart */}
-            <div className="flex items-center gap-2">
+            {/* Right side - User & Cart */}
+            <div className="flex items-center gap-3">
               {/* User Account */}
               <div className="relative">
                 {user ? (
@@ -127,7 +124,7 @@ export function Header() {
                     className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-2"
                   >
                     <User className="w-5 h-5" />
-                    <span className="hidden md:inline text-sm">
+                    <span className="hidden lg:inline text-sm">
                       {user.firstName || 'Mitt konto'}
                     </span>
                   </button>
@@ -137,7 +134,7 @@ export function Header() {
                     className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-2"
                   >
                     <User className="w-5 h-5" />
-                    <span className="hidden md:inline text-sm">Logga in</span>
+                    <span className="hidden lg:inline text-sm">Logga in</span>
                   </Link>
                 )}
 
@@ -192,83 +189,313 @@ export function Header() {
               </button>
             </div>
           </div>
-        </div>
 
-        {/* Mobile/Desktop Menu */}
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="overflow-hidden border-t border-gray-200"
-            >
-              <nav className="container mx-auto px-4 py-6">
-                <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
-                  {navigation.map((item) => (
+          {/* Navigation Menu */}
+          <nav className="py-4 hidden md:block">
+            <ul className="flex items-center justify-center gap-8 flex-wrap">
+              {/* Hem */}
+              <li>
+                <Link
+                  href="/"
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                    isActive('/') 
+                      ? 'bg-[#4A3428] text-white' 
+                      : 'hover:bg-gray-100 text-gray-700'
+                  }`}
+                >
+                  <Home className="w-4 h-4" />
+                  <span className="font-medium">Hem</span>
+                </Link>
+              </li>
+
+              {/* Produkter */}
+              <li>
+                <Link
+                  href="/products"
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                    isActive('/products') 
+                      ? 'bg-[#4A3428] text-white' 
+                      : 'hover:bg-gray-100 text-gray-700'
+                  }`}
+                >
+                  <Package className="w-4 h-4" />
+                  <span className="font-medium">Produkter</span>
+                </Link>
+              </li>
+
+              {/* Om oss - with dropdown */}
+              <li className="relative">
+                <button
+                  onMouseEnter={() => setActiveDropdown('om-oss')}
+                  onMouseLeave={() => setActiveDropdown(null)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                    isActive('/om-oss') 
+                      ? 'bg-[#4A3428] text-white' 
+                      : 'hover:bg-gray-100 text-gray-700'
+                  }`}
+                >
+                  <Info className="w-4 h-4" />
+                  <span className="font-medium">Om oss</span>
+                  <ChevronDown className="w-4 h-4" />
+                </button>
+
+                {/* Dropdown */}
+                <AnimatePresence>
+                  {activeDropdown === 'om-oss' && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      onMouseEnter={() => setActiveDropdown('om-oss')}
+                      onMouseLeave={() => setActiveDropdown(null)}
+                      className="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-lg py-2 border border-gray-200"
+                    >
+                      <Link
+                        href="/om-oss"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Vilka är vi?
+                      </Link>
+                      <Link
+                        href="/om-oss/ingredienser"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Våra ingredienser
+                      </Link>
+                      <Link
+                        href="/om-oss/faq"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Vanliga frågor (FAQ)
+                      </Link>
+                      <Link
+                        href="/om-oss/aterforsaljare"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Återförsäljare
+                      </Link>
+                      <Link
+                        href="/recensioner"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Recensioner
+                      </Link>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </li>
+
+              {/* Quiz - Highlighted */}
+              <li>
+                <Link
+                  href="/quiz"
+                  className="flex items-center gap-2 px-6 py-3 bg-amber-50 border-2 border-amber-300 hover:bg-amber-100 rounded-full font-semibold text-gray-700 transition-all transform hover:scale-105"
+                >
+                  <Sparkles className="w-4 h-4 text-amber-600" />
+                  <span>Hudanalys</span>
+                </Link>
+              </li>
+
+              {/* Kunskap - with dropdown */}
+              <li className="relative">
+                <button
+                  onMouseEnter={() => setActiveDropdown('kunskap')}
+                  onMouseLeave={() => setActiveDropdown(null)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                    isActive('/kunskap') || isActive('/blogg')
+                      ? 'bg-[#4A3428] text-white' 
+                      : 'hover:bg-gray-100 text-gray-700'
+                  }`}
+                >
+                  <BookOpen className="w-4 h-4" />
+                  <span className="font-medium">Kunskap</span>
+                  <ChevronDown className="w-4 h-4" />
+                </button>
+
+                {/* Dropdown */}
+                <AnimatePresence>
+                  {activeDropdown === 'kunskap' && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      onMouseEnter={() => setActiveDropdown('kunskap')}
+                      onMouseLeave={() => setActiveDropdown(null)}
+                      className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 border border-gray-200"
+                    >
+                      <Link
+                        href="/blogg"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Blogg
+                      </Link>
+                      <Link
+                        href="/kunskap/e-bok"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        E-bok
+                      </Link>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </li>
+
+              {/* Kontakt */}
+              <li>
+                <Link
+                  href="/kontakt"
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                    isActive('/kontakt') 
+                      ? 'bg-[#4A3428] text-white' 
+                      : 'hover:bg-gray-100 text-gray-700'
+                  }`}
+                >
+                  <Phone className="w-4 h-4" />
+                  <span className="font-medium">Kontakt</span>
+                </Link>
+              </li>
+            </ul>
+          </nav>
+
+          {/* Mobile Navigation Menu */}
+          <AnimatePresence>
+            {isMobileMenuOpen && (
+              <motion.nav
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="md:hidden border-t border-gray-100 overflow-hidden"
+              >
+                <ul className="py-4 space-y-2">
+                  <li>
                     <Link
-                      key={item.name}
-                      href={item.href}
-                      onClick={() => setIsOpen(false)}
-                      className={`
-                        px-4 py-3 rounded-lg text-center transition-all duration-200
-                        ${pathname === item.href 
+                      href="/"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`flex items-center gap-2 px-4 py-3 rounded-lg transition-all ${
+                        isActive('/') 
                           ? 'bg-[#4A3428] text-white' 
-                          : 'hover:bg-gray-100'
-                        }
-                        ${item.highlight 
-                          ? 'bg-amber-50 border-2 border-amber-300 hover:bg-amber-100 font-semibold' 
-                          : ''
-                        }
-                      `}
+                          : 'hover:bg-gray-100 text-gray-700'
+                      }`}
                     >
-                      {item.name}
+                      <Home className="w-4 h-4" />
+                      <span className="font-medium">Hem</span>
                     </Link>
-                  ))}
-                </div>
+                  </li>
 
-                {/* Additional Menu Items */}
-                <div className="mt-6 pt-6 border-t border-gray-200">
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                  <li>
                     <Link
-                      href="/om-oss/ingredienser"
-                      onClick={() => setIsOpen(false)}
-                      className="text-gray-600 hover:text-[#4A3428] transition-colors"
+                      href="/products"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`flex items-center gap-2 px-4 py-3 rounded-lg transition-all ${
+                        isActive('/products') 
+                          ? 'bg-[#4A3428] text-white' 
+                          : 'hover:bg-gray-100 text-gray-700'
+                      }`}
                     >
-                      Ingredienser
+                      <Package className="w-4 h-4" />
+                      <span className="font-medium">Produkter</span>
                     </Link>
+                  </li>
+
+                  <li>
+                    <div className="px-4 py-2">
+                      <p className="text-sm font-semibold text-gray-600 mb-2">Om oss</p>
+                      <div className="space-y-1 ml-4">
+                        <Link
+                          href="/om-oss"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
+                        >
+                          Vilka är vi?
+                        </Link>
+                        <Link
+                          href="/om-oss/ingredienser"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
+                        >
+                          Våra ingredienser
+                        </Link>
+                        <Link
+                          href="/om-oss/faq"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
+                        >
+                          Vanliga frågor (FAQ)
+                        </Link>
+                        <Link
+                          href="/om-oss/aterforsaljare"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
+                        >
+                          Återförsäljare
+                        </Link>
+                        <Link
+                          href="/recensioner"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
+                        >
+                          Recensioner
+                        </Link>
+                      </div>
+                    </div>
+                  </li>
+
+                  <li className="px-4">
                     <Link
-                      href="/om-oss/faq"
-                      onClick={() => setIsOpen(false)}
-                      className="text-gray-600 hover:text-[#4A3428] transition-colors"
+                      href="/quiz"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex items-center justify-center gap-2 px-6 py-3 bg-amber-50 border-2 border-amber-300 hover:bg-amber-100 rounded-full font-semibold text-gray-700 transition-all"
                     >
-                      Vanliga frågor
+                      <Sparkles className="w-4 h-4 text-amber-600" />
+                      <span>Hudanalys</span>
                     </Link>
+                  </li>
+
+                  <li>
+                    <div className="px-4 py-2">
+                      <p className="text-sm font-semibold text-gray-600 mb-2">Kunskap</p>
+                      <div className="space-y-1 ml-4">
+                        <Link
+                          href="/blogg"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
+                        >
+                          Blogg
+                        </Link>
+                        <Link
+                          href="/kunskap/e-bok"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
+                        >
+                          E-bok
+                        </Link>
+                      </div>
+                    </div>
+                  </li>
+
+                  <li>
                     <Link
-                      href="/recensioner"
-                      onClick={() => setIsOpen(false)}
-                      className="text-gray-600 hover:text-[#4A3428] transition-colors"
+                      href="/kontakt"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`flex items-center gap-2 px-4 py-3 rounded-lg transition-all ${
+                        isActive('/kontakt') 
+                          ? 'bg-[#4A3428] text-white' 
+                          : 'hover:bg-gray-100 text-gray-700'
+                      }`}
                     >
-                      Recensioner
+                      <Phone className="w-4 h-4" />
+                      <span className="font-medium">Kontakt</span>
                     </Link>
-                    <Link
-                      href="/om-oss/aterforsaljare"
-                      onClick={() => setIsOpen(false)}
-                      className="text-gray-600 hover:text-[#4A3428] transition-colors"
-                    >
-                      Återförsäljare
-                    </Link>
-                  </div>
-                </div>
-              </nav>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                  </li>
+                </ul>
+              </motion.nav>
+            )}
+          </AnimatePresence>
+        </div>
       </header>
 
       {/* Spacer to prevent content from going under fixed header */}
-      <div className="h-28" />
+      <div className="h-40" />
 
       {/* Cart Drawer */}
       <CartDrawer />
