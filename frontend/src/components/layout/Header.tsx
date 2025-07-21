@@ -86,36 +86,38 @@ export function Header() {
       }`}>
         <div className="container mx-auto px-4">
           {/* Upper section with logo */}
-          <div className="flex items-center justify-between py-4 border-b border-gray-100">
-            {/* Mobile menu button */}
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              aria-label="Toggle menu"
-            >
-              {isMobileMenuOpen ? (
-                <X className="w-6 h-6" />
-              ) : (
-                <Menu className="w-6 h-6" />
-              )}
-            </button>
+          <div className="flex items-center py-4 border-b border-gray-100">
+            {/* Left side - Mobile menu button (invisible spacer on desktop) */}
+            <div className="flex items-center w-16 md:w-0">
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="md:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                aria-label="Toggle menu"
+              >
+                {isMobileMenuOpen ? (
+                  <X className="w-6 h-6" />
+                ) : (
+                  <Menu className="w-6 h-6" />
+                )}
+              </button>
+            </div>
 
-            {/* Logo - Bigger and Centered */}
+            {/* Logo - Perfectly Centered */}
             <div className="flex-1 flex justify-center">
               <Link href="/" className="flex items-center">
                 <Image
                   src="/1753.png"
                   alt="1753 Skincare"
-                  width={180}
-                  height={60}
-                  className="h-14 w-auto md:h-16"
+                  width={200}
+                  height={70}
+                  className="h-16 w-auto md:h-20"
                   priority
                 />
               </Link>
             </div>
 
             {/* Right side - User & Cart */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 w-16 md:w-auto justify-end">
               {/* User Account */}
               <div className="relative">
                 {user ? (
