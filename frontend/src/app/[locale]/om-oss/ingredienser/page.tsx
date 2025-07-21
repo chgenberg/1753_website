@@ -252,7 +252,7 @@ export default function IngredientsPage() {
               >
                 <div className="relative h-48 overflow-hidden">
                   <Image
-                    src="/Mushrooms/reishi.png"
+                    src="/Mushrooms/reiki.png"
                     alt="Reishi svamp"
                     width={400}
                     height={192}
