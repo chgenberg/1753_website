@@ -22,6 +22,16 @@ export default function QuizPage() {
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [errors, setErrors] = useState<{name?: string, email?: string, privacy?: string}>({});
   const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const totalQuestions = questions.length;
   const progress = currentStep === 'questions' ? ((currentQuestion + 1) / totalQuestions) * 100 : 0;
@@ -190,7 +200,7 @@ export default function QuizPage() {
           <div className="max-w-4xl mx-auto flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={() => setShowRegisterModal(true)}
-              className="flex items-center justify-center px-8 py-4 bg-gradient-to-r from-amber-400 to-orange-400 text-black rounded-xl font-medium hover:from-amber-300 hover:to-orange-300 transition-all duration-300 transform hover:scale-105"
+              className="flex items-center justify-center px-8 py-4 bg-[#4A3428] hover:bg-[#3A2A1E] text-white rounded-full font-medium transition-all duration-300 transform hover:scale-105"
             >
               <User className="w-5 h-5 mr-2" />
               Spara Resultat & Skapa Konto
@@ -206,7 +216,7 @@ export default function QuizPage() {
                 setUserEmail('');
                 setPrivacyAccepted(false);
               }}
-              className="px-8 py-4 bg-gray-100 text-gray-800 rounded-xl font-medium hover:bg-gray-200 transition-colors"
+              className="px-8 py-4 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-full font-medium transition-colors"
             >
               Gör Om Quiz
             </button>
@@ -217,47 +227,57 @@ export default function QuizPage() {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/95 backdrop-blur-xl flex items-center justify-center p-4 z-50">
-      <div className="max-w-2xl w-full">
+    <div className="fixed inset-0 bg-gray-50 flex items-center justify-center overflow-hidden">
+      {/* Background Image */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src={isMobile ? "/QUIZ/bathroom_mobile.png" : "/QUIZ/bathroom_desktop.png"}
+          alt="Background"
+          className="w-full h-full object-cover opacity-20"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-white/40 to-white/60" />
+      </div>
+
+      <div className="relative z-10 max-w-2xl w-full p-4">
         {/* Welcome Screen */}
         {currentStep === 'welcome' && (
           <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             className="text-center"
           >
             <div className="mb-8">
               <motion.div
                 animate={{ 
                   rotate: [0, 5, -5, 0],
-                  scale: [1, 1.1, 1],
+                  scale: [1, 1.05, 1],
                 }}
                 transition={{ 
-                  duration: 2,
+                  duration: 4,
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
-                className="w-20 h-20 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full mx-auto mb-6 flex items-center justify-center"
+                className="w-16 h-16 bg-gradient-to-br from-[#8B6B47] to-[#6B5337] rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg"
               >
-                <Sparkles className="w-10 h-10 text-white" />
+                <Sparkles className="w-8 h-8 text-white" />
               </motion.div>
               
-              <h1 className="text-4xl md:text-5xl font-light text-white mb-4 uppercase tracking-tight">
+              <h1 className="text-3xl md:text-4xl font-light text-gray-900 mb-2 uppercase tracking-wider">
                 Välkommen till din
               </h1>
-              <h2 className="text-3xl md:text-4xl bg-gradient-to-r from-amber-300 to-orange-300 bg-clip-text text-transparent font-medium uppercase">
+              <h2 className="text-2xl md:text-3xl text-[#8B6B47] font-semibold uppercase mb-4">
                 Kostnadsfria Hudanalys
               </h2>
-              <p className="text-lg text-white/80 mt-4 max-w-lg mx-auto">
+              <p className="text-gray-600 mt-4 max-w-md mx-auto">
                 Få personliga rekommendationer för livsstil, produkter och kost på bara 2 minuter
               </p>
             </div>
 
-            <form onSubmit={handleWelcomeSubmit} className="space-y-6">
+            <form onSubmit={handleWelcomeSubmit} className="space-y-4 max-w-md mx-auto">
               {/* Name Input */}
               <div className="text-left">
-                <label className="flex items-center text-white font-medium mb-2">
-                  <User className="w-5 h-5 mr-2" />
+                <label className="flex items-center text-gray-700 text-sm font-medium mb-2">
+                  <User className="w-4 h-4 mr-2 text-[#8B6B47]" />
                   Vad är ditt namn?
                 </label>
                 <input
@@ -265,15 +285,15 @@ export default function QuizPage() {
                   value={userName}
                   onChange={(e) => setUserName(e.target.value)}
                   placeholder="Ditt förnamn"
-                  className={`w-full px-4 py-3 bg-white/10 border ${errors.name ? 'border-red-400' : 'border-white/20'} rounded-xl text-white placeholder-white/60 focus:outline-none focus:border-amber-400 transition-colors`}
+                  className={`w-full px-4 py-3 bg-white border ${errors.name ? 'border-red-400' : 'border-gray-200'} rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#8B6B47] transition-colors`}
                 />
-                {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name}</p>}
+                {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
               </div>
 
               {/* Email Input */}
               <div className="text-left">
-                <label className="flex items-center text-white font-medium mb-2">
-                  <Mail className="w-5 h-5 mr-2" />
+                <label className="flex items-center text-gray-700 text-sm font-medium mb-2">
+                  <Mail className="w-4 h-4 mr-2 text-[#8B6B47]" />
                   Vilken är din e-postadress?
                 </label>
                 <input
@@ -281,9 +301,9 @@ export default function QuizPage() {
                   value={userEmail}
                   onChange={(e) => setUserEmail(e.target.value)}
                   placeholder="din@email.com"
-                  className={`w-full px-4 py-3 bg-white/10 border ${errors.email ? 'border-red-400' : 'border-white/20'} rounded-xl text-white placeholder-white/60 focus:outline-none focus:border-amber-400 transition-colors`}
+                  className={`w-full px-4 py-3 bg-white border ${errors.email ? 'border-red-400' : 'border-gray-200'} rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#8B6B47] transition-colors`}
                 />
-                {errors.email && <p className="text-red-400 text-sm mt-1">{errors.email}</p>}
+                {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
               </div>
 
               {/* Privacy Policy */}
@@ -293,20 +313,17 @@ export default function QuizPage() {
                     type="checkbox"
                     checked={privacyAccepted}
                     onChange={(e) => setPrivacyAccepted(e.target.checked)}
-                    className="mt-1 h-4 w-4 text-amber-400 focus:ring-amber-400 border-white/20 rounded"
+                    className="mt-1 h-4 w-4 text-[#8B6B47] focus:ring-[#8B6B47] border-gray-300 rounded"
                   />
                   <div className="flex-1">
-                    <div className="flex items-center text-white/90 text-sm">
-                      <Shield className="w-4 h-4 mr-2 text-amber-400" />
-                      <span>
-                        Jag godkänner{' '}
-                        <a href="/privacy-policy" target="_blank" className="text-amber-400 hover:text-amber-300 underline">
-                          integritetspolicyn
-                        </a>{' '}
-                        och samtycker till att få personliga hudvårdsrekommendationer
-                      </span>
+                    <div className="text-gray-600 text-sm">
+                      Jag godkänner{' '}
+                      <a href="/privacy-policy" target="_blank" className="text-[#8B6B47] hover:text-[#6B5337] underline">
+                        integritetspolicyn
+                      </a>{' '}
+                      och samtycker till att få personliga hudvårdsrekommendationer
                     </div>
-                    {errors.privacy && <p className="text-red-400 text-sm mt-1">{errors.privacy}</p>}
+                    {errors.privacy && <p className="text-red-500 text-sm mt-1">{errors.privacy}</p>}
                   </div>
                 </label>
               </div>
@@ -316,24 +333,24 @@ export default function QuizPage() {
                 type="submit"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full flex items-center justify-center px-8 py-4 bg-gradient-to-r from-amber-400 to-orange-400 text-black rounded-xl font-semibold hover:from-amber-300 hover:to-orange-300 transition-all duration-300 text-lg"
+                className="w-full flex items-center justify-center px-8 py-4 bg-[#4A3428] text-white rounded-full font-medium hover:bg-[#3A2A1E] transition-all duration-300 shadow-lg"
               >
                 <span>Starta Min Hudanalys</span>
                 <ArrowRight className="w-5 h-5 ml-2" />
               </motion.button>
 
               {/* Trust Indicators */}
-              <div className="flex items-center justify-center gap-6 text-white/60 text-xs mt-6">
+              <div className="flex items-center justify-center gap-6 text-gray-500 text-xs mt-6">
                 <span className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-[#8B7355] rounded-full"></div>
+                  <div className="w-1.5 h-1.5 bg-[#8B6B47] rounded-full"></div>
                   100% Kostnadsfritt
                 </span>
                 <span className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                  <div className="w-1.5 h-1.5 bg-[#8B6B47] rounded-full"></div>
                   2 minuter
                 </span>
                 <span className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                  <div className="w-1.5 h-1.5 bg-[#8B6B47] rounded-full"></div>
                   AI-driven
                 </span>
               </div>
@@ -345,22 +362,19 @@ export default function QuizPage() {
         {currentStep === 'questions' && (
           <>
             {/* Progress Bar */}
-            <div className="mb-8">
+            <div className="mb-6">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-white/60 text-sm uppercase tracking-wide">
+                <span className="text-gray-600 text-sm">
                   Fråga {currentQuestion + 1} av {totalQuestions}
                 </span>
-                <span className="text-white/60 text-sm">
+                <span className="text-gray-600 text-sm">
                   {Math.round(progress)}%
                 </span>
               </div>
-              <div className="w-full h-2 bg-gray-800 rounded-full overflow-hidden">
+              <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
                 <motion.div 
-                  className="h-full rounded-full"
-                  style={{
-                    background: 'linear-gradient(90deg, #8B4513 0%, #A0522D 100%)',
-                    width: `${progress}%`
-                  }}
+                  className="h-full rounded-full bg-gradient-to-r from-[#8B6B47] to-[#6B5337]"
+                  style={{ width: `${progress}%` }}
                   transition={{ duration: 0.5, ease: "easeOut" }}
                 />
               </div>
@@ -370,27 +384,27 @@ export default function QuizPage() {
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentQuestion}
-                initial={{ opacity: 0, x: 50 }}
+                initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -50 }}
+                exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.3 }}
-                className="bg-white rounded-2xl p-8"
+                className="bg-white rounded-2xl p-6 md:p-8 shadow-sm"
               >
-                <div className="text-center mb-8">
+                <div className="text-center mb-6">
                   {questions[currentQuestion]?.icon && (
-                    <div className="text-4xl mb-4">{questions[currentQuestion].icon}</div>
+                    <div className="text-3xl mb-3">{questions[currentQuestion].icon}</div>
                   )}
-                  <h2 className="text-2xl md:text-3xl font-semibold text-gray-900 mb-4">
+                  <h2 className="text-xl md:text-2xl font-medium text-gray-900 mb-2">
                     {questions[currentQuestion]?.text}
                   </h2>
                   {questions[currentQuestion]?.description && (
-                    <p className="text-gray-600">
+                    <p className="text-gray-600 text-sm">
                       {questions[currentQuestion].description}
                     </p>
                   )}
                 </div>
 
-                <div className="grid gap-3">
+                <div className="space-y-2">
                   {questions[currentQuestion]?.options.map((option) => {
                     const isMultiSelect = questions[currentQuestion].multiSelect
                     const currentAnswers = answers[questions[currentQuestion].id]?.split(',') || []
@@ -402,30 +416,30 @@ export default function QuizPage() {
                       <motion.button
                         key={option.value}
                         onClick={() => handleAnswer(questions[currentQuestion].id, option.value)}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className={`p-4 rounded-xl border-2 text-left transition-all duration-300 ${
+                        whileHover={{ scale: 1.01 }}
+                        whileTap={{ scale: 0.99 }}
+                        className={`w-full p-4 rounded-lg border text-left transition-all duration-200 ${
                           isSelected
-                            ? 'border-[#8B7355] bg-[#8B7355] text-white'
-                            : 'border-gray-200 hover:border-[#8B7355] bg-white'
+                            ? 'border-[#8B6B47] bg-[#8B6B47]/10'
+                            : 'border-gray-200 hover:border-[#8B6B47]/50 bg-white'
                         }`}
                       >
                         <div className="flex items-center">
-                          <span className="text-2xl mr-3">{option.emoji}</span>
+                          <span className="text-xl mr-3">{option.emoji}</span>
                           <div className="flex-1">
-                            <h3 className={`font-semibold ${isSelected ? 'text-white' : 'text-gray-900'}`}>
+                            <h3 className={`font-medium text-sm ${isSelected ? 'text-[#4A3428]' : 'text-gray-900'}`}>
                               {option.label}
                             </h3>
                             {option.description && (
-                              <p className={`text-sm mt-1 ${isSelected ? 'text-white/80' : 'text-gray-600'}`}>
+                              <p className={`text-xs mt-0.5 ${isSelected ? 'text-[#6B5337]' : 'text-gray-500'}`}>
                                 {option.description}
                               </p>
                             )}
                           </div>
                           {isSelected && (
                             <div className="ml-auto">
-                              <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
-                                <svg className="w-4 h-4 text-[#8B7355]" fill="currentColor" viewBox="0 0 20 20">
+                              <div className="w-5 h-5 bg-[#8B6B47] rounded-full flex items-center justify-center">
+                                <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                 </svg>
                               </div>
@@ -471,10 +485,10 @@ export default function QuizPage() {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       disabled={!answers[questions[currentQuestion].id]}
-                      className="px-8 py-3 bg-[#4A3428] text-white rounded-full font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                      className="px-6 py-2.5 bg-[#4A3428] text-white rounded-full text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 shadow-md"
                     >
                       <span>Fortsätt</span>
-                      <ArrowRight className="w-5 h-5" />
+                      <ArrowRight className="w-4 h-4" />
                     </motion.button>
                   </div>
                 )}
@@ -482,22 +496,22 @@ export default function QuizPage() {
             </AnimatePresence>
 
             {/* Navigation */}
-            <div className="flex justify-between mt-8">
+            <div className="flex justify-between mt-6">
               <button
                 onClick={goToPrevious}
-                className="flex items-center px-6 py-3 text-white hover:text-amber-400 transition-colors"
+                className="flex items-center px-4 py-2 text-gray-600 hover:text-[#8B6B47] transition-colors text-sm"
               >
-                <ArrowLeft className="w-5 h-5 mr-2" />
+                <ArrowLeft className="w-4 h-4 mr-1" />
                 Föregående
               </button>
               
-              {answers[questions[currentQuestion]?.id] && (
+              {answers[questions[currentQuestion]?.id] && !questions[currentQuestion]?.multiSelect && (
                 <button
                   onClick={goToNextQuestion}
-                  className="flex items-center px-6 py-3 bg-amber-400 text-black rounded-xl font-medium hover:bg-amber-300 transition-colors"
+                  className="flex items-center px-4 py-2 bg-[#4A3428] text-white rounded-full text-sm font-medium hover:bg-[#3A2A1E] transition-colors"
                 >
                   {currentQuestion === questions.length - 1 ? 'Få Mina Resultat' : 'Nästa'}
-                  <ArrowRight className="w-5 h-5 ml-2" />
+                  <ArrowRight className="w-4 h-4 ml-1" />
                 </button>
               )}
             </div>
