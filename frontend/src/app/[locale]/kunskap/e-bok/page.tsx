@@ -14,6 +14,7 @@ export default function EbookPage() {
   const [totalPages, setTotalPages] = useState(0)
   const [pdfLoaded, setPdfLoaded] = useState(false)
   const [showFallback, setShowFallback] = useState(false)
+  const [scriptError, setScriptError] = useState('')
 
   useEffect(() => {
     // Add the original CSS
@@ -31,27 +32,45 @@ export default function EbookPage() {
     const timeout = setTimeout(() => {
       if (isLoading) {
         setShowFallback(true)
+        setScriptError('E-bok läsaren laddade inte inom rimlig tid.')
       }
-    }, 10000) // 10 sekunders timeout
+    }, 15000) // Give more time for interactive reader
     return () => clearTimeout(timeout)
   }, [isLoading])
+
+  const handlePdfJsError = () => {
+    setScriptError('Kunde inte ladda PDF.js biblioteket.')
+    setShowFallback(true)
+  }
+
+  const handleAppJsError = () => {
+    setScriptError('Kunde inte ladda e-bok applikationen.')
+    setShowFallback(true)
+  }
 
   return (
     <>
       <Header />
       <div className="pt-24">
         <Script 
-        src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"
-        onLoad={() => setPdfLoaded(true)}
-        crossOrigin="anonymous"
-      />
-      
-      {pdfLoaded && (
-        <Script 
-          src="/ebook-reader/app.js"
-          onLoad={() => setIsLoading(false)}
+          src="/ebook-reader/pdf.min.js"
+          onLoad={() => {
+            console.log('PDF.js loaded successfully')
+            setPdfLoaded(true)
+          }}
+          onError={handlePdfJsError}
         />
-      )}
+        
+        {pdfLoaded && (
+          <Script 
+            src="/ebook-reader/app.js"
+            onLoad={() => {
+              console.log('App.js loaded successfully')
+              setIsLoading(false)
+            }}
+            onError={handleAppJsError}
+          />
+        )}
 
       {/* Loading Screen */}
       <div id="loading" className={`loading-screen ${!isLoading ? 'hidden' : ''}`}>
@@ -69,25 +88,43 @@ export default function EbookPage() {
 
       {/* Fallback embed om läsaren inte laddas */}
       {showFallback && (
-        <div className="max-w-6xl mx-auto my-12">
+        <div className="max-w-6xl mx-auto my-12 p-6">
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+            <h3 className="text-lg font-semibold text-yellow-800 mb-2">E-bok läsaren kunde inte laddas</h3>
+            {scriptError && (
+              <p className="text-sm text-yellow-700 mb-2">Fel: {scriptError}</p>
+            )}
+            <p className="text-sm text-yellow-700">
+              Ingen fara! Du kan fortfarande läsa e-boken via PDF-visningen nedan.
+            </p>
+          </div>
+          
           <iframe
             src="/ebook-reader/e-book_weedyourskin_backup.pdf#toolbar=0&navpanes=0"
-            className="w-full h-[80vh] border"
+            className="w-full h-[80vh] border rounded-lg shadow-lg"
+            title="Weed Your Skin E-book"
           />
-          <p className="text-center text-sm text-gray-600 mt-4">
-            Om interaktiva läsaren inte laddas kan du läsa PDF:en här ovan 🡱 eller <a href="/ebook-reader/e-book_weedyourskin_backup.pdf" className="underline text-[#4A3428]" download>ladda ner e-boken</a> istället.
-          </p>
+          
+          <div className="text-center mt-4 space-y-2">
+            <p className="text-sm text-gray-600">
+              Du kan också{' '}
+              <a 
+                href="/ebook-reader/e-book_weedyourskin_backup.pdf" 
+                className="underline text-[#4A3428] hover:text-[#6B5337]" 
+                download="1753_Skincare_WeedYourSkin_Ebook.pdf"
+              >
+                ladda ner e-boken här
+              </a>
+            </p>
+            <p className="text-xs text-gray-500">
+              Filstorlek: ~15 MB | Format: PDF
+            </p>
+          </div>
         </div>
       )}
 
       {/* Main Container */}
       <div id="app" className={`app-container ${!isLoading ? 'loaded' : ''}`}>
-        {/* Logo Header */}
-        <header className="logo-header">
-          <Link href="/" className="logo-link">
-            <Image src="/1753.png" alt="1753 Skincare" width={120} height={40} className="logo" />
-          </Link>
-        </header>
 
         {/* Navigation Arrows */}
         <button id="prevBtn" className="nav-arrow nav-prev" title="Föregående sida">

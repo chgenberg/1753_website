@@ -122,37 +122,82 @@ export default function CheckoutPage() {
           console.error('Newsletter subscription error:', newsletterError);
         }
       }
+
+      // Generate unique order ID
+      const orderId = `1753-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
       
-      // Here you would integrate with Viva Wallet
-      // For now, we'll simulate a payment process
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
-      // Track purchase completion in Drip
-      if (form.email) {
-        try {
-          await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002'}/api/newsletter/track`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              email: form.email,
-              action: 'purchase_completed',
-              data: {
-                total,
-                items: items.map(item => item.product.name),
-                orderTotal: total
-              }
-            })
-          });
-        } catch (trackingError) {
-          console.error('Purchase tracking error:', trackingError);
+      // Prepare order data for payment
+      const orderData = {
+        orderId,
+        customer: {
+          email: form.email,
+          firstName: form.firstName,
+          lastName: form.lastName,
+          phone: form.phone,
+          address: form.address,
+          apartment: form.apartment,
+          city: form.city,
+          postalCode: form.postalCode,
+          country: form.country
+        },
+        items: items.map(item => ({
+          productId: item.productId,
+          name: item.product.name,
+          price: item.price,
+          quantity: item.quantity,
+          sku: item.product.id, // Using product ID as SKU for now
+          variantId: item.variantId
+        })),
+        subtotal,
+        shipping,
+        tax: 0, // VAT is included in Swedish prices
+        total,
+        currency: 'SEK',
+        paymentMethod: form.paymentMethod,
+        newsletter: form.newsletter,
+        comments: ''
+      }
+
+      // Create payment order
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002'}/api/orders/payment`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+      })
+
+      const result = await response.json()
+
+      if (!result.success) {
+        throw new Error(result.error || 'Payment creation failed')
+      }
+
+      // Store order ID in localStorage for success page
+      localStorage.setItem('currentOrderId', result.orderId)
+      localStorage.setItem('orderData', JSON.stringify({
+        orderId: result.orderId,
+        total,
+        items: items.map(item => ({ name: item.product.name, quantity: item.quantity })),
+        customer: {
+          firstName: form.firstName,
+          lastName: form.lastName,
+          email: form.email
         }
+      }))
+
+      // Clear cart before redirect
+      clearCart()
+
+      // Redirect to Viva Wallet for payment
+      if (result.redirectUrl) {
+        window.location.href = result.redirectUrl
+      } else {
+        // Fallback - redirect to success page (for testing)
+        router.push('/checkout/success')
       }
       
-      // Clear cart and redirect to success page
-      clearCart()
-      router.push('/checkout/success')
-    } catch (error) {
-      toast.error('Något gick fel med betalningen. Försök igen.')
+    } catch (error: any) {
+      console.error('Payment error:', error)
+      toast.error(error.message || 'Något gick fel med betalningen. Försök igen.')
       setIsProcessing(false)
     }
   }

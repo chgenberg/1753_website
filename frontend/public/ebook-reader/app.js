@@ -54,9 +54,8 @@ class EBookReader {
     async init() {
         try {
             // Configure PDF.js
-            // Configure worker source. Safari often blocks cross-origin workers, so we fall back
-            // to disabling the worker entirely on Safari/iOS to ensure the reader still loads.
-            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+            // Use local worker file to avoid cross-origin issues
+            pdfjsLib.GlobalWorkerOptions.workerSrc = '/ebook-reader/pdf.worker.min.js';
             
             // Detect Safari (desktop & iOS) – both often restrict cross-origin web-workers.
             const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
@@ -88,6 +87,8 @@ class EBookReader {
         } catch (error) {
             console.error('Error initializing e-book reader:', error);
             this.showError('Kunde inte ladda e-boken. Försök igen senare.');
+            // Hide loading screen even on error to show fallback
+            this.hideLoadingScreen();
         }
     }
     
