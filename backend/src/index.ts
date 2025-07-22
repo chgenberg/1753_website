@@ -32,8 +32,9 @@ const envConfig = validateEnv()
 const app = express()
 const PORT = process.env.PORT || envConfig.PORT || 5002
 
-// Trust proxy for Railway and other reverse proxies
-app.set('trust proxy', true)
+// Trust proxy configuration for Railway
+// Railway uses specific proxy setup, so we trust the first proxy
+app.set('trust proxy', 1)
 
 // Security middleware
 app.use(helmet({
