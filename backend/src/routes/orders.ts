@@ -223,6 +223,7 @@ router.get('/test/viva-wallet', async (req, res) => {
  */
 router.post('/test/payment', async (req, res) => {
   try {
+    logger.info('Test payment route called')
     const testOrderData = {
       orderId: `TEST-${Date.now()}`,
       customer: {
@@ -254,7 +255,9 @@ router.post('/test/payment', async (req, res) => {
       comments: 'Test order for Viva Wallet integration'
     }
 
+    logger.info('Calling orderService.createPayment with test data')
     const paymentResult = await orderService.createPayment(testOrderData)
+    logger.info('Payment result received:', { success: paymentResult.success })
 
     if (!paymentResult.success) {
       return res.status(400).json({
@@ -275,9 +278,11 @@ router.post('/test/payment', async (req, res) => {
 
   } catch (error: any) {
     logger.error('Error creating test payment:', error)
+    logger.error('Error stack:', error.stack)
     res.status(500).json({
       success: false,
-      error: 'Internal server error'
+      error: 'Internal server error',
+      details: error.message
     })
   }
 })
