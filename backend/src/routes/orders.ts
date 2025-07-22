@@ -316,6 +316,29 @@ router.post('/:orderId/process', async (req, res) => {
 })
 
 /**
+ * Debug: List all registered routes
+ * GET /api/orders/debug/routes
+ */
+router.get('/debug/routes', (req, res) => {
+  const routes: string[] = []
+  
+  // Get all registered routes from this router
+  router.stack.forEach((layer: any) => {
+    if (layer.route) {
+      const methods = Object.keys(layer.route.methods).join(', ').toUpperCase()
+      routes.push(`${methods} /api/orders${layer.route.path}`)
+    }
+  })
+  
+  res.json({
+    success: true,
+    message: 'All registered order routes',
+    routes: routes.sort(),
+    timestamp: new Date().toISOString()
+  })
+})
+
+/**
  * Health check for order service
  * GET /api/orders/health
  */
