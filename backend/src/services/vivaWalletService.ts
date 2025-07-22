@@ -98,6 +98,8 @@ class VivaWalletService {
         amount: payload.amount,
         customerEmail: payload.customer.email 
       })
+      logger.info('Full payload being sent to Viva Wallet:', JSON.stringify(payload, null, 2))
+      logger.info('Headers being sent:', this.getHeaders())
 
       const response: AxiosResponse<SmartCheckoutResponse> = await axios.post(
         `${this.credentials.baseUrl}/checkout/v2/orders`,
@@ -110,7 +112,13 @@ class VivaWalletService {
 
     } catch (error: any) {
       logger.error('Failed to create Viva Wallet Smart Checkout order:', error.response?.data || error.message)
-      throw new Error('Failed to create payment order')
+      logger.error('Error status:', error.response?.status)
+      logger.error('Error headers:', error.response?.headers)
+      logger.error('Full error object:', error)
+      
+      // Return more detailed error
+      const errorMessage = error.response?.data?.message || error.response?.data || error.message || 'Unknown error'
+      throw new Error(`Viva Wallet API error: ${JSON.stringify(errorMessage)}`)
     }
   }
 
