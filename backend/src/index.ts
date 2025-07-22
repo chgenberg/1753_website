@@ -112,6 +112,16 @@ app.use('/api/knowledge', knowledgeRoutes)
 app.use('/api/blog', blogRoutes)
 app.use('/api/raw-materials', rawMaterialsRoutes)
 app.use('/api/contact', contactRoutes)
+
+// Debug: Log all requests to /api/orders
+app.use('/api/orders', (req, res, next) => {
+  console.log(`🚀 Request to /api/orders: ${req.method} ${req.url}`)
+  console.log(`   Original URL: ${req.originalUrl}`)
+  console.log(`   Base URL: ${req.baseUrl}`)
+  console.log(`   Path: ${req.path}`)
+  next()
+})
+
 app.use('/api/orders', orderRoutes)
 
 // Health check endpoint

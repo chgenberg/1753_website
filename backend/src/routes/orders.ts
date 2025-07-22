@@ -321,6 +321,21 @@ router.post('/:orderId/process', async (req, res) => {
 })
 
 /**
+ * Debug: GET version of test/payment to see if path matching works
+ * GET /api/orders/test/payment
+ */
+router.get('/test/payment', (req, res) => {
+  logger.info('GET /test/payment called (debug route)')
+  res.json({
+    success: true,
+    message: 'GET version of /test/payment works',
+    method: 'GET',
+    path: req.path,
+    originalUrl: req.originalUrl
+  })
+})
+
+/**
  * Debug: List all registered routes
  * GET /api/orders/debug/routes
  */
@@ -377,6 +392,25 @@ router.get('/health', async (req, res) => {
       error: error.message
     })
   }
+})
+
+// Debug: Catch-all route to see what requests actually reach this router
+router.all('*', (req, res) => {
+  logger.info(`Catch-all route hit: ${req.method} ${req.path}`)
+  logger.info('Full URL:', req.url)
+  logger.info('Base URL:', req.baseUrl)
+  logger.info('Original URL:', req.originalUrl)
+  res.status(404).json({
+    success: false,
+    message: `Route ${req.method} ${req.path} not found in orders router`,
+    debug: {
+      method: req.method,
+      path: req.path,
+      url: req.url,
+      baseUrl: req.baseUrl,
+      originalUrl: req.originalUrl
+    }
+  })
 })
 
 export default router 
