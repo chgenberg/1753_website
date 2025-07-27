@@ -40,7 +40,7 @@ router.get('/', async (req, res) => {
       },
       orderBy: [
         { category: 'asc' },
-        { name: 'asc' }
+        { swedishName: 'asc' }
       ]
     });
     
