@@ -4,7 +4,7 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { motion } from 'framer-motion'
 import { useState } from 'react'
-import dynamic from 'next/dynamic'
+
 import Image from 'next/image'
 import { 
   Phone, 
@@ -19,8 +19,7 @@ import {
 } from 'lucide-react'
 import type { Metadata } from 'next'
 
-// Dynamically import map component (client-side only)
-const ContactMap = dynamic(() => import('@/components/layout/ContactMap'), { ssr: false })
+
 
 
 const contactInfo = [
@@ -366,33 +365,7 @@ export default function ContactPage() {
           </div>
         </section>
 
-        {/* Map Section */}
-        <section className="py-20 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="text-center mb-12"
-            >
-              <h2 className="text-3xl font-bold mb-4">Hitta till oss</h2>
-              <p className="text-gray-600 max-w-2xl mx-auto">
-                Vårt kontor ligger i Åsa, Halland. Besök gärna efter överenskommelse.
-              </p>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="aspect-video rounded-2xl overflow-hidden shadow-lg"
-            >
-              <ContactMap />
-            </motion.div>
-          </div>
-        </section>
+
       </main>
       <Footer />
     </>
