@@ -1,11 +1,33 @@
 'use client'
 
+import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { Download, FileText, ExternalLink } from 'lucide-react'
 
 export default function EBookPage() {
+  useEffect(() => {
+    // Check if iframe fails to load and show desktop fallback
+    const timer = setTimeout(() => {
+      const iframe = document.querySelector('iframe[title="Weed Your Skin E-bok"]') as HTMLIFrameElement;
+      const desktopFallback = document.getElementById('desktop-pdf-fallback') as HTMLElement;
+      
+      if (iframe && desktopFallback) {
+        try {
+          // Try to access iframe content - if it fails, show fallback
+          iframe.contentDocument;
+        } catch (error) {
+          // Cross-origin or X-Frame-Options blocked the iframe
+          iframe.style.display = 'none';
+          desktopFallback.style.display = 'flex';
+        }
+      }
+    }, 3000); // Wait 3 seconds for iframe to load
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#FAF8F5]">
       <Header />
@@ -93,30 +115,88 @@ export default function EBookPage() {
                 </div>
               </div>
               
-              {/* PDF Embed */}
+              {/* PDF Embed with fallback */}
               <div className="relative bg-gray-100" style={{ height: '800px' }}>
                 <iframe
                   src="/e-book_weedyourskin_backup.pdf#toolbar=1&navpanes=0&scrollbar=1"
                   className="w-full h-full"
                   title="Weed Your Skin E-bok"
                   loading="lazy"
+                  onError={() => {
+                    // Hide iframe and show fallback on error
+                    const iframe = document.querySelector('iframe[title="Weed Your Skin E-bok"]') as HTMLElement;
+                    const fallback = document.getElementById('pdf-fallback') as HTMLElement;
+                    if (iframe && fallback) {
+                      iframe.style.display = 'none';
+                      fallback.style.display = 'flex';
+                    }
+                  }}
                 />
                 
-                {/* Fallback message */}
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <div className="text-center p-8 bg-white/90 rounded-xl shadow-lg max-w-md mx-auto opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-auto">
-                    <FileText className="w-16 h-16 text-[#4A3428] mx-auto mb-4" />
-                    <p className="text-gray-700 mb-4">
-                      Om PDF:en inte visas korrekt kan du ladda ner den direkt.
+                {/* Fallback content - always visible on mobile, hidden on desktop until error */}
+                <div 
+                  id="pdf-fallback" 
+                  className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 md:hidden"
+                >
+                  <div className="text-center p-8 bg-white rounded-xl shadow-lg max-w-md mx-auto">
+                    <FileText className="w-20 h-20 text-[#4A3428] mx-auto mb-6" />
+                    <h3 className="text-xl font-bold text-gray-900 mb-4">
+                      Ladda ner e-boken
+                    </h3>
+                    <p className="text-gray-700 mb-6">
+                      För bästa läsupplevelse, ladda ner e-boken direkt till din enhet.
                     </p>
-                    <a
-                      href="/e-book_weedyourskin_backup.pdf"
-                      download="Weed_Your_Skin_1753.pdf"
-                      className="inline-flex items-center px-6 py-2 bg-[#4A3428] text-white rounded-full text-sm font-medium hover:bg-[#3A2418] transition-colors duration-300"
-                    >
-                      <Download className="w-4 h-4 mr-2" />
-                      Ladda ner nu
-                    </a>
+                    <div className="space-y-3">
+                      <a
+                        href="/e-book_weedyourskin_backup.pdf"
+                        download="Weed_Your_Skin_1753.pdf"
+                        className="block w-full px-6 py-3 bg-[#4A3428] text-white rounded-lg text-sm font-medium hover:bg-[#3A2418] transition-colors duration-300"
+                      >
+                        <Download className="w-4 h-4 inline mr-2" />
+                        Ladda ner PDF (14 MB)
+                      </a>
+                      <button
+                        onClick={() => window.open('/e-book_weedyourskin_backup.pdf', '_blank')}
+                        className="block w-full px-6 py-3 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors duration-300"
+                      >
+                        <ExternalLink className="w-4 h-4 inline mr-2" />
+                        Öppna i ny flik
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Desktop error fallback (hidden by default) */}
+                <div 
+                  id="desktop-pdf-fallback" 
+                  className="absolute inset-0 hidden items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100"
+                >
+                  <div className="text-center p-12 bg-white rounded-xl shadow-lg max-w-lg mx-auto">
+                    <FileText className="w-24 h-24 text-[#4A3428] mx-auto mb-6" />
+                    <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                      E-boken kunde inte visas
+                    </h3>
+                    <p className="text-gray-700 mb-6">
+                      PDF:en kan inte visas direkt i webbläsaren på grund av säkerhetsinställningar.
+                      Ladda ner den istället för att läsa den lokalt.
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <a
+                        href="/e-book_weedyourskin_backup.pdf"
+                        download="Weed_Your_Skin_1753.pdf"
+                        className="flex-1 px-6 py-3 bg-[#4A3428] text-white rounded-lg font-medium hover:bg-[#3A2418] transition-colors duration-300 text-center"
+                      >
+                        <Download className="w-4 h-4 inline mr-2" />
+                        Ladda ner PDF
+                      </a>
+                      <button
+                        onClick={() => window.open('/e-book_weedyourskin_backup.pdf', '_blank')}
+                        className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors duration-300"
+                      >
+                        <ExternalLink className="w-4 h-4 inline mr-2" />
+                        Försök öppna
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
