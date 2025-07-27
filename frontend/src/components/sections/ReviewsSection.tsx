@@ -2,50 +2,152 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import Image from 'next/image'
-import { Star, Quote } from 'lucide-react'
+import { Star, Quote, CheckCircle } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 
-const reviews = [
-  {
-    id: 1,
-    name: 'Emma Svensson',
-    rating: 5,
-    comment: 'Fantastiska produkter! Min hud har aldrig känt sig så mjuk och balanserad.',
-          product: 'The ONE Facial Oil',
-    image: '/Porträtt_hemsidan/kapitel-16.png'
-  },
-  {
-    id: 2,
-    name: 'Marcus Andersson',
-    rating: 5,
-    comment: 'CBD-oljan har verkligen hjälpt min känsliga hud. Rekommenderar starkt!',
-          product: 'Au Naturel Makeup Remover',
-    image: '/Porträtt_hemsidan/kapitel-18.png'
-  },
-  {
-    id: 3,
-    name: 'Sofia Lindberg',
-    rating: 5,
-    comment: 'Älskar konsistensen och doften. Ser redan resultat efter två veckor!',
-          product: 'TA-DA Serum',
-    image: '/Porträtt_hemsidan/kapitel-22.png'
-  }
-]
+interface Review {
+  id: string
+  reviewer: string
+  rating: number
+  comment: string
+  product: string
+  createdAt: string
+  verified: boolean
+}
 
 export function ReviewsSection() {
+  const [reviews, setReviews] = useState<Review[]>([])
   const [overallStats, setOverallStats] = useState({
     totalReviews: 823,
     averageRating: 4.62
   })
+  const [loading, setLoading] = useState(true)
 
   const t = useTranslations('Reviews')
 
   useEffect(() => {
-    // You could fetch overall stats from API here if needed
-    // For now using the calculated values from our analysis
+    fetchReviews()
+    fetchStats()
   }, [])
+
+  const fetchReviews = async () => {
+    try {
+      // Fetch featured reviews
+      const response = await fetch('/api/reviews?limit=3&featured=true')
+      if (response.ok) {
+        const data = await response.json()
+        if (data.success && data.data.length > 0) {
+          setReviews(data.data)
+        } else {
+          // Fallback to default reviews if no featured reviews
+          setReviews([
+            {
+              id: '1',
+              reviewer: 'Emma Svensson',
+              rating: 5,
+              comment: 'Fantastiska produkter! Min hud har aldrig känt sig så mjuk och balanserad.',
+              product: 'The ONE Facial Oil',
+              createdAt: new Date().toISOString(),
+              verified: true
+            },
+            {
+              id: '2',
+              reviewer: 'Marcus Andersson',
+              rating: 5,
+              comment: 'CBD-oljan har verkligen hjälpt min känsliga hud. Rekommenderar starkt!',
+              product: 'Au Naturel Makeup Remover',
+              createdAt: new Date().toISOString(),
+              verified: true
+            },
+            {
+              id: '3',
+              reviewer: 'Sofia Lindberg',
+              rating: 5,
+              comment: 'Älskar konsistensen och doften. Ser redan resultat efter två veckor!',
+              product: 'TA-DA Serum',
+              createdAt: new Date().toISOString(),
+              verified: true
+            }
+          ])
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching reviews:', error)
+      // Use default reviews on error
+      setReviews([
+        {
+          id: '1',
+          reviewer: 'Emma Svensson',
+          rating: 5,
+          comment: 'Fantastiska produkter! Min hud har aldrig känt sig så mjuk och balanserad.',
+          product: 'The ONE Facial Oil',
+          createdAt: new Date().toISOString(),
+          verified: true
+        },
+        {
+          id: '2',
+          reviewer: 'Marcus Andersson',
+          rating: 5,
+          comment: 'CBD-oljan har verkligen hjälpt min känsliga hud. Rekommenderar starkt!',
+          product: 'Au Naturel Makeup Remover',
+          createdAt: new Date().toISOString(),
+          verified: true
+        },
+        {
+          id: '3',
+          reviewer: 'Sofia Lindberg',
+          rating: 5,
+          comment: 'Älskar konsistensen och doften. Ser redan resultat efter två veckor!',
+          product: 'TA-DA Serum',
+          createdAt: new Date().toISOString(),
+          verified: true
+        }
+      ])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const fetchStats = async () => {
+    try {
+      const response = await fetch('/api/reviews/stats')
+      if (response.ok) {
+        const data = await response.json()
+        if (data.success) {
+          setOverallStats({
+            totalReviews: data.data.totalReviews,
+            averageRating: data.data.averageRating
+          })
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching review stats:', error)
+    }
+  }
+
+  if (loading) {
+    return (
+      <section className="py-24 bg-[var(--color-bg-accent)]">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-[var(--color-primary-dark)] mb-4">
+              VAD VÅRA KUNDER SÄGER
+            </h2>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-white rounded-2xl shadow-lg p-8 animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
+                <div className="h-16 bg-gray-200 rounded mb-4"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section className="py-24 bg-[var(--color-bg-accent)]">
@@ -76,7 +178,7 @@ export function ReviewsSection() {
               className="bg-white rounded-2xl shadow-lg overflow-hidden"
             >
               {/* Quote Icon */}
-              <div className="relative p-8 pb-0">
+              <div className="relative p-8">
                 <Quote className="absolute top-6 right-6 w-8 h-8 text-[var(--color-accent-light)]/30" />
                 
                 {/* Rating */}
@@ -94,7 +196,7 @@ export function ReviewsSection() {
                 </div>
 
                 {/* Comment */}
-                <p className="text-[var(--color-gray-700)] leading-relaxed mb-4 italic">
+                <p className="text-[var(--color-gray-700)] leading-relaxed mb-4 italic min-h-[4rem]">
                   "{review.comment}"
                 </p>
 
@@ -102,33 +204,23 @@ export function ReviewsSection() {
                 <p className="text-sm text-[var(--color-accent)] font-medium mb-6">
                   {review.product}
                 </p>
-              </div>
 
-              {/* Customer Info */}
-              <div className="flex items-center gap-4 p-6 bg-[var(--color-bg-primary)]">
-                <div className="relative w-12 h-12 rounded-full overflow-hidden">
-                  <Image
-                    src={review.image}
-                    alt={review.name}
-                    fill
-                    sizes="48px"
-                    className="object-cover"
-                  />
-                </div>
-                <div>
-                  <p className="font-medium text-[var(--color-primary-dark)]">
-                    {review.name}
+                {/* Customer Info - No Image */}
+                <div className="border-t pt-4">
+                  <p className="font-medium text-[var(--color-primary-dark)] mb-1">
+                    {review.reviewer}
                   </p>
-                  <p className="text-sm text-[var(--color-gray-500)]">
-                    Verifierad köpare
-                  </p>
+                  <div className="flex items-center gap-2 text-sm text-[var(--color-gray-500)]">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <span>Verifierad köpare</span>
+                  </div>
                 </div>
               </div>
             </motion.div>
           ))}
         </div>
 
-        {/* Trust Badge */}
+        {/* Trust Badge - Updated without images */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -136,25 +228,13 @@ export function ReviewsSection() {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="text-center mt-12"
         >
-          <div className="inline-flex items-center gap-4 bg-white rounded-full px-8 py-4 shadow-lg">
-            <div className="flex -space-x-2">
-              {[
-                '/Porträtt_hemsidan/kapitel-24.png',
-                '/Porträtt_hemsidan/kapitel-23.png',
-                '/Porträtt_hemsidan/kapitel-22.png'
-              ].map((img, i) => (
-                img && (
-                  <div key={i} className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-white">
-                    <Image
-                      src={img}
-                      alt="Customer"
-                      fill
-                      sizes="40px"
-                      className="object-cover"
-                    />
-                  </div>
-                )
-              ))}
+          <div className="inline-flex items-center gap-6 bg-white rounded-full px-8 py-4 shadow-lg">
+            <div className="flex items-center gap-2">
+              <Star className="w-5 h-5 fill-[var(--color-accent)] text-[var(--color-accent)]" />
+              <Star className="w-5 h-5 fill-[var(--color-accent)] text-[var(--color-accent)]" />
+              <Star className="w-5 h-5 fill-[var(--color-accent)] text-[var(--color-accent)]" />
+              <Star className="w-5 h-5 fill-[var(--color-accent)] text-[var(--color-accent)]" />
+              <Star className="w-5 h-5 fill-[var(--color-accent)] text-[var(--color-accent)]" />
             </div>
             <div className="text-left">
               <p className="font-semibold text-[var(--color-primary-dark)]">
@@ -178,7 +258,7 @@ export function ReviewsSection() {
               href="/recensioner"
               className="inline-flex items-center px-6 py-3 bg-[#4A3428] text-white rounded-full text-sm font-medium hover:bg-[#6B5D54] transition-colors"
             >
-              {t('readAllReviews')}
+              LÄS ALLA RECENSIONER
             </Link>
           </motion.div>
         </motion.div>

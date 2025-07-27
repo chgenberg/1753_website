@@ -48,7 +48,33 @@ export function ProductsSection() {
           !product.name.toLowerCase().includes('store review') &&
           !product.name.toLowerCase().includes('1753 skincare store')
         )
-        setProducts(filteredProducts)
+        
+        // Custom order for homepage products
+        const customOrder = [
+          'duo-kit-ta-da-serum',
+          'duo-kit-the-one-i-love', 
+          'ta-da-serum',
+          'au-naturel-makeup-remover',
+          'fungtastic-mushroom-extract',
+          'i-love-facial-oil',
+          'the-one-facial-oil'
+        ]
+        
+        // Sort products according to custom order
+        const sortedProducts = filteredProducts.sort((a: Product, b: Product) => {
+          const aIndex = customOrder.indexOf(a.slug)
+          const bIndex = customOrder.indexOf(b.slug)
+          
+          if (aIndex !== -1 && bIndex !== -1) {
+            return aIndex - bIndex
+          }
+          if (aIndex !== -1 && bIndex === -1) return -1
+          if (aIndex === -1 && bIndex !== -1) return 1
+          
+          return 0
+        })
+        
+        setProducts(sortedProducts)
       }
     } catch (error) {
       console.error('Error fetching products:', error)
