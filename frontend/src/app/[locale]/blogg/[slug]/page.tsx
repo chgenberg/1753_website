@@ -157,8 +157,21 @@ export default async function BlogPostPage({ params }: Props) {
                           prose-ul:my-6 prose-li:my-2
                           prose-strong:text-gray-900 prose-strong:font-semibold
                           prose-blockquote:border-l-4 prose-blockquote:border-[#4A3428] prose-blockquote:pl-6 prose-blockquote:italic">
-              {/* Always render as HTML to avoid showing HTML code as text */}
-              <div dangerouslySetInnerHTML={{ __html: post.content }} />
+              {/* Clean and render content */}
+              <div dangerouslySetInnerHTML={{ 
+                __html: post.content
+                  // Remove any escaped quotes and HTML entities
+                  .replace(/&quot;/g, '"')
+                  .replace(/&#39;/g, "'")
+                  .replace(/&lt;/g, '<')
+                  .replace(/&gt;/g, '>')
+                  .replace(/&amp;/g, '&')
+                  // Remove any visible HTML class attributes that might have been saved as text
+                  .replace(/"(mb-\d+|mt-\d+|text-[\w-]+|leading-[\w-]+|font-[\w-]+|italic|bold|px-\d+|py-\d+)"/g, '')
+                  .replace(/class="[^"]*"/g, '')
+                  // Clean up any remaining quote marks around text
+                  .replace(/">([^<]+)</g, '>$1<')
+              }} />
             </div>
 
             {/* Call to Action */}
