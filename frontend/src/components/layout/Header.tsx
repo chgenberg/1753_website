@@ -183,19 +183,62 @@ export function Header() {
                   </AnimatePresence>
                 </li>
 
-                {/* Blogg */}
-                <li>
-                  <Link
-                    href="/blogg"
+                {/* Kunskap - with dropdown */}
+                <li className="relative">
+                  <button
+                    onMouseEnter={() => setActiveDropdown('kunskap')}
+                    onMouseLeave={() => setActiveDropdown(null)}
                     className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all text-sm ${
-                      isActive('/blogg')
-                        ? 'bg-[#4A3428] text-white' 
+                      isActive('/kunskap') || isActive('/quiz') || isActive('/blogg')
+                        ? 'bg-[#4A3428] text-white'
                         : 'hover:bg-gray-100 text-gray-700'
                     }`}
                   >
-                    <PenTool className="w-4 h-4" />
-                    <span className="font-medium">Blogg</span>
-                  </Link>
+                    <BookOpen className="w-4 h-4" />
+                    <span className="font-medium">Kunskap</span>
+                    <ChevronDown className="w-3 h-3" />
+                  </button>
+
+                  {/* Dropdown */}
+                  <AnimatePresence>
+                    {activeDropdown === 'kunskap' && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        onMouseEnter={() => setActiveDropdown('kunskap')}
+                        onMouseLeave={() => setActiveDropdown(null)}
+                        className="absolute top-full left-0 mt-1 w-64 bg-white rounded-lg shadow-lg py-2 border border-gray-200"
+                      >
+                        <Link
+                          href="/blogg"
+                          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          Blogg
+                          <PenTool className="w-4 h-4" />
+                        </Link>
+                        <Link
+                          href="/kunskap/e-bok"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          E-bok: Weed Your Skin
+                        </Link>
+                        <Link
+                          href="/quiz"
+                          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          Hudanalys
+                          <Sparkles className="w-4 h-4 text-amber-600" />
+                        </Link>
+                        <Link
+                          href="/kunskap/funktionella-ravaror"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          Funktionella råvaror
+                        </Link>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </li>
 
 
@@ -383,14 +426,39 @@ export function Header() {
                   </li>
 
                   <li>
-                    <Link
-                      href="/blogg"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50"
-                    >
-                      <PenTool className="w-5 h-5" />
-                      <span className="font-medium">Blogg</span>
-                    </Link>
+                    <div className="px-4 py-2">
+                      <p className="text-sm font-semibold text-gray-600 mb-2">Kunskap</p>
+                      <div className="space-y-1 ml-4">
+                        <Link
+                          href="/blogg"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
+                        >
+                          Blogg
+                        </Link>
+                        <Link
+                          href="/kunskap/e-bok"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
+                        >
+                          E-bok: Weed Your Skin
+                        </Link>
+                        <Link
+                          href="/quiz"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
+                        >
+                          Hudanalys
+                        </Link>
+                        <Link
+                          href="/kunskap/funktionella-ravaror"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
+                        >
+                          Funktionella råvaror
+                        </Link>
+                      </div>
+                    </div>
                   </li>
 
                   <li>

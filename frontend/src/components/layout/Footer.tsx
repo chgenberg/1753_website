@@ -16,8 +16,13 @@ const footerLinks = {
     { name: 'Om oss', href: '/om-oss' },
     { name: 'Våra ingredienser', href: '/om-oss/ingredienser' },
     { name: 'Återförsäljare', href: '/om-oss/aterforsaljare' },
-    { name: 'Blogg', href: '/blogg' },
     { name: 'Kontakt', href: '/kontakt' }
+  ],
+  knowledge: [
+    { name: 'Blogg', href: '/blogg' },
+    { name: 'E-bok', href: '/kunskap/e-bok' },
+    { name: 'Hudanalys', href: '/quiz' },
+    { name: 'Funktionella råvaror', href: '/kunskap/funktionella-ravaror' }
   ],
   help: [
     { name: 'Q&A', href: '/om-oss/faq' },
@@ -100,6 +105,23 @@ export function Footer() {
             <h3 className="font-semibold mb-4">Företag</h3>
             <ul className="space-y-2">
               {footerLinks.company.map((link) => (
+                <li key={link.name}>
+                  <Link
+                    href={link.href}
+                    className="text-gray-400 hover:text-[#00937c] transition-colors duration-200"
+                  >
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Knowledge */}
+          <div>
+            <h3 className="font-semibold mb-4">Kunskap</h3>
+            <ul className="space-y-2">
+              {footerLinks.knowledge.map((link) => (
                 <li key={link.name}>
                   <Link
                     href={link.href}
