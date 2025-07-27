@@ -226,17 +226,39 @@ export default function BlogContent({ posts }: BlogContentProps) {
                       
                       <p className="text-gray-600 mb-4 line-clamp-3 flex-1">
                         {(() => {
-                          // Clean HTML content more thoroughly
+                          // Clean HTML content much more thoroughly
                           let cleanText = post.content
-                            .replace(/<[^>]*>/g, '') // Remove HTML tags completely
-                            .replace(/class\s*=\s*["'][^"']*["']/gi, '') // Remove class attributes
-                            .replace(/mb-\d+|text-\w+-\d+|leading-\w+|font-\w+|italic|text-gray-\d+|mt-\d+/g, '') // Remove Tailwind classes
-                            .replace(/["']/g, '') // Remove quotes
-                            .replace(/\s+/g, ' ') // Replace multiple spaces with single space
-                            .replace(/^[\s">]+|[\s">]+$/g, '') // Remove leading/trailing spaces and quotes
+                            // First remove all HTML tags completely
+                            .replace(/<[^>]*>/g, '')
+                            // Remove any remaining attribute patterns like class="..." or style="..."
+                            .replace(/\w+\s*=\s*["'][^"']*["']/gi, '')
+                            // Remove Tailwind/CSS class names that might be left over
+                            .replace(/(?:mb|mt|pt|pb|px|py|pl|pr|ml|mr|text|bg|border|rounded|flex|grid|w|h|max|min|lg|md|sm|xl|2xl|leading|font|italic|bold|semibold|tracking|space|gap|justify|items|align|transform|transition|duration|ease|hover|focus|active|group|relative|absolute|fixed|sticky|top|bottom|left|right|z|opacity|scale|rotate|translate|cursor|pointer|select|resize|overflow|hidden|visible|scroll|auto|block|inline|table|sr)-[\w-]*[\w]/g, '')
+                            // Remove standalone CSS class words
+                            .replace(/\b(?:italic|bold|semibold|flex|grid|block|inline|hidden|visible|relative|absolute|fixed|sticky|pointer|auto|scroll|left|right|center|top|bottom|start|end|between|around|evenly|stretch|baseline|nowrap|wrap|reverse|col|row|gap|space|justify|items|align|content|self|order|shrink|grow|basis)\b/g, '')
+                            // Remove quotes and special characters that might be left
+                            .replace(/["'`><]/g, '')
+                            // Remove any remaining class/style attribute fragments
+                            .replace(/class\s*[:=]\s*|style\s*[:=]\s*/gi, '')
+                            // Clean up multiple spaces and line breaks
+                            .replace(/\s+/g, ' ')
+                            // Remove leading/trailing spaces and special characters
+                            .replace(/^[\s\-=>]+|[\s\-=>]+$/g, '')
                             .trim();
                           
-                          // If still too long, truncate
+                          // If text is empty or too short, try to get first meaningful sentence
+                          if (cleanText.length < 10) {
+                            // Try to extract first sentence from content
+                            const textOnly = post.content.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+                            const firstSentence = textOnly.split('.')[0];
+                            if (firstSentence && firstSentence.length > 10) {
+                              cleanText = firstSentence + '.';
+                            } else {
+                              cleanText = textOnly.substring(0, 150);
+                            }
+                          }
+                          
+                          // Truncate if still too long
                           if (cleanText.length > 150) {
                             cleanText = cleanText.substring(0, 150);
                             // Try to end at a word boundary

@@ -22,6 +22,7 @@ const footerLinks = {
     { name: 'Blogg', href: '/blogg' },
     { name: 'E-bok', href: '/kunskap/e-bok' },
     { name: 'Hudanalys', href: '/quiz' },
+    { name: 'Våra ingredienser', href: '/om-oss/ingredienser' },
     { name: 'Funktionella råvaror', href: '/kunskap/funktionella-ravaror' }
   ],
   help: [
