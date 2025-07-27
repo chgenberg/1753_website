@@ -1,15 +1,16 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { ChevronDown, ChevronUp, ExternalLink } from 'lucide-react'
+import { ChevronDown, ChevronUp, ExternalLink, X } from 'lucide-react'
 import { useState } from 'react'
 import Link from 'next/link'
 
 
 export default function FAQPage() {
   const [openItems, setOpenItems] = useState<number[]>([])
+  const [showVideoModal, setShowVideoModal] = useState(false)
 
   const toggleItem = (index: number) => {
     setOpenItems(prev => 
@@ -65,14 +66,12 @@ export default function FAQPage() {
           <p>
             Ja, här är en av föreläsningarna som vår grundare, Christopher Genberg, har spelat in:
           </p>
-          <a 
-            href="#" 
+          <button 
+            onClick={() => setShowVideoModal(true)}
             className="inline-flex items-center text-[#00937c] hover:text-[#007363] font-medium"
-            target="_blank"
-            rel="noopener noreferrer"
           >
             Se föreläsningen <ExternalLink className="w-4 h-4 ml-1" />
-          </a>
+          </button>
         </div>
       )
     },
@@ -155,14 +154,12 @@ export default function FAQPage() {
       answer: (
         <div className="space-y-4">
           <p>Du hittar vår kostnadsfria e-bok här:</p>
-          <a 
-            href="#" 
+          <Link 
+            href="/kunskap/e-bok" 
             className="inline-flex items-center text-[#00937c] hover:text-[#007363] font-medium"
-            target="_blank"
-            rel="noopener noreferrer"
           >
             Ladda ner e-boken <ExternalLink className="w-4 h-4 ml-1" />
-          </a>
+          </Link>
           <p>Boken består av 140 sidor och beskriver allt du behöver veta om hud, hudvård och hudhälsa.</p>
         </div>
       )
@@ -245,14 +242,12 @@ export default function FAQPage() {
       question: "Var hittar jag er returpolicy?",
       answer: (
         <div className="space-y-4">
-          <a 
-            href="#" 
+          <Link 
+            href="/leverans-retur" 
             className="inline-flex items-center text-[#00937c] hover:text-[#007363] font-medium"
-            target="_blank"
-            rel="noopener noreferrer"
           >
             Läs vår returpolicy <ExternalLink className="w-4 h-4 ml-1" />
-          </a>
+          </Link>
         </div>
       )
     }
@@ -416,6 +411,51 @@ export default function FAQPage() {
           </motion.div>
         </div>
       </main>
+
+      {/* Video Modal */}
+      <AnimatePresence>
+        {showVideoModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4"
+            onClick={() => setShowVideoModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-2xl shadow-xl max-w-4xl w-full overflow-hidden"
+            >
+              <div className="flex justify-between items-center p-4 border-b">
+                <h3 className="text-xl font-semibold text-gray-900">
+                  Föreläsning: CBD Hudvård
+                </h3>
+                <button
+                  onClick={() => setShowVideoModal(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+              
+              <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+                <iframe
+                  src="https://www.youtube.com/embed/YUxPTOI6HHs?autoplay=1"
+                  title="CBD Hudvård Föreläsning"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="absolute top-0 left-0 w-full h-full"
+                />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <Footer />
     </>
   )

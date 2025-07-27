@@ -25,19 +25,19 @@ export function HeroSection() {
   const stepDescriptions = {
     'Gör hud-QUIZ': {
       title: '📝 Gör hud-QUIZ',
-      description: 'Vårt hudvårdsquiz tar bara 2 minuter och hjälper oss förstå din unika hudtyp och dina specifika behov. Genom att svara på några enkla frågor om din hud, livsstil och preferenser kan vi skapa en skräddarsydd hudvårdsrutin just för dig. Quizet analyserar faktorer som hudtyp, eventuella hudproblem, ålder och miljöpåverkan för att ge dig de mest relevanta produktrekommendationerna.'
+      description: 'Vårt hudvårdsquiz tar bara 2 minuter och hjälper oss förstå din unika hudtyp och dina specifika behov.\n\nGenom att svara på några enkla frågor om din hud, livsstil och preferenser kan vi skapa en skräddarsydd hudvårdsrutin just för dig.\n\nQuizet analyserar faktorer som hudtyp, eventuella hudproblem, ålder och miljöpåverkan för att ge dig de mest relevanta produktrekommendationerna.'
     },
     'Få rekommendation': {
       title: '🎯 Få rekommendation',
-      description: 'Baserat på dina quiz-svar får du en personlig hudvårdsplan med produktrekommendationer som är specifikt utvalda för din hudtyp och dina behov. Vår algoritm kombinerar traditionell hudvårdskunskap med modern vetenskap för att skapa en komplett rutin som inkluderar rengöring, behandling och skydd. Du får också tips om hur du bäst använder produkterna för optimala resultat.'
+      description: 'Baserat på dina quiz-svar får du en personlig hudvårdsplan med produktrekommendationer som är specifikt utvalda för din hudtyp och dina behov.\n\nVår algoritm kombinerar traditionell hudvårdskunskap med modern vetenskap för att skapa en komplett rutin som inkluderar rengöring, behandling och skydd.\n\nDu får också tips om hur du bäst använder produkterna för optimala resultat.'
     },
     'Följ upp': {
       title: '📈 Följ upp',
-      description: 'Vi följer din hudvårdsresa varje vecka för att säkerställa att du ser kontinuerliga förbättringar. Genom regelbundna check-ins kan vi justera din rutin vid behov och ge dig personliga tips baserat på hur din hud utvecklas. Du får påminnelser om när det är dags att applicera produkterna och kan dokumentera din progress med bilder för att tydligt se förbättringarna över tid.'
+      description: 'Vi följer din hudvårdsresa varje vecka för att säkerställa att du ser kontinuerliga förbättringar.\n\nGenom regelbundna check-ins kan vi justera din rutin vid behov och ge dig personliga tips baserat på hur din hud utvecklas.\n\nDu får påminnelser om när det är dags att applicera produkterna och kan dokumentera din progress med bilder för att tydligt se förbättringarna över tid.'
     },
     'Perfekt hud!': {
       title: '✨ Perfekt hud!',
-      description: 'Inom 3 månader kommer du att se en märkbar förbättring av din huds kvalitet och utseende. Med våra naturliga produkter innehållande CBD och CBG, kombinerat med din personliga hudvårdsrutin, kommer din hud att bli mer balanserad, klarare och strålande. Många av våra kunder rapporterar synliga resultat redan efter några veckor, men den fulla effekten uppnås vanligtvis inom 3 månader av konsekvent användning.'
+      description: 'Inom 3 månader kommer du att se en märkbar förbättring av din huds kvalitet och utseende.\n\nMed våra naturliga produkter innehållande CBD och CBG, kombinerat med din personliga hudvårdsrutin, kommer din hud att bli mer balanserad, klarare och strålande.\n\nMånga av våra kunder rapporterar synliga resultat redan efter några veckor, men den fulla effekten uppnås vanligtvis inom 3 månader av konsekvent användning.'
     }
   };
 
@@ -183,9 +183,11 @@ export function HeroSection() {
                 <X className="w-6 h-6" />
               </button>
             </div>
-            <p className="text-gray-700 leading-relaxed">
-              {modalContent.description}
-            </p>
+            <div className="text-gray-700 leading-relaxed space-y-4">
+              {modalContent.description.split('\n\n').map((paragraph, index) => (
+                <p key={index}>{paragraph}</p>
+              ))}
+            </div>
             <button
               onClick={() => setModalContent(null)}
               className="mt-6 w-full px-6 py-3 bg-[#4A3428] text-white rounded-full hover:bg-[#3A2A1E] transition-colors font-medium"

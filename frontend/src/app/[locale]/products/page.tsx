@@ -163,7 +163,33 @@ export default function ProductsPage() {
         break
       case 'featured':
       default:
+        // Custom order for featured products
+        const customOrder = [
+          'duo-kit-ta-da-serum',
+          'duo-kit-the-one-i-love', 
+          'ta-da-serum',
+          'au-naturel-makeup-remover',
+          'fungtastic-mushroom-extract',
+          'the-one-facial-oil',
+          'i-love-facial-oil'
+        ]
+        
         sorted.sort((a, b) => {
+          const aIndex = customOrder.indexOf(a.slug)
+          const bIndex = customOrder.indexOf(b.slug)
+          
+          // If both products are in custom order, sort by custom order
+          if (aIndex !== -1 && bIndex !== -1) {
+            return aIndex - bIndex
+          }
+          
+          // If only a is in custom order, a comes first
+          if (aIndex !== -1 && bIndex === -1) return -1
+          
+          // If only b is in custom order, b comes first
+          if (aIndex === -1 && bIndex !== -1) return 1
+          
+          // If neither is in custom order, fall back to featured/bestseller logic
           if (a.featured && !b.featured) return -1
           if (!a.featured && b.featured) return 1
           if (a.bestseller && !b.bestseller) return -1

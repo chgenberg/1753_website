@@ -376,10 +376,10 @@ async function updateProductDescriptions() {
       where: { slug: 'au-naturel-makeup-remover' },
       data: {
         name: 'Au Naturel Makeup Remover',
-        description: 'Upptäck hemligheten till ren och frisk hud. Avlägsnar smört, luftföroreningar och makeup utan att skada din huds naturliga balans.',
+        description: 'Upptäck hemligheten till ren och frisk hud. Avlägsnar smuts, luftföroreningar och makeup utan att skada din huds naturliga balans.',
         shortDescription: 'Mild och effektiv makeupborttagare med CBD',
-        price: 299,
-        compareAtPrice: 349,
+        price: 399,
+        compareAtPrice: null,
         longDescription: `
 <div class="product-description">
   <h2>Upptäck hemligheten till ren och frisk hud med Au Naturel Makeup Remover</h2>

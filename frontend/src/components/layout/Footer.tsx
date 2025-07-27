@@ -20,7 +20,7 @@ const footerLinks = {
     { name: 'Kontakt', href: '/kontakt' }
   ],
   help: [
-    { name: 'FAQ', href: '/om-oss/faq' },
+    { name: 'Q&A', href: '/om-oss/faq' },
     { name: 'Leverans & Retur', href: '/leverans-retur' },
     { name: 'Betalning', href: '/betalning' },
     { name: 'Integritetspolicy', href: '/integritetspolicy' },

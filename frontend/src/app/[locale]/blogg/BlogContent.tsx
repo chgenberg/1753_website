@@ -228,10 +228,12 @@ export default function BlogContent({ posts }: BlogContentProps) {
                         {(() => {
                           // Clean HTML content more thoroughly
                           let cleanText = post.content
-                            .replace(/<[^>]*>/g, '') // Remove HTML tags
+                            .replace(/<[^>]*>/g, '') // Remove HTML tags completely
                             .replace(/class\s*=\s*["'][^"']*["']/gi, '') // Remove class attributes
-                            .replace(/mb-\d+|text-\w+-\d+|leading-\w+|font-\w+/g, '') // Remove common Tailwind classes
+                            .replace(/mb-\d+|text-\w+-\d+|leading-\w+|font-\w+|italic|text-gray-\d+|mt-\d+/g, '') // Remove Tailwind classes
+                            .replace(/["']/g, '') // Remove quotes
                             .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+                            .replace(/^[\s">]+|[\s">]+$/g, '') // Remove leading/trailing spaces and quotes
                             .trim();
                           
                           // If still too long, truncate

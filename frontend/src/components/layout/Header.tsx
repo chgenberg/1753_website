@@ -176,7 +176,7 @@ export function Header() {
                           href="/om-oss/faq"
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         >
-                          Vanliga frågor
+                          Q&A
                         </Link>
                       </motion.div>
                     )}
@@ -362,7 +362,7 @@ export function Header() {
                           onClick={() => setIsMobileMenuOpen(false)}
                           className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
                         >
-                          Vanliga frågor (FAQ)
+                          Q&A
                         </Link>
                         <Link
                           href="/om-oss/aterforsaljare"
