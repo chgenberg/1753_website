@@ -1,5 +1,5 @@
 // Service Worker for E-book Reader
-const CACHE_NAME = '1753-ebook-reader-v2';
+const CACHE_NAME = '1753-ebook-reader-v3';
 const urlsToCache = [
     '/ebook-reader/',
     '/ebook-reader/styles.css',
