@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Sparkles, Heart, Droplets, Leaf, Brain, MessageCircle, 
@@ -560,8 +560,12 @@ export function QuizResults({ answers, userName = '', userEmail = '', results, o
         <RegisterModal
           isOpen={showRegisterModal}
           onClose={() => setShowRegisterModal(false)}
-          initialEmail={userEmail}
-          source="quiz_results"
+          quizData={{
+            answers,
+            results: generatedPlan,
+            userName,
+            userEmail
+          }}
         />
       )}
     </div>
