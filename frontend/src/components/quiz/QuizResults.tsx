@@ -413,22 +413,22 @@ export function QuizResults({ answers, userName = '', userEmail = '', results, o
               </motion.div>
             </motion.div>
 
-            {/* Tabs */}
+        {/* Tabs */}
             <div className="flex flex-wrap justify-center gap-2 mt-6">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as TabType)}
+                {tabs.map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as TabType)}
                   className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all ${
-                    activeTab === tab.id
+                      activeTab === tab.id
                       ? 'bg-[#8B6B47] text-white'
                       : 'bg-white/80 text-gray-700 hover:bg-white hover:text-[#8B6B47]'
-                  }`}
-                >
-                  {tab.icon}
+                    }`}
+                  >
+                    {tab.icon}
                   <span className="text-sm font-medium">{tab.label}</span>
-                </button>
-              ))}
+                  </button>
+                ))}
             </div>
           </div>
         </div>
@@ -437,7 +437,7 @@ export function QuizResults({ answers, userName = '', userEmail = '', results, o
         <div className="flex-1 overflow-y-auto">
           <div className="max-w-6xl mx-auto px-4 py-8">
             <AnimatePresence mode="wait">
-              <motion.div
+                <motion.div
                 key={activeTab}
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -577,8 +577,8 @@ const TimelineTab = ({ timeline }: { timeline: any }) => (
   <div className="space-y-8">
     {/* Week 1 */}
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1 }}
       className="bg-white rounded-xl p-6 shadow-lg"
     >
@@ -601,35 +601,35 @@ const TimelineTab = ({ timeline }: { timeline: any }) => (
               </li>
             ))}
           </ul>
-        </div>
-        
-        <div>
+                    </div>
+
+                    <div>
           <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
             <Moon className="w-4 h-4 text-blue-500" />
             Kvällsrutin
           </h4>
-          <ul className="space-y-2">
+                      <ul className="space-y-2">
             {timeline.week1?.eveningRoutine?.map((step: string, i: number) => (
               <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
                 <span className="text-[#8B6B47] mt-0.5">{i + 1}.</span>
                 {step}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
       
       <div className="mt-4 p-4 bg-amber-50 rounded-lg">
         <p className="text-sm text-amber-800">
           <span className="font-medium">Förväntat:</span> {timeline.week1?.expectedChanges}
         </p>
       </div>
-    </motion.div>
+                </motion.div>
 
     {/* Month 1 */}
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
       className="bg-white rounded-xl p-6 shadow-lg"
     >
@@ -645,10 +645,10 @@ const TimelineTab = ({ timeline }: { timeline: any }) => (
               <div key={i} className="flex items-center gap-2 text-sm text-gray-700">
                 <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
                 {improvement}
-              </div>
+                              </div>
             ))}
-          </div>
-        </div>
+                            </div>
+                            </div>
         
         {timeline.month1?.milestones && (
           <div>
@@ -658,17 +658,17 @@ const TimelineTab = ({ timeline }: { timeline: any }) => (
                 <span key={i} className="px-3 py-1 bg-[#8B6B47]/10 text-[#8B6B47] rounded-full text-sm">
                   {milestone}
                 </span>
-              ))}
-            </div>
-          </div>
+                        ))}
+                      </div>
+                    </div>
         )}
-      </div>
-    </motion.div>
+                  </div>
+                </motion.div>
 
     {/* Month 3 */}
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
       className="bg-gradient-to-br from-[#8B6B47]/10 to-[#6B5337]/10 rounded-xl p-6 shadow-lg"
     >
@@ -680,16 +680,16 @@ const TimelineTab = ({ timeline }: { timeline: any }) => (
       <div className="space-y-4">
         <div>
           <h4 className="font-medium text-gray-900 mb-2">Förväntade resultat</h4>
-          <ul className="space-y-2">
+                    <ul className="space-y-2">
             {timeline.month3?.expectedResults?.map((result: string, i: number) => (
               <li key={i} className="flex items-start gap-2 text-gray-700">
                 <Star className="w-4 h-4 text-[#8B6B47] mt-0.5 flex-shrink-0" />
                 {result}
-              </li>
-            ))}
-          </ul>
-        </div>
-        
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
         <div className="p-4 bg-white/70 rounded-lg">
           <p className="text-sm text-gray-700">
             <span className="font-medium">Underhållsplan:</span> {timeline.month3?.maintenancePlan}
@@ -723,9 +723,9 @@ const LifestyleTab = ({ lifestyle }: { lifestyle: any }) => (
           <li key={i} className="text-sm text-gray-600 flex items-start gap-2">
             <span className="text-blue-500 mt-0.5">•</span>
             {tip}
-          </li>
-        ))}
-      </ul>
+                        </li>
+                      ))}
+                    </ul>
     </motion.div>
 
     {/* Stress */}
@@ -741,25 +741,25 @@ const LifestyleTab = ({ lifestyle }: { lifestyle: any }) => (
       </h3>
       <p className="text-gray-700 mb-3">{lifestyle.stress?.currentImpact}</p>
       <h4 className="font-medium text-gray-900 mb-2">Tekniker:</h4>
-      <ul className="space-y-2">
+                    <ul className="space-y-2">
         {lifestyle.stress?.techniques?.map((technique: string, i: number) => (
           <li key={i} className="text-sm text-gray-600 flex items-start gap-2">
             <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
             {technique}
-          </li>
-        ))}
-      </ul>
+                        </li>
+                      ))}
+                    </ul>
       <div className="mt-4 p-4 bg-purple-50 rounded-lg">
         <p className="text-sm text-purple-800">
           <span className="font-medium">Daglig rutin:</span> {lifestyle.stress?.dailyPractice}
         </p>
-      </div>
-    </motion.div>
+                  </div>
+                </motion.div>
 
     {/* Exercise */}
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
       className="bg-white rounded-xl p-6 shadow-lg"
     >
@@ -776,11 +776,11 @@ const LifestyleTab = ({ lifestyle }: { lifestyle: any }) => (
             {type}
           </span>
         ))}
-      </div>
+                    </div>
     </motion.div>
-
+                    
     {/* Environment */}
-    <motion.div
+                        <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.4 }}
@@ -802,7 +802,7 @@ const LifestyleTab = ({ lifestyle }: { lifestyle: any }) => (
         ))}
       </ul>
     </motion.div>
-  </div>
+                          </div>
 )
 
 const ProductsTab = ({ products }: { products: any }) => (
@@ -835,28 +835,28 @@ const ProductsTab = ({ products }: { products: any }) => (
                     <span key={j} className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs">
                       {ingredient}
                     </span>
-                  ))}
-                </div>
-              </div>
-              
+                      ))}
+                    </div>
+                  </div>
+
               <div className="p-3 bg-green-50 rounded-lg">
                 <p className="text-sm text-green-800">
                   <span className="font-medium">Förväntat:</span> {product.expectedResults}
                 </p>
-              </div>
-            </div>
+                    </div>
+                          </div>
             
-            <Link
+                            <Link
               href={`/products/${product.name.toLowerCase().replace(/\s+/g, '-')}`}
               className="mt-4 inline-flex items-center gap-2 text-[#8B6B47] hover:text-[#6B5337] font-medium text-sm"
-            >
-              Se produkt
+                            >
+                              Se produkt
               <ArrowRight className="w-4 h-4" />
-            </Link>
-          </motion.div>
-        ))}
-      </div>
-    </div>
+                            </Link>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
 
     {/* Application Order */}
     <div className="bg-gradient-to-br from-[#8B6B47]/10 to-[#6B5337]/10 rounded-xl p-6 shadow-lg">
@@ -912,35 +912,35 @@ const NutritionTab = ({ nutrition }: { nutrition: any }) => (
       <h3 className="text-xl font-semibold text-gray-900 mb-4">Nyckelföda för din hud</h3>
       <div className="grid md:grid-cols-2 gap-4">
         {nutrition.keyFoods?.map((category: any, i: number) => (
-          <motion.div
+                <motion.div
             key={i}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
             className="bg-white rounded-xl p-5 shadow-lg"
           >
             <h4 className="font-semibold text-[#8B6B47] mb-3">{category.category}</h4>
             <div className="space-y-3">
-              <div className="flex flex-wrap gap-2">
+                            <div className="flex flex-wrap gap-2">
                 {category.foods?.map((food: string, j: number) => (
                   <span key={j} className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">
-                    {food}
-                  </span>
-                ))}
-              </div>
+                                  {food}
+                                </span>
+                              ))}
+                            </div>
               <p className="text-sm text-gray-600">{category.benefit}</p>
               {category.servingSuggestion && (
                 <p className="text-xs text-[#8B6B47] font-medium">
                   💡 {category.servingSuggestion}
                 </p>
               )}
-            </div>
+                          </div>
           </motion.div>
-        ))}
-      </div>
-    </div>
+                      ))}
+                    </div>
+                  </div>
 
-    {/* Meal Plan */}
+                  {/* Meal Plan */}
     {nutrition.mealPlan && (
       <div className="bg-white rounded-xl p-6 shadow-lg">
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
@@ -953,19 +953,19 @@ const NutritionTab = ({ nutrition }: { nutrition: any }) => (
             <p className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
               {nutrition.mealPlan.breakfast}
             </p>
-          </div>
+                        </div>
           <div>
             <h4 className="font-medium text-gray-700 mb-2">Lunch</h4>
             <p className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
               {nutrition.mealPlan.lunch}
             </p>
-          </div>
+                    </div>
           <div>
             <h4 className="font-medium text-gray-700 mb-2">Middag</h4>
             <p className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
               {nutrition.mealPlan.dinner}
             </p>
-          </div>
+                  </div>
           <div>
             <h4 className="font-medium text-gray-700 mb-2">Mellanmål</h4>
             <div className="bg-gray-50 p-3 rounded-lg">
@@ -1001,19 +1001,19 @@ const NutritionTab = ({ nutrition }: { nutrition: any }) => (
                 <li key={i} className="text-sm text-gray-600">• {tip}</li>
               ))}
             </ul>
-          </div>
+                        </div>
           <div>
             <h4 className="font-medium text-gray-700 mb-2">Örtteer</h4>
             <ul className="space-y-1">
               {nutrition.hydration.herbalteas?.map((tea: string, i: number) => (
                 <li key={i} className="text-sm text-gray-600">• {tea}</li>
-              ))}
+                      ))}
             </ul>
-          </div>
-        </div>
+                    </div>
+                  </div>
       </div>
-    )}
-  </div>
+              )}
+          </div>
 )
 
 const SourcesTab = ({ sources }: { sources: any }) => (
@@ -1025,7 +1025,7 @@ const SourcesTab = ({ sources }: { sources: any }) => (
         Vetenskaplig grund
       </h3>
       <p className="text-gray-700">{sources.scientificBasis}</p>
-    </div>
+        </div>
 
     {/* Key Studies */}
     {sources.keyStudies && sources.keyStudies.length > 0 && (
@@ -1066,5 +1066,5 @@ const SourcesTab = ({ sources }: { sources: any }) => (
         </ul>
       </div>
     )}
-  </div>
-) 
+    </div>
+  )

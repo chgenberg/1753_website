@@ -120,7 +120,7 @@ export default function ProductPage() {
               concentration: '2-5%'
             })) || [],
             skinTypes: foundProduct.skinTypes || ['normal', 'dry', 'oily', 'combination', 'sensitive'],
-            benefits: foundProduct.skinConcerns?.map((c: string) => `Hjälper mot ${c.toLowerCase()}`) || [
+            benefits: foundProduct.benefitsDetails || foundProduct.skinConcerns || [
               'Ger djup återfuktning',
               'Stärker hudbarriären', 
               'Ger naturlig lyster'

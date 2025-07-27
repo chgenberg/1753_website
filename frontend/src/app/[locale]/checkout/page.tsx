@@ -122,7 +122,7 @@ export default function CheckoutPage() {
           console.error('Newsletter subscription error:', newsletterError);
         }
       }
-
+      
       // Generate unique order ID
       const orderId = `1753-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
       
@@ -160,8 +160,8 @@ export default function CheckoutPage() {
 
       // Create payment order
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002'}/api/orders/payment`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderData)
       })
 
@@ -175,13 +175,13 @@ export default function CheckoutPage() {
       localStorage.setItem('currentOrderId', result.orderId)
       localStorage.setItem('orderData', JSON.stringify({
         orderId: result.orderId,
-        total,
+                total,
         items: items.map(item => ({ name: item.product.name, quantity: item.quantity })),
         customer: {
           firstName: form.firstName,
           lastName: form.lastName,
           email: form.email
-        }
+              }
       }))
 
       // Clear cart before redirect
@@ -192,7 +192,7 @@ export default function CheckoutPage() {
         window.location.href = result.redirectUrl
       } else {
         // Fallback - redirect to success page (for testing)
-        router.push('/checkout/success')
+      router.push('/checkout/success')
       }
       
     } catch (error: any) {
