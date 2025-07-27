@@ -60,6 +60,7 @@ export const getProducts = async (
         orderBy = { createdAt: 'asc' }
         break
       case 'featured':
+        // Custom order for featured products - handle in post-processing
         orderBy = [
           { isFeatured: 'desc' },
           { createdAt: 'desc' }
@@ -92,7 +93,7 @@ export const getProducts = async (
     ])
 
     // Calculate ratings for each product
-    const productsWithRatings = products.map(product => {
+    let productsWithRatings = products.map(product => {
       const approvedReviews = product.reviews || []
       const reviewCount = product._count.reviews
       
@@ -113,6 +114,40 @@ export const getProducts = async (
         }
       }
     })
+
+    // Apply custom ordering for featured products
+    if (req.query.sort === 'featured' || req.query.featured === 'true') {
+      const customOrder = [
+        'duo-kit-ta-da-serum',
+        'duo-kit-the-one-i-love', 
+        'ta-da-serum',
+        'au-naturel-makeup-remover',
+        'fungtastic-mushroom-extract',
+        'i-love-facial-oil',
+        'the-one-facial-oil'
+      ]
+      
+      productsWithRatings.sort((a, b) => {
+        const aIndex = customOrder.indexOf(a.slug)
+        const bIndex = customOrder.indexOf(b.slug)
+        
+        // If both products are in custom order, sort by custom order
+        if (aIndex !== -1 && bIndex !== -1) {
+          return aIndex - bIndex
+        }
+        
+        // If only a is in custom order, a comes first
+        if (aIndex !== -1 && bIndex === -1) return -1
+        
+        // If only b is in custom order, b comes first
+        if (aIndex === -1 && bIndex !== -1) return 1
+        
+        // If neither is in custom order, fall back to featured/creation date logic
+        if (a.isFeatured && !b.isFeatured) return -1
+        if (!a.isFeatured && b.isFeatured) return 1
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      })
+    }
 
     // Pagination info
     const totalPages = Math.ceil(total / limit)

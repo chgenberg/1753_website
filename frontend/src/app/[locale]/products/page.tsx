@@ -170,8 +170,8 @@ export default function ProductsPage() {
           'ta-da-serum',
           'au-naturel-makeup-remover',
           'fungtastic-mushroom-extract',
-          'the-one-facial-oil',
-          'i-love-facial-oil'
+          'i-love-facial-oil',
+          'the-one-facial-oil'
         ]
         
         sorted.sort((a, b) => {
