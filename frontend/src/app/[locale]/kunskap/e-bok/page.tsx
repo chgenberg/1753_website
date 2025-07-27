@@ -260,7 +260,7 @@ export default function EbookPage() {
           <div className="products-grid">
             {/* Product 1: DUO-kit + TA-DA Serum */}
             <div className="product-card">
-              <Link href="/products/duo-ta-da" className="product-link">
+              <Link href="/products/duo-kit-ta-da-serum" className="product-link">
                 <div className="product-image-wrapper">
                   <Image 
                     src="/ebook-reader/DUOTADA.png" 
@@ -272,16 +272,55 @@ export default function EbookPage() {
                 </div>
                 <h3 className="product-name">DUO-kit + TA-DA Serum</h3>
                 <p className="product-description">
-                  Våra bästsäljare – Nu som komplett rutinpaket för 1498 kr
-                  Vill du ge din hud ett verkligt lyft – utan att kompromissa med ingredienser, filosofi eller resultat? Då är det här paketet för dig.
+                  Våra bästsäljare – Nu som komplett rutinpaket för 1498 kr. Vill du ge din hud ett verkligt lyft – utan att kompromissa med ingredienser, filosofi eller resultat...
                 </p>
                 <span className="product-cta">Läs mer →</span>
               </Link>
             </div>
 
-            {/* Product 2: Au Naturel Makeup Remover */}
+            {/* Product 2: DUO-kit */}
             <div className="product-card">
-              <Link href="/products/makeup-remover-au-naturel" className="product-link">
+              <Link href="/products/duo-kit-the-one-i-love" className="product-link">
+                <div className="product-image-wrapper">
+                  <Image 
+                    src="/ebook-reader/DUO.png" 
+                    alt="DUO-kit" 
+                    width={300}
+                    height={300}
+                    className="product-image"
+                  />
+                </div>
+                <h3 className="product-name">DUO-kit</h3>
+                <p className="product-description">
+                  Perfekt kombination av The ONE Facial Oil och I LOVE Facial Oil för komplett ansiktsvård. Nu för 1099 kr...
+                </p>
+                <span className="product-cta">Läs mer →</span>
+              </Link>
+            </div>
+
+            {/* Product 3: TA-DA Serum */}
+            <div className="product-card">
+              <Link href="/products/ta-da-serum" className="product-link">
+                <div className="product-image-wrapper">
+                  <Image 
+                    src="/ebook-reader/TA-DA.png" 
+                    alt="TA-DA Serum" 
+                    width={300}
+                    height={300}
+                    className="product-image"
+                  />
+                </div>
+                <h3 className="product-name">TA-DA Serum</h3>
+                <p className="product-description">
+                  Ett revolutionerande serum som kombinerar kraftfulla peptider med naturliga ingredienser för synliga resultat...
+                </p>
+                <span className="product-cta">Läs mer →</span>
+              </Link>
+            </div>
+
+            {/* Product 4: Au Naturel Makeup Remover */}
+            <div className="product-card">
+              <Link href="/products/au-naturel-makeup-remover" className="product-link">
                 <div className="product-image-wrapper">
                   <Image 
                     src="/ebook-reader/Naturel.png" 
@@ -293,15 +332,15 @@ export default function EbookPage() {
                 </div>
                 <h3 className="product-name">Au Naturel Makeup Remover</h3>
                 <p className="product-description">
-                  Vill du avlägsna smuts, luftföroreningar och makeup utan att skada din huds naturliga balans? Au Naturel Makeup Remover är lösningen du har letat efter
+                  Vill du avlägsna smuts, luftföroreningar och makeup utan att skada din huds naturliga balans...
                 </p>
                 <span className="product-cta">Läs mer →</span>
               </Link>
             </div>
 
-            {/* Product 3: Fungtastic Mushroom Extract */}
+            {/* Product 5: Fungtastic Mushroom Extract */}
             <div className="product-card">
-              <Link href="/products/fungtastic-extract" className="product-link">
+              <Link href="/products/fungtastic-mushroom-extract" className="product-link">
                 <div className="product-image-wrapper">
                   <Image 
                     src="/ebook-reader/Fungtastic.png" 
@@ -313,7 +352,47 @@ export default function EbookPage() {
                 </div>
                 <h3 className="product-name">Fungtastic Mushroom Extract</h3>
                 <p className="product-description">
-                  Upplev naturens kraft med Fungtastic Mushroom Extract - Fungtastic Mushroom Extract kombinerar fyra av naturens mest potenta medicinska svampar
+                  Upplev naturens kraft med Fungtastic Mushroom Extract. Kombinerar fyra av naturens mest potenta medicinska svampar...
+                </p>
+                <span className="product-cta">Läs mer →</span>
+              </Link>
+            </div>
+
+            {/* Product 6: The ONE Facial Oil */}
+            <div className="product-card">
+              <Link href="/products/the-one-facial-oil" className="product-link">
+                <div className="product-image-wrapper">
+                  <Image 
+                    src="/ebook-reader/TheONE.png" 
+                    alt="The ONE Facial Oil" 
+                    width={300}
+                    height={300}
+                    className="product-image"
+                  />
+                </div>
+                <h3 className="product-name">The ONE Facial Oil</h3>
+                <p className="product-description">
+                  Den ultimata ansiktsoljan med CBD och naturliga botaniska ingredienser för alla hudtyper...
+                </p>
+                <span className="product-cta">Läs mer →</span>
+              </Link>
+            </div>
+
+            {/* Product 7: I LOVE Facial Oil */}
+            <div className="product-card">
+              <Link href="/products/i-love-facial-oil" className="product-link">
+                <div className="product-image-wrapper">
+                  <Image 
+                    src="/ebook-reader/ILOVE.png" 
+                    alt="I LOVE Facial Oil" 
+                    width={300}
+                    height={300}
+                    className="product-image"
+                  />
+                </div>
+                <h3 className="product-name">I LOVE Facial Oil</h3>
+                <p className="product-description">
+                  En lyxig ansiktsolja med CBG och noga utvalda botaniska oljor för djup återfuktning och näring...
                 </p>
                 <span className="product-cta">Läs mer →</span>
               </Link>

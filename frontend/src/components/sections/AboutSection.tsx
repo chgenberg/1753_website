@@ -178,7 +178,7 @@ export function AboutSection() {
               </p>
               <div className="border-l-4 border-[var(--color-accent)] pl-6">
                 <p className="font-medium text-[var(--color-primary)]">
-                  Christopher & Anna
+                  Christopher & Ebba
                 </p>
                 <p className="text-sm text-[var(--color-gray-600)]">
                   Grundare, 1753 Skincare

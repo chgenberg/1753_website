@@ -82,12 +82,12 @@ export default function CBDPage() {
                 transition={{ duration: 0.8 }}
               >
                 <span className="text-[#00937c] font-medium text-sm uppercase tracking-wider">Cannabidiol</span>
-                <h1 className="text-5xl md:text-6xl font-bold mt-4 mb-6">
-                  CBD
-                </h1>
-                <h2 className="text-3xl font-semibold text-gray-700 mb-6">
+                <h2 className="text-3xl font-semibold text-gray-700 mb-2">
                   Det fantastiska
                 </h2>
+                <h1 className="text-5xl md:text-6xl font-bold mb-6">
+                  CBD
+                </h1>
                 <p className="text-xl text-gray-600 leading-relaxed mb-8">
                   En av de mest effektiva men underskattade ingredienserna i världen. 
                   CBD revolutionerar hudvård genom att arbeta med hudens naturliga system.
@@ -238,7 +238,7 @@ export default function CBDPage() {
               <div className="relative rounded-3xl overflow-hidden shadow-2xl">
                 <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
                   <iframe
-                    src="https://player.vimeo.com/video/1050527371?autoplay=1&loop=1&muted=1&background=1&controls=0"
+                    src="https://player.vimeo.com/video/1012312811?autoplay=1&loop=1&muted=1&background=1&controls=0"
                     className="absolute top-0 left-0 w-full h-full"
                     frameBorder="0"
                     allow="autoplay; fullscreen; picture-in-picture"

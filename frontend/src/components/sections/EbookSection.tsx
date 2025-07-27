@@ -58,7 +58,7 @@ export function EbookSection() {
             </motion.div>
             
             <p className="text-sm text-gray-500 italic mt-6">
-              cultivating living skin since linnaeus
+                              cultivating living skin since Linné
             </p>
           </motion.div>
 

@@ -74,12 +74,12 @@ export default function CBGPage() {
                 transition={{ duration: 0.8 }}
               >
                 <span className="text-[#00937c] font-medium text-sm uppercase tracking-wider">Cannabigerol</span>
-                <h1 className="text-5xl md:text-6xl font-bold mt-4 mb-6">
-                  CBG
-                </h1>
-                <h2 className="text-3xl font-semibold text-gray-700 mb-6">
+                <h2 className="text-3xl font-semibold text-gray-700 mb-2">
                   Det enastående
                 </h2>
+                <h1 className="text-5xl md:text-6xl font-bold mb-6">
+                  CBG
+                </h1>
                 <p className="text-xl text-gray-600 leading-relaxed mb-8">
                   Kallad "Mother of All Cannabinoids" - CBG är förmodligen världens bästa hudvårdsingrediens 
                   för optimal hudhälsa och balanserat endocannabinoidsystem.

@@ -38,9 +38,10 @@ router.get('/', async (req, res) => {
         slug: true,
         thumbnail: true
       },
-      orderBy: {
-        swedishName: 'asc'
-      }
+      orderBy: [
+        { category: 'asc' },
+        { name: 'asc' }
+      ]
     });
     
     res.json(rawMaterials);

@@ -15,7 +15,7 @@ interface BlogPost {
   readingTime?: string
 }
 
-// Mock blog data - replace with API call later
+// Fallback blog data that matches real API blog posts
 const mockBlogPosts: BlogPost[] = [
   {
     slug: '10-tips-for-akne',
@@ -47,12 +47,21 @@ export function BlogSection() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 100))
-        setPosts(mockBlogPosts)
+        // Try to fetch real blog posts from API
+        const response = await fetch('/api/blog')
+        if (response.ok) {
+          const data = await response.json()
+          // Use the first 3 posts for homepage display
+          setPosts(data.slice(0, 3))
+        } else {
+          // Fallback to mock posts if API fails
+          console.warn('Blog API not available, using mock posts')
+          setPosts(mockBlogPosts)
+        }
       } catch (error) {
         console.error('Error fetching blog posts:', error)
-        setPosts([])
+        // Fallback to mock posts
+        setPosts(mockBlogPosts)
       } finally {
         setLoading(false)
       }

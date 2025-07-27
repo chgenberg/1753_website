@@ -6,22 +6,31 @@ async function updateSpecificProductPrices() {
   try {
     console.log('💰 Updating specific product prices...\n')
 
-    // Update DUO-kit to regular price (remove extra price appearance)
-    const duoKitUpdate = await prisma.product.updateMany({
+    // Update regular DUO-kit to 1099 kr
+    const duoKitRegularUpdate = await prisma.product.updateMany({
       where: {
-        OR: [
-          { name: { contains: 'DUO', mode: 'insensitive' } },
-          { slug: { contains: 'duo' } },
-          { name: { contains: 'KIT', mode: 'insensitive' } }
-        ]
+        slug: 'duo-kit-the-one-i-love'
       },
       data: {
         price: 1099,
-        compareAtPrice: null // Remove any compare price to make it regular price
+        compareAtPrice: null
       }
     })
 
-    console.log(`✅ Updated ${duoKitUpdate.count} DUO-kit products to 1099 kr (regular price)`)
+    console.log(`✅ Updated ${duoKitRegularUpdate.count} regular DUO-kit products to 1099 kr`)
+
+    // Update DUO-kit + TA-DA to 1498 kr
+    const duoKitTadaUpdate = await prisma.product.updateMany({
+      where: {
+        slug: 'duo-kit-ta-da-serum'
+      },
+      data: {
+        price: 1498,
+        compareAtPrice: null
+      }
+    })
+
+    console.log(`✅ Updated ${duoKitTadaUpdate.count} DUO-kit + TA-DA products to 1498 kr`)
 
     // Update Fungtastic Mushroom Extract to regular price
     const fungtasticUpdate = await prisma.product.updateMany({

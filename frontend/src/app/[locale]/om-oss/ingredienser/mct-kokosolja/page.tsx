@@ -72,12 +72,12 @@ export default function MCTKokosOljaPage() {
                 transition={{ duration: 0.8 }}
               >
                 <span className="text-[#00937c] font-medium text-sm uppercase tracking-wider">Medium-Chain Triglycerides</span>
-                <h1 className="text-5xl md:text-6xl font-bold mt-4 mb-6">
-                  MCT Kokosolja
-                </h1>
-                <h2 className="text-3xl font-semibold text-gray-700 mb-6">
+                <h2 className="text-3xl font-semibold text-gray-700 mb-2">
                   Fantastiska
                 </h2>
+                <h1 className="text-5xl md:text-6xl font-bold mb-6">
+                  MCT Kokosolja
+                </h1>
                 <p className="text-xl text-gray-600 leading-relaxed mb-8">
                   Den perfekta grundingrediensen för våra CBD- och CBG-produkter. Lugnande, återfuktande 
                   och antibakteriell - utan att täppa igen dina porer.

@@ -107,7 +107,7 @@ export default function IngredientsPage() {
               <h1 className="text-5xl md:text-6xl font-bold mt-4 mb-6">
                 Låt oss prata växter
               </h1>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-xl text-white max-w-3xl mx-auto leading-relaxed">
                 Vi har noggrant valt ut de mest effektiva naturliga ingredienserna för att optimera 
                 din hudshälsa genom att stödja hudens endocannabinoidsystem.
               </p>

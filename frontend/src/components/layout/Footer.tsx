@@ -46,7 +46,7 @@ export function Footer() {
               />
             </Link>
             <p className="text-gray-400 mb-6 max-w-sm">
-              Naturlig hudvård med CBD & CBG sedan 1753. Vi kombinerar traditionell kunskap med modern vetenskap för din huds bästa.
+              Naturlig hudvård med CBD & CBG. Vi kombinerar traditionell kunskap med modern vetenskap för din huds bästa.
             </p>
             
             {/* Social Links */}
@@ -135,19 +135,19 @@ export function Footer() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="flex items-center space-x-3">
               <Mail className="w-5 h-5 text-[#00937c]" />
-              <a href="mailto:info@1753skincare.se" className="text-gray-400 hover:text-[#00937c] transition-colors">
-                info@1753skincare.se
+                              <a href="mailto:hej@1753skincare.com" className="text-gray-400 hover:text-[#00937c] transition-colors">
+                  hej@1753skincare.com
               </a>
             </div>
             <div className="flex items-center space-x-3">
               <Phone className="w-5 h-5 text-[#00937c]" />
-              <a href="tel:+46812345678" className="text-gray-400 hover:text-[#00937c] transition-colors">
-                +46 8 123 456 78
+                              <a href="tel:+46732305521" className="text-gray-400 hover:text-[#00937c] transition-colors">
+                +46732305521
               </a>
             </div>
             <div className="flex items-center space-x-3">
               <MapPin className="w-5 h-5 text-[#00937c]" />
-              <span className="text-gray-400">Stockholm, Sverige</span>
+                              <span className="text-gray-400">Åsa, Sverige</span>
             </div>
           </div>
         </div>
