@@ -163,7 +163,7 @@ export default function ProductsPage() {
         break
       case 'featured':
       default:
-        // Custom order for featured products
+        // Custom order for all products
         const customOrder = [
           'duo-kit-ta-da-serum',
           'duo-kit-the-one-i-love', 

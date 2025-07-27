@@ -388,7 +388,7 @@ export default function CheckoutPage() {
                           <CreditCard className="w-6 h-6 mr-3 text-gray-600" />
                           <div className="flex-1">
                             <p className="font-medium">Betalkort</p>
-                            <p className="text-sm text-gray-500">Visa, Mastercard, American Express</p>
+                            <p className="text-sm text-gray-500">Visa, Mastercard</p>
                           </div>
                         </label>
                         

@@ -31,45 +31,25 @@ export default function BetalningPage() {
 
               <div className="grid md:grid-cols-2 gap-8 mb-8">
                 <div className="bg-[#F5F3F0] rounded-xl p-6">
-                  <h3 className="text-lg font-semibold mb-4">Kort & Digitala plånböcker</h3>
+                  <h3 className="text-lg font-semibold mb-4">Betalningskort</h3>
                   <ul className="space-y-3">
                     <li className="flex items-center">
                       <CheckCircle className="w-5 h-5 text-[#4A3428] mr-3" />
-                      <span>Visa, Mastercard, American Express</span>
+                      <span>Visa</span>
                     </li>
                     <li className="flex items-center">
                       <CheckCircle className="w-5 h-5 text-[#4A3428] mr-3" />
-                      <span>Apple Pay</span>
-                    </li>
-                    <li className="flex items-center">
-                      <CheckCircle className="w-5 h-5 text-[#4A3428] mr-3" />
-                      <span>Google Pay</span>
-                    </li>
-                    <li className="flex items-center">
-                      <CheckCircle className="w-5 h-5 text-[#4A3428] mr-3" />
-                      <span>PayPal</span>
+                      <span>Mastercard</span>
                     </li>
                   </ul>
                 </div>
 
                 <div className="bg-[#F5F3F0] rounded-xl p-6">
-                  <h3 className="text-lg font-semibold mb-4">Köp nu, betala senare</h3>
+                  <h3 className="text-lg font-semibold mb-4">Mobila betalningar</h3>
                   <ul className="space-y-3">
                     <li className="flex items-center">
                       <CheckCircle className="w-5 h-5 text-[#4A3428] mr-3" />
-                      <span>Klarna - Delbetalning</span>
-                    </li>
-                    <li className="flex items-center">
-                      <CheckCircle className="w-5 h-5 text-[#4A3428] mr-3" />
-                      <span>Klarna - Betala senare (30 dagar)</span>
-                    </li>
-                    <li className="flex items-center">
-                      <CheckCircle className="w-5 h-5 text-[#4A3428] mr-3" />
                       <span>Swish</span>
-                    </li>
-                    <li className="flex items-center">
-                      <CheckCircle className="w-5 h-5 text-[#4A3428] mr-3" />
-                      <span>Bankgiro/Plusgiro</span>
                     </li>
                   </ul>
                 </div>

@@ -133,13 +133,20 @@ export default function IngredientsPage() {
 
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
               {keyIngredients.map((ingredient, index) => (
-                <motion.div
+                <motion.a
                   key={ingredient.name}
+                  href={
+                    ingredient.name === 'MCT Kokosolja' ? '/om-oss/ingredienser/mct-kokosolja' :
+                    ingredient.name === 'Jojoba Olja' ? '/om-oss/ingredienser/jojoba-olja' :
+                    `/om-oss/ingredienser/${ingredient.name.toLowerCase()}`
+                  }
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className="bg-gray-50 rounded-2xl p-8 hover:shadow-lg transition-all duration-300 group cursor-pointer"
+                  whileHover={{ scale: 1.05, y: -8 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="block bg-gray-50 rounded-2xl p-8 hover:shadow-lg transition-all duration-300 group cursor-pointer"
                 >
                   <div className="text-center">
                     {/* Image or Icon */}
@@ -169,22 +176,13 @@ export default function IngredientsPage() {
                       </div>
                     )}
                     
-                    <h3 className="text-2xl font-bold mb-4">{ingredient.name}</h3>
+                    <h3 className="text-2xl font-bold mb-4 group-hover:text-[#8B4513] transition-colors">{ingredient.name}</h3>
                     <p className="text-gray-600 mb-6">{ingredient.description}</p>
-                    <motion.a
-                      href={
-                        ingredient.name === 'MCT Kokosolja' ? '/om-oss/ingredienser/mct-kokosolja' :
-                        ingredient.name === 'Jojoba Olja' ? '/om-oss/ingredienser/jojoba-olja' :
-                        `/om-oss/ingredienser/${ingredient.name.toLowerCase()}`
-                      }
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="inline-block px-6 py-2 bg-[#8B4513] text-white rounded-full font-medium hover:bg-[#6B3410] transition-colors duration-300"
-                    >
+                    <span className="inline-block px-6 py-2 bg-[#8B4513] text-white rounded-full font-medium group-hover:bg-[#6B3410] transition-colors duration-300">
                       Läs mer
-                    </motion.a>
+                    </span>
                   </div>
-                </motion.div>
+                </motion.a>
               ))}
             </div>
           </div>
@@ -204,11 +202,14 @@ export default function IngredientsPage() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 lg:gap-8">
               {/* Chaga */}
-              <motion.div
+              <motion.a
+                href="/om-oss/ingredienser/chaga"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
-                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group"
+                whileHover={{ scale: 1.02, y: -4 }}
+                whileTap={{ scale: 0.98 }}
+                className="block bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer"
               >
                 <div className="relative h-48 overflow-hidden">
                   <Image
@@ -221,7 +222,7 @@ export default function IngredientsPage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                 </div>
                 <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Chaga</h3>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-[#8B4513] transition-colors">Chaga</h3>
                   <p className="text-gray-600 mb-4">
                     "Skogens diamant" - Rik på antioxidanter och stärker immunförsvaret
                   </p>
@@ -233,22 +234,22 @@ export default function IngredientsPage() {
                       Immunförsvar
                     </span>
                   </div>
-                                  <Link
-                  href="/om-oss/ingredienser/chaga"
-                  className="text-[#8B4513] hover:text-[#6B3410] font-medium flex items-center"
-                >
-                  Läs mer
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
+                  <span className="text-[#8B4513] hover:text-[#6B3410] font-medium flex items-center">
+                    Läs mer
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </span>
                 </div>
-              </motion.div>
+              </motion.a>
 
               {/* Reishi */}
-              <motion.div
+              <motion.a
+                href="/om-oss/ingredienser/reishi"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7 }}
-                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group"
+                whileHover={{ scale: 1.02, y: -4 }}
+                whileTap={{ scale: 0.98 }}
+                className="block bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer"
               >
                 <div className="relative h-48 overflow-hidden">
                   <Image
@@ -261,7 +262,7 @@ export default function IngredientsPage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                 </div>
                 <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Reishi</h3>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-[#8B4513] transition-colors">Reishi</h3>
                   <p className="text-gray-600 mb-4">
                     "Odödlighetens svamp" - Adaptogen som balanserar stress och sömn
                   </p>
@@ -273,22 +274,22 @@ export default function IngredientsPage() {
                       Stressbalans
                     </span>
                   </div>
-                                  <Link
-                  href="/om-oss/ingredienser/reishi"
-                  className="text-[#8B4513] hover:text-[#6B3410] font-medium flex items-center"
-                >
-                  Läs mer
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
+                  <span className="text-[#8B4513] hover:text-[#6B3410] font-medium flex items-center">
+                    Läs mer
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </span>
                 </div>
-              </motion.div>
+              </motion.a>
 
               {/* Lion's Mane */}
-              <motion.div
+              <motion.a
+                href="/om-oss/ingredienser/lions-mane"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.8 }}
-                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group"
+                whileHover={{ scale: 1.02, y: -4 }}
+                whileTap={{ scale: 0.98 }}
+                className="block bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer"
               >
                 <div className="relative h-48 overflow-hidden">
                   <Image
@@ -301,7 +302,7 @@ export default function IngredientsPage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                 </div>
                 <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Lion's Mane</h3>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-[#8B4513] transition-colors">Lion's Mane</h3>
                   <p className="text-gray-600 mb-4">
                     "Den smarta svampen" - Stödjer kognitiv funktion och fokus
                   </p>
@@ -313,22 +314,22 @@ export default function IngredientsPage() {
                       Fokus
                     </span>
                   </div>
-                                  <Link
-                  href="/om-oss/ingredienser/lions-mane"
-                  className="text-[#8B4513] hover:text-[#6B3410] font-medium flex items-center"
-                >
-                  Läs mer
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
+                  <span className="text-[#8B4513] hover:text-[#6B3410] font-medium flex items-center">
+                    Läs mer
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </span>
                 </div>
-              </motion.div>
+              </motion.a>
 
               {/* Cordyceps */}
-              <motion.div
+              <motion.a
+                href="/om-oss/ingredienser/cordyceps"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.9 }}
-                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group"
+                whileHover={{ scale: 1.02, y: -4 }}
+                whileTap={{ scale: 0.98 }}
+                className="block bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer"
               >
                 <div className="relative h-48 overflow-hidden">
                   <Image
@@ -341,7 +342,7 @@ export default function IngredientsPage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                 </div>
                 <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Cordyceps</h3>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-[#8B4513] transition-colors">Cordyceps</h3>
                   <p className="text-gray-600 mb-4">
                     "Energigivande svamp" - Ökar uthållighet och syreupptagning
                   </p>
@@ -353,15 +354,12 @@ export default function IngredientsPage() {
                       Uthållighet
                     </span>
                   </div>
-                                  <Link
-                  href="/om-oss/ingredienser/cordyceps"
-                  className="text-[#8B4513] hover:text-[#6B3410] font-medium flex items-center"
-                >
-                  Läs mer
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
+                  <span className="text-[#8B4513] hover:text-[#6B3410] font-medium flex items-center">
+                    Läs mer
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </span>
                 </div>
-              </motion.div>
+              </motion.a>
             </div>
           </div>
         </section>
