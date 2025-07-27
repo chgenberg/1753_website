@@ -1,11 +1,10 @@
 // Service Worker for E-book Reader
-const CACHE_NAME = '1753-ebook-reader-v1';
+const CACHE_NAME = '1753-ebook-reader-v2';
 const urlsToCache = [
-    '/',
-    '/styles.css',
-    '/app.js',
-    '/pdf/e-book_weedyourskin.pdf',
-    '/omslag-complete.pdf',
+    '/ebook-reader/',
+    '/ebook-reader/styles.css',
+    '/ebook-reader/app.js',
+    '/ebook-reader/e-book_weedyourskin_backup.pdf',
     'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
     'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
     'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
