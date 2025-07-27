@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { ChevronDown, ChevronUp, ChevronRight, Leaf, Heart, Brain, Shield, Sparkles, Apple } from 'lucide-react'
+import { ChevronDown, ChevronUp, ChevronRight } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface RawMaterial {
@@ -85,35 +85,32 @@ const rawMaterials = [
   }
 ]
 
-const categories = [
-  { id: 'all', name: 'Alla', icon: <Leaf className="w-4 h-4" /> },
-  { id: 'berry', name: 'Bär', icon: <Heart className="w-4 h-4" /> },
-  { id: 'fermented', name: 'Fermenterat', icon: <Brain className="w-4 h-4" /> },
-  { id: 'herb', name: 'Örter', icon: <Shield className="w-4 h-4" /> },
-]
+
 
 export default function FunctionalRawMaterialsPage() {
   const [rawMaterials, setRawMaterials] = useState<RawMaterial[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     fetchRawMaterials()
-  }, [selectedCategory])
+  }, [])
 
   const fetchRawMaterials = async () => {
     try {
       setLoading(true)
-      const params = selectedCategory !== 'all' ? `?category=${selectedCategory}` : ''
-      const response = await fetch(`/api/raw-materials${params}`)
+      // Always fetch all raw materials and sort them alphabetically by Swedish name
+      const response = await fetch(`/api/raw-materials`)
       
       if (response.ok) {
         const data = await response.json()
-        setRawMaterials(data)
+        // Sort alphabetically by Swedish name
+        const sortedData = data.sort((a: RawMaterial, b: RawMaterial) => 
+          a.swedishName.localeCompare(b.swedishName, 'sv')
+        )
+        setRawMaterials(sortedData)
       } else {
         console.error('Failed to fetch raw materials')
-        // Fallback to empty array
         setRawMaterials([])
       }
     } catch (error) {
@@ -122,10 +119,6 @@ export default function FunctionalRawMaterialsPage() {
     } finally {
       setLoading(false)
     }
-  }
-
-  const handleCategoryChange = (categoryId: string) => {
-    setSelectedCategory(categoryId)
   }
 
   const toggleExpanded = (materialId: string) => {
@@ -155,23 +148,7 @@ export default function FunctionalRawMaterialsPage() {
               förbättra din hudhälsa inifrån och ut. Baserat på vetenskaplig forskning.
             </p>
             
-            {/* Category Filter */}
-            <div className="flex flex-wrap justify-center gap-3 mb-12">
-              {categories.map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => handleCategoryChange(category.id)}
-                  className={`flex items-center gap-2 px-6 py-3 border rounded-full transition-colors ${
-                    selectedCategory === category.id
-                      ? 'bg-amber-500 text-white border-amber-500'
-                      : 'bg-white border-gray-200 hover:border-amber-500 hover:bg-amber-50'
-                  }`}
-                >
-                  {category.icon}
-                  <span>{category.name}</span>
-                </button>
-              ))}
-            </div>
+
           </div>
         </div>
       </section>
@@ -194,21 +171,13 @@ export default function FunctionalRawMaterialsPage() {
             </div>
           ) : rawMaterials.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-gray-600">Inga råvaror hittades för den valda kategorin.</p>
+              <p className="text-gray-600">Inga råvaror hittades.</p>
             </div>
           ) : (
             <div className="space-y-4 max-w-4xl mx-auto">
               {rawMaterials.map((material) => {
                 const isExpanded = expandedItems.has(material.id)
-                const categoryIcon = {
-                  berry: <Heart className="w-5 h-5" />,
-                  herb: <Leaf className="w-5 h-5" />,
-                  fermented: <Brain className="w-5 h-5" />,
-                  tea: <Sparkles className="w-5 h-5" />,
-                  vegetable: <Shield className="w-5 h-5" />,
-                  fruit: <Apple className="w-5 h-5" />,
-                  default: <Leaf className="w-5 h-5" />
-                }[material.category] || <Leaf className="w-5 h-5" />
+
                 
                 return (
                   <motion.div
@@ -222,17 +191,6 @@ export default function FunctionalRawMaterialsPage() {
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex items-start gap-4 flex-1">
-                          <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                            material.category === 'berry' ? 'bg-red-100 text-red-600' :
-                            material.category === 'herb' ? 'bg-green-100 text-green-600' :
-                            material.category === 'fermented' ? 'bg-purple-100 text-purple-600' :
-                            material.category === 'tea' ? 'bg-amber-100 text-amber-600' :
-                            material.category === 'vegetable' ? 'bg-orange-100 text-orange-600' :
-                            'bg-gray-100 text-gray-600'
-                          }`}>
-                            {categoryIcon}
-                          </div>
-                          
                           <div className="flex-1">
                             <div className="flex items-center gap-3 mb-1">
                               <h3 className="text-lg font-semibold text-gray-900">
