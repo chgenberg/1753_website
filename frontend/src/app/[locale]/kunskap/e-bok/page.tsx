@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { Download, FileText, ExternalLink } from 'lucide-react'
@@ -35,22 +36,25 @@ export default function EBookPage() {
       <main className="pt-20">
         {/* Hero Section */}
         <section className="relative py-20 px-4 md:px-8 overflow-hidden">
-          <div className="max-w-6xl mx-auto text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                Weed Your Skin - E-bok
-              </h1>
-              <p className="text-xl text-gray-700 mb-8 max-w-3xl mx-auto">
-                Upptäck hemligheten bakom frisk och strålande hud med vår omfattande guide 
-                om CBD-baserad hudvård och hudens ekosystem.
-              </p>
-              
-              {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-center">
+              {/* Text Content */}
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6 }}
+                className="text-center md:text-left"
+              >
+                <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                  Weed Your Skin - E-bok
+                </h1>
+                <p className="text-xl text-gray-700 mb-8">
+                  Upptäck hemligheten bakom frisk och strålande hud med vår omfattande guide 
+                  om CBD-baserad hudvård och hudens ekosystem.
+                </p>
+                
+                {/* Action Buttons */}
+                <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start items-center mb-8">
                 <a
                   href="/e-book_weedyourskin_backup.pdf"
                   download="Weed_Your_Skin_1753.pdf"
@@ -68,27 +72,55 @@ export default function EBookPage() {
                 </button>
               </div>
 
-              {/* Features */}
-              <div className="grid md:grid-cols-3 gap-6 mb-12">
-                <div className="bg-white p-6 rounded-xl shadow-md">
-                  <FileText className="w-12 h-12 text-[#4A3428] mx-auto mb-4" />
-                  <h3 className="font-semibold text-lg mb-2">Omfattande Guide</h3>
-                  <p className="text-gray-600">200+ sidor fullpackade med kunskap om hudvård och CBD</p>
+                {/* Features */}
+                <div className="grid grid-cols-3 gap-4 mt-12">
+                  <div className="text-center">
+                    <FileText className="w-10 h-10 text-[#4A3428] mx-auto mb-2" />
+                    <p className="text-sm font-medium text-gray-900">Omfattande Guide</p>
+                  </div>
+                  <div className="text-center">
+                    <svg className="w-10 h-10 text-[#4A3428] mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p className="text-sm font-medium text-gray-900">Vetenskapligt</p>
+                  </div>
+                  <div className="text-center">
+                    <Download className="w-10 h-10 text-[#4A3428] mx-auto mb-2" />
+                    <p className="text-sm font-medium text-gray-900">Direkt Nedladdning</p>
+                  </div>
                 </div>
-                <div className="bg-white p-6 rounded-xl shadow-md">
-                  <svg className="w-12 h-12 text-[#4A3428] mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <h3 className="font-semibold text-lg mb-2">Vetenskapligt Baserad</h3>
-                  <p className="text-gray-600">Byggd på forskning och 12+ års erfarenhet</p>
+              </motion.div>
+
+              {/* Book Image */}
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="relative"
+              >
+                <div className="relative mx-auto max-w-md">
+                  {/* Background decoration */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#4A3428]/10 to-transparent rounded-3xl transform rotate-3"></div>
+                  
+                  {/* Book image */}
+                  <div className="relative z-10 transform hover:scale-105 transition-transform duration-300">
+                    <Image
+                      src="/bok.jpg"
+                      alt="Weed Your Skin E-bok"
+                      width={400}
+                      height={600}
+                      className="rounded-2xl shadow-2xl w-full h-auto"
+                      priority
+                    />
+                    
+                    {/* Badge */}
+                    <div className="absolute -top-4 -right-4 bg-[#4A3428] text-white rounded-full px-6 py-3 shadow-lg transform rotate-12">
+                      <span className="text-sm font-bold">200+ sidor</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="bg-white p-6 rounded-xl shadow-md">
-                  <Download className="w-12 h-12 text-[#4A3428] mx-auto mb-4" />
-                  <h3 className="font-semibold text-lg mb-2">Direkt Nedladdning</h3>
-                  <p className="text-gray-600">Få tillgång till e-boken direkt på din enhet</p>
-                </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            </div>
           </div>
         </section>
 
