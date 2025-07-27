@@ -1,407 +1,138 @@
-'use client';
+'use client'
 
-import React, { useEffect, useState } from 'react'
-import { ArrowLeft } from 'lucide-react'
-import Link from 'next/link'
-import Image from 'next/image'
-import Script from 'next/script'
+import { motion } from 'framer-motion'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
+import { Download, FileText, ExternalLink } from 'lucide-react'
 
-export default function EbookPage() {
-  const [isLoading, setIsLoading] = useState(true)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(0)
-  const [pdfLoaded, setPdfLoaded] = useState(false)
-  const [showFallback, setShowFallback] = useState(false)
-  const [scriptError, setScriptError] = useState('')
-
-  useEffect(() => {
-    // Add the original CSS
-    const link = document.createElement('link')
-    link.rel = 'stylesheet'
-    link.href = '/ebook-reader/styles.css'
-    document.head.appendChild(link)
-
-    return () => {
-      document.head.removeChild(link)
-    }
-  }, [])
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (isLoading) {
-        setShowFallback(true)
-        setScriptError('E-bok läsaren laddade inte inom rimlig tid.')
-      }
-    }, 15000) // Give more time for interactive reader
-    return () => clearTimeout(timeout)
-  }, [isLoading])
-
-  const handlePdfJsError = () => {
-    setScriptError('Kunde inte ladda PDF.js biblioteket.')
-    setShowFallback(true)
-  }
-
-  const handleAppJsError = () => {
-    setScriptError('Kunde inte ladda e-bok applikationen.')
-    setShowFallback(true)
-  }
-
+export default function EBookPage() {
   return (
-    <>
+    <div className="min-h-screen bg-[#FAF8F5]">
       <Header />
-      <div className="pt-24">
-        <Script 
-          src="/ebook-reader/pdf.min.js"
-          onLoad={() => {
-            console.log('PDF.js loaded successfully')
-            setPdfLoaded(true)
-          }}
-          onError={handlePdfJsError}
-        />
-        
-        {pdfLoaded && (
-          <Script 
-            src="/ebook-reader/app.js"
-            onLoad={() => {
-              console.log('App.js loaded successfully')
-              setIsLoading(false)
-            }}
-            onError={handleAppJsError}
-          />
-        )}
+      
+      <main className="pt-20">
+        {/* Hero Section */}
+        <section className="relative py-20 px-4 md:px-8 overflow-hidden">
+          <div className="max-w-6xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                Weed Your Skin - E-bok
+              </h1>
+              <p className="text-xl text-gray-700 mb-8 max-w-3xl mx-auto">
+                Upptäck hemligheten bakom frisk och strålande hud med vår omfattande guide 
+                om CBD-baserad hudvård och hudens ekosystem.
+              </p>
+              
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+                <a
+                  href="/e-book_weedyourskin_backup.pdf"
+                  download="Weed_Your_Skin_1753.pdf"
+                  className="inline-flex items-center px-8 py-4 bg-[#4A3428] text-white rounded-full font-medium hover:bg-[#3A2418] transition-colors duration-300 shadow-lg"
+                >
+                  <Download className="w-5 h-5 mr-2" />
+                  Ladda ner e-boken (PDF)
+                </a>
+                <button
+                  onClick={() => window.open('/e-book_weedyourskin_backup.pdf', '_blank')}
+                  className="inline-flex items-center px-8 py-4 bg-white text-[#4A3428] rounded-full font-medium hover:bg-gray-50 transition-colors duration-300 shadow-lg border border-[#4A3428]"
+                >
+                  <ExternalLink className="w-5 h-5 mr-2" />
+                  Öppna i ny flik
+                </button>
+              </div>
 
-      {/* Loading Screen */}
-      <div id="loading" className={`loading-screen ${!isLoading ? 'hidden' : ''}`}>
-        <div className="loader">
-          <div className="loader-ring"></div>
-          <div className="loader-text">Laddar din e-bok...</div>
-          <div className="loader-progress">
-            <div className="loader-progress-bar">
-              <div className="loader-progress-fill"></div>
-            </div>
-            <div className="loader-progress-text">0%</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Fallback embed om läsaren inte laddas */}
-      {showFallback && (
-        <div className="max-w-6xl mx-auto my-12 p-6">
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-            <h3 className="text-lg font-semibold text-yellow-800 mb-2">E-bok läsaren kunde inte laddas</h3>
-            {scriptError && (
-              <p className="text-sm text-yellow-700 mb-2">Fel: {scriptError}</p>
-            )}
-            <p className="text-sm text-yellow-700">
-              Ingen fara! Du kan fortfarande läsa e-boken via PDF-visningen nedan.
-            </p>
-          </div>
-          
-          <iframe
-            src="/ebook-reader/e-book_weedyourskin_backup.pdf#toolbar=0&navpanes=0"
-            className="w-full h-[80vh] border rounded-lg shadow-lg"
-            title="Weed Your Skin E-book"
-          />
-          
-          <div className="text-center mt-4 space-y-2">
-            <p className="text-sm text-gray-600">
-              Du kan också{' '}
-              <a 
-                href="/ebook-reader/e-book_weedyourskin_backup.pdf" 
-                className="underline text-[#4A3428] hover:text-[#6B5337]" 
-                download="1753_Skincare_WeedYourSkin_Ebook.pdf"
-              >
-                ladda ner e-boken här
-              </a>
-            </p>
-            <p className="text-xs text-gray-500">
-              Filstorlek: ~15 MB | Format: PDF
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Main Container */}
-      <div id="app" className={`app-container ${!isLoading ? 'loaded' : ''}`}>
-
-        {/* Navigation Arrows */}
-        <button id="prevBtn" className="nav-arrow nav-prev" title="Föregående sida">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polyline points="15,18 9,12 15,6"></polyline>
-          </svg>
-        </button>
-        
-        <button id="nextBtn" className="nav-arrow nav-next" title="Nästa sida">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polyline points="9,18 15,12 9,6"></polyline>
-          </svg>
-        </button>
-
-        {/* E-book Reader */}
-        <main className="reader-container">
-          {/* Book Container */}
-          <div className="book-container">
-            <div className="book" id="book">
-              <div className="page-container">
-                {/* Left Page */}
-                <div className="page left-page" id="leftPage">
-                  <canvas id="leftCanvas"></canvas>
+              {/* Features */}
+              <div className="grid md:grid-cols-3 gap-6 mb-12">
+                <div className="bg-white p-6 rounded-xl shadow-md">
+                  <FileText className="w-12 h-12 text-[#4A3428] mx-auto mb-4" />
+                  <h3 className="font-semibold text-lg mb-2">Omfattande Guide</h3>
+                  <p className="text-gray-600">200+ sidor fullpackade med kunskap om hudvård och CBD</p>
                 </div>
-                
-                {/* Right Page */}
-                <div className="page right-page" id="rightPage">
-                  <canvas id="rightCanvas"></canvas>
+                <div className="bg-white p-6 rounded-xl shadow-md">
+                  <svg className="w-12 h-12 text-[#4A3428] mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <h3 className="font-semibold text-lg mb-2">Vetenskapligt Baserad</h3>
+                  <p className="text-gray-600">Byggd på forskning och 12+ års erfarenhet</p>
+                </div>
+                <div className="bg-white p-6 rounded-xl shadow-md">
+                  <Download className="w-12 h-12 text-[#4A3428] mx-auto mb-4" />
+                  <h3 className="font-semibold text-lg mb-2">Direkt Nedladdning</h3>
+                  <p className="text-gray-600">Få tillgång till e-boken direkt på din enhet</p>
                 </div>
               </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* PDF Viewer Section */}
+        <section className="pb-20 px-4 md:px-8">
+          <div className="max-w-6xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="bg-white rounded-2xl shadow-xl overflow-hidden"
+            >
+              <div className="p-6 border-b border-gray-200 bg-gray-50">
+                <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+                  <h2 className="text-2xl font-semibold text-gray-900">Förhandsgranska e-boken</h2>
+                  <a
+                    href="/e-book_weedyourskin_backup.pdf"
+                    download="Weed_Your_Skin_1753.pdf"
+                    className="inline-flex items-center px-6 py-2 bg-[#4A3428] text-white rounded-full text-sm font-medium hover:bg-[#3A2418] transition-colors duration-300"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Ladda ner PDF
+                  </a>
+                </div>
+              </div>
+              
+              {/* PDF Embed */}
+              <div className="relative bg-gray-100" style={{ height: '800px' }}>
+                <iframe
+                  src="/e-book_weedyourskin_backup.pdf#toolbar=1&navpanes=0&scrollbar=1"
+                  className="w-full h-full"
+                  title="Weed Your Skin E-bok"
+                  loading="lazy"
+                />
+                
+                {/* Fallback message */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="text-center p-8 bg-white/90 rounded-xl shadow-lg max-w-md mx-auto opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-auto">
+                    <FileText className="w-16 h-16 text-[#4A3428] mx-auto mb-4" />
+                    <p className="text-gray-700 mb-4">
+                      Om PDF:en inte visas korrekt kan du ladda ner den direkt.
+                    </p>
+                    <a
+                      href="/e-book_weedyourskin_backup.pdf"
+                      download="Weed_Your_Skin_1753.pdf"
+                      className="inline-flex items-center px-6 py-2 bg-[#4A3428] text-white rounded-full text-sm font-medium hover:bg-[#3A2418] transition-colors duration-300"
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Ladda ner nu
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Additional Info */}
+            <div className="mt-8 text-center">
+              <p className="text-gray-600">
+                <span className="font-medium">Tips:</span> Du kan zooma in och ut i PDF:en med Ctrl/Cmd + och - tangenterna.
+              </p>
             </div>
           </div>
-
-          {/* Click Areas for Navigation */}
-          <div className="click-area click-left" id="clickLeft"></div>
-          <div className="click-area click-right" id="clickRight"></div>
-        </main>
-        
-        {/* Progress Bar */}
-        <div className="progress-container">
-          <div className="progress-bar">
-            <div className="progress-fill" id="progressFill"></div>
-          </div>
-        </div>
-
-        {/* Controls */}
-        <div className="controls">
-          <div className="control-group">
-            <button id="firstBtn" className="control-btn" title="Första sidan">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="11,17 6,12 11,7"></polyline>
-                <polyline points="18,17 13,12 18,7"></polyline>
-              </svg>
-            </button>
-            
-            <button id="prevPageBtn" className="control-btn" title="Föregående">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="15,18 9,12 15,6"></polyline>
-              </svg>
-            </button>
-            
-            <div className="page-info">
-              <span id="currentPage">1</span>
-              <span>/</span>
-              <span id="totalPages">0</span>
-            </div>
-            
-            <button id="nextPageBtn" className="control-btn" title="Nästa">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="9,18 15,12 9,6"></polyline>
-              </svg>
-            </button>
-            
-            <button id="lastBtn" className="control-btn" title="Sista sidan">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="13,17 18,12 13,7"></polyline>
-                <polyline points="6,17 11,12 6,7"></polyline>
-              </svg>
-            </button>
-          </div>
-          
-          {/* Zoom Controls */}
-          <div className="zoom-controls">
-            <button id="zoomOutBtn" className="control-btn" title="Zooma ut (Ctrl+-)">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="8" y1="11" x2="14" y2="11"></line>
-              </svg>
-            </button>
-            
-            <span id="zoomLevel" className="zoom-level">100%</span>
-            
-            <button id="zoomInBtn" className="control-btn" title="Zooma in (Ctrl++)">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="11" y1="8" x2="11" y2="14"></line>
-                <line x1="8" y1="11" x2="14" y2="11"></line>
-              </svg>
-            </button>
-            
-            <button id="zoomResetBtn" className="control-btn" title="Återställ zoom (Ctrl+0)">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="8"></circle>
-                <path d="M11,11 L11,6 M11,11 L14,11"></path>
-              </svg>
-            </button>
-          </div>
-          
-          {/* Action Buttons */}
-          <div className="action-controls">
-            <button id="downloadBtn" className="control-btn download-btn" title="Ladda ner PDF">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="7 10 12 15 17 10"></polyline>
-                <line x1="12" y1="15" x2="12" y2="3"></line>
-              </svg>
-            </button>
-            
-            <button id="fullscreenBtn" className="control-btn" title="Fullskärm">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Product Recommendations Section */}
-      <section className="product-recommendations">
-        <div className="recommendations-container">
-          <h2 className="recommendations-title">VILL DU TA HAND OM HUDENS HÄLSA PÅ RIKTIGT?</h2>
-          
-          <div className="products-grid">
-            {/* Product 1: DUO-kit + TA-DA Serum */}
-            <div className="product-card">
-              <Link href="/products/duo-kit-ta-da-serum" className="product-link">
-                <div className="product-image-wrapper">
-                  <Image 
-                    src="/ebook-reader/DUOTADA.png" 
-                    alt="DUO-kit + TA-DA Serum" 
-                    width={300}
-                    height={300}
-                    className="product-image"
-                  />
-                </div>
-                <h3 className="product-name">DUO-kit + TA-DA Serum</h3>
-                <p className="product-description">
-                  Våra bästsäljare – Nu som komplett rutinpaket för 1498 kr. Vill du ge din hud ett verkligt lyft – utan att kompromissa med ingredienser, filosofi eller resultat...
-                </p>
-                <span className="product-cta">Läs mer →</span>
-              </Link>
-            </div>
-
-            {/* Product 2: DUO-kit */}
-            <div className="product-card">
-              <Link href="/products/duo-kit-the-one-i-love" className="product-link">
-                <div className="product-image-wrapper">
-                  <Image 
-                    src="/ebook-reader/DUO.png" 
-                    alt="DUO-kit" 
-                    width={300}
-                    height={300}
-                    className="product-image"
-                  />
-                </div>
-                <h3 className="product-name">DUO-kit</h3>
-                <p className="product-description">
-                  Perfekt kombination av The ONE Facial Oil och I LOVE Facial Oil för komplett ansiktsvård. Nu för 1099 kr...
-                </p>
-                <span className="product-cta">Läs mer →</span>
-              </Link>
-            </div>
-
-            {/* Product 3: TA-DA Serum */}
-            <div className="product-card">
-              <Link href="/products/ta-da-serum" className="product-link">
-                <div className="product-image-wrapper">
-                  <Image 
-                    src="/ebook-reader/TA-DA.png" 
-                    alt="TA-DA Serum" 
-                    width={300}
-                    height={300}
-                    className="product-image"
-                  />
-                </div>
-                <h3 className="product-name">TA-DA Serum</h3>
-                <p className="product-description">
-                  Ett revolutionerande serum som kombinerar kraftfulla peptider med naturliga ingredienser för synliga resultat...
-                </p>
-                <span className="product-cta">Läs mer →</span>
-              </Link>
-            </div>
-
-            {/* Product 4: Au Naturel Makeup Remover */}
-            <div className="product-card">
-              <Link href="/products/au-naturel-makeup-remover" className="product-link">
-                <div className="product-image-wrapper">
-                  <Image 
-                    src="/ebook-reader/Naturel.png" 
-                    alt="Au Naturel Makeup Remover" 
-                    width={300}
-                    height={300}
-                    className="product-image"
-                  />
-                </div>
-                <h3 className="product-name">Au Naturel Makeup Remover</h3>
-                <p className="product-description">
-                  Vill du avlägsna smuts, luftföroreningar och makeup utan att skada din huds naturliga balans...
-                </p>
-                <span className="product-cta">Läs mer →</span>
-              </Link>
-            </div>
-
-            {/* Product 5: Fungtastic Mushroom Extract */}
-            <div className="product-card">
-              <Link href="/products/fungtastic-mushroom-extract" className="product-link">
-                <div className="product-image-wrapper">
-                  <Image 
-                    src="/ebook-reader/Fungtastic.png" 
-                    alt="Fungtastic Mushroom Extract" 
-                    width={300}
-                    height={300}
-                    className="product-image"
-                  />
-                </div>
-                <h3 className="product-name">Fungtastic Mushroom Extract</h3>
-                <p className="product-description">
-                  Upplev naturens kraft med Fungtastic Mushroom Extract. Kombinerar fyra av naturens mest potenta medicinska svampar...
-                </p>
-                <span className="product-cta">Läs mer →</span>
-              </Link>
-            </div>
-
-            {/* Product 6: The ONE Facial Oil */}
-            <div className="product-card">
-              <Link href="/products/the-one-facial-oil" className="product-link">
-                <div className="product-image-wrapper">
-                  <Image 
-                    src="/ebook-reader/TheONE.png" 
-                    alt="The ONE Facial Oil" 
-                    width={300}
-                    height={300}
-                    className="product-image"
-                  />
-                </div>
-                <h3 className="product-name">The ONE Facial Oil</h3>
-                <p className="product-description">
-                  Den ultimata ansiktsoljan med CBD och naturliga botaniska ingredienser för alla hudtyper...
-                </p>
-                <span className="product-cta">Läs mer →</span>
-              </Link>
-            </div>
-
-            {/* Product 7: I LOVE Facial Oil */}
-            <div className="product-card">
-              <Link href="/products/i-love-facial-oil" className="product-link">
-                <div className="product-image-wrapper">
-                  <Image 
-                    src="/ebook-reader/ILOVE.png" 
-                    alt="I LOVE Facial Oil" 
-                    width={300}
-                    height={300}
-                    className="product-image"
-                  />
-                </div>
-                <h3 className="product-name">I LOVE Facial Oil</h3>
-                <p className="product-description">
-                  En lyxig ansiktsolja med CBG och noga utvalda botaniska oljor för djup återfuktning och näring...
-                </p>
-                <span className="product-cta">Läs mer →</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+        </section>
+      </main>
+      
+      <Footer />
     </div>
-    <Footer />
-  </>
   )
 } 
