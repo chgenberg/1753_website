@@ -120,7 +120,7 @@ export function HeroSection() {
             className="relative"
           >
             {/* Background decoration */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[#8B6B47]/10 to-transparent rounded-3xl" />
+            <div className="absolute inset-0 bg-white/90 backdrop-blur-sm rounded-3xl shadow-lg" />
             
             {/* Timeline Content */}
             <div className="relative z-10 p-8 lg:p-12">
@@ -138,7 +138,7 @@ export function HeroSection() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.6 + index * 0.1 }}
-                    className="flex items-center gap-4 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
+                    className="flex items-center gap-4 cursor-pointer hover:bg-gray-100 p-2 rounded-lg transition-colors"
                     onClick={() => setModalContent(stepDescriptions[step.text as keyof typeof stepDescriptions])}
                   >
                     <div className="flex-shrink-0 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-md text-2xl">
