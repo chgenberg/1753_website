@@ -306,28 +306,72 @@ export function GallerySection() {
               {/* Close button */}
               <button
                 onClick={() => setSelectedImage(null)}
-                className="absolute top-4 right-4 z-10 p-2 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-colors"
+                className="absolute top-4 right-4 z-10 p-3 bg-white/95 backdrop-blur-sm rounded-full hover:bg-white transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
               >
-                <X className="w-6 h-6 text-gray-700" />
+                <X className="w-5 h-5 text-gray-600 hover:text-gray-800" />
               </button>
 
               <div className="flex flex-col md:flex-row h-full overflow-hidden">
                 {/* Image side */}
-                <div className="relative w-full md:w-2/5 h-64 md:h-full flex-shrink-0">
+                <div className="relative w-full md:w-2/5 h-64 md:h-full flex-shrink-0 bg-gradient-to-br from-gray-50 to-gray-100">
                   <Image
                     src={selectedImage.desktop}
                     alt={selectedImage.title}
                     fill
-                    className="object-cover md:object-contain"
+                    className="object-cover md:object-contain rounded-l-none md:rounded-l-2xl"
                   />
+                  {/* Image overlay with title */}
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4 md:p-6">
+                    <h2 className="text-white font-bold text-lg md:text-xl leading-tight">
+                      {selectedImage.title}
+                    </h2>
+                  </div>
                 </div>
 
                 {/* Content side */}
-                <div className="flex-1 p-6 md:p-10 overflow-y-auto max-h-full">
+                <div className="flex-1 p-6 md:p-10 overflow-y-auto max-h-full bg-white">
+                  {/* Content header */}
+                  <div className="border-b border-gray-200 pb-4 mb-6">
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 bg-[#4A3428] rounded-full"></div>
+                      <span className="text-sm font-medium text-[#4A3428] uppercase tracking-wide">
+                        Naturens kraft
+                      </span>
+                    </div>
+                  </div>
+                  
+                  {/* Main content */}
                   <div 
-                    className="prose prose-base md:prose-lg max-w-none"
+                    className="prose prose-base md:prose-lg max-w-none
+                             prose-headings:text-gray-900 prose-headings:font-bold
+                             prose-p:text-gray-700 prose-p:leading-relaxed
+                             prose-strong:text-gray-900 prose-strong:font-semibold
+                             prose-ul:my-4 prose-li:my-1
+                             prose-a:text-[#4A3428] prose-a:no-underline hover:prose-a:underline"
                     dangerouslySetInnerHTML={{ __html: selectedImage.detailedDescription }}
                   />
+                  
+                  {/* Call to action at bottom */}
+                  <div className="mt-8 pt-6 border-t border-gray-100">
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <button
+                        onClick={() => setSelectedImage(null)}
+                        className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+                      >
+                        Stäng
+                      </button>
+                      <button
+                        onClick={() => {
+                          setSelectedImage(null)
+                          // Scroll to products section
+                          document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })
+                        }}
+                        className="flex-1 px-4 py-2 bg-[#4A3428] text-white rounded-lg hover:bg-[#3A2418] transition-colors font-medium"
+                      >
+                        Se våra produkter
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </motion.div>
