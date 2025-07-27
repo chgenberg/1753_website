@@ -53,7 +53,7 @@ export function HeroSection() {
           alt="1753 Skincare Background"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/60" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/70 md:from-black/40 md:via-black/30 md:to-black/60" />
       </div>
 
       {/* Content */}
@@ -69,11 +69,11 @@ export function HeroSection() {
           >
             {/* Main Heading */}
             <div>
-              <h1 className="text-5xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+              <h1 className="text-5xl lg:text-7xl font-bold text-white drop-shadow-lg mb-6 leading-tight">
                 Naturlig hudvård för
-                <span className="text-[#4A3428] block">hudens ekosystem</span>
+                <span className="text-white block">hudens ekosystem</span>
               </h1>
-              <p className="text-xl lg:text-2xl text-gray-600 leading-relaxed">
+              <p className="text-xl lg:text-2xl text-white/90 leading-relaxed drop-shadow-md">
                 Vetenskapligt utvecklad hudvård som arbetar i harmoni med hudens celler, mikrobiom och endocannabinoidsystem
               </p>
             </div>

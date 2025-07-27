@@ -300,7 +300,7 @@ export function GallerySection() {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="relative max-w-4xl w-full max-h-[90vh] bg-white rounded-2xl shadow-2xl overflow-hidden"
+              className="relative max-w-5xl w-full max-h-[85vh] bg-white rounded-2xl shadow-2xl flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Close button */}
@@ -311,21 +311,21 @@ export function GallerySection() {
                 <X className="w-6 h-6 text-gray-700" />
               </button>
 
-              <div className="flex flex-col md:flex-row h-full">
+              <div className="flex flex-col md:flex-row h-full overflow-hidden">
                 {/* Image side */}
-                <div className="relative w-full md:w-1/2 h-64 md:h-auto">
+                <div className="relative w-full md:w-2/5 h-64 md:h-full flex-shrink-0">
                   <Image
                     src={selectedImage.desktop}
                     alt={selectedImage.title}
                     fill
-                    className="object-cover"
+                    className="object-cover md:object-contain"
                   />
                 </div>
 
                 {/* Content side */}
-                <div className="flex-1 p-8 md:p-12 overflow-y-auto">
+                <div className="flex-1 p-6 md:p-10 overflow-y-auto max-h-full">
                   <div 
-                    className="prose prose-lg max-w-none"
+                    className="prose prose-base md:prose-lg max-w-none"
                     dangerouslySetInnerHTML={{ __html: selectedImage.detailedDescription }}
                   />
                 </div>
