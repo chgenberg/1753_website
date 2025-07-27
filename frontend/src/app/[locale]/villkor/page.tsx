@@ -42,8 +42,9 @@ export default function VillkorPage() {
               <h2 className="text-2xl font-semibold text-gray-900 mb-6">1. Företagsinformation</h2>
               <div className="bg-[#F5F3F0] rounded-xl p-6">
                 <p className="text-gray-700 mb-4">
-                  <strong>1753 Skincare</strong><br />
-                  Organisationsnummer: [Organisationsnummer]<br />
+                  <strong>Floranie International AB</strong><br />
+                  Organisationsnummer: 559286-4036<br />
+                  Varumärke: 1753 Skincare<br />
                   Adress: Södra Skjutbanevägen 10, 439 55 Åsa, Sverige<br />
                   E-post: hej@1753skincare.com<br />
                   Telefon: 0732-305521
@@ -88,15 +89,11 @@ export default function VillkorPage() {
                   annat anges. Vi förbehåller oss rätten att ändra priser utan förvarning.
                 </p>
                 <p>
-                  Betalning ska ske vid beställningstillfället om inte annat avtalats (t.ex. Klarna). 
-                  Vi accepterar följande betalmetoder:
+                  Betalning ska ske vid beställningstillfället. Vi accepterar följande betalmetoder:
                 </p>
                 <ul className="list-disc list-inside space-y-1 ml-4">
-                  <li>Kort (Visa, Mastercard, American Express)</li>
+                  <li>Betalkort (Visa, Mastercard)</li>
                   <li>Swish</li>
-                  <li>PayPal</li>
-                  <li>Klarna (Betala senare/Delbetalning)</li>
-                  <li>Apple Pay / Google Pay</li>
                 </ul>
               </div>
             </section>

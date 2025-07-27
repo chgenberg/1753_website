@@ -155,11 +155,8 @@ export default function ContactPage() {
             >
               <Heart className="w-16 h-16 text-[#00937c] mx-auto mb-4" />
               <h1 className="text-5xl md:text-6xl font-bold mt-4 mb-6">
-                Hör av dig
+                Vi älskar när du hör av dig
               </h1>
-              <p className="text-2xl font-semibold text-[#00937c] mb-4">
-                Vi älskar när du
-              </p>
               <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
                 Om du har några frågor, idéer eller tankar, tveka inte att kontakta oss. 
                 Använd formuläret nedan, skicka e-post, DM eller PM i våra sociala kanaler, 
