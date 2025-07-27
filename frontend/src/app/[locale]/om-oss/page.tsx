@@ -26,28 +26,33 @@ const values = [
   {
     icon: <Award className="w-8 h-8" />,
     title: 'Tradition',
-    description: 'Över 270 års erfarenhet av kvalitet och innovation.'
+    description: 'Vi bygger på århundraden av cannabis kunskap och innovation.'
   }
 ]
 
 const timeline = [
   {
     year: '1753',
-    title: 'Grundades',
-    description: 'Vårt företag grundades med fokus på naturlig hudvård.'
+    title: 'Carl Von Linné namnger Cannabis Sativa',
+    description: 'En av Sveriges mest framstående personer någonsin namnger Cannabis Sativa.'
   },
   {
-    year: '1890',
-    title: 'Första laboratoriet',
-    description: 'Vi etablerade vårt första forskningslaboratorium.'
+    year: '1839',
+    title: 'Cannabis introduceras till västerländsk medicin',
+    description: 'Den irländska läkaren William B. O\'Shaughnessy introducerar cannabis till västerländsk medicin efter studier i Indien.'
   },
   {
-    year: '1950',
-    title: 'International expansion',
-    description: 'Började exportera våra produkter till Europa.'
+    year: '1925',
+    title: 'International reglering',
+    description: 'Cannabis regleras internationellt genom Genevekonventionen som del av begränsning av narkotika.'
   },
   {
-    year: '2020',
+    year: '1992',
+    title: 'Upptäckten av endocannabinoidsystemet',
+    description: 'Upptäckten av det endocannabinoida systemet revolutionerar förståelsen av cannabisens effekt på kroppen.'
+  },
+  {
+    year: '2022',
     title: 'CBD-innovation',
     description: 'Lanserade vår revolutionerande CBD-hudvårdsserie.'
   }
@@ -316,7 +321,7 @@ export default function AboutPage() {
             >
               <h2 className="text-4xl font-bold mb-6">Vår resa genom tiden</h2>
               <p className="text-xl text-gray-600">
-                Viktiga milstolpar i vår över 270-åriga historia.
+                Viktiga milstolpar i cannabis historia och vår resa.
               </p>
             </motion.div>
 
