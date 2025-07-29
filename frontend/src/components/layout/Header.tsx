@@ -164,7 +164,7 @@ export function Header() {
                           href="/om-oss"
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         >
-                          Om 1753 Skincare
+                          Om oss
                         </Link>
                         <Link
                           href="/om-oss/aterforsaljare"
