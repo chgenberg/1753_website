@@ -57,11 +57,12 @@ const mockReviews = [
   }
 ]
 
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   try {
-    const searchParams = request.nextUrl.searchParams
+    const { searchParams } = new URL(request.url)
     const queryString = searchParams.toString()
-    const fullUrl = `${BACKEND_URL}/api/reviews?${queryString}`
+    const backendUrl = process.env.BACKEND_URL || 'https://1753website-production.up.railway.app'
+    const fullUrl = `${backendUrl}/api/reviews?${queryString}`
     
     console.log('Fetching reviews from:', fullUrl)
     

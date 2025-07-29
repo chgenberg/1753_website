@@ -1,21 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  request: Request,
+  { params }: { params: { slug: string } }
 ) {
   try {
-    const { slug } = await params
+    const slug = params.slug
     
-    // Use backend API URL
-    const backendUrl = process.env.BACKEND_URL || 'https://1753websitebackend-production.up.railway.app'
-    const response = await fetch(`${backendUrl}/api/raw-materials/${slug}`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      // Don't cache for now to avoid cache issues
-      cache: 'no-store'
-    })
+    // Forward to backend API
+    const backendUrl = process.env.BACKEND_URL || 'https://1753website-production.up.railway.app'
+    const response = await fetch(`${backendUrl}/api/raw-materials/${slug}`)
     
     if (response.status === 404) {
       return NextResponse.json(

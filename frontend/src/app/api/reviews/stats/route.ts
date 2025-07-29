@@ -7,7 +7,8 @@ const BACKEND_URL = process.env.NODE_ENV === 'development'
 
 export async function GET() {
   try {
-    const fullUrl = `${BACKEND_URL}/api/reviews/stats`
+    const backendUrl = process.env.BACKEND_URL || 'https://1753website-production.up.railway.app'
+    const fullUrl = `${backendUrl}/api/reviews/stats`
     console.log('Fetching review stats from:', fullUrl)
     
     const response = await fetch(fullUrl, {

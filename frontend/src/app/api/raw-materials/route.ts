@@ -1,27 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
-    const category = searchParams.get('category')
-    const search = searchParams.get('search')
-    
+    const page = searchParams.get('page') || '1'
+    const limit = searchParams.get('limit') || '12'
+    const category = searchParams.get('category') || ''
+    const search = searchParams.get('search') || ''
+    const sort = searchParams.get('sort') || 'name'
+
     // Build query string
-    const queryParams = new URLSearchParams()
-    if (category) queryParams.append('category', category)
-    if (search) queryParams.append('search', search)
-    
-    // Use backend API URL
-    const backendUrl = process.env.BACKEND_URL || 'https://1753websitebackend-production.up.railway.app'
-    const url = `${backendUrl}/api/raw-materials${queryParams.toString() ? `?${queryParams.toString()}` : ''}`
-    
-    const response = await fetch(url, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      // Don't cache for now to avoid cache issues
-      cache: 'no-store'
+    const queryParams = new URLSearchParams({
+      page,
+      limit,
+      ...(category && { category }),
+      ...(search && { search }),
+      sort
     })
+
+    const backendUrl = process.env.BACKEND_URL || 'https://1753website-production.up.railway.app'
+    const response = await fetch(`${backendUrl}/api/raw-materials?${queryParams}`)
     
     if (!response.ok) {
       throw new Error(`Backend responded with ${response.status}`)
