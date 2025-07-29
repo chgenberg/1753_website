@@ -81,7 +81,7 @@ export function HeroSection() {
             {/* Author Info */}
             <div className="flex items-center gap-4 p-6 bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm">
               <img 
-                src="/Porträtt/Christopher2.jpg" 
+                src="/Porträtt/c-and-e-2.jpg" 
                 alt="Christopher Genberg"
                 className="w-16 h-16 rounded-full object-cover"
               />

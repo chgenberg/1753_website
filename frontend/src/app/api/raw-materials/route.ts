@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
       sort
     })
 
-    const backendUrl = process.env.BACKEND_URL || 'https://1753website-production.up.railway.app'
+    const backendUrl = process.env.BACKEND_URL || 'https://1753websitebackend-production.up.railway.app'
     const response = await fetch(`${backendUrl}/api/raw-materials?${queryParams}`, {
       headers: {
         'Content-Type': 'application/json',

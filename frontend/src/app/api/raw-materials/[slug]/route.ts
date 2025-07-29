@@ -8,7 +8,7 @@ export async function GET(
     const { slug } = await params
     
     // Forward to backend API
-    const backendUrl = process.env.BACKEND_URL || 'https://1753website-production.up.railway.app'
+    const backendUrl = process.env.BACKEND_URL || 'https://1753websitebackend-production.up.railway.app'
     const response = await fetch(`${backendUrl}/api/raw-materials/${slug}`)
     
     if (response.status === 404) {

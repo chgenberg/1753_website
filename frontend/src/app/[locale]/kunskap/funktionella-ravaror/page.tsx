@@ -22,7 +22,7 @@ interface RawMaterial {
 }
 
 // Temporary data until we fetch from API
-const rawMaterials = [
+const fallbackRawMaterials = [
   {
     id: '1',
     name: 'Blueberry',
@@ -30,8 +30,10 @@ const rawMaterials = [
     category: 'berry',
     origin: 'Nordisk',
     slug: 'blabar',
-    description: 'Rika på antocyaniner som motverkar oxidativ stress',
-    thumbnail: '/images/raw-materials/blueberry.jpg'
+    description: 'Rika på antocyaniner som motverkar oxidativ stress och stödjer hudhälsan inifrån. Blåbär innehåller kraftfulla antioxidanter som skyddar cellerna.',
+    thumbnail: '/images/raw-materials/blueberry.jpg',
+    healthBenefits: ['Antioxidanter', 'Antiinflammatorisk', 'Stödjer kollagenproduktion'],
+    nutrients: ['Antocyaniner', 'Vitamin C', 'Vitamin K', 'Mangan']
   },
   {
     id: '2',
@@ -40,8 +42,10 @@ const rawMaterials = [
     category: 'berry',
     origin: 'Nordisk',
     slug: 'lingon',
-    description: 'Antiinflammatorisk verkan som gynnar hudhälsan',
-    thumbnail: '/images/raw-materials/lingonberry.jpg'
+    description: 'Antiinflammatorisk verkan som gynnar hudhälsan och minskar rodnad. Lingon är rikt på proantocyanidiner som stärker kärlväggarna.',
+    thumbnail: '/images/raw-materials/lingonberry.jpg',
+    healthBenefits: ['Antiinflammatorisk', 'Stärker kärl', 'Antioxidanter'],
+    nutrients: ['Proantocyanidiner', 'Vitamin C', 'Mangan', 'Fiber']
   },
   {
     id: '3',
@@ -50,8 +54,10 @@ const rawMaterials = [
     category: 'berry',
     origin: 'Nordisk/Asiatisk',
     slug: 'havtorn',
-    description: 'Omega-7 för starkare hudbarriär',
-    thumbnail: '/images/raw-materials/sea-buckthorn.jpg'
+    description: 'Omega-7 för starkare hudbarriär och förbättrad hudelasticitet. Havtorn är ett kraftpaket av näringsämnen för huden.',
+    thumbnail: '/images/raw-materials/sea-buckthorn.jpg',
+    healthBenefits: ['Stärker hudbarriär', 'Omega-7', 'Läkande egenskaper'],
+    nutrients: ['Omega-7', 'Vitamin C', 'Vitamin E', 'Beta-karoten']
   },
   {
     id: '4',
@@ -60,8 +66,10 @@ const rawMaterials = [
     category: 'tea',
     origin: 'Asiatisk',
     slug: 'gront-te',
-    description: 'Katechiner som skyddar mot UV-stress',
-    thumbnail: '/images/raw-materials/green-tea.jpg'
+    description: 'Katechiner som skyddar mot UV-stress och förhindrar för tidig hudåldrande. Grönt te är en av naturens starkaste antioxidanter.',
+    thumbnail: '/images/raw-materials/green-tea.jpg',
+    healthBenefits: ['UV-skydd', 'Anti-aging', 'Antioxidanter'],
+    nutrients: ['EGCG', 'Katechiner', 'L-theanin', 'Vitamin C']
   },
   {
     id: '5',
@@ -70,8 +78,10 @@ const rawMaterials = [
     category: 'herb',
     origin: 'Asiatisk',
     slug: 'gurkmeja',
-    description: 'Curcumin som dämpar hudinflammation',
-    thumbnail: '/images/raw-materials/turmeric.jpg'
+    description: 'Curcumin som dämpar hudinflammation och ger huden en naturlig lyster. Gurkmeja har använts i tusentals år för sina läkande egenskaper.',
+    thumbnail: '/images/raw-materials/turmeric.jpg',
+    healthBenefits: ['Antiinflammatorisk', 'Antioxidanter', 'Läkande'],
+    nutrients: ['Curcumin', 'Curcuminoider', 'Järn', 'Mangan']
   },
   {
     id: '6',
@@ -80,15 +90,39 @@ const rawMaterials = [
     category: 'fermented',
     origin: 'Asiatisk',
     slug: 'kimchi',
-    description: 'Probiotika för balanserad gut-skin-axel',
-    thumbnail: '/images/raw-materials/kimchi.jpg'
+    description: 'Probiotika för balanserad gut-skin-axel och förbättrad hudhälsa. Fermenterade livsmedel stödjer både tarmhälsa och hudens mikrobiom.',
+    thumbnail: '/images/raw-materials/kimchi.jpg',
+    healthBenefits: ['Probiotika', 'Stödjer tarmhälsa', 'Gut-skin-axel'],
+    nutrients: ['Lactobacillus', 'Vitamin B12', 'Vitamin K2', 'Fiber']
+  },
+  {
+    id: '7',
+    name: 'Chia Seeds',
+    swedishName: 'Chiafrön',
+    category: 'seed',
+    origin: 'Sydamerikansk',
+    slug: 'chiafron',
+    description: 'Omega-3 fettsyror som stödjer hudens fuktbalans och elasticitet. Chiafrön är en rik källa till växtbaserade omega-3:or.',
+    thumbnail: '/images/raw-materials/chia.jpg',
+    healthBenefits: ['Omega-3', 'Fuktbalans', 'Antioxidanter'],
+    nutrients: ['Alpha-linolensyra', 'Fiber', 'Protein', 'Kalcium']
+  },
+  {
+    id: '8',
+    name: 'Kefir',
+    swedishName: 'Kefir',
+    category: 'fermented',
+    origin: 'Kaukasisk',
+    slug: 'kefir',
+    description: 'Probiotiska kulturer som stärker tarmhälsan och förbättrar hudens utseende via gut-skin-axeln.',
+    thumbnail: '/images/raw-materials/kefir.jpg',
+    healthBenefits: ['Probiotika', 'Tarmhälsa', 'Immunförsvar'],
+    nutrients: ['Probiotiska kulturer', 'Protein', 'B-vitaminer', 'Kalcium']
   }
 ]
 
-
-
 export default function FunctionalRawMaterialsPage() {
-  const [rawMaterials, setRawMaterials] = useState<RawMaterial[]>([])
+  const [rawMaterials, setRawMaterials] = useState<RawMaterial[]>(fallbackRawMaterials)
   const [loading, setLoading] = useState(true)
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set())
 
@@ -104,18 +138,20 @@ export default function FunctionalRawMaterialsPage() {
       
       if (response.ok) {
         const data = await response.json()
-        // Sort alphabetically by Swedish name
-        const sortedData = data.sort((a: RawMaterial, b: RawMaterial) => 
-          a.swedishName.localeCompare(b.swedishName, 'sv')
-        )
-        setRawMaterials(sortedData)
+        if (data && Array.isArray(data) && data.length > 0) {
+          // Sort alphabetically by Swedish name
+          const sortedData = data.sort((a: RawMaterial, b: RawMaterial) => 
+            a.swedishName.localeCompare(b.swedishName, 'sv')
+          )
+          setRawMaterials(sortedData)
+        }
       } else {
-        console.error('Failed to fetch raw materials')
-        setRawMaterials([])
+        console.error('Failed to fetch raw materials, using fallback data')
+        // Keep fallback data
       }
     } catch (error) {
       console.error('Error fetching raw materials:', error)
-      setRawMaterials([])
+      // Keep fallback data
     } finally {
       setLoading(false)
     }
