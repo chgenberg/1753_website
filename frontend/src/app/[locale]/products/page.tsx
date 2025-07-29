@@ -56,9 +56,13 @@ export default function ProductsPage() {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002'}/api/products?sort=featured`)
       const data = await response.json()
-      setProducts(data)
+      
+      // Ensure data is an array
+      const productsArray = Array.isArray(data) ? data : (data.products || [])
+      setProducts(productsArray)
     } catch (error) {
       console.error('Error fetching products:', error)
+      setProducts([]) // Set empty array on error
     } finally {
       setLoading(false)
     }
@@ -66,7 +70,8 @@ export default function ProductsPage() {
 
   // Filter products based on category only
   useEffect(() => {
-    let currentFiltered = [...products]
+    const safeProducts = Array.isArray(products) ? products : []
+    let currentFiltered = [...safeProducts]
     
     // Filter by category
     if (selectedCategory !== 'alla') {
@@ -130,7 +135,9 @@ export default function ProductsPage() {
     setActiveFilter(null)
   }
 
-  const categories = ['alla', ...Array.from(new Set(products.map(p => p.category)))]
+  // Ensure products is always an array before mapping
+  const safeProducts = Array.isArray(products) ? products : []
+  const categories = ['alla', ...Array.from(new Set(safeProducts.map(p => p.category).filter(Boolean)))]
 
   const categoryLabels: Record<string, string> = {
     'alla': 'Alla',

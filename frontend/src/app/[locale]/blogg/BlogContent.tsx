@@ -205,15 +205,16 @@ export default function BlogContent({ posts }: BlogContentProps) {
                     transition={{ duration: 0.6, delay: Math.min(index * 0.1, 0.3) }}
                     className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer h-full flex flex-col"
                   >
-                    <div className="relative h-48 bg-gradient-to-b from-gray-50 to-gray-100 overflow-hidden">
+                    <div className="relative h-64 bg-gradient-to-b from-gray-50 to-gray-100 overflow-hidden">
                       {(post as BlogPostWithImages).thumbnail ? (
-                        <div className="w-full h-full flex items-center justify-center p-3">
+                        <div className="w-full h-full flex items-center justify-center p-4">
                           <Image
                             src={(post as BlogPostWithImages).thumbnail!}
                             alt={post.title}
-                            width={300}
-                            height={400}
+                            width={240}
+                            height={320}
                             className="h-full w-auto object-contain group-hover:scale-105 transition-transform duration-300"
+                            style={{ maxWidth: '100%', height: 'auto' }}
                           />
                         </div>
                       ) : (

@@ -296,11 +296,11 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, q
                     <div className="flex-1">
                       <span className="text-sm text-gray-700">
                         Jag accepterar{' '}
-                        <a href="/terms" target="_blank" className="text-amber-600 hover:underline">
+                        <a href="/villkor" target="_blank" className="text-amber-600 hover:underline">
                           användarvillkoren
                         </a>{' '}
                         och{' '}
-                        <a href="/privacy-policy" target="_blank" className="text-amber-600 hover:underline">
+                        <a href="/integritetspolicy" target="_blank" className="text-amber-600 hover:underline">
                           integritetspolicyn
                         </a>
                       </span>

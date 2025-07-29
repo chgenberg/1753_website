@@ -196,7 +196,7 @@ export default function RegisterPage() {
                   användarvillkoren
                 </Link>
                 {' och '}
-                <Link href="/privacy-policy" className="text-[#8B6B47] hover:text-[#6B5337] underline">
+                <Link href="/integritetspolicy" className="text-[#8B6B47] hover:text-[#6B5337] underline">
                   integritetspolicyn
                 </Link>
               </label>

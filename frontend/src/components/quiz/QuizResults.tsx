@@ -637,8 +637,8 @@ export default function QuizResults({
                     />
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-2xl font-bold text-[#4A3428]">{skinScore}</span>
-                    <span className="text-xs text-gray-500">HUDPOÄNG</span>
+                    <span className="text-xl font-bold text-[#4A3428]">{skinScore}</span>
+                    <span className="text-[10px] text-gray-500 uppercase tracking-wider">HUDPOÄNG</span>
                   </div>
                   <button
                     onClick={() => setShowScoreExplanation(true)}
