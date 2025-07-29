@@ -1,222 +1,322 @@
-[
-  {
-    "chapter": 1,
-    "image": "kapitel-1.jpg",
-    "thumbnail": "thumb-kapitel-1.jpg"
+{
+  "kapitel-1": {
+    "original": "Kapitel 1.png",
+    "full": "/images/blog/kapitel-1.jpg",
+    "thumbnail": "/images/blog/kapitel-1-thumb.jpg"
   },
-  {
-    "chapter": 2,
-    "image": "kapitel-2.jpg",
-    "thumbnail": "thumb-kapitel-2.jpg"
+  "kapitel-10": {
+    "original": "Kapitel 10.png",
+    "full": "/images/blog/kapitel-10.jpg",
+    "thumbnail": "/images/blog/kapitel-10-thumb.jpg"
   },
-  {
-    "chapter": 3,
-    "image": "kapitel-3.jpg",
-    "thumbnail": "thumb-kapitel-3.jpg"
+  "kapitel-11": {
+    "original": "Kapitel 11.png",
+    "full": "/images/blog/kapitel-11.jpg",
+    "thumbnail": "/images/blog/kapitel-11-thumb.jpg"
   },
-  {
-    "chapter": 4,
-    "image": "kapitel-4.jpg",
-    "thumbnail": "thumb-kapitel-4.jpg"
+  "kapitel-12": {
+    "original": "Kapitel 12.png",
+    "full": "/images/blog/kapitel-12.jpg",
+    "thumbnail": "/images/blog/kapitel-12-thumb.jpg"
   },
-  {
-    "chapter": 5,
-    "image": "kapitel-5.jpg",
-    "thumbnail": "thumb-kapitel-5.jpg"
+  "kapitel-13": {
+    "original": "Kapitel 13.png",
+    "full": "/images/blog/kapitel-13.jpg",
+    "thumbnail": "/images/blog/kapitel-13-thumb.jpg"
   },
-  {
-    "chapter": 6,
-    "image": "kapitel-6.jpg",
-    "thumbnail": "thumb-kapitel-6.jpg"
+  "kapitel-14": {
+    "original": "Kapitel 14.png",
+    "full": "/images/blog/kapitel-14.jpg",
+    "thumbnail": "/images/blog/kapitel-14-thumb.jpg"
   },
-  {
-    "chapter": 7,
-    "image": "kapitel-7.jpg",
-    "thumbnail": "thumb-kapitel-7.jpg"
+  "kapitel-15": {
+    "original": "Kapitel 15.png",
+    "full": "/images/blog/kapitel-15.jpg",
+    "thumbnail": "/images/blog/kapitel-15-thumb.jpg"
   },
-  {
-    "chapter": 8,
-    "image": "kapitel-8.jpg",
-    "thumbnail": "thumb-kapitel-8.jpg"
+  "kapitel-16": {
+    "original": "Kapitel 16.png",
+    "full": "/images/blog/kapitel-16.jpg",
+    "thumbnail": "/images/blog/kapitel-16-thumb.jpg"
   },
-  {
-    "chapter": 9,
-    "image": "kapitel-9.jpg",
-    "thumbnail": "thumb-kapitel-9.jpg"
+  "kapitel-17": {
+    "original": "Kapitel 17.png",
+    "full": "/images/blog/kapitel-17.jpg",
+    "thumbnail": "/images/blog/kapitel-17-thumb.jpg"
   },
-  {
-    "chapter": 10,
-    "image": "kapitel-10.jpg",
-    "thumbnail": "thumb-kapitel-10.jpg"
+  "kapitel-18": {
+    "original": "Kapitel 18.png",
+    "full": "/images/blog/kapitel-18.jpg",
+    "thumbnail": "/images/blog/kapitel-18-thumb.jpg"
   },
-  {
-    "chapter": 11,
-    "image": "kapitel-11.jpg",
-    "thumbnail": "thumb-kapitel-11.jpg"
+  "kapitel-19": {
+    "original": "Kapitel 19.png",
+    "full": "/images/blog/kapitel-19.jpg",
+    "thumbnail": "/images/blog/kapitel-19-thumb.jpg"
   },
-  {
-    "chapter": 12,
-    "image": "kapitel-12.jpg",
-    "thumbnail": "thumb-kapitel-12.jpg"
+  "kapitel-2": {
+    "original": "Kapitel 2.png",
+    "full": "/images/blog/kapitel-2.jpg",
+    "thumbnail": "/images/blog/kapitel-2-thumb.jpg"
   },
-  {
-    "chapter": 13,
-    "image": "kapitel-13.jpg",
-    "thumbnail": "thumb-kapitel-13.jpg"
+  "kapitel-20": {
+    "original": "Kapitel 20.png",
+    "full": "/images/blog/kapitel-20.jpg",
+    "thumbnail": "/images/blog/kapitel-20-thumb.jpg"
   },
-  {
-    "chapter": 14,
-    "image": "kapitel-14.jpg",
-    "thumbnail": "thumb-kapitel-14.jpg"
+  "kapitel-21": {
+    "original": "Kapitel 21.png",
+    "full": "/images/blog/kapitel-21.jpg",
+    "thumbnail": "/images/blog/kapitel-21-thumb.jpg"
   },
-  {
-    "chapter": 15,
-    "image": "kapitel-15.jpg",
-    "thumbnail": "thumb-kapitel-15.jpg"
+  "kapitel-22": {
+    "original": "Kapitel 22.png",
+    "full": "/images/blog/kapitel-22.jpg",
+    "thumbnail": "/images/blog/kapitel-22-thumb.jpg"
   },
-  {
-    "chapter": 16,
-    "image": "kapitel-16.jpg",
-    "thumbnail": "thumb-kapitel-16.jpg"
+  "kapitel-23": {
+    "original": "Kapitel 23.png",
+    "full": "/images/blog/kapitel-23.jpg",
+    "thumbnail": "/images/blog/kapitel-23-thumb.jpg"
   },
-  {
-    "chapter": 17,
-    "image": "kapitel-17.jpg",
-    "thumbnail": "thumb-kapitel-17.jpg"
+  "kapitel-24": {
+    "original": "Kapitel 24.png",
+    "full": "/images/blog/kapitel-24.jpg",
+    "thumbnail": "/images/blog/kapitel-24-thumb.jpg"
   },
-  {
-    "chapter": 18,
-    "image": "kapitel-18.jpg",
-    "thumbnail": "thumb-kapitel-18.jpg"
+  "kapitel-25": {
+    "original": "Kapitel 25.png",
+    "full": "/images/blog/kapitel-25.jpg",
+    "thumbnail": "/images/blog/kapitel-25-thumb.jpg"
   },
-  {
-    "chapter": 19,
-    "image": "kapitel-19.jpg",
-    "thumbnail": "thumb-kapitel-19.jpg"
+  "kapitel-26": {
+    "original": "Kapitel 26.png",
+    "full": "/images/blog/kapitel-26.jpg",
+    "thumbnail": "/images/blog/kapitel-26-thumb.jpg"
   },
-  {
-    "chapter": 20,
-    "image": "kapitel-20.jpg",
-    "thumbnail": "thumb-kapitel-20.jpg"
+  "kapitel-27": {
+    "original": "Kapitel 27.png",
+    "full": "/images/blog/kapitel-27.jpg",
+    "thumbnail": "/images/blog/kapitel-27-thumb.jpg"
   },
-  {
-    "chapter": 21,
-    "image": "kapitel-21.jpg",
-    "thumbnail": "thumb-kapitel-21.jpg"
+  "kapitel-28": {
+    "original": "Kapitel 28.png",
+    "full": "/images/blog/kapitel-28.jpg",
+    "thumbnail": "/images/blog/kapitel-28-thumb.jpg"
   },
-  {
-    "chapter": 22,
-    "image": "kapitel-22.jpg",
-    "thumbnail": "thumb-kapitel-22.jpg"
+  "kapitel-29": {
+    "original": "Kapitel 29.png",
+    "full": "/images/blog/kapitel-29.jpg",
+    "thumbnail": "/images/blog/kapitel-29-thumb.jpg"
   },
-  {
-    "chapter": 23,
-    "image": "kapitel-23.jpg",
-    "thumbnail": "thumb-kapitel-23.jpg"
+  "kapitel-3": {
+    "original": "Kapitel 3.png",
+    "full": "/images/blog/kapitel-3.jpg",
+    "thumbnail": "/images/blog/kapitel-3-thumb.jpg"
   },
-  {
-    "chapter": 24,
-    "image": "kapitel-24.jpg",
-    "thumbnail": "thumb-kapitel-24.jpg"
+  "kapitel-30": {
+    "original": "Kapitel 30.png",
+    "full": "/images/blog/kapitel-30.jpg",
+    "thumbnail": "/images/blog/kapitel-30-thumb.jpg"
   },
-  {
-    "chapter": 25,
-    "image": "kapitel-25.jpg",
-    "thumbnail": "thumb-kapitel-25.jpg"
+  "kapitel-31": {
+    "original": "Kapitel 31.png",
+    "full": "/images/blog/kapitel-31.jpg",
+    "thumbnail": "/images/blog/kapitel-31-thumb.jpg"
   },
-  {
-    "chapter": 26,
-    "image": "kapitel-26.jpg",
-    "thumbnail": "thumb-kapitel-26.jpg"
+  "kapitel-32": {
+    "original": "Kapitel 32.png",
+    "full": "/images/blog/kapitel-32.jpg",
+    "thumbnail": "/images/blog/kapitel-32-thumb.jpg"
   },
-  {
-    "chapter": 27,
-    "image": "kapitel-27.jpg",
-    "thumbnail": "thumb-kapitel-27.jpg"
+  "kapitel-33": {
+    "original": "Kapitel 33.png",
+    "full": "/images/blog/kapitel-33.jpg",
+    "thumbnail": "/images/blog/kapitel-33-thumb.jpg"
   },
-  {
-    "chapter": 28,
-    "image": "kapitel-28.jpg",
-    "thumbnail": "thumb-kapitel-28.jpg"
+  "kapitel-34": {
+    "original": "Kapitel 34.png",
+    "full": "/images/blog/kapitel-34.jpg",
+    "thumbnail": "/images/blog/kapitel-34-thumb.jpg"
   },
-  {
-    "chapter": 29,
-    "image": "kapitel-29.jpg",
-    "thumbnail": "thumb-kapitel-29.jpg"
+  "kapitel-35": {
+    "original": "Kapitel 35.png",
+    "full": "/images/blog/kapitel-35.jpg",
+    "thumbnail": "/images/blog/kapitel-35-thumb.jpg"
   },
-  {
-    "chapter": 30,
-    "image": "kapitel-30.jpg",
-    "thumbnail": "thumb-kapitel-30.jpg"
+  "kapitel-36": {
+    "original": "Kapitel 36.png",
+    "full": "/images/blog/kapitel-36.jpg",
+    "thumbnail": "/images/blog/kapitel-36-thumb.jpg"
   },
-  {
-    "chapter": 31,
-    "image": "kapitel-31.jpg",
-    "thumbnail": "thumb-kapitel-31.jpg"
+  "kapitel-37": {
+    "original": "Kapitel 37.png",
+    "full": "/images/blog/kapitel-37.jpg",
+    "thumbnail": "/images/blog/kapitel-37-thumb.jpg"
   },
-  {
-    "chapter": 32,
-    "image": "kapitel-32.jpg",
-    "thumbnail": "thumb-kapitel-32.jpg"
+  "kapitel-38": {
+    "original": "Kapitel 38.png",
+    "full": "/images/blog/kapitel-38.jpg",
+    "thumbnail": "/images/blog/kapitel-38-thumb.jpg"
   },
-  {
-    "chapter": 33,
-    "image": "kapitel-33.jpg",
-    "thumbnail": "thumb-kapitel-33.jpg"
+  "kapitel-39": {
+    "original": "Kapitel 39.png",
+    "full": "/images/blog/kapitel-39.jpg",
+    "thumbnail": "/images/blog/kapitel-39-thumb.jpg"
   },
-  {
-    "chapter": 34,
-    "image": "kapitel-34.jpg",
-    "thumbnail": "thumb-kapitel-34.jpg"
+  "kapitel-4": {
+    "original": "Kapitel 4.png",
+    "full": "/images/blog/kapitel-4.jpg",
+    "thumbnail": "/images/blog/kapitel-4-thumb.jpg"
   },
-  {
-    "chapter": 35,
-    "image": "kapitel-35.jpg",
-    "thumbnail": "thumb-kapitel-35.jpg"
+  "kapitel-40": {
+    "original": "Kapitel 40.png",
+    "full": "/images/blog/kapitel-40.jpg",
+    "thumbnail": "/images/blog/kapitel-40-thumb.jpg"
   },
-  {
-    "chapter": 36,
-    "image": "kapitel-36.jpg",
-    "thumbnail": "thumb-kapitel-36.jpg"
+  "kapitel-41": {
+    "original": "Kapitel 41.png",
+    "full": "/images/blog/kapitel-41.jpg",
+    "thumbnail": "/images/blog/kapitel-41-thumb.jpg"
   },
-  {
-    "chapter": 37,
-    "image": "kapitel-37.jpg",
-    "thumbnail": "thumb-kapitel-37.jpg"
+  "kapitel-42": {
+    "original": "Kapitel 42.png",
+    "full": "/images/blog/kapitel-42.jpg",
+    "thumbnail": "/images/blog/kapitel-42-thumb.jpg"
   },
-  {
-    "chapter": 38,
-    "image": "kapitel-38.jpg",
-    "thumbnail": "thumb-kapitel-38.jpg"
+  "kapitel-43": {
+    "original": "Kapitel 43.png",
+    "full": "/images/blog/kapitel-43.jpg",
+    "thumbnail": "/images/blog/kapitel-43-thumb.jpg"
   },
-  {
-    "chapter": 39,
-    "image": "kapitel-39.jpg",
-    "thumbnail": "thumb-kapitel-39.jpg"
+  "kapitel-44": {
+    "original": "Kapitel 44.png",
+    "full": "/images/blog/kapitel-44.jpg",
+    "thumbnail": "/images/blog/kapitel-44-thumb.jpg"
   },
-  {
-    "chapter": 40,
-    "image": "kapitel-40.jpg",
-    "thumbnail": "thumb-kapitel-40.jpg"
+  "kapitel-45": {
+    "original": "Kapitel 45.png",
+    "full": "/images/blog/kapitel-45.jpg",
+    "thumbnail": "/images/blog/kapitel-45-thumb.jpg"
   },
-  {
-    "chapter": 41,
-    "image": "kapitel-41.jpg",
-    "thumbnail": "thumb-kapitel-41.jpg"
+  "kapitel-46": {
+    "original": "Kapitel 46.png",
+    "full": "/images/blog/kapitel-46.jpg",
+    "thumbnail": "/images/blog/kapitel-46-thumb.jpg"
   },
-  {
-    "chapter": 42,
-    "image": "kapitel-42.jpg",
-    "thumbnail": "thumb-kapitel-42.jpg"
+  "kapitel-47": {
+    "original": "Kapitel 47.png",
+    "full": "/images/blog/kapitel-47.jpg",
+    "thumbnail": "/images/blog/kapitel-47-thumb.jpg"
   },
-  {
-    "chapter": 43,
-    "image": "kapitel-43.jpg",
-    "thumbnail": "thumb-kapitel-43.jpg"
+  "kapitel-48": {
+    "original": "Kapitel 48.png",
+    "full": "/images/blog/kapitel-48.jpg",
+    "thumbnail": "/images/blog/kapitel-48-thumb.jpg"
   },
-  {
-    "chapter": 44,
-    "image": "kapitel-44.jpg",
-    "thumbnail": "thumb-kapitel-44.jpg"
+  "kapitel-49": {
+    "original": "Kapitel 49.png",
+    "full": "/images/blog/kapitel-49.jpg",
+    "thumbnail": "/images/blog/kapitel-49-thumb.jpg"
+  },
+  "kapitel-5": {
+    "original": "Kapitel 5.png",
+    "full": "/images/blog/kapitel-5.jpg",
+    "thumbnail": "/images/blog/kapitel-5-thumb.jpg"
+  },
+  "kapitel-50": {
+    "original": "Kapitel 50.png",
+    "full": "/images/blog/kapitel-50.jpg",
+    "thumbnail": "/images/blog/kapitel-50-thumb.jpg"
+  },
+  "kapitel-51": {
+    "original": "Kapitel 51.png",
+    "full": "/images/blog/kapitel-51.jpg",
+    "thumbnail": "/images/blog/kapitel-51-thumb.jpg"
+  },
+  "kapitel-52": {
+    "original": "Kapitel 52.png",
+    "full": "/images/blog/kapitel-52.jpg",
+    "thumbnail": "/images/blog/kapitel-52-thumb.jpg"
+  },
+  "kapitel-53": {
+    "original": "Kapitel 53.png",
+    "full": "/images/blog/kapitel-53.jpg",
+    "thumbnail": "/images/blog/kapitel-53-thumb.jpg"
+  },
+  "kapitel-54": {
+    "original": "Kapitel 54.png",
+    "full": "/images/blog/kapitel-54.jpg",
+    "thumbnail": "/images/blog/kapitel-54-thumb.jpg"
+  },
+  "kapitel-55": {
+    "original": "Kapitel 55.png",
+    "full": "/images/blog/kapitel-55.jpg",
+    "thumbnail": "/images/blog/kapitel-55-thumb.jpg"
+  },
+  "kapitel-56": {
+    "original": "Kapitel 56.png",
+    "full": "/images/blog/kapitel-56.jpg",
+    "thumbnail": "/images/blog/kapitel-56-thumb.jpg"
+  },
+  "kapitel-57": {
+    "original": "Kapitel 57.png",
+    "full": "/images/blog/kapitel-57.jpg",
+    "thumbnail": "/images/blog/kapitel-57-thumb.jpg"
+  },
+  "kapitel-58": {
+    "original": "Kapitel 58.png",
+    "full": "/images/blog/kapitel-58.jpg",
+    "thumbnail": "/images/blog/kapitel-58-thumb.jpg"
+  },
+  "kapitel-59": {
+    "original": "Kapitel 59.png",
+    "full": "/images/blog/kapitel-59.jpg",
+    "thumbnail": "/images/blog/kapitel-59-thumb.jpg"
+  },
+  "kapitel-6": {
+    "original": "Kapitel 6.png",
+    "full": "/images/blog/kapitel-6.jpg",
+    "thumbnail": "/images/blog/kapitel-6-thumb.jpg"
+  },
+  "kapitel-60": {
+    "original": "Kapitel 60.png",
+    "full": "/images/blog/kapitel-60.jpg",
+    "thumbnail": "/images/blog/kapitel-60-thumb.jpg"
+  },
+  "kapitel-61": {
+    "original": "Kapitel 61.png",
+    "full": "/images/blog/kapitel-61.jpg",
+    "thumbnail": "/images/blog/kapitel-61-thumb.jpg"
+  },
+  "kapitel-62": {
+    "original": "Kapitel 62.png",
+    "full": "/images/blog/kapitel-62.jpg",
+    "thumbnail": "/images/blog/kapitel-62-thumb.jpg"
+  },
+  "kapitel-63": {
+    "original": "Kapitel 63.png",
+    "full": "/images/blog/kapitel-63.jpg",
+    "thumbnail": "/images/blog/kapitel-63-thumb.jpg"
+  },
+  "kapitel-64": {
+    "original": "Kapitel 64.png",
+    "full": "/images/blog/kapitel-64.jpg",
+    "thumbnail": "/images/blog/kapitel-64-thumb.jpg"
+  },
+  "kapitel-7": {
+    "original": "Kapitel 7.png",
+    "full": "/images/blog/kapitel-7.jpg",
+    "thumbnail": "/images/blog/kapitel-7-thumb.jpg"
+  },
+  "kapitel-8": {
+    "original": "Kapitel 8.png",
+    "full": "/images/blog/kapitel-8.jpg",
+    "thumbnail": "/images/blog/kapitel-8-thumb.jpg"
+  },
+  "kapitel-9": {
+    "original": "Kapitel 9.png",
+    "full": "/images/blog/kapitel-9.jpg",
+    "thumbnail": "/images/blog/kapitel-9-thumb.jpg"
   }
-]
+}

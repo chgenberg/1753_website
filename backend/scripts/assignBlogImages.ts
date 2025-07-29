@@ -1,166 +1,135 @@
 import { PrismaClient } from '@prisma/client'
-import fs from 'fs'
-import path from 'path'
+import * as fs from 'fs'
+import * as path from 'path'
 
 const prisma = new PrismaClient()
 
-// Read the image mapping file
-const mappingPath = path.join(__dirname, '../../frontend/public/images/blog/blog-images-mapping.json')
-const imageMapping = JSON.parse(fs.readFileSync(mappingPath, 'utf8'))
+interface ImageMapping {
+  [key: string]: {
+    original: string
+    full: string
+    thumbnail: string
+  }
+}
 
-// Strategy for mapping images to blog posts
-// We'll distribute the 44 images across 124 blog posts
 async function assignBlogImages() {
-  console.log('🖼️  Assigning images to blog posts...\n')
-  
   try {
-    // Get all published blog posts
-    const posts = await prisma.blogPost.findMany({
+    // Read the image mapping
+    const mappingPath = path.join(__dirname, '../../frontend/public/images/blog/blog-images-mapping.json')
+    const mappingData = fs.readFileSync(mappingPath, 'utf8')
+    const imageMapping: ImageMapping = JSON.parse(mappingData)
+    
+    // Get all available images and sort them
+    const availableImages = Object.keys(imageMapping).sort((a, b) => {
+      const aNum = parseInt(a.match(/\d+/)?.[0] || '0')
+      const bNum = parseInt(b.match(/\d+/)?.[0] || '0')
+      return aNum - bNum
+    })
+    
+    console.log(`Found ${availableImages.length} optimized images`)
+    
+    // Get all published blog posts ordered by creation date
+    const blogPosts = await prisma.blogPost.findMany({
       where: { published: true },
-      orderBy: { id: 'asc' }
+      orderBy: { createdAt: 'asc' },
+      select: { id: true, title: true, slug: true }
     })
     
-    console.log(`Found ${posts.length} published blog posts`)
-    console.log(`Have ${imageMapping.length} images available\n`)
+    console.log(`Found ${blogPosts.length} published blog posts`)
     
-    let updatedCount = 0
+    // Smart image assignment to avoid duplicates side-by-side
+    const imageAssignments: { [postId: string]: { image: string, thumbnail: string } } = {}
     
-    // Calculate distribution - cycle through images
-    for (let i = 0; i < posts.length; i++) {
-      const post = posts[i]
-      const imageIndex = i % imageMapping.length // Cycle through available images
-      const image = imageMapping[imageIndex]
+    // Create a rotation pattern that maximizes distance between same images
+    const totalImages = availableImages.length
+    const totalPosts = blogPosts.length
+    
+    // Calculate optimal spacing to avoid adjacent duplicates
+    const spacing = Math.max(3, Math.floor(totalImages / 8)) // Minimum 3 posts between same image
+    
+    for (let i = 0; i < totalPosts; i++) {
+      const post = blogPosts[i]
       
-      // Update the blog post with image paths
-      await prisma.blogPost.update({
-        where: { id: post.id },
+      // Use modulo with spacing to create a pattern that avoids adjacent duplicates
+      const imageIndex = (i * spacing) % totalImages
+      const imageKey = availableImages[imageIndex]
+      const imageData = imageMapping[imageKey]
+      
+      imageAssignments[post.id] = {
+        image: imageData.full,
+        thumbnail: imageData.thumbnail
+      }
+      
+      console.log(`Post ${i + 1}/${totalPosts}: "${post.title}" → ${imageKey}`)
+    }
+    
+    // Update all blog posts with their assigned images
+    const updatePromises = Object.entries(imageAssignments).map(([postId, images]) =>
+      prisma.blogPost.update({
+        where: { id: parseInt(postId) },
         data: {
-          image: `/images/blog/${image.image}`,
-          thumbnail: `/images/blog/${image.thumbnail}`
+          image: images.image,
+          thumbnail: images.thumbnail
         }
       })
+    )
+    
+    await Promise.all(updatePromises)
+    
+    console.log(`\n✅ Successfully assigned images to ${blogPosts.length} blog posts`)
+    console.log(`📸 Used ${availableImages.length} different images with smart rotation`)
+    console.log(`🔄 Spacing: minimum ${spacing} posts between same image`)
+    
+    // Generate assignment summary
+    const assignmentSummary = blogPosts.map((post, index) => {
+      const imageIndex = (index * spacing) % totalImages
+      const imageKey = availableImages[imageIndex]
+      return {
+        post: post.title,
+        slug: post.slug,
+        image: imageKey,
+        position: index + 1
+      }
+    })
+    
+    // Save assignment summary for reference
+    const summaryPath = path.join(__dirname, '../data/blog-image-assignments.json')
+    fs.writeFileSync(summaryPath, JSON.stringify(assignmentSummary, null, 2))
+    console.log(`📋 Assignment summary saved to: ${summaryPath}`)
+    
+    // Verify no adjacent duplicates
+    const adjacentCheck = []
+    for (let i = 0; i < blogPosts.length - 1; i++) {
+      const currentImageIndex = (i * spacing) % totalImages
+      const nextImageIndex = ((i + 1) * spacing) % totalImages
       
-      updatedCount++
-      
-      // Log progress every 10 posts
-      if (updatedCount % 10 === 0) {
-        console.log(`✅ Updated ${updatedCount} posts...`)
+      if (currentImageIndex === nextImageIndex) {
+        adjacentCheck.push(`Posts ${i + 1} and ${i + 2} have same image`)
       }
     }
     
-    console.log(`\n🎉 Successfully assigned images to ${updatedCount} blog posts!`)
-    
-    // Show some examples
-    console.log('\n📸 Sample assignments:')
-    const samples = await prisma.blogPost.findMany({
-      take: 5,
-      where: { image: { not: null } },
-      select: { title: true, image: true, thumbnail: true }
-    })
-    
-    samples.forEach(post => {
-      console.log(`\n${post.title}`)
-      console.log(`  Image: ${post.image}`)
-      console.log(`  Thumb: ${post.thumbnail}`)
-    })
+    if (adjacentCheck.length === 0) {
+      console.log(`✅ No adjacent duplicate images found`)
+    } else {
+      console.warn(`⚠️  Found ${adjacentCheck.length} adjacent duplicates:`)
+      adjacentCheck.forEach(warning => console.warn(`   ${warning}`))
+    }
     
   } catch (error) {
-    console.error('❌ Error assigning images:', error)
+    console.error('Error assigning blog images:', error)
+    throw error
   } finally {
     await prisma.$disconnect()
   }
 }
 
-// Alternative strategy: Assign specific images to posts based on content/keywords
-async function assignImagesByContent() {
-  console.log('🎯 Assigning images based on content matching...\n')
-  
-  // Define keyword mappings for more intelligent assignment
-  const contentMappings = [
-    { keywords: ['cbd', 'cannabidiol'], preferredImages: [1, 5, 10] },
-    { keywords: ['cbg', 'cannabigerol'], preferredImages: [2, 6, 11] },
-    { keywords: ['hud', 'skin', 'hudvård'], preferredImages: [3, 7, 12, 15] },
-    { keywords: ['endocannabinoid', 'ecs'], preferredImages: [4, 8, 13] },
-    { keywords: ['vatten', 'water', 'fukt'], preferredImages: [20, 25, 30] },
-    { keywords: ['inflammation', 'rosacea', 'akne'], preferredImages: [16, 21, 26] },
-    { keywords: ['naturlig', 'natural', 'växt'], preferredImages: [35, 40, 42] },
-    // Add more mappings as needed
-  ]
-  
-  try {
-    const posts = await prisma.blogPost.findMany({
-      where: { published: true }
-    })
-    
-    let updatedCount = 0
-    const usedImages = new Set<number>()
-    
-    for (const post of posts) {
-      const contentLower = (post.title + ' ' + post.content).toLowerCase()
-      let selectedImageIndex = -1
-      
-      // Try to find a matching image based on keywords
-      for (const mapping of contentMappings) {
-        if (mapping.keywords.some(keyword => contentLower.includes(keyword))) {
-          // Find an unused preferred image
-          for (const imgIndex of mapping.preferredImages) {
-            if (!usedImages.has(imgIndex - 1) && imageMapping[imgIndex - 1]) {
-              selectedImageIndex = imgIndex - 1
-              usedImages.add(selectedImageIndex)
-              break
-            }
-          }
-          if (selectedImageIndex !== -1) break
-        }
-      }
-      
-      // If no match found, use next available image
-      if (selectedImageIndex === -1) {
-        for (let i = 0; i < imageMapping.length; i++) {
-          if (!usedImages.has(i)) {
-            selectedImageIndex = i
-            usedImages.add(i)
-            break
-          }
-        }
-      }
-      
-      // If still no image (more posts than images), cycle
-      if (selectedImageIndex === -1) {
-        selectedImageIndex = updatedCount % imageMapping.length
-      }
-      
-      const image = imageMapping[selectedImageIndex]
-      
-      await prisma.blogPost.update({
-        where: { id: post.id },
-        data: {
-          image: `/images/blog/${image.image}`,
-          thumbnail: `/images/blog/${image.thumbnail}`
-        }
-      })
-      
-      updatedCount++
-    }
-    
-    console.log(`\n✅ Successfully assigned images to ${updatedCount} blog posts using content matching!`)
-    
-  } catch (error) {
-    console.error('❌ Error:', error)
-  } finally {
-    await prisma.$disconnect()
-  }
-}
-
-// Main execution
-async function main() {
-  const strategy = process.argv[2] || 'simple'
-  
-  if (strategy === 'content') {
-    await assignImagesByContent()
-  } else {
-    await assignBlogImages()
-  }
-}
-
-main() 
+// Run the script
+assignBlogImages()
+  .then(() => {
+    console.log('Blog image assignment completed successfully!')
+    process.exit(0)
+  })
+  .catch((error) => {
+    console.error('Script failed:', error)
+    process.exit(1)
+  }) 
