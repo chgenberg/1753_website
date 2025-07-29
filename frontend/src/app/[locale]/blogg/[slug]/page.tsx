@@ -28,6 +28,33 @@ async function getPost(slug: string) {
   return res.json();
 }
 
+// Function to format blog content and ensure H2 headings are bold
+function formatBlogContent(content: string): string {
+  if (!content) return '';
+  
+  // Split into lines and process each line
+  const lines = content.split('\n');
+  const processedLines = lines.map(line => {
+    const trimmedLine = line.trim();
+    
+    // Check if line starts with "Steg" followed by number/colon (case insensitive)
+    const stepRegex = /^steg\s*\d+[\:\.]?\s*/i;
+    
+    if (stepRegex.test(trimmedLine)) {
+      // Remove any existing HTML tags and format as H2
+      const cleanText = trimmedLine.replace(/<[^>]*>/g, '').replace(stepRegex, (match) => {
+        return match.charAt(0).toUpperCase() + match.slice(1).toLowerCase();
+      });
+      
+      return `<h2 class="text-2xl font-bold mb-4 mt-8 text-gray-900">${cleanText}</h2>`;
+    }
+    
+    return line;
+  });
+  
+  return processedLines.join('\n');
+}
+
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
@@ -90,6 +117,9 @@ export default async function BlogPostPage({ params }: Props) {
       </>
     );
   }
+
+  // Format the content before rendering
+  const formattedContent = formatBlogContent(post.content);
 
   return (
     <>
@@ -165,7 +195,7 @@ export default async function BlogPostPage({ params }: Props) {
               )}
               {/* Clean and render content */}
               <div dangerouslySetInnerHTML={{ 
-                __html: post.content
+                __html: formattedContent
                   // Remove any escaped quotes and HTML entities
                   .replace(/&quot;/g, '"')
                   .replace(/&#39;/g, "'")
