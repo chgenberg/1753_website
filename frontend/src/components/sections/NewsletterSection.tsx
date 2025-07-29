@@ -83,17 +83,17 @@ export default function NewsletterSection({
     setIsSubmitting(true)
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002'}/api/newsletter/subscribe`, {
+      // Subscribe to Drip
+      const response = await fetch('/api/newsletter', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           email: formData.email,
-          firstName: formData.firstName,
-          skinType: formData.skinType,
-          interests: formData.interests,
-          source: variant === 'blog' ? 'blog' : 'newsletter_section'
+          tags: ['newsletter', 'website-signup'],
+          source: 'newsletter-section',
+          workflow: 'nyhetsbrev'
         }),
       })
 

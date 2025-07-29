@@ -473,7 +473,8 @@ export default function QuizResults({
   const [skinScore, setSkinScore] = useState(0)
   const [showRegisterModal, setShowRegisterModal] = useState(false)
   const [showScoreExplanation, setShowScoreExplanation] = useState(false)
-  const { addToCart } = useCart()
+  const { addToCart, setUserEmail, setUserName } = useCart()
+  const [isVisible, setIsVisible] = useState(false)
   
      // Quiz data (keeping this for register modal)
    const quizData = {
@@ -482,6 +483,16 @@ export default function QuizResults({
      userName: userName || '',
      userEmail: userEmail || ''
    }
+
+  // Set user info in cart context for abandoned cart tracking
+  useEffect(() => {
+    if (userEmail) {
+      setUserEmail(userEmail)
+    }
+    if (userName) {
+      setUserName(userName)
+    }
+  }, [userEmail, userName, setUserEmail, setUserName])
 
   const tabs = [
     { id: 'summary' as TabType, label: 'Översikt', icon: <Sparkles className="w-4 h-4" /> },

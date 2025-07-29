@@ -18,6 +18,8 @@ interface CartContextType {
   shipping: number
   tax: number
   total: number
+  setUserEmail: (email: string) => void
+  setUserName: (name: string) => void
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
@@ -37,6 +39,9 @@ interface CartProviderProps {
 export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>([])
   const [isOpen, setIsOpen] = useState(false)
+  const [userEmail, setUserEmailState] = useState<string>('')
+  const [userName, setUserNameState] = useState<string>('')
+  const [abandonedCartTimer, setAbandonedCartTimer] = useState<NodeJS.Timeout | null>(null)
 
   // Load cart from localStorage on mount
   useEffect(() => {
@@ -48,12 +53,82 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         console.error('Error loading cart from localStorage:', error)
       }
     }
+
+    // Load user info from localStorage
+    const savedEmail = localStorage.getItem('userEmail')
+    const savedName = localStorage.getItem('userName')
+    if (savedEmail) setUserEmailState(savedEmail)
+    if (savedName) setUserNameState(savedName)
   }, [])
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(items))
-  }, [items])
+    
+    // Handle abandoned cart tracking
+    if (items.length > 0 && userEmail) {
+      // Clear existing timer
+      if (abandonedCartTimer) {
+        clearTimeout(abandonedCartTimer)
+      }
+      
+      // Set new timer for 1 hour (3600000 ms)
+      const timer = setTimeout(() => {
+        triggerAbandonedCartWorkflow()
+      }, 3600000) // 1 hour
+      
+      setAbandonedCartTimer(timer)
+    } else if (abandonedCartTimer) {
+      // Clear timer if cart is empty or no email
+      clearTimeout(abandonedCartTimer)
+      setAbandonedCartTimer(null)
+    }
+
+    return () => {
+      if (abandonedCartTimer) {
+        clearTimeout(abandonedCartTimer)
+      }
+    }
+  }, [items, userEmail])
+
+  const triggerAbandonedCartWorkflow = async () => {
+    if (!userEmail || items.length === 0) return
+
+    try {
+      await fetch('/api/abandoned-cart', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: userEmail,
+          userName: userName,
+          cartItems: items.map(item => ({
+            id: item.productId,
+            name: item.product.name,
+            quantity: item.quantity,
+            price: item.price,
+            image: item.product.images?.[0] || ''
+          })),
+          cartTotal: total
+        }),
+      })
+      
+      console.log('Abandoned cart workflow triggered for:', userEmail)
+    } catch (error) {
+      console.error('Failed to trigger abandoned cart workflow:', error)
+    }
+  }
+
+  const setUserEmail = (email: string) => {
+    setUserEmailState(email)
+    localStorage.setItem('userEmail', email)
+  }
+
+  const setUserName = (name: string) => {
+    setUserNameState(name)
+    localStorage.setItem('userName', name)
+  }
 
   const addToCart = (product: Product, quantity: number = 1, variantId?: string) => {
     setItems(prevItems => {
@@ -65,7 +140,6 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         // Update quantity if item already exists
         const updatedItems = [...prevItems]
         updatedItems[existingItemIndex].quantity += quantity
-        // Removed toast notification - cart drawer provides feedback
         return updatedItems
       } else {
         // Add new item
@@ -81,7 +155,6 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
             slug: product.slug
           }
         }
-        // Removed toast notification - cart drawer provides feedback
         return [...prevItems, newItem]
       }
     })
@@ -93,7 +166,6 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       const filteredItems = prevItems.filter(
         item => !(item.productId === productId && item.variantId === variantId)
       )
-      // Removed toast notification
       return filteredItems
     })
   }
@@ -117,7 +189,11 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
   const clearCart = () => {
     setItems([])
-    // Removed toast notification
+    // Clear abandoned cart timer when cart is cleared
+    if (abandonedCartTimer) {
+      clearTimeout(abandonedCartTimer)
+      setAbandonedCartTimer(null)
+    }
   }
 
   const openCart = () => setIsOpen(true)
@@ -145,7 +221,9 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     subtotal,
     shipping,
     tax,
-    total
+    total,
+    setUserEmail,
+    setUserName
   }
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>

@@ -51,7 +51,8 @@ export default function EBookPage() {
         body: JSON.stringify({
           email: email.trim(),
           tags: ['ebook-download'],
-          source: 'ebook-page'
+          source: 'ebook-page',
+          workflow: 'ebook-download'
         }),
       })
 
