@@ -4,7 +4,7 @@ import { HeroSection } from '@/components/sections/HeroSection'
 // import { ProductsSectionSafe } from '@/components/sections/ProductsSectionSafe'
 import { AboutSection } from '@/components/sections/AboutSection'
 import { BlogSection } from '@/components/sections/BlogSection'
-import { ReviewsSection } from '@/components/sections/ReviewsSection'
+// import { ReviewsSection } from '@/components/sections/ReviewsSection'
 import { GallerySection } from '@/components/sections/GallerySection'
 import NewsletterSection from '@/components/sections/NewsletterSection'
 import { EbookSection } from '@/components/sections/EbookSection'
@@ -63,7 +63,6 @@ export default function HomePage() {
       <main>
         <HeroSection />
         <EmergencyProductsSection />
-        <ReviewsSection />
         <EbookSection />
         <AboutSection />
         <GallerySection />
