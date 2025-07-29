@@ -213,7 +213,7 @@ router.post('/', async (req, res) => {
 
     const discountCode = await prisma.discountCode.create({
       data: {
-        ...validatedData,
+        ...(validatedData as any),
         code: validatedData.code.toUpperCase(), // Always store codes in uppercase
         validFrom: validatedData.validFrom ? new Date(validatedData.validFrom) : new Date(),
         validUntil: validatedData.validUntil ? new Date(validatedData.validUntil) : null

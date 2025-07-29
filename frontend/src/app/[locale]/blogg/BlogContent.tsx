@@ -48,7 +48,7 @@ export default function BlogContent({ posts }: BlogContentProps) {
     // Use a spacing algorithm to avoid adjacent duplicates
     const spacing = Math.max(3, Math.floor(portraitImages.length / 8))
     const imageIndex = (index * spacing) % portraitImages.length
-    return `/Bilder_kvinnor boken_2025/${portraitImages[imageIndex]}`
+    return `/Bilder_kvinnor%20boken_2025/${portraitImages[imageIndex]}`
   }
 
   // Extract unique categories and tags
