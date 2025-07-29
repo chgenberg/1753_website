@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import Link from 'next/link';
+import Image from 'next/image';
 
 type Props = {
   params: Promise<{ slug: string; locale: string }>;
@@ -137,12 +138,15 @@ export default async function BlogPostPage({ params }: Props) {
             </header>
 
             {/* Featured Image (if available) */}
-            {post.featuredImage && (
+            {(post as any).image && (
               <div className="mb-12 rounded-2xl overflow-hidden shadow-lg">
-                <img 
-                  src={post.featuredImage} 
+                <Image 
+                  src={(post as any).image} 
                   alt={post.title}
+                  width={1200}
+                  height={800}
                   className="w-full h-auto"
+                  priority
                 />
               </div>
             )}
