@@ -205,18 +205,18 @@ export default function BlogContent({ posts }: BlogContentProps) {
                     transition={{ duration: 0.6, delay: Math.min(index * 0.1, 0.3) }}
                     className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer h-full flex flex-col"
                   >
-                    <div className="relative h-48 bg-gray-200 overflow-hidden">
+                    <div className="relative h-64 bg-gradient-to-b from-gray-50 to-gray-100 overflow-hidden">
                       {(post as BlogPostWithImages).thumbnail ? (
                         <Image
                           src={(post as BlogPostWithImages).thumbnail!}
                           alt={post.title}
                           width={600}
                           height={400}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
                         />
                       ) : (
                         /* Gradient placeholder with category-based colors */
-                        <div className={`w-full h-full flex items-center justify-center ${
+                        <div className={`w-full h-full flex items-center justify-center p-4 ${
                           post.category === 'Cannabinoider' ? 'bg-gradient-to-br from-[#F5F3F0]0 to-[#6B5D54]' :
                           post.category === 'Endocannabinoidsystem' ? 'bg-gradient-to-br from-blue-500 to-indigo-600' :
                           post.category === 'Medicinska Svampar' ? 'bg-gradient-to-br from-amber-500 to-orange-600' :

@@ -137,21 +137,7 @@ export default async function BlogPostPage({ params }: Props) {
               </div>
             </header>
 
-            {/* Featured Image (if available) */}
-            {(post as any).image && (
-              <div className="mb-12 rounded-2xl overflow-hidden shadow-lg">
-                <Image 
-                  src={(post as any).image} 
-                  alt={post.title}
-                  width={1200}
-                  height={800}
-                  className="w-full h-auto"
-                  priority
-                />
-              </div>
-            )}
-
-            {/* Article Content */}
+            {/* Article Content with Featured Image */}
             <div className="prose prose-lg prose-gray max-w-none overflow-hidden blog-content
                           prose-headings:font-bold prose-headings:text-gray-900
                           prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6
@@ -162,6 +148,21 @@ export default async function BlogPostPage({ params }: Props) {
                           prose-strong:text-gray-900 prose-strong:font-semibold
                           prose-blockquote:border-l-4 prose-blockquote:border-[#4A3428] prose-blockquote:pl-6 prose-blockquote:italic
                           [&_*]:break-words [&_a]:overflow-wrap-anywhere [&_span]:break-all">
+              {/* Featured Image floating to the left */}
+              {(post as any).image && (
+                <div className="float-none sm:float-left mr-0 sm:mr-8 mb-6 w-full sm:w-80 md:w-96">
+                  <div className="rounded-lg overflow-hidden shadow-md bg-gradient-to-b from-gray-50 to-gray-100 p-2">
+                    <Image 
+                      src={(post as any).image} 
+                      alt={post.title}
+                      width={400}
+                      height={300}
+                      className="w-full h-auto object-contain"
+                      priority
+                    />
+                  </div>
+                </div>
+              )}
               {/* Clean and render content */}
               <div dangerouslySetInnerHTML={{ 
                 __html: post.content
