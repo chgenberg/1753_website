@@ -1,33 +1,128 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { Download, FileText, ExternalLink } from 'lucide-react'
+import { Download, FileText, Mail, Check, Sparkles, Shield } from 'lucide-react'
 
 export default function EBookPage() {
-  useEffect(() => {
-    // Check if iframe fails to load and show desktop fallback
-    const timer = setTimeout(() => {
-      const iframe = document.querySelector('iframe[title="Weed Your Skin E-bok"]') as HTMLIFrameElement;
-      const desktopFallback = document.getElementById('desktop-pdf-fallback') as HTMLElement;
-      
-      if (iframe && desktopFallback) {
-        try {
-          // Try to access iframe content - if it fails, show fallback
-          iframe.contentDocument;
-        } catch (error) {
-          // Cross-origin or X-Frame-Options blocked the iframe
-          iframe.style.display = 'none';
-          desktopFallback.style.display = 'flex';
-        }
-      }
-    }, 3000); // Wait 3 seconds for iframe to load
+  const [email, setEmail] = useState('')
+  const [privacyAccepted, setPrivacyAccepted] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitted, setIsSubmitted] = useState(false)
+  const [errors, setErrors] = useState<{email?: string, privacy?: string}>({})
 
-    return () => clearTimeout(timer);
-  }, []);
+  const validateEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    const newErrors: {email?: string, privacy?: string} = {}
+
+    if (!email || email.trim() === '') {
+      newErrors.email = 'E-postadress krävs'
+    } else if (!validateEmail(email)) {
+      newErrors.email = 'Ogiltig e-postadress'
+    }
+
+    if (!privacyAccepted) {
+      newErrors.privacy = 'Du måste acceptera integritetspolicyn'
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors)
+      return
+    }
+
+    setErrors({})
+    setIsSubmitting(true)
+
+    try {
+      // Subscribe to Drip
+      const response = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email.trim(),
+          tags: ['ebook-download'],
+          source: 'ebook-page'
+        }),
+      })
+
+      if (response.ok) {
+        setIsSubmitted(true)
+        // Trigger PDF download
+        const link = document.createElement('a')
+        link.href = '/e-book_weedyourskin_backup.pdf'
+        link.download = 'Weed_Your_Skin_1753.pdf'
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      } else {
+        throw new Error('Failed to subscribe')
+      }
+    } catch (error) {
+      console.error('Error:', error)
+      setErrors({ email: 'Ett fel uppstod. Försök igen.' })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  if (isSubmitted) {
+    return (
+      <div className="min-h-screen bg-[#FAF8F5]">
+        <Header />
+        
+        <main className="pt-20 pb-20">
+          <div className="max-w-4xl mx-auto px-4 text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="bg-white rounded-2xl shadow-xl p-12"
+            >
+              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Check className="w-10 h-10 text-green-600" />
+              </div>
+              
+              <h1 className="text-3xl font-bold text-gray-900 mb-4">
+                Tack för din prenumeration!
+              </h1>
+              
+              <p className="text-lg text-gray-700 mb-8">
+                E-boken har skickats till din e-post och nedladdningen startade automatiskt. 
+                Om nedladdningen inte startade, klicka på knappen nedan.
+              </p>
+
+              <div className="space-y-4">
+                <a
+                  href="/e-book_weedyourskin_backup.pdf"
+                  download="Weed_Your_Skin_1753.pdf"
+                  className="inline-flex items-center px-8 py-4 bg-[#4A3428] text-white rounded-full font-medium hover:bg-[#3A2418] transition-colors duration-300 shadow-lg"
+                >
+                  <Download className="w-5 h-5 mr-2" />
+                  Ladda ner e-boken igen
+                </a>
+                
+                <p className="text-sm text-gray-600">
+                  Du kommer också att få värdefulla hudvårdstips och erbjudanden i din inkorg.
+                </p>
+              </div>
+            </motion.div>
+          </div>
+        </main>
+        
+        <Footer />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-[#FAF8F5]">
@@ -52,31 +147,12 @@ export default function EBookPage() {
                   Upptäck hemligheten bakom frisk och strålande hud med vår omfattande guide 
                   om CBD-baserad hudvård och hudens ekosystem.
                 </p>
-                
-                {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start items-center mb-8">
-                <a
-                  href="/e-book_weedyourskin_backup.pdf"
-                  download="Weed_Your_Skin_1753.pdf"
-                  className="inline-flex items-center px-8 py-4 bg-[#4A3428] text-white rounded-full font-medium hover:bg-[#3A2418] transition-colors duration-300 shadow-lg"
-                >
-                  <Download className="w-5 h-5 mr-2" />
-                  Ladda ner e-boken (PDF)
-                </a>
-                <button
-                  onClick={() => window.open('/e-book_weedyourskin_backup.pdf', '_blank')}
-                  className="inline-flex items-center px-8 py-4 bg-white text-[#4A3428] rounded-full font-medium hover:bg-gray-50 transition-colors duration-300 shadow-lg border border-[#4A3428]"
-                >
-                  <ExternalLink className="w-5 h-5 mr-2" />
-                  Öppna i ny flik
-                </button>
-              </div>
 
                 {/* Features */}
-                <div className="grid grid-cols-3 gap-4 mt-12">
+                <div className="grid grid-cols-3 gap-4 mb-8">
                   <div className="text-center">
                     <FileText className="w-10 h-10 text-[#4A3428] mx-auto mb-2" />
-                    <p className="text-sm font-medium text-gray-900">Omfattande Guide</p>
+                    <p className="text-sm font-medium text-gray-900">300+ Sidor</p>
                   </div>
                   <div className="text-center">
                     <svg className="w-10 h-10 text-[#4A3428] mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -88,6 +164,29 @@ export default function EBookPage() {
                     <Download className="w-10 h-10 text-[#4A3428] mx-auto mb-2" />
                     <p className="text-sm font-medium text-gray-900">Direkt Nedladdning</p>
                   </div>
+                </div>
+
+                {/* What's Inside */}
+                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 mb-8">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Vad du får:</h3>
+                  <ul className="space-y-2 text-gray-700">
+                    <li className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-green-600 flex-shrink-0" />
+                      Komplett guide till CBD-hudvård
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-green-600 flex-shrink-0" />
+                      Vetenskapliga studier och referenser
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-green-600 flex-shrink-0" />
+                      Praktiska hudvårdstips
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-green-600 flex-shrink-0" />
+                      Ingrediensguide och recept
+                    </li>
+                  </ul>
                 </div>
               </motion.div>
 
@@ -115,7 +214,7 @@ export default function EBookPage() {
                     
                     {/* Badge */}
                     <div className="absolute -top-4 -right-4 bg-[#4A3428] text-white rounded-full px-6 py-3 shadow-lg transform rotate-12">
-                      <span className="text-sm font-bold">200+ sidor</span>
+                      <span className="text-sm font-bold">300+ sidor</span>
                     </div>
                   </div>
                 </div>
@@ -124,122 +223,98 @@ export default function EBookPage() {
           </div>
         </section>
 
-        {/* PDF Viewer Section */}
+        {/* Download Form Section */}
         <section className="pb-20 px-4 md:px-8">
-          <div className="max-w-6xl mx-auto">
+          <div className="max-w-2xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
               className="bg-white rounded-2xl shadow-xl overflow-hidden"
             >
-              <div className="p-6 border-b border-gray-200 bg-gray-50">
-                <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-                  <h2 className="text-2xl font-semibold text-gray-900">Förhandsgranska e-boken</h2>
-                  <a
-                    href="/e-book_weedyourskin_backup.pdf"
-                    download="Weed_Your_Skin_1753.pdf"
-                    className="inline-flex items-center px-6 py-2 bg-[#4A3428] text-white rounded-full text-sm font-medium hover:bg-[#3A2418] transition-colors duration-300"
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    Ladda ner PDF
-                  </a>
-                </div>
-              </div>
-              
-              {/* PDF Embed with fallback */}
-              <div className="relative bg-gray-100" style={{ height: '800px' }}>
-                <iframe
-                  src="/e-book_weedyourskin_backup.pdf#toolbar=1&navpanes=0&scrollbar=1"
-                  className="w-full h-full"
-                  title="Weed Your Skin E-bok"
-                  loading="lazy"
-                  onError={() => {
-                    // Hide iframe and show fallback on error
-                    const iframe = document.querySelector('iframe[title="Weed Your Skin E-bok"]') as HTMLElement;
-                    const fallback = document.getElementById('pdf-fallback') as HTMLElement;
-                    if (iframe && fallback) {
-                      iframe.style.display = 'none';
-                      fallback.style.display = 'flex';
-                    }
-                  }}
-                />
-                
-                {/* Fallback content - always visible on mobile, hidden on desktop until error */}
-                <div 
-                  id="pdf-fallback" 
-                  className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 md:hidden"
-                >
-                  <div className="text-center p-8 bg-white rounded-xl shadow-lg max-w-md mx-auto">
-                    <FileText className="w-20 h-20 text-[#4A3428] mx-auto mb-6" />
-                    <h3 className="text-xl font-bold text-gray-900 mb-4">
-                      Ladda ner e-boken
-                    </h3>
-                    <p className="text-gray-700 mb-6">
-                      För bästa läsupplevelse, ladda ner e-boken direkt till din enhet.
-                    </p>
-                    <div className="space-y-3">
-                      <a
-                        href="/e-book_weedyourskin_backup.pdf"
-                        download="Weed_Your_Skin_1753.pdf"
-                        className="block w-full px-6 py-3 bg-[#4A3428] text-white rounded-lg text-sm font-medium hover:bg-[#3A2418] transition-colors duration-300"
-                      >
-                        <Download className="w-4 h-4 inline mr-2" />
-                        Ladda ner PDF (14 MB)
-                      </a>
-                      <button
-                        onClick={() => window.open('/e-book_weedyourskin_backup.pdf', '_blank')}
-                        className="block w-full px-6 py-3 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors duration-300"
-                      >
-                        <ExternalLink className="w-4 h-4 inline mr-2" />
-                        Öppna i ny flik
-                      </button>
-                    </div>
+              <div className="p-8">
+                <div className="text-center mb-8">
+                  <div className="w-16 h-16 bg-[#4A3428]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Sparkles className="w-8 h-8 text-[#4A3428]" />
                   </div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                    Ladda ner din kostnadsfria e-bok
+                  </h2>
+                  <p className="text-gray-600">
+                    Ange din e-postadress nedan för att få direkt tillgång till e-boken
+                  </p>
                 </div>
 
-                {/* Desktop error fallback (hidden by default) */}
-                <div 
-                  id="desktop-pdf-fallback" 
-                  className="absolute inset-0 hidden items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100"
-                >
-                  <div className="text-center p-12 bg-white rounded-xl shadow-lg max-w-lg mx-auto">
-                    <FileText className="w-24 h-24 text-[#4A3428] mx-auto mb-6" />
-                    <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                      E-boken kunde inte visas
-                    </h3>
-                    <p className="text-gray-700 mb-6">
-                      PDF:en kan inte visas direkt i webbläsaren på grund av säkerhetsinställningar.
-                      Ladda ner den istället för att läsa den lokalt.
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-3">
-                      <a
-                        href="/e-book_weedyourskin_backup.pdf"
-                        download="Weed_Your_Skin_1753.pdf"
-                        className="flex-1 px-6 py-3 bg-[#4A3428] text-white rounded-lg font-medium hover:bg-[#3A2418] transition-colors duration-300 text-center"
-                      >
-                        <Download className="w-4 h-4 inline mr-2" />
-                        Ladda ner PDF
-                      </a>
-                      <button
-                        onClick={() => window.open('/e-book_weedyourskin_backup.pdf', '_blank')}
-                        className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors duration-300"
-                      >
-                        <ExternalLink className="w-4 h-4 inline mr-2" />
-                        Försök öppna
-                      </button>
-                    </div>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  {/* Email Input */}
+                  <div>
+                    <label className="flex items-center text-gray-700 text-sm font-medium mb-2">
+                      <Mail className="w-4 h-4 mr-2 text-[#4A3428]" />
+                      Din e-postadress
+                    </label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="din@email.com"
+                      className={`w-full px-4 py-3 bg-gray-50 border ${errors.email ? 'border-red-400' : 'border-gray-200'} rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#4A3428] focus:bg-white transition-colors`}
+                      disabled={isSubmitting}
+                    />
+                    {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
                   </div>
-                </div>
+
+                  {/* Privacy Policy */}
+                  <div>
+                    <label className="flex items-start space-x-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={privacyAccepted}
+                        onChange={(e) => setPrivacyAccepted(e.target.checked)}
+                        className="mt-1 h-4 w-4 text-[#4A3428] focus:ring-[#4A3428] border-gray-300 rounded"
+                        disabled={isSubmitting}
+                      />
+                      <div className="flex-1">
+                        <div className="text-gray-600 text-sm">
+                          <Shield className="w-4 h-4 inline mr-1" />
+                          Jag godkänner{' '}
+                          <a href="/integritetspolicy" target="_blank" className="text-[#4A3428] hover:text-[#3A2418] underline">
+                            integritetspolicyn
+                          </a>{' '}
+                          och samtycker till att få värdefulla hudvårdstips och erbjudanden via e-post
+                        </div>
+                        {errors.privacy && <p className="text-red-500 text-sm mt-1">{errors.privacy}</p>}
+                      </div>
+                    </label>
+                  </div>
+
+                  {/* Submit Button */}
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full flex items-center justify-center px-8 py-4 bg-[#4A3428] text-white rounded-full font-medium hover:bg-[#3A2418] transition-colors duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                        Skickar...
+                      </>
+                    ) : (
+                      <>
+                        <Download className="w-5 h-5 mr-2" />
+                        Ladda ner e-boken gratis
+                      </>
+                    )}
+                  </button>
+
+                  {/* Security Note */}
+                  <div className="text-center">
+                    <p className="text-xs text-gray-500">
+                      🔒 Vi skickar aldrig spam och du kan avregistrera dig när som helst
+                    </p>
+                  </div>
+                </form>
               </div>
             </motion.div>
-
-            {/* Additional Info */}
-            <div className="mt-8 text-center">
-              <p className="text-gray-600">
-                <span className="font-medium">Tips:</span> Du kan zooma in och ut i PDF:en med Ctrl/Cmd + och - tangenterna.
-              </p>
-            </div>
           </div>
         </section>
       </main>
