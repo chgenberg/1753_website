@@ -70,12 +70,20 @@ export function BlogSection() {
     fetchPosts()
   }, [])
 
-  // Images for blog posts with responsive versions
+  // Images for blog posts with responsive versions - using different images for variety
   const blogImages = [
-    { desktop: '/Porträtt_hemsidan/kapitel-22-desktop.png', mobile: '/Porträtt_hemsidan/kapitel-22.png' },
-    { desktop: '/Porträtt_hemsidan/kapitel-24-desktop.png', mobile: '/Porträtt_hemsidan/kapitel-24.png' },
-    { desktop: '/Porträtt_hemsidan/kapitel-37-desktop.png', mobile: '/Porträtt_hemsidan/kapitel-37.png' }
+    { desktop: '/images/blog/kapitel-22.jpg', mobile: '/images/blog/kapitel-22-thumb.jpg' },
+    { desktop: '/images/blog/kapitel-37.jpg', mobile: '/images/blog/kapitel-37-thumb.jpg' },
+    { desktop: '/images/blog/kapitel-43.jpg', mobile: '/images/blog/kapitel-43-thumb.jpg' },
+    { desktop: '/images/blog/kapitel-24.jpg', mobile: '/images/blog/kapitel-24-thumb.jpg' },
+    { desktop: '/images/blog/kapitel-32.jpg', mobile: '/images/blog/kapitel-32-thumb.jpg' },
+    { desktop: '/images/blog/kapitel-29.jpg', mobile: '/images/blog/kapitel-29-thumb.jpg' }
   ]
+
+  // Get image for specific post index with rotation to avoid adjacent duplicates
+  const getImageForPost = (index: number) => {
+    return blogImages[index % blogImages.length]
+  }
 
   if (loading) {
     return (
@@ -118,22 +126,31 @@ export function BlogSection() {
               <Link href={`/blogg/${post.slug}`} className="block">
                 <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
                   {/* Image */}
-                  <div className="relative h-64 overflow-hidden">
+                  <div className="relative h-64 overflow-hidden bg-gray-100">
                     {/* Desktop Image */}
                     <Image
-                      src={blogImages[index]?.desktop || blogImages[0].desktop}
+                      src={getImageForPost(index)?.desktop || blogImages[0].desktop}
                       alt={post.title}
                       fill
                       sizes="(max-width: 768px) 100vw, 33vw"
                       className="object-cover group-hover:scale-105 transition-transform duration-500 hidden md:block"
+                      onError={(e) => {
+                        console.warn(`Failed to load blog image: ${getImageForPost(index)?.desktop}`)
+                        // Fallback to a default image or hide if needed
+                      }}
+                      priority={index === 0} // Only prioritize first image
                     />
                     {/* Mobile Image */}
                     <Image
-                      src={blogImages[index]?.mobile || blogImages[0].mobile}
+                      src={getImageForPost(index)?.mobile || blogImages[0].mobile}
                       alt={post.title}
                       fill
                       sizes="100vw"
                       className="object-cover group-hover:scale-105 transition-transform duration-500 md:hidden"
+                      onError={(e) => {
+                        console.warn(`Failed to load blog thumbnail: ${getImageForPost(index)?.mobile}`)
+                      }}
+                      priority={index === 0} // Only prioritize first image
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
