@@ -6,6 +6,7 @@ import { Toaster } from 'react-hot-toast'
 import { CartProvider } from '@/contexts/CartContext'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { CartDrawer } from '@/components/cart/CartDrawer'
+import CookieBanner from '@/components/cookies/CookieBanner'
 import './globals.css'
 
 const inter = Inter({ 
@@ -98,6 +99,7 @@ export default async function RootLayout({
             <CartProvider>
               {children}
               <CartDrawer />
+              <CookieBanner />
               <Toaster 
                 position="top-right"
                 toastOptions={{
