@@ -118,10 +118,10 @@ export async function POST(request: NextRequest) {
 // Helper function to map workflow names to Drip workflow IDs
 function getWorkflowId(workflowName: string): string {
   const workflowMap: Record<string, string> = {
-    'nyhetsbrev': process.env.DRIP_NEWSLETTER_WORKFLOW_ID || '12345', // Replace with actual ID
-    'overgiven-varukorg': process.env.DRIP_ABANDONED_CART_WORKFLOW_ID || '67890', // Replace with actual ID
-    'quiz-resultat': process.env.DRIP_QUIZ_WORKFLOW_ID || '54321', // Replace with actual ID
-    'ebook-download': process.env.DRIP_EBOOK_WORKFLOW_ID || '98765' // Replace with actual ID
+    'nyhetsbrev': process.env.DRIP_NEWSLETTER_WORKFLOW_ID || '',
+    'overgiven-varukorg': process.env.DRIP_ABANDONED_CART_WORKFLOW_ID || '',
+    'quiz-resultat': process.env.DRIP_NEWSLETTER_WORKFLOW_ID || '', // Använder samma som nyhetsbrev
+    'ebook-download': process.env.DRIP_NEWSLETTER_WORKFLOW_ID || '' // Använder samma som nyhetsbrev
   }
   
   return workflowMap[workflowName] || workflowMap['nyhetsbrev']

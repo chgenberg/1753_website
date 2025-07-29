@@ -3,14 +3,12 @@
 ## Översikt
 Denna guide beskriver hur man ställer in Drip.com workflows för 1753 Skincare:
 
-1. **Nyhetsbrev** - För alla newsletter-registreringar
+1. **Nyhetsbrev** - För alla newsletter-registreringar, quiz-användare och e-bok nedladdningar
 2. **Övergiven varukorg** - Efter 1 timme utan köp
-3. **Quiz-resultat** - För quiz-användare
-4. **E-bok nedladdning** - För e-bok leads
 
 ## Steg 1: Skapa Workflows i Drip
 
-### 1.1 Nyhetsbrev Workflow
+### 1.1 Nyhetsbrev Workflow (HUVUDWORKFLOW)
 1. Gå till **Workflows** i Drip dashboard
 2. Klicka **Create Workflow**
 3. Namnge: "Nyhetsbrev"
@@ -19,7 +17,13 @@ Denna guide beskriver hur man ställer in Drip.com workflows för 1753 Skincare:
    - Välkomstmail
    - Produktrekommendationer
    - Hudvårdstips
+   - Personaliserat innehåll baserat på källa (quiz, e-bok, newsletter)
 6. Notera **Workflow ID** (finns i URL:en)
+
+**OBS:** Denna workflow används för:
+- Newsletter-registreringar
+- Quiz-avslutningar  
+- E-bok nedladdningar
 
 ### 1.2 Övergiven Varukorg Workflow
 1. Skapa ny workflow: "Övergiven varukorg"
@@ -34,79 +38,75 @@ Denna guide beskriver hur man ställer in Drip.com workflows för 1753 Skincare:
    - `cart_items_count`
    - `cart_recovery_url`
 
-### 1.3 Quiz Workflow
-1. Skapa workflow: "Quiz-resultat"
-2. Personaliserade hudvårdstips baserat på quiz
-3. Produktrekommendationer
-
-### 1.4 E-bok Workflow
-1. Skapa workflow: "E-bok nedladdning"
-2. Leverera e-boken direkt
-3. Följ upp med relaterat innehåll
-
 ## Steg 2: Konfigurera Environment Variables
 
 ### Railway Environment Variables
 Lägg till följande i Railway dashboard:
 
 ```env
-DRIP_ACCOUNT_ID=din_drip_account_id
+DRIP_ACCOUNT_ID=8548704
 DRIP_API_TOKEN=din_drip_api_token
-DRIP_NEWSLETTER_WORKFLOW_ID=workflow_id_för_nyhetsbrev
-DRIP_ABANDONED_CART_WORKFLOW_ID=workflow_id_för_övergiven_varukorg
-DRIP_QUIZ_WORKFLOW_ID=workflow_id_för_quiz
-DRIP_EBOOK_WORKFLOW_ID=workflow_id_för_ebook
+DRIP_NEWSLETTER_WORKFLOW_ID=687757484
+DRIP_ABANDONED_CART_WORKFLOW_ID=ditt_övergiven_varukorg_workflow_id
 NEXT_PUBLIC_BASE_URL=https://1753website-production.up.railway.app
 ```
 
-### Hitta Workflow IDs
-1. Gå till din workflow i Drip
-2. Kolla URL:en: `https://www.getdrip.com/workflows/YOUR_WORKFLOW_ID/edit`
-3. `YOUR_WORKFLOW_ID` är det ID du behöver
+**Du behöver ENDAST dessa två workflows!**
 
-## Steg 3: Audience Management
+## Steg 3: Audience Management & Taggning
 
-### Automatisk Taggning
-Systemet taggar automatiskt subscribers:
-- `nyhetsbrev` - Newsletter signups
-- `övergiven-varukorg` - Abandoned cart users
-- `quiz-användare` - Quiz takers
-- `ebook-download` - E-book downloaders
+### Automatisk Taggning per Källa
+Systemet taggar automatiskt subscribers baserat på var de kommer ifrån:
 
-### Custom Fields som sätts
-```javascript
-// Newsletter signup
-{
-  source: 'newsletter-section',
-  subscription_date: '2025-01-01T12:00:00Z',
-  workflow_triggered: 'nyhetsbrev',
-  signup_page: 'Newsletter Signup'
-}
+**Newsletter signup:**
+- Tags: `newsletter`, `website-signup`, `nyhetsbrev`
+- Source: `newsletter-section`
 
-// Abandoned cart
-{
-  cart_total: 1098,
-  cart_items_count: 2,
-  cart_items: [...],
-  cart_abandoned_at: '2025-01-01T12:00:00Z',
-  cart_recovery_url: 'https://1753website.com/cart?recover=true'
-}
+**Quiz completion:**
+- Tags: `quiz-användare`, `nyhetsbrev`  
+- Source: `quiz-results`
+- Custom fields: quiz score, skin concerns
 
-// Quiz results
-{
-  quiz_score: 70,
-  skin_type: 'combination',
-  main_concerns: 'aging,acne'
-}
+**E-bok download:**
+- Tags: `ebook-download`, `nyhetsbrev`
+- Source: `ebook-page`
+
+**Övergiven varukorg:**
+- Tags: `övergiven-varukorg`, `cart-abandoner`
+- Custom fields: cart data, recovery URL
+
+### Personalisering i Nyhetsbrev Workflow
+Du kan skapa olika email-grenar i samma workflow baserat på tags:
+
+```
+IF subscriber has tag "quiz-användare"
+  → Skicka personliga hudvårdstips
+  
+IF subscriber has tag "ebook-download"  
+  → Skicka relaterat CBD-innehåll
+  
+IF subscriber has tag "newsletter"
+  → Skicka allmänt välkomstmail
 ```
 
 ## Steg 4: Testing
 
-### Testa Newsletter
+### Testa Newsletter (alla källor)
 ```bash
+# Newsletter signup
 curl -X POST https://1753website-production.up.railway.app/api/newsletter \
   -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","workflow":"nyhetsbrev"}'
+  -d '{"email":"test@example.com","workflow":"nyhetsbrev","source":"newsletter-section"}'
+
+# Quiz completion  
+curl -X POST https://1753website-production.up.railway.app/api/newsletter \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","workflow":"quiz-resultat","source":"quiz-results"}'
+
+# E-bok download
+curl -X POST https://1753website-production.up.railway.app/api/newsletter \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","workflow":"ebook-download","source":"ebook-page"}'
 ```
 
 ### Testa Övergiven Varukorg
@@ -115,62 +115,22 @@ curl -X POST https://1753website-production.up.railway.app/api/newsletter \
 3. Vänta 1 timme (eller ändra timer för test)
 4. Kontrollera Drip för triggered workflow
 
-## Steg 5: Monitoring
+## Fördelar med denna Setup
 
-### Drip Dashboard
-- Kontrollera **Workflows** → **Performance**
-- Se delivery rates och engagement
-- Övervaka subscriber growth
-
-### Logs
-Kontrollera Railway logs för:
-```
-Successfully subscribed to Drip: email@example.com workflow: nyhetsbrev
-Successfully triggered nyhetsbrev workflow for: email@example.com
-Abandoned cart workflow triggered for: email@example.com
-```
-
-## Troubleshooting
-
-### Common Issues
-1. **401 Unauthorized**: Kontrollera DRIP_API_TOKEN
-2. **Workflow not triggering**: Verifiera WORKFLOW_ID
-3. **Subscriber not found**: Email kanske inte finns i Drip än
-
-### Debug Commands
-```bash
-# Test Drip API connection
-curl -u "YOUR_API_TOKEN:" https://api.getdrip.com/v2/YOUR_ACCOUNT_ID/subscribers
-
-# Check specific subscriber
-curl -u "YOUR_API_TOKEN:" https://api.getdrip.com/v2/YOUR_ACCOUNT_ID/subscribers/email@example.com
-```
-
-## Best Practices
-
-1. **Testa workflows** innan lansering
-2. **Segmentera audiences** baserat på beteende
-3. **A/B testa** email subject lines
-4. **Övervaka metrics** regelbundet
-5. **Respektera GDPR** - endast opt-in subscribers
+✅ **Enklare hantering** - Bara 2 workflows att underhålla
+✅ **Centraliserad nyhetsbrevs-resa** - Alla leads i samma funnel  
+✅ **Personalisering** - Olika innehåll baserat på källa/tags
+✅ **Mindre komplexitet** - Färre workflows att konfigurera
+✅ **Bättre översikt** - All email-kommunikation i en huvudresa
 
 ## Integration Points
 
 ### Frontend Components
 - `NewsletterSection.tsx` → Newsletter workflow
-- `QuizResults.tsx` → Quiz workflow  
-- `e-bok/page.tsx` → E-book workflow
+- `QuizResults.tsx` → Newsletter workflow (med quiz-tags)
+- `e-bok/page.tsx` → Newsletter workflow (med e-bok tags)
 - `CartContext.tsx` → Abandoned cart workflow
 
 ### API Endpoints
-- `/api/newsletter` → Subscribe + trigger workflow
-- `/api/abandoned-cart` → Abandoned cart tracking
-- `/api/quiz/results` → Quiz completion (if email provided)
-
-## Next Steps
-
-1. Skapa workflows i Drip dashboard
-2. Konfigurera environment variables
-3. Testa varje workflow
-4. Övervaka performance
-5. Optimera baserat på metrics 
+- `/api/newsletter` → Subscribe + trigger newsletter workflow
+- `/api/abandoned-cart` → Abandoned cart workflow 
