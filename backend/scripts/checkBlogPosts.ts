@@ -75,6 +75,20 @@ async function cleanBlogPosts() {
           .replace(/>\s*"[^"]*"\s*>/g, '>')
           // Remove $1 artifacts from previous cleaning
           .replace(/\$1/g, '')
+          // NEW: Remove CSS classes directly attached to HTML tags (the main remaining issue)
+          .replace(/<(p|div|span|h[1-6]|ul|ol|li|strong|em|a)\s+[^>]*(?:mb-|mt-|text-|leading-|font-|prose-|list-|space-|italic|bold)[^>]*>/g, '<$1>')
+          // Remove broken patterns like <pmb-6 </span>
+          .replace(/<p[^>]*(?:mb-|mt-|text-|leading-|font-|prose-|list-|space-|italic|bold)[^>]*>/g, '<p>')
+          .replace(/<span[^>]*(?:mb-|mt-|text-|leading-|font-|prose-|list-|space-|italic|bold)[^>]*>/g, '<span>')
+          .replace(/<h[1-6][^>]*(?:mb-|mt-|text-|leading-|font-|prose-|list-|space-|italic|bold)[^>]*>/g, function(match) { 
+            const level = match.match(/<h([1-6])/)?.[1] || '2';
+            return `<h${level}>`;
+          })
+          // Remove any standalone CSS class strings that got left behind
+          .replace(/\s+(?:mb-\d+|mt-\d+|text-[\w-]+|leading-[\w-]+|font-[\w-]+|italic|bold|px-\d+|py-\d+|prose-[\w-]+|list-[\w-]+|space-[\w-]+|my-\d+)\s*/g, ' ')
+          // Clean up broken fragments
+          .replace(/(?:mb-|mt-|text-|leading-|font-|prose-|list-|space-|italic|bold)[\w-]*\s*<\/span>/g, '</span>')
+          .replace(/<\/span><\/span>/g, '</span>')
           // Clean up whitespace and empty attributes
           .replace(/\s+>/g, '>')
           .replace(/>\s+</g, '><')
