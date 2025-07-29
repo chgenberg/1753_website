@@ -41,8 +41,10 @@ export default function ProductsPage() {
   const [activeFilter, setActiveFilter] = useState<string | null>(null)
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null)
   const [favorites, setFavorites] = useState<string[]>([])
+  const [isClient, setIsClient] = useState(false)
 
   useEffect(() => {
+    setIsClient(true)
     fetchProducts()
     // Load favorites from localStorage
     const savedFavorites = localStorage.getItem('favorites')
@@ -54,11 +56,19 @@ export default function ProductsPage() {
   const fetchProducts = async () => {
     setLoading(true)
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002'}/api/products?sort=featured`)
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002'}/api/products?sort=featured`
+      console.log('Fetching products from:', apiUrl)
+      
+      const response = await fetch(apiUrl)
+      console.log('Response status:', response.status)
+      
       const data = await response.json()
+      console.log('Response data:', data)
       
       // Ensure data is an array
-      const productsArray = Array.isArray(data) ? data : (data.products || [])
+      const productsArray = Array.isArray(data) ? data : (data.data || data.products || [])
+      console.log('Products array:', productsArray.length, 'products')
+      
       setProducts(productsArray)
     } catch (error) {
       console.error('Error fetching products:', error)
