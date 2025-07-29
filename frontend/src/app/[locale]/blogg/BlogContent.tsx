@@ -207,15 +207,14 @@ export default function BlogContent({ posts }: BlogContentProps) {
                   >
                     <div className="relative aspect-[3/4] bg-gradient-to-b from-gray-50 to-gray-100 overflow-hidden">
                       {(post as BlogPostWithImages).thumbnail ? (
-                        <div className="w-full h-full flex items-center justify-center">
+                        <div className="w-full h-full flex items-center justify-center p-2">
                           <Image
                             src={(post as BlogPostWithImages).thumbnail!}
                             alt={post.title}
                             fill
-                            className="object-cover group-hover:scale-105 transition-transform duration-300"
+                            className="object-contain group-hover:scale-105 transition-transform duration-300"
                             style={{ 
-                              objectPosition: 'center',
-                              objectFit: 'cover'
+                              objectPosition: 'center'
                             }}
                           />
                         </div>
