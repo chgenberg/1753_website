@@ -274,7 +274,7 @@ export default function ProductPage() {
               {/* Badges */}
               <div className="absolute top-4 left-4 flex flex-col gap-2">
                 {product.bestseller && (
-                  <span className="bg-red-500 text-white text-sm px-3 py-1 rounded-full">
+                  <span className="bg-[#8B4513] text-white text-sm px-3 py-1 rounded-full">
                     Bästsäljare
                   </span>
                 )}
@@ -284,7 +284,7 @@ export default function ProductPage() {
                   </span>
                 )}
                 {discountPercentage > 0 && (
-                  <span className="bg-yellow-500 text-white text-sm px-3 py-1 rounded-full">
+                  <span className="bg-[#8B4513] text-white text-sm px-3 py-1 rounded-full">
                     -{discountPercentage}%
                   </span>
                 )}

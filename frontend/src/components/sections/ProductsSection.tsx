@@ -176,7 +176,7 @@ export function ProductsSection() {
                     
                     {/* Discount Badge */}
                     {product.compareAtPrice && product.compareAtPrice > product.price && (
-                      <div className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                      <div className="absolute top-4 left-4 bg-[#8B4513] text-white px-3 py-1 rounded-full text-sm font-semibold">
                         -{Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100)}%
                       </div>
                     )}

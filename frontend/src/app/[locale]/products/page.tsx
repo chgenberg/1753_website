@@ -304,7 +304,7 @@ export default function ProductsPage() {
                         </span>
                       )}
                       {product.bestseller && (
-                        <span className="bg-yellow-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                        <span className="bg-[#8B4513] text-white text-xs font-bold px-3 py-1 rounded-full">
                           BESTSELLER
                         </span>
                       )}

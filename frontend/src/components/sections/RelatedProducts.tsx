@@ -155,7 +155,7 @@ export default function RelatedProducts({ currentProductSlug, locale }: RelatedP
                     
                     {/* Discount Badge */}
                     {product.compareAtPrice && product.compareAtPrice > product.price && (
-                      <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-semibold">
+                      <div className="absolute top-2 left-2 bg-[#8B4513] text-white text-xs px-2 py-1 rounded-full font-semibold">
                         -{Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100)}%
                       </div>
                     )}
