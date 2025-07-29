@@ -483,6 +483,8 @@ model Order {
   taxAmount       Float       @default(0)
   shippingAmount  Float       @default(0)
   discountAmount  Float       @default(0)
+  totalBeforeDiscount Float?  // Original total before any discounts
+  totalDiscount   Float       @default(0) // Total amount discounted
   totalAmount     Float
   currency        String      @default("SEK")
   
@@ -510,6 +512,7 @@ model Order {
   // Relations
   user           User?     @relation(fields: [userId], references: [id])
   items          OrderItem[]
+  discounts      OrderDiscount[] // Track applied discount codes
   
   @@map("orders")
 }
@@ -793,3 +796,87 @@ model ContactSubmission {
   @@index([createdAt])
   @@index([category])
 }
+
+// Discount codes for promotional campaigns
+model DiscountCode {
+  id               String   @id @default(cuid())
+  code             String   @unique // The discount code (e.g., "WELCOME20")
+  name             String   // Internal name/description
+  description      String?  // Public description for customers
+  
+  // Discount configuration
+  type             String   // "percentage" or "fixed_amount"
+  value            Float    // Percentage (0-100) or fixed amount in SEK
+  minimumOrderAmount Float? // Minimum order value to use code
+  maximumDiscount  Float?   // Maximum discount amount for percentage codes
+  
+  // Product restrictions
+  applicableToAll  Boolean  @default(true)
+  productIds       String[] // Empty array = all products, otherwise specific product IDs
+  excludeProductIds String[] // Products that are excluded from discount
+  categoryRestrictions String[] // Product categories this applies to
+  
+  // Usage limits
+  usageLimit       Int?     // Total times code can be used (null = unlimited)
+  usageCount       Int      @default(0) // How many times it's been used
+  perCustomerLimit Int?     // Max uses per customer (null = unlimited)
+  
+  // Time constraints
+  validFrom        DateTime @default(now())
+  validUntil       DateTime?
+  
+  // Customer restrictions
+  firstTimeCustomersOnly Boolean @default(false)
+  minCustomerSpend Float?  // Minimum historical customer spend
+  
+  // Status and metadata
+  isActive         Boolean  @default(true)
+  isPublic         Boolean  @default(true) // Whether customers can see this code
+  priority         Int      @default(0)    // Higher priority codes applied first
+  
+  // Campaign tracking
+  campaignId       String?  // Link to marketing campaign
+  source           String?  // Where this code was distributed
+  
+  // Admin fields
+  createdBy        String?  // Admin who created the code
+  notes            String?  // Internal notes
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  // Relations
+  orderDiscounts   OrderDiscount[]
+  
+  @@map("discount_codes")
+  @@index([code])
+  @@index([isActive])
+  @@index([validFrom, validUntil])
+  @@index([type])
+}
+
+// Track discount usage per order
+model OrderDiscount {
+  id               String   @id @default(cuid())
+  orderId          String
+  discountCodeId   String
+  discountCode     String   // Store the actual code used
+  discountAmount   Float    // Amount discounted
+  originalAmount   Float    // Order amount before discount
+  
+  createdAt        DateTime @default(now())
+  
+  // Relations
+  order            Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  discount         DiscountCode @relation(fields: [discountCodeId], references: [id])
+  
+  @@map("order_discounts")
+  @@index([orderId])
+  @@index([discountCodeId])
+}
+
+// Add discount tracking to Order model
+// Note: This would require updating the existing Order model to include:
+// discounts        OrderDiscount[]
+// totalBeforeDiscount Float?
+// totalDiscount    Float    @default(0)
