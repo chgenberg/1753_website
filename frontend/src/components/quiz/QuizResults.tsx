@@ -559,10 +559,25 @@ export default function QuizResults({
   // Add to cart function
      const handleAddToCart = (product: any) => {
      addToCart({
-       id: product.slug,
-       name: product.name,
-       price: product.price,
-       image: product.image
+       ...product,
+       tags: [],
+       images: [{ url: product.image, alt: product.name, position: 0 }],
+       variants: [],
+       inventory: 100,
+       trackInventory: false,
+       allowBackorder: true,
+       isActive: true,
+       isFeatured: product.featured || false,
+       seoKeywords: [],
+       keyIngredients: [],
+       skinConcerns: [],
+       timeOfDay: undefined,
+       benefitsDetails: [],
+       ingredientsDetails: [],
+       imagesData: [],
+       rating: { average: 0, count: 0 },
+       createdAt: new Date().toISOString(),
+       updatedAt: new Date().toISOString()
      })
    }
 
@@ -756,8 +771,6 @@ export default function QuizResults({
             <RegisterModal
               isOpen={showRegisterModal}
               onClose={() => setShowRegisterModal(false)}
-              initialEmail={userEmail}
-              initialName={userName}
               quizData={quizData}
             />
           )}

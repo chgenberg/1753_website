@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { QuizQuestion } from './QuizQuestion'
-import { QuizResults } from './QuizResults'
+import QuizResults from './QuizResults'
 import { questions } from './quizData'
 
 interface SkinCareQuizModalProps {
