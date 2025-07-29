@@ -60,7 +60,7 @@ export function Header() {
   return (
     <>
       {/* Fixed Top Bar */}
-      <div className="fixed top-0 left-0 right-0 bg-black text-white text-xs sm:text-sm py-2 z-50">
+      <div className="fixed top-0 left-0 right-0 bg-[#4A3428] text-white text-xs sm:text-sm py-2 z-50">
         <div className="container mx-auto px-4">
           <AnimatePresence mode="wait">
             <motion.div

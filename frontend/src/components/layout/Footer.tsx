@@ -36,7 +36,7 @@ const footerLinks = {
 
 export function Footer() {
   return (
-    <footer className="bg-black text-white">
+    <footer className="bg-[#4A3428] text-white">
       {/* Main Footer */}
       <div className="container mx-auto px-4 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
@@ -51,7 +51,7 @@ export function Footer() {
                 className="brightness-0 invert"
               />
             </Link>
-            <p className="text-gray-400 mb-6 max-w-sm">
+            <p className="text-white/80 mb-6 max-w-sm">
               Naturlig hudvård med CBD & CBG. Vi kombinerar traditionell kunskap med modern vetenskap för din huds bästa.
             </p>
             
@@ -92,7 +92,7 @@ export function Footer() {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-gray-400 hover:text-[#00937c] transition-colors duration-200"
+                    className="text-white/80 hover:text-white transition-colors duration-200"
                   >
                     {link.name}
                   </Link>
@@ -109,7 +109,7 @@ export function Footer() {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-gray-400 hover:text-[#00937c] transition-colors duration-200"
+                    className="text-white/80 hover:text-white transition-colors duration-200"
                   >
                     {link.name}
                   </Link>
@@ -126,7 +126,7 @@ export function Footer() {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-gray-400 hover:text-[#00937c] transition-colors duration-200"
+                    className="text-white/80 hover:text-white transition-colors duration-200"
                   >
                     {link.name}
                   </Link>
@@ -143,7 +143,7 @@ export function Footer() {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-gray-400 hover:text-[#00937c] transition-colors duration-200"
+                    className="text-white/80 hover:text-white transition-colors duration-200"
                   >
                     {link.name}
                   </Link>
@@ -157,40 +157,40 @@ export function Footer() {
         <div className="mt-12 pt-8 border-t border-white/10">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="flex items-center space-x-3">
-              <Mail className="w-5 h-5 text-[#00937c]" />
-                              <a href="mailto:hej@1753skincare.com" className="text-gray-400 hover:text-[#00937c] transition-colors">
-                  hej@1753skincare.com
+              <Mail className="w-5 h-5 text-white" />
+                                            <a href="mailto:hej@1753skincare.com" className="text-white/80 hover:text-white transition-colors">
+                hej@1753skincare.com
               </a>
             </div>
             <div className="flex items-center space-x-3">
-              <Phone className="w-5 h-5 text-[#00937c]" />
-                              <a href="tel:+46732305521" className="text-gray-400 hover:text-[#00937c] transition-colors">
+              <Phone className="w-5 h-5 text-white" />
+                              <a href="tel:+46732305521" className="text-white/80 hover:text-white transition-colors">
                 +46732305521
               </a>
             </div>
             <div className="flex items-center space-x-3">
-              <MapPin className="w-5 h-5 text-[#00937c]" />
-                              <span className="text-gray-400">Åsa, Sverige</span>
+              <MapPin className="w-5 h-5 text-white" />
+                              <span className="text-white/80">Åsa, Sverige</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Bottom Bar */}
-      <div className="bg-gray-900">
+      <div className="bg-[#3A2418]">
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-500 text-sm">
+            <p className="text-white/60 text-sm">
               © 2024 1753 Skincare. Alla rättigheter förbehållna.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
-              <Link href="/integritetspolicy" className="text-gray-500 hover:text-[#00937c] text-sm transition-colors">
+              <Link href="/integritetspolicy" className="text-white/60 hover:text-white text-sm transition-colors">
                 Integritetspolicy
               </Link>
-              <Link href="/villkor" className="text-gray-500 hover:text-[#00937c] text-sm transition-colors">
+              <Link href="/villkor" className="text-white/60 hover:text-white text-sm transition-colors">
                 Villkor
               </Link>
-              <Link href="/cookies" className="text-gray-500 hover:text-[#00937c] text-sm transition-colors">
+              <Link href="/cookies" className="text-white/60 hover:text-white text-sm transition-colors">
                 Cookies
               </Link>
             </div>
