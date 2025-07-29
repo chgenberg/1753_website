@@ -4,50 +4,26 @@ import { PrismaClient } from '@prisma/client';
 const router = Router();
 const prisma = new PrismaClient();
 
-// Get all raw materials
+// Get all raw materials with Swedish sorting
 router.get('/', async (req, res) => {
   try {
-    const { category, search } = req.query;
-    
-    const where: any = {
-      isActive: true
-    };
-    
-    if (category && category !== 'all') {
-      where.category = category as string;
-    }
-    
-    if (search) {
-      where.OR = [
-        { name: { contains: search as string, mode: 'insensitive' } },
-        { swedishName: { contains: search as string, mode: 'insensitive' } },
-        { description: { contains: search as string, mode: 'insensitive' } }
-      ];
-    }
-    
     const rawMaterials = await prisma.rawMaterial.findMany({
-      where,
-      select: {
-        id: true,
-        name: true,
-        swedishName: true,
-        origin: true,
-        category: true,
-        description: true,
-        healthBenefits: true,
-        slug: true,
-        thumbnail: true
+      // Removed: where: { isActive: true },
+      orderBy: {
+        name: 'asc', // This will sort alphabetically by Swedish name
       },
-      orderBy: [
-        { category: 'asc' },
-        { swedishName: 'asc' }
-      ]
     });
-    
-    res.json(rawMaterials);
+
+    res.json({
+      success: true,
+      data: rawMaterials,
+    });
   } catch (error) {
     console.error('Error fetching raw materials:', error);
-    res.status(500).json({ error: 'Failed to fetch raw materials' });
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch raw materials',
+    });
   }
 });
 

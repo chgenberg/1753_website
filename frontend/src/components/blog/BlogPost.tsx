@@ -64,6 +64,34 @@ export function BlogPost({
     })
   }
 
+  // Function to format blog content with automatic H2 styling
+  const formatBlogContent = (content: string) => {
+    if (!content) return '';
+    
+    // Split content into lines
+    const lines = content.split('\n');
+    
+    // Process each line
+    const processedLines = lines.map(line => {
+      const trimmedLine = line.trim();
+      
+      // Check if line starts with "Steg" followed by number/colon (case insensitive)
+      const stepRegex = /^steg\s*\d+[\:\.]?\s*/i;
+      
+      if (stepRegex.test(trimmedLine)) {
+        // Make it a proper H2 heading
+        const cleanedTitle = trimmedLine.replace(stepRegex, (match) => {
+          return match.charAt(0).toUpperCase() + match.slice(1).toLowerCase();
+        });
+        return `## ${cleanedTitle}`;
+      }
+      
+      return line;
+    });
+    
+    return processedLines.join('\n');
+  };
+
   // Parse content into paragraphs and handle special formatting
   const formatContent = (text: string) => {
     const lines = text.split('\n')
