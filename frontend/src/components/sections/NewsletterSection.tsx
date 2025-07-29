@@ -348,7 +348,7 @@ export default function NewsletterSection({
                 disabled={isSubmitting}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full px-6 py-4 bg-gradient-to-r from-orange-500 to-pink-500 text-white rounded-lg font-semibold hover:from-orange-600 hover:to-pink-600 transition-all duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed text-lg"
+                className="w-full px-6 py-4 bg-[#4A3428] text-white rounded-lg font-semibold hover:bg-[#3A2418] transition-all duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed text-lg"
               >
                 {isSubmitting ? (
                   <Loader2 className="w-6 h-6 animate-spin" />
