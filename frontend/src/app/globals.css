@@ -11,6 +11,25 @@
   .text-gradient-yellow {
     stroke: url(#gradient-yellow);
   }
+  
+  /* Overflow prevention for blog content and long URLs */
+  .blog-content {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    hyphens: auto;
+  }
+  
+  .blog-content a,
+  .blog-content span {
+    word-break: break-all;
+    overflow-wrap: anywhere;
+  }
+  
+  .blog-content p,
+  .blog-content div {
+    max-width: 100%;
+    overflow-wrap: break-word;
+  }
 }
 
 /* Add gradient definition to body */
