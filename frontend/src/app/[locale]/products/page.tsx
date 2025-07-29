@@ -119,7 +119,7 @@ export default function ProductsPage() {
     }
 
     setFilteredProducts(currentFiltered)
-  }, [selectedCategory, products, activeFilter])
+  }, [selectedCategory, products, activeFilter, sortBy])
 
   const toggleFavorite = (productId: string) => {
     const newFavorites = favorites.includes(productId)
