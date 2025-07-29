@@ -43,9 +43,8 @@ export default function BlogContent({ posts }: BlogContentProps) {
     'Kapitel 61.png', 'Kapitel 62.png', 'Kapitel 63.png', 'Kapitel 64.png'
   ]
 
-  // Function to get image for blog post with rotation to avoid adjacent duplicates
-  const getImageForPost = (index: number) => {
-    // Use a spacing algorithm to avoid adjacent duplicates
+  // Function to get fallback image for a post when no explicit image found
+  const getFallbackImage = (slug: string, index: number) => {
     const spacing = Math.max(3, Math.floor(portraitImages.length / 8))
     const imageIndex = (index * spacing) % portraitImages.length
     return `/Bilder_kvinnor%20boken_2025/${portraitImages[imageIndex]}`
@@ -233,15 +232,12 @@ export default function BlogContent({ posts }: BlogContentProps) {
                     <div className="relative aspect-[3/4] bg-gradient-to-b from-gray-50 to-gray-100 overflow-hidden">
                       <div className="w-full h-full flex items-center justify-center">
                         <Image
-                          src={getImageForPost(index)}
+                          src={(post as BlogPostWithImages).image || (post as BlogPostWithImages).thumbnail || getFallbackImage(post.slug, index)}
                           alt={post.title}
                           fill
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           className="object-cover group-hover:scale-105 transition-transform duration-300"
-                          priority={index < 6} // Priority for first 6 images
-                          onError={(e) => {
-                            console.warn(`Failed to load blog image for post ${index}: ${getImageForPost(index)}`)
-                          }}
+                          priority={index < 8}
                         />
                       </div>
                     </div>
