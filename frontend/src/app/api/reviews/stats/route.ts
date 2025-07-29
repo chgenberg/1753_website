@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 
 export async function GET() {
   try {
-    const backendUrl = process.env.BACKEND_URL || 'https://1753website-production.up.railway.app'
+    const backendUrl = process.env.BACKEND_URL || 'https://1753websitebackend-production.up.railway.app'
     const fullUrl = `${backendUrl}/api/reviews/stats`
     console.log('Fetching review stats from:', fullUrl)
     
