@@ -51,21 +51,40 @@ async function cleanBlogPosts() {
     for (const post of posts) {
       const originalContent = post.content
       
-      // Clean the content
-      const cleanedContent = originalContent
-        // Remove any escaped quotes and HTML entities
+            // Clean the content with simple but effective patterns
+      let cleanedContent = originalContent
+      
+      // Step 1: Replace HTML entities
+      cleanedContent = cleanedContent
         .replace(/&quot;/g, '"')
         .replace(/&#39;/g, "'")
         .replace(/&lt;/g, '<')
         .replace(/&gt;/g, '>')
         .replace(/&amp;/g, '&')
-        // Remove visible HTML class attributes
-        .replace(/"(mb-\d+|mt-\d+|text-[\w-]+|leading-[\w-]+|font-[\w-]+|italic|bold|px-\d+|py-\d+|prose-[\w-]+)"/g, '')
-        .replace(/class="[^"]*"/g, '')
-        // Remove any remaining quotes around plain text
-        .replace(/"([^"<>]*)"(?![^<]*>)/g, '$1')
-        // Clean up double spaces
+      
+      // Step 2: Remove all CSS class patterns (multiple passes to catch nested ones)
+      for (let i = 0; i < 5; i++) {
+        cleanedContent = cleanedContent
+          // Remove any text that looks like CSS classes in quotes
+          .replace(/"[^"]*(?:mb-|mt-|text-|leading-|font-|prose-|list-|space-|italic|bold)[^"]*"/g, '')
+          // Remove any remaining quoted CSS-like patterns
+          .replace(/"(?:mb-\d+|mt-\d+|text-[\w-]+|leading-[\w-]+|font-[\w-]+|italic|bold|px-\d+|py-\d+|prose-[\w-]+|list-[\w-]+|space-[\w-]+|my-\d+)"/g, '')
+          // Remove class attributes
+          .replace(/class="[^"]*"/g, '')
+          // Remove patterns like > "something" >
+          .replace(/>\s*"[^"]*"\s*>/g, '>')
+          // Remove $1 artifacts from previous cleaning
+          .replace(/\$1/g, '')
+          // Clean up whitespace and empty attributes
+          .replace(/\s+>/g, '>')
+          .replace(/>\s+</g, '><')
+          .replace(/>\s+/g, '>')
+      }
+      
+      // Step 3: Final cleanup
+      cleanedContent = cleanedContent
         .replace(/\s+/g, ' ')
+        .replace(/>\s+</g, '><')
         .trim()
       
       if (originalContent !== cleanedContent) {
