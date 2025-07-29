@@ -68,24 +68,30 @@ export default function ProductsPage() {
       // Ensure data is an array
       const productsArray = Array.isArray(data) ? data : (data.data || data.products || [])
       console.log('Products array:', productsArray.length, 'products')
+      console.log('Setting products to state...')
       
       setProducts(productsArray)
+      console.log('Products set successfully')
     } catch (error) {
       console.error('Error fetching products:', error)
       setProducts([]) // Set empty array on error
     } finally {
+      console.log('Setting loading to false')
       setLoading(false)
     }
   }
 
   // Filter products based on category only
   useEffect(() => {
+    console.log('Filtering effect triggered. Products:', products.length, 'selectedCategory:', selectedCategory)
     const safeProducts = Array.isArray(products) ? products : []
+    console.log('Safe products:', safeProducts.length)
     let currentFiltered = [...safeProducts]
     
     // Filter by category
     if (selectedCategory !== 'alla') {
       currentFiltered = currentFiltered.filter(product => product.category === selectedCategory)
+      console.log('After category filter:', currentFiltered.length)
     }
 
     // Sort products
@@ -128,6 +134,7 @@ export default function ProductsPage() {
         break
     }
 
+    console.log('Final filtered products:', currentFiltered.length)
     setFilteredProducts(currentFiltered)
   }, [selectedCategory, products, activeFilter, sortBy])
 
@@ -156,6 +163,7 @@ export default function ProductsPage() {
   }
 
   if (loading) {
+    console.log('LOADING: true - showing loading screen')
     return (
       <div className="min-h-screen bg-gray-50">
         <Header />
@@ -171,6 +179,8 @@ export default function ProductsPage() {
       </div>
     )
   }
+
+  console.log('LOADING: false - showing products page. Products:', products.length, 'Filtered:', filteredProducts.length)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -376,7 +386,7 @@ export default function ProductsPage() {
                               <Star
                                 key={i}
                                 className={`w-4 h-4 ${
-                                  i < Math.floor(product.rating!.average)
+                                  i < Math.round(product.rating!.average)
                                     ? 'text-yellow-400 fill-yellow-400'
                                     : 'text-gray-300'
                                 }`}
@@ -384,7 +394,7 @@ export default function ProductsPage() {
                             ))}
                           </div>
                           <span className="text-sm text-gray-500">
-                            ({product.rating.count})
+                            {product.rating.average.toFixed(1)} ({product.rating.count})
                           </span>
                         </div>
                       )}
