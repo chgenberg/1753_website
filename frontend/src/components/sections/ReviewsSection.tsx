@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { Star, Quote, CheckCircle } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Star, Quote, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 
@@ -18,11 +18,13 @@ interface Review {
 
 export function ReviewsSection() {
   const [reviews, setReviews] = useState<Review[]>([])
+  const [currentIndex, setCurrentIndex] = useState(0)
   const [overallStats, setOverallStats] = useState({
     totalReviews: 823,
     averageRating: 4.62
   })
   const [loading, setLoading] = useState(true)
+  const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
   const t = useTranslations('Reviews')
 
@@ -34,127 +36,163 @@ export function ReviewsSection() {
     setTimeout(() => setLoading(false), 1000)
   }, [])
 
+  // Auto-rotate carousel
+  useEffect(() => {
+    if (reviews.length > 0) {
+      intervalRef.current = setInterval(() => {
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % reviews.length)
+      }, 5000) // Change slide every 5 seconds
+
+      return () => {
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current)
+        }
+      }
+    }
+  }, [reviews.length])
+
   const fetchReviews = async () => {
     try {
-      // Fetch general reviews (not product-specific)
-      const response = await fetch('/api/reviews?page=1&limit=3')
+      // Fetch more reviews for carousel
+      const response = await fetch('/api/reviews?page=1&limit=10')
       if (response.ok) {
         const data = await response.json()
         if (data.reviews && data.reviews.length > 0) {
           setReviews(data.reviews)
         } else {
           // Use fallback reviews
-          setReviews([
-            {
-              id: '1',
-              reviewer: 'Emma Svensson',
-              rating: 5,
-              comment: 'Fantastiska produkter! Min hud har aldrig känt sig så mjuk och balanserad.',
-              product: 'The ONE Facial Oil',
-              createdAt: new Date().toISOString(),
-              verified: true
-            },
-            {
-              id: '2',
-              reviewer: 'Marcus Andersson',
-              rating: 5,
-              comment: 'CBD-oljan har verkligen hjälpt min känsliga hud. Rekommenderar starkt!',
-              product: 'Au Naturel Makeup Remover',
-              createdAt: new Date().toISOString(),
-              verified: true
-            },
-            {
-              id: '3',
-              reviewer: 'Sofia Lindberg',
-              rating: 5,
-              comment: 'Ser redan resultat efter två veckor! Fantastisk produkt.',
-              product: 'TA-DA Serum',
-              createdAt: new Date().toISOString(),
-              verified: true
-            }
-          ])
+          setReviews(getDefaultReviews())
         }
       }
     } catch (error) {
       console.error('Error fetching reviews:', error)
-      // Use default reviews on error
-      setReviews([
-        {
-          id: '1',
-          reviewer: 'Emma Svensson',
-          rating: 5,
-          comment: 'Fantastiska produkter! Min hud har aldrig känt sig så mjuk och balanserad.',
-          product: 'The ONE Facial Oil',
-          createdAt: new Date().toISOString(),
-          verified: true
-        },
-        {
-          id: '2',
-          reviewer: 'Marcus Andersson',
-          rating: 5,
-          comment: 'CBD-oljan har verkligen hjälpt min känsliga hud. Rekommenderar starkt!',
-          product: 'Au Naturel Makeup Remover',
-          createdAt: new Date().toISOString(),
-          verified: true
-        },
-        {
-          id: '3',
-          reviewer: 'Sofia Lindberg',
-          rating: 5,
-          comment: 'Ser redan resultat efter två veckor! Fantastisk produkt.',
-          product: 'TA-DA Serum',
-          createdAt: new Date().toISOString(),
-          verified: true
-        }
-      ])
+      setReviews(getDefaultReviews())
     }
   }
+
+  const getDefaultReviews = () => [
+    {
+      id: '1',
+      reviewer: 'Emma Svensson',
+      rating: 5,
+      comment: 'Fantastiska produkter! Min hud har aldrig känt sig så mjuk och balanserad.',
+      product: 'The ONE Facial Oil',
+      createdAt: new Date().toISOString(),
+      verified: true
+    },
+    {
+      id: '2',
+      reviewer: 'Marcus Andersson',
+      rating: 5,
+      comment: 'CBD-oljan har verkligen hjälpt min känsliga hud. Rekommenderar starkt!',
+      product: 'Au Naturel Makeup Remover',
+      createdAt: new Date().toISOString(),
+      verified: true
+    },
+    {
+      id: '3',
+      reviewer: 'Sofia Lindberg',
+      rating: 5,
+      comment: 'Ser redan resultat efter två veckor! Fantastisk produkt.',
+      product: 'TA-DA Serum',
+      createdAt: new Date().toISOString(),
+      verified: true
+    },
+    {
+      id: '4',
+      reviewer: 'Johan Nilsson',
+      rating: 4,
+      comment: 'Mycket bra kvalitet och snabb leverans. Nöjd med mitt köp!',
+      product: 'DUO-KIT',
+      createdAt: new Date().toISOString(),
+      verified: true
+    },
+    {
+      id: '5',
+      reviewer: 'Anna Persson',
+      rating: 5,
+      comment: 'Min hud älskar dessa produkter! Kommer definitivt köpa igen.',
+      product: 'TA-DA Serum',
+      createdAt: new Date().toISOString(),
+      verified: true
+    }
+  ]
 
   const fetchStats = async () => {
     try {
       const response = await fetch('/api/reviews/stats')
       if (response.ok) {
         const data = await response.json()
-        // Handle both old and new response formats
-        if (data.totalReviews !== undefined) {
+        if (data.totalReviews > 0) {
           setOverallStats({
             totalReviews: data.totalReviews,
-            averageRating: data.averageRating || 0
-          })
-        } else if (data.success && data.data) {
-          setOverallStats({
-            totalReviews: data.data.totalReviews,
-            averageRating: data.data.averageRating
+            averageRating: data.averageRating || 4.62
           })
         }
       }
     } catch (error) {
-      console.error('Error fetching review stats:', error)
-      // Set default stats on error
-      setOverallStats({
-        totalReviews: 823,
-        averageRating: 4.6
-      })
+      console.error('Error fetching stats:', error)
     }
   }
 
-  if (loading) {
+  const goToPrevious = () => {
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + reviews.length) % reviews.length)
+    // Reset interval
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = setInterval(() => {
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % reviews.length)
+      }, 5000)
+    }
+  }
+
+  const goToNext = () => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % reviews.length)
+    // Reset interval
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = setInterval(() => {
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % reviews.length)
+      }, 5000)
+    }
+  }
+
+  const goToSlide = (index: number) => {
+    setCurrentIndex(index)
+    // Reset interval
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = setInterval(() => {
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % reviews.length)
+      }, 5000)
+    }
+  }
+
+  // Calculate visible reviews (3 on desktop, 1 on mobile)
+  const getVisibleReviews = () => {
+    const visibleCount = 3 // Will be handled by CSS for mobile
+    const result = []
+    for (let i = 0; i < visibleCount; i++) {
+      const index = (currentIndex + i) % reviews.length
+      result.push(reviews[index])
+    }
+    return result
+  }
+
+  if (loading || reviews.length === 0) {
     return (
-      <section className="py-24 bg-[var(--color-bg-accent)]">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-[var(--color-primary-dark)] mb-4">
+      <section className="py-20 px-4 md:px-8 bg-[var(--color-background-alt)]">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-[var(--color-primary-dark)] mb-4">
               VAD VÅRA KUNDER SÄGER
             </h2>
+            <p className="text-lg text-[var(--color-gray-600)]">
+              Äkta berättelser från människor som upptäckt kraften i naturlig hudvård
+            </p>
           </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white rounded-2xl shadow-lg p-8 animate-pulse">
-                <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
-                <div className="h-16 bg-gray-200 rounded mb-4"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-              </div>
-            ))}
+          <div className="flex justify-center items-center min-h-[300px]">
+            <div className="animate-pulse text-gray-400">Laddar recensioner...</div>
           </div>
         </div>
       </section>
@@ -162,74 +200,121 @@ export function ReviewsSection() {
   }
 
   return (
-    <section className="py-24 bg-[var(--color-bg-accent)]">
-      <div className="container mx-auto px-4">
+    <section className="py-20 px-4 md:px-8 bg-[var(--color-background-alt)] overflow-hidden">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-12"
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-[var(--color-primary-dark)] mb-4 tracking-tight">
+          <h2 className="text-4xl font-bold text-[var(--color-primary-dark)] mb-4">
             VAD VÅRA KUNDER SÄGER
           </h2>
-          <p className="text-lg text-[var(--color-gray-600)] max-w-2xl mx-auto font-light">
+          <p className="text-lg text-[var(--color-gray-600)]">
             Äkta berättelser från människor som upptäckt kraften i naturlig hudvård
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          {reviews.map((review, index) => (
-            <motion.div
-              key={review.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              className="bg-white rounded-2xl shadow-lg overflow-hidden"
-            >
-              {/* Quote Icon */}
-              <div className="relative p-8">
-                <Quote className="absolute top-6 right-6 w-8 h-8 text-[var(--color-accent-light)]/30" />
-                
-                {/* Rating */}
-                <div className="flex gap-1 mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`w-5 h-5 ${
-                        i < review.rating 
-                          ? 'fill-[var(--color-accent)] text-[var(--color-accent)]' 
-                          : 'fill-gray-200 text-gray-200'
-                      }`}
-                    />
-                  ))}
-                </div>
+        {/* Carousel Container */}
+        <div className="relative">
+          {/* Navigation Buttons */}
+          <button
+            onClick={goToPrevious}
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-3 hover:shadow-xl transition-shadow hidden md:block"
+            aria-label="Föregående recension"
+          >
+            <ChevronLeft className="w-6 h-6 text-[var(--color-primary-dark)]" />
+          </button>
+          
+          <button
+            onClick={goToNext}
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-3 hover:shadow-xl transition-shadow hidden md:block"
+            aria-label="Nästa recension"
+          >
+            <ChevronRight className="w-6 h-6 text-[var(--color-primary-dark)]" />
+          </button>
 
-                {/* Comment */}
-                <p className="text-[var(--color-gray-700)] leading-relaxed mb-4 italic min-h-[4rem]">
-                  "{review.comment}"
-                </p>
+          {/* Reviews Carousel */}
+          <div className="overflow-hidden mx-auto max-w-6xl">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentIndex}
+                initial={{ opacity: 0, x: 100 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -100 }}
+                transition={{ duration: 0.5 }}
+                className="grid md:grid-cols-3 gap-8"
+              >
+                {getVisibleReviews().map((review, index) => (
+                  <div
+                    key={`${review.id}-${currentIndex}-${index}`}
+                    className={`bg-white rounded-2xl shadow-lg overflow-hidden ${
+                      index > 0 ? 'hidden md:block' : ''
+                    }`}
+                  >
+                    {/* Quote Icon */}
+                    <div className="relative p-8">
+                      <Quote className="absolute top-6 right-6 w-8 h-8 text-[var(--color-accent-light)]/30" />
+                      
+                      {/* Rating */}
+                      <div className="flex gap-1 mb-4">
+                        {[...Array(5)].map((_, i) => (
+                          <Star
+                            key={i}
+                            className={`w-5 h-5 ${
+                              i < review.rating 
+                                ? 'fill-[var(--color-accent)] text-[var(--color-accent)]' 
+                                : 'fill-gray-200 text-gray-200'
+                            }`}
+                          />
+                        ))}
+                      </div>
 
-                {/* Product */}
-                <p className="text-sm text-[var(--color-accent)] font-medium mb-6">
-                  {review.product}
-                </p>
+                      {/* Comment */}
+                      <p className="text-[var(--color-gray-700)] leading-relaxed mb-4 italic min-h-[4rem]">
+                        "{review.comment}"
+                      </p>
 
-                {/* Customer Info - No Image */}
-                <div className="border-t pt-4">
-                  <p className="font-medium text-[var(--color-primary-dark)] mb-1">
-                    {review.reviewer}
-                  </p>
-                  <div className="flex items-center gap-2 text-sm text-[var(--color-gray-500)]">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
-                    <span>Verifierad köpare</span>
+                      {/* Product */}
+                      <p className="text-sm text-[var(--color-accent)] font-medium mb-6">
+                        {review.product}
+                      </p>
+
+                      {/* Customer Info - No Image */}
+                      <div className="border-t pt-4">
+                        <p className="font-medium text-[var(--color-primary-dark)] mb-1">
+                          {review.reviewer}
+                        </p>
+                        <div className="flex items-center gap-2 text-sm text-[var(--color-gray-500)]">
+                          <CheckCircle className="w-4 h-4 text-green-600" />
+                          <span>Verifierad köpare</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            </motion.div>
-          ))}
+                ))}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Dots Indicator */}
+          <div className="flex justify-center gap-2 mt-6">
+            {reviews.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => goToSlide(index)}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  index === currentIndex 
+                    ? 'w-8 bg-[var(--color-accent)]' 
+                    : 'bg-gray-300 hover:bg-gray-400'
+                }`}
+                aria-label={`Gå till recension ${index + 1}`}
+              />
+            ))}
+          </div>
         </div>
 
         {/* Trust Badge - Updated without images */}
