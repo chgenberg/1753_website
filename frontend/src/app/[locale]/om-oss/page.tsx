@@ -163,7 +163,7 @@ export default function AboutPage() {
                   <div className="relative w-20 h-20 mr-6">
                     {isClient ? (
                       <Image
-                        src="/Porträtt/Christopher2.jpg"
+                        src="/Porträtt/c-and-e-2.jpg"
                         alt="Christopher Genberg"
                         width={80}
                         height={80}

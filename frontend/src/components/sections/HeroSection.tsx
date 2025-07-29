@@ -47,8 +47,8 @@ export function HeroSection() {
       <div className="absolute inset-0 z-0">
         <img
           src={isMobile 
-            ? "/Porträtt_hemsidan/Omslag_2025_mobile.png"
-            : "/Porträtt_hemsidan/Omslag_2025_desktop.png"
+            ? "/images/hero-bg.jpg"
+            : "/images/hero-bg.jpg"
           }
           alt="1753 Skincare Background"
           className="w-full h-full object-cover"
