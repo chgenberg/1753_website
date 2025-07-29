@@ -41,8 +41,11 @@ export const QuizQuestion: React.FC<QuizQuestionProps> = ({
         </p>
       </div>
 
-      {/* Options Grid - Box Layout */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
+      {/* Question Options - Updated Grid Layout */}
+      <div className={`grid gap-3 ${
+        // Mobile: 1 column, Desktop: 2 columns for compact squares
+        'grid-cols-1 md:grid-cols-2 lg:grid-cols-2'
+      }`}>
         {question.options.map((option, index) => (
           <motion.button
             key={option.value}
@@ -52,52 +55,54 @@ export const QuizQuestion: React.FC<QuizQuestionProps> = ({
             whileHover={{ scale: 1.02, y: -2 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => onAnswer(question.id, option.value)}
-            className={`relative p-6 rounded-xl border-2 transition-all duration-300 text-center group ${
+            className={`relative p-4 md:p-6 rounded-xl border-2 transition-all duration-300 group ${
               selectedValue === option.value
                 ? 'border-[#4A3428] bg-[#4A3428] text-white shadow-xl'
                 : 'border-gray-200 hover:border-[#4A3428]/50 hover:shadow-lg bg-white'
             }`}
           >
-            {/* Option Icon - Centered */}
-            <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3 transition-all ${
-              selectedValue === option.value
-                ? 'bg-white/20'
-                : 'bg-[#4A3428]/10 group-hover:bg-[#4A3428]/20'
-            }`}>
-              <span className="text-2xl">{option.icon || option.emoji}</span>
-            </div>
-
-            {/* Option Content - Centered */}
-            <div>
-              <h4 className={`font-semibold text-base md:text-lg mb-1 ${
+            <div className="flex items-center md:items-start gap-4">
+              {/* Option Icon - Left aligned on desktop, centered on mobile */}
+              <div className={`w-14 h-14 md:w-12 md:h-12 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
                 selectedValue === option.value
-                  ? 'text-white'
-                  : 'text-gray-900'
+                  ? 'bg-white/20'
+                  : 'bg-[#4A3428]/10 group-hover:bg-[#4A3428]/20'
               }`}>
-                {option.label}
-              </h4>
-              {option.description && (
-                <p className={`text-xs md:text-sm leading-relaxed ${
+                <span className="text-xl md:text-lg">{option.icon || option.emoji}</span>
+              </div>
+
+              {/* Option Content - Aligned with icon */}
+              <div className="text-left flex-1">
+                <h4 className={`font-semibold text-base mb-1 ${
                   selectedValue === option.value
-                    ? 'text-white/80'
-                    : 'text-gray-600'
+                    ? 'text-white'
+                    : 'text-gray-900'
                 }`}>
-                  {option.description}
-                </p>
+                  {option.label}
+                </h4>
+                {option.description && (
+                  <p className={`text-xs leading-relaxed line-clamp-2 ${
+                    selectedValue === option.value
+                      ? 'text-white/80'
+                      : 'text-gray-600'
+                  }`}>
+                    {option.description}
+                  </p>
+                )}
+              </div>
+
+              {/* Selection Indicator - Right aligned */}
+              {selectedValue === option.value && (
+                <motion.div
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  className="w-6 h-6 bg-white rounded-full flex items-center justify-center flex-shrink-0"
+                >
+                  <Check className="w-4 h-4 text-[#4A3428]" strokeWidth={3} />
+                </motion.div>
               )}
             </div>
-
-            {/* Selection Indicator - Top Right Corner */}
-            {selectedValue === option.value && (
-              <motion.div
-                initial={{ scale: 0, rotate: -180 }}
-                animate={{ scale: 1, rotate: 0 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                className="absolute top-3 right-3 w-6 h-6 bg-white rounded-full flex items-center justify-center"
-              >
-                <Check className="w-4 h-4 text-[#4A3428]" strokeWidth={3} />
-              </motion.div>
-            )}
           </motion.button>
         ))}
       </div>
