@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { questions } from '@/components/quiz/quizData';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LoadingAnimation } from '@/components/quiz/LoadingAnimation';
-import { QuizResults } from '@/components/quiz/QuizResults';
+import QuizResults from '@/components/quiz/QuizResults';
 import { User, Mail, Shield, Sparkles, ArrowRight, ArrowLeft, Home } from 'lucide-react';
 import { RegisterModal } from '@/components/auth/RegisterModal';
 import Link from 'next/link';
@@ -46,31 +46,25 @@ export default function QuizPage() {
   // Handle welcome form submission
   const handleWelcomeSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const newErrors: {name?: string, email?: string, privacy?: string} = {};
+    const newErrors: {email?: string, privacy?: string} = {};
 
-    // Validate name
-    if (!userName.trim()) {
-      newErrors.name = 'Vänligen ange ditt namn';
-    }
-
-    // Validate email
-    if (!userEmail.trim()) {
-      newErrors.email = 'Vänligen ange din e-postadress';
+    if (!userEmail || userEmail.trim() === '') {
+      newErrors.email = 'E-postadress krävs';
     } else if (!isValidEmail(userEmail)) {
-      newErrors.email = 'Vänligen ange en giltig e-postadress';
+      newErrors.email = 'Ogiltig e-postadress';
     }
 
-    // Validate privacy
     if (!privacyAccepted) {
-      newErrors.privacy = 'Du måste godkänna vår integritetspolicy för att fortsätta';
+      newErrors.privacy = 'Du måste acceptera integritetspolicyn';
     }
 
-    setErrors(newErrors);
-
-    // If no errors, proceed to questions
-    if (Object.keys(newErrors).length === 0) {
-      setCurrentStep('questions');
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
     }
+
+    setErrors({});
+    setCurrentStep('questions');
   };
 
   const handleAnswer = (questionId: string, answer: string) => {
@@ -267,51 +261,32 @@ export default function QuizPage() {
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
-                className="w-16 h-16 bg-gradient-to-br from-[#8B6B47] to-[#6B5337] rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg"
+                className="w-16 h-16 bg-gradient-to-br from-[#4A3428] to-[#3A2418] rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg"
               >
                 <Sparkles className="w-8 h-8 text-white" />
               </motion.div>
               
-              <h1 className="text-3xl md:text-4xl font-light text-gray-900 mb-2 uppercase tracking-wider">
-                Välkommen till din
+              <h1 className="text-2xl md:text-3xl font-light text-gray-900 mb-4 uppercase tracking-wider">
+                KOSTNADSFRI HUDANALYS
               </h1>
-              <h2 className="text-2xl md:text-3xl text-[#8B6B47] font-semibold uppercase mb-4">
-                Kostnadsfria Hudanalys
-              </h2>
-              <p className="text-gray-600 mt-4 max-w-md mx-auto">
-                Få personliga rekommendationer för livsstil, produkter och kost på bara 2 minuter
+              <p className="text-gray-600 text-base max-w-sm mx-auto">
+                2 minuter • AI-driven • Personliga tips
               </p>
             </div>
 
             <form onSubmit={handleWelcomeSubmit} className="space-y-4 max-w-md mx-auto">
-              {/* Name Input */}
-              <div className="text-left">
-                <label className="flex items-center text-gray-700 text-sm font-medium mb-2">
-                  <User className="w-4 h-4 mr-2 text-[#8B6B47]" />
-                  Vad är ditt namn?
-                </label>
-                <input
-                  type="text"
-                  value={userName}
-                  onChange={(e) => setUserName(e.target.value)}
-                  placeholder="Ditt förnamn"
-                  className={`w-full px-4 py-3 bg-white border ${errors.name ? 'border-red-400' : 'border-gray-200'} rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#8B6B47] transition-colors`}
-                />
-                {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
-              </div>
-
               {/* Email Input */}
               <div className="text-left">
                 <label className="flex items-center text-gray-700 text-sm font-medium mb-2">
-                  <Mail className="w-4 h-4 mr-2 text-[#8B6B47]" />
-                  Vilken är din e-postadress?
+                  <Mail className="w-4 h-4 mr-2 text-[#4A3428]" />
+                  Din e-postadress
                 </label>
                 <input
                   type="email"
                   value={userEmail}
                   onChange={(e) => setUserEmail(e.target.value)}
                   placeholder="din@email.com"
-                  className={`w-full px-4 py-3 bg-white border ${errors.email ? 'border-red-400' : 'border-gray-200'} rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#8B6B47] transition-colors`}
+                  className={`w-full px-4 py-3 bg-white border ${errors.email ? 'border-red-400' : 'border-gray-200'} rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#4A3428] transition-colors`}
                 />
                 {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
               </div>
@@ -323,12 +298,12 @@ export default function QuizPage() {
                     type="checkbox"
                     checked={privacyAccepted}
                     onChange={(e) => setPrivacyAccepted(e.target.checked)}
-                    className="mt-1 h-4 w-4 text-[#8B6B47] focus:ring-[#8B6B47] border-gray-300 rounded"
+                    className="mt-1 h-4 w-4 text-[#4A3428] focus:ring-[#4A3428] border-gray-300 rounded"
                   />
                   <div className="flex-1">
                     <div className="text-gray-600 text-sm">
                       Jag godkänner{' '}
-                      <a href="/privacy-policy" target="_blank" className="text-[#8B6B47] hover:text-[#6B5337] underline">
+                      <a href="/integritetspolicy" target="_blank" className="text-[#4A3428] hover:text-[#3A2418] underline">
                         integritetspolicyn
                       </a>{' '}
                       och samtycker till att få personliga hudvårdsrekommendationer
@@ -343,7 +318,7 @@ export default function QuizPage() {
                 type="submit"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full flex items-center justify-center px-8 py-4 bg-[#4A3428] text-white rounded-full font-medium hover:bg-[#3A2A1E] transition-all duration-300 shadow-lg"
+                className="w-full flex items-center justify-center px-8 py-4 bg-[#4A3428] text-white rounded-full font-medium hover:bg-[#3A2418] transition-all duration-300 shadow-lg"
               >
                 <span>Starta Min Hudanalys</span>
                 <ArrowRight className="w-5 h-5 ml-2" />
