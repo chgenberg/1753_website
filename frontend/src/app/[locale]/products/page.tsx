@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { useCart } from '@/contexts/CartContext'
-import { Filter, ChevronDown, ShoppingBag, Star, Heart, Eye, Sparkles } from 'lucide-react'
+import { Filter, ChevronDown, ShoppingBag, Star, Heart, Eye, Sparkles, Package } from 'lucide-react'
 import { generatePageSEO } from '@/lib/seo-utils'
 import type { Metadata } from 'next'
 
@@ -28,6 +28,7 @@ interface Product {
     average: number
     count: number
   }
+  images?: string[] // Added images field
 }
 
 export default function ProductsPage() {
@@ -327,12 +328,18 @@ export default function ProductsPage() {
 
                     {/* Product Image */}
                     <div className="relative h-64 bg-gray-100 overflow-hidden">
-                      <Image
-                        src={product.image}
-                        alt={product.name}
-                        fill
-                        className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
-                      />
+                      {product.images && product.images.length > 0 ? (
+                        <Image
+                          src={product.images[0]}
+                          alt={product.name}
+                          fill
+                          className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-400">
+                          <Package className="w-16 h-16" />
+                        </div>
+                      )}
                       
                       {/* Quick View Overlay */}
                       <div className={`absolute inset-0 bg-black/50 flex items-center justify-center transition-opacity duration-300 ${
