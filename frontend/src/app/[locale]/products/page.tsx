@@ -56,7 +56,7 @@ export default function ProductsPage() {
   const fetchProducts = async () => {
     setLoading(true)
     try {
-      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'https://1753website-production.up.railway.app'}/api/products?sort=featured`
+      const apiUrl = 'https://1753website-production.up.railway.app/api/products?sort=featured'
       console.log('Fetching products from:', apiUrl)
       
       const response = await fetch(apiUrl)
