@@ -1,10 +1,5 @@
 import { NextResponse } from 'next/server'
 
-// Force localhost in development, regardless of NEXT_PUBLIC_API_URL
-const BACKEND_URL = process.env.NODE_ENV === 'development' 
-  ? 'http://localhost:5002' 
-  : 'https://1753websitebackend-production.up.railway.app'
-
 export async function GET() {
   try {
     const backendUrl = process.env.BACKEND_URL || 'https://1753website-production.up.railway.app'
@@ -23,16 +18,16 @@ export async function GET() {
     if (!response.ok) {
       console.error('Backend stats error:', response.status, response.statusText)
       
-      // Return mock stats if backend is not available
+      // Return empty stats if backend is not available
       return NextResponse.json({
-        totalReviews: 823,
-        averageRating: 4.6,
+        totalReviews: 0,
+        averageRating: 0,
         ratingDistribution: {
-          1: 5,
-          2: 8,
-          3: 15,
-          4: 95,
-          5: 700
+          1: 0,
+          2: 0,
+          3: 0,
+          4: 0,
+          5: 0
         },
         error: `Backend unavailable (${response.status})`
       })
@@ -43,16 +38,16 @@ export async function GET() {
   } catch (error) {
     console.error('Error fetching review stats:', error)
     
-    // Return mock stats if there's a connection error
+    // Return empty stats if there's a connection error
     return NextResponse.json({
-      totalReviews: 823,
-      averageRating: 4.6,
+      totalReviews: 0,
+      averageRating: 0,
       ratingDistribution: {
-        1: 5,
-        2: 8,
-        3: 15,
-        4: 95,
-        5: 700
+        1: 0,
+        2: 0,
+        3: 0,
+        4: 0,
+        5: 0
       },
       error: 'Backend connection failed'
     })
