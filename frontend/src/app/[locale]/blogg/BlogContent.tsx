@@ -26,6 +26,31 @@ export default function BlogContent({ posts }: BlogContentProps) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [selectedTag, setSelectedTag] = useState<string | null>(null)
 
+  // Available blog images in portrait format
+  const portraitImages = [
+    'Kapitel 1.png', 'Kapitel 2.png', 'Kapitel 3.png', 'Kapitel 4.png', 'Kapitel 5.png',
+    'Kapitel 6.png', 'Kapitel 7.png', 'Kapitel 8.png', 'Kapitel 9.png', 'Kapitel 10.png',
+    'Kapitel 11.png', 'Kapitel 12.png', 'Kapitel 13.png', 'Kapitel 14.png', 'Kapitel 15.png',
+    'Kapitel 16.png', 'Kapitel 17.png', 'Kapitel 18.png', 'Kapitel 19.png', 'Kapitel 20.png',
+    'Kapitel 21.png', 'Kapitel 22.png', 'Kapitel 23.png', 'Kapitel 24.png', 'Kapitel 25.png',
+    'Kapitel 26.png', 'Kapitel 27.png', 'Kapitel 28.png', 'Kapitel 29.png', 'Kapitel 30.png',
+    'Kapitel 31.png', 'Kapitel 32.png', 'Kapitel 33.png', 'Kapitel 34.png', 'Kapitel 35.png',
+    'Kapitel 36.png', 'Kapitel 37.png', 'Kapitel 38.png', 'Kapitel 39.png', 'Kapitel 40.png',
+    'Kapitel 41.png', 'Kapitel 42.png', 'Kapitel 43.png', 'Kapitel 44.png', 'Kapitel 45.png',
+    'Kapitel 46.png', 'Kapitel 47.png', 'Kapitel 48.png', 'Kapitel 49.png', 'Kapitel 50.png',
+    'Kapitel 51.png', 'Kapitel 52.png', 'Kapitel 53.png', 'Kapitel 54.png', 'Kapitel 55.png',
+    'Kapitel 56.png', 'Kapitel 57.png', 'Kapitel 58.png', 'Kapitel 59.png', 'Kapitel 60.png',
+    'Kapitel 61.png', 'Kapitel 62.png', 'Kapitel 63.png', 'Kapitel 64.png'
+  ]
+
+  // Function to get image for blog post with rotation to avoid adjacent duplicates
+  const getImageForPost = (index: number) => {
+    // Use a spacing algorithm to avoid adjacent duplicates
+    const spacing = Math.max(3, Math.floor(portraitImages.length / 8))
+    const imageIndex = (index * spacing) % portraitImages.length
+    return `/Bilder_kvinnor boken_2025/${portraitImages[imageIndex]}`
+  }
+
   // Extract unique categories and tags
   const categories = useMemo(() => {
     const cats = new Set(safePosts.map(post => post.category || 'Hudvård'))
@@ -206,31 +231,19 @@ export default function BlogContent({ posts }: BlogContentProps) {
                     className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer h-full flex flex-col max-w-sm mx-auto"
                   >
                     <div className="relative aspect-[3/4] bg-gradient-to-b from-gray-50 to-gray-100 overflow-hidden">
-                      {(post as BlogPostWithImages).thumbnail ? (
-                        <div className="w-full h-full flex items-center justify-center p-2">
-                          <Image
-                            src={(post as BlogPostWithImages).thumbnail!}
-                            alt={post.title}
-                            fill
-                            className="object-contain group-hover:scale-105 transition-transform duration-300"
-                            style={{ 
-                              objectPosition: 'center'
-                            }}
-                          />
-                        </div>
-                      ) : (
-                        /* Gradient placeholder with category-based colors */
-                        <div className={`w-full h-full flex items-center justify-center p-4 ${
-                          post.category === 'Cannabinoider' ? 'bg-gradient-to-br from-[#F5F3F0]0 to-[#6B5D54]' :
-                          post.category === 'Endocannabinoidsystem' ? 'bg-gradient-to-br from-blue-500 to-indigo-600' :
-                          post.category === 'Medicinska Svampar' ? 'bg-gradient-to-br from-amber-500 to-orange-600' :
-                          post.category === 'Hudproblem' ? 'bg-gradient-to-br from-red-500 to-pink-600' :
-                          post.category === 'Mikrobiom' ? 'bg-gradient-to-br from-purple-500 to-pink-600' :
-                          'bg-gradient-to-br from-[#00937c] to-[#00b89d]'
-                        }`}>
-                          <span className="text-white text-4xl font-bold opacity-50">1753</span>
-                        </div>
-                      )}
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Image
+                          src={getImageForPost(index)}
+                          alt={post.title}
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                          priority={index < 6} // Priority for first 6 images
+                          onError={(e) => {
+                            console.warn(`Failed to load blog image for post ${index}: ${getImageForPost(index)}`)
+                          }}
+                        />
+                      </div>
                     </div>
                     
                     <div className="p-6 flex-1 flex flex-col">
