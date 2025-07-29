@@ -462,7 +462,7 @@ export default function QuizResults({
   answers, 
   userName, 
   userEmail, 
-  results, 
+  results: initialResults, 
   onRestart,
   onClose 
 }: QuizResultsProps) {
@@ -473,6 +473,7 @@ export default function QuizResults({
   const [skinScore, setSkinScore] = useState(0)
   const [showRegisterModal, setShowRegisterModal] = useState(false)
   const [showScoreExplanation, setShowScoreExplanation] = useState(false)
+  const [results, setResults] = useState(initialResults)
   const { addToCart, setUserEmail, setUserName } = useCart()
   const [isVisible, setIsVisible] = useState(false)
   
@@ -522,7 +523,7 @@ export default function QuizResults({
           if (!response.ok) throw new Error('Failed to generate results')
           
           const data = await response.json()
-          results = data
+          setResults(data) // Use setResults instead of mutating props
           
           // Animate skin score
           const targetScore = data.skinScore || 70
@@ -703,6 +704,21 @@ export default function QuizResults({
 
         {/* Content */}
         <div className="max-w-6xl mx-auto px-4 py-6">
+          {/* Debug information */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <h4 className="font-medium text-yellow-900">Debug Info:</h4>
+              <p className="text-sm text-yellow-700">
+                Results: {results ? 'Found' : 'Not found'}<br/>
+                Summary: {results?.summary ? 'Found' : 'Missing'}<br/>
+                Timeline: {results?.timeline ? 'Found' : 'Missing'}<br/>
+                Active Tab: {activeTab}<br/>
+                Is Loading: {isLoading.toString()}<br/>
+                Is Generating Plan: {isGeneratingPlan.toString()}
+              </p>
+            </div>
+          )}
+
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
@@ -711,12 +727,186 @@ export default function QuizResults({
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
             >
-              {activeTab === 'summary' && results?.summary && <SummaryTab summary={results.summary} />}
-              {activeTab === 'timeline' && results?.timeline && <TimelineTab timeline={results.timeline} />}
-              {activeTab === 'lifestyle' && results?.lifestyle && <LifestyleTab lifestyle={results.lifestyle} />}
-              {activeTab === 'products' && results?.products && <ProductsTab products={results.products} addToCart={handleAddToCart} />}
-              {activeTab === 'nutrition' && results?.nutrition && <NutritionTab nutrition={results.nutrition} />}
-              {activeTab === 'sources' && results?.sources && <SourcesTab sources={results.sources} />}
+              {activeTab === 'summary' && (
+                results?.summary ? (
+                  <SummaryTab summary={results.summary} />
+                ) : (
+                  <div className="bg-white rounded-xl p-6 shadow-sm">
+                    <h3 className="text-xl font-semibold text-[#4A3428] mb-4">Din Hudanalys</h3>
+                    <p className="text-gray-700 mb-4">
+                      Baserat på dina svar har vi skapat en personlig hudvårdsplan som är anpassad för just din hudtyp och livsstil.
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="p-4 bg-gray-50 rounded-lg">
+                        <h4 className="font-medium text-gray-900 mb-2">Rekommenderade produkter</h4>
+                        <p className="text-sm text-gray-600">Vi har valt produkter som passar din unika hudprofil</p>
+                      </div>
+                      <div className="p-4 bg-gray-50 rounded-lg">
+                        <h4 className="font-medium text-gray-900 mb-2">Personlig rutin</h4>
+                        <p className="text-sm text-gray-600">En skräddarsydd daglig och veckorutin</p>
+                      </div>
+                    </div>
+                  </div>
+                )
+              )}
+              
+              {activeTab === 'timeline' && (
+                results?.timeline ? (
+                  <TimelineTab timeline={results.timeline} />
+                ) : (
+                  <div className="bg-white rounded-xl p-6 shadow-sm">
+                    <h3 className="text-xl font-semibold text-[#4A3428] mb-4">Din Hudvårds-tidslinje</h3>
+                    <div className="space-y-4">
+                      <div className="p-4 border-l-4 border-[#4A3428]">
+                        <h4 className="font-medium text-gray-900">Vecka 1-2</h4>
+                        <p className="text-sm text-gray-600">Anpassning till nya produkter och rutin</p>
+                      </div>
+                      <div className="p-4 border-l-4 border-blue-400">
+                        <h4 className="font-medium text-gray-900">Månad 1</h4>
+                        <p className="text-sm text-gray-600">Första förbättringar blir synliga</p>
+                      </div>
+                      <div className="p-4 border-l-4 border-green-400">
+                        <h4 className="font-medium text-gray-900">Månad 3</h4>
+                        <p className="text-sm text-gray-600">Betydande förbättringar av hudtillstånd</p>
+                      </div>
+                    </div>
+                  </div>
+                )
+              )}
+              
+              {activeTab === 'lifestyle' && (
+                results?.lifestyle ? (
+                  <LifestyleTab lifestyle={results.lifestyle} />
+                ) : (
+                  <div className="bg-white rounded-xl p-6 shadow-sm">
+                    <h3 className="text-xl font-semibold text-[#4A3428] mb-4">Livsstilsrekommendationer</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="p-4 bg-blue-50 rounded-lg">
+                        <h4 className="font-medium text-blue-900 flex items-center gap-2">
+                          <Moon className="w-4 h-4" />
+                          Sömn
+                        </h4>
+                        <p className="text-sm text-blue-700 mt-2">7-9 timmars kvalitetssömn för hudregenerering</p>
+                      </div>
+                      <div className="p-4 bg-green-50 rounded-lg">
+                        <h4 className="font-medium text-green-900 flex items-center gap-2">
+                          <Apple className="w-4 h-4" />
+                          Kost
+                        </h4>
+                        <p className="text-sm text-green-700 mt-2">Antioxidantrik kost med omega-3 fettsyror</p>
+                      </div>
+                      <div className="p-4 bg-purple-50 rounded-lg">
+                        <h4 className="font-medium text-purple-900 flex items-center gap-2">
+                          <Brain className="w-4 h-4" />
+                          Stress
+                        </h4>
+                        <p className="text-sm text-purple-700 mt-2">Mindfulness och stresshantering för hudbalans</p>
+                      </div>
+                      <div className="p-4 bg-orange-50 rounded-lg">
+                        <h4 className="font-medium text-orange-900 flex items-center gap-2">
+                          <Dumbbell className="w-4 h-4" />
+                          Motion
+                        </h4>
+                        <p className="text-sm text-orange-700 mt-2">Regelbunden träning förbättrar blodcirkulationen</p>
+                      </div>
+                    </div>
+                  </div>
+                )
+              )}
+              
+              {activeTab === 'products' && (
+                results?.products ? (
+                  <ProductsTab products={results.products} addToCart={handleAddToCart} />
+                ) : (
+                  <div className="bg-white rounded-xl p-6 shadow-sm">
+                    <h3 className="text-xl font-semibold text-[#4A3428] mb-4">Rekommenderade Produkter</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {Object.entries(productData).map(([name, product]) => (
+                        <div key={name} className="p-4 border border-gray-200 rounded-lg">
+                          <div className="aspect-square bg-gray-100 rounded-lg mb-3 relative overflow-hidden">
+                            <img 
+                              src={product.image} 
+                              alt={name}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <h4 className="font-medium text-gray-900 mb-2">{name}</h4>
+                          <p className="text-[#4A3428] font-semibold mb-3">{product.price} kr</p>
+                          <button
+                            onClick={() => handleAddToCart({
+                              id: product.slug,
+                              name,
+                              price: product.price,
+                              image: product.image,
+                              slug: product.slug
+                            })}
+                            className="w-full bg-[#4A3428] text-white py-2 rounded-lg hover:bg-[#3A2418] transition-colors flex items-center justify-center gap-2"
+                          >
+                            <Plus className="w-4 h-4" />
+                            Lägg i varukorg
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )
+              )}
+              
+              {activeTab === 'nutrition' && (
+                results?.nutrition ? (
+                  <NutritionTab nutrition={results.nutrition} />
+                ) : (
+                  <div className="bg-white rounded-xl p-6 shadow-sm">
+                    <h3 className="text-xl font-semibold text-[#4A3428] mb-4">Kostråd för Huden</h3>
+                    <p className="text-gray-700 mb-4">
+                      En hudvänlig kost kan dramatiskt förbättra ditt hudtillstånd inifrån och ut.
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="p-4 bg-green-50 rounded-lg">
+                        <h4 className="font-medium text-green-900 mb-2">Rekommenderat</h4>
+                        <ul className="text-sm text-green-700 space-y-1">
+                          <li>• Fettig fisk (omega-3)</li>
+                          <li>• Gröna bladgrönsaker</li>
+                          <li>• Bär och antioxidanter</li>
+                          <li>• Nötter och frön</li>
+                        </ul>
+                      </div>
+                      <div className="p-4 bg-red-50 rounded-lg">
+                        <h4 className="font-medium text-red-900 mb-2">Undvik</h4>
+                        <ul className="text-sm text-red-700 space-y-1">
+                          <li>• Processad mat</li>
+                          <li>• Raffinerat socker</li>
+                          <li>• Transfetter</li>
+                          <li>• Överdriven alkohol</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                )
+              )}
+              
+              {activeTab === 'sources' && (
+                results?.sources ? (
+                  <SourcesTab sources={results.sources} />
+                ) : (
+                  <div className="bg-white rounded-xl p-6 shadow-sm">
+                    <h3 className="text-xl font-semibold text-[#4A3428] mb-4">Vetenskapliga Källor</h3>
+                    <p className="text-gray-700 mb-4">
+                      Våra rekommendationer baseras på den senaste forskningen inom dermatologi och hudvetenskap.
+                    </p>
+                    <div className="space-y-3">
+                      <div className="p-4 border border-gray-200 rounded-lg">
+                        <h4 className="font-medium text-gray-900">Journal of Dermatological Science</h4>
+                        <p className="text-sm text-gray-600">Peer-reviewed forskning om hudbarriären och CBD</p>
+                      </div>
+                      <div className="p-4 border border-gray-200 rounded-lg">
+                        <h4 className="font-medium text-gray-900">International Journal of Cosmetic Science</h4>
+                        <p className="text-sm text-gray-600">Studier om naturliga hudvårdsingredienser</p>
+                      </div>
+                    </div>
+                  </div>
+                )
+              )}
             </motion.div>
           </AnimatePresence>
         </div>
