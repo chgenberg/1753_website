@@ -195,7 +195,7 @@ export default function BlogContent({ posts }: BlogContentProps) {
               <p className="text-xl text-gray-600">Inga artiklar hittades. Prova att ändra dina filter.</p>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               {filteredPosts.map((post, index) => (
                 <Link key={post.slug} href={`/blogg/${post.slug}`}>
                   <motion.article
@@ -203,18 +203,20 @@ export default function BlogContent({ posts }: BlogContentProps) {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6, delay: Math.min(index * 0.1, 0.3) }}
-                    className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer h-full flex flex-col"
+                    className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer h-full flex flex-col max-w-sm mx-auto"
                   >
-                    <div className="relative h-72 bg-gradient-to-b from-gray-50 to-gray-100 overflow-hidden">
+                    <div className="relative aspect-[3/4] bg-gradient-to-b from-gray-50 to-gray-100 overflow-hidden">
                       {(post as BlogPostWithImages).thumbnail ? (
-                        <div className="w-full h-full flex items-center justify-center p-2">
+                        <div className="w-full h-full flex items-center justify-center">
                           <Image
                             src={(post as BlogPostWithImages).thumbnail!}
                             alt={post.title}
-                            width={200}
-                            height={280}
-                            className="w-auto h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                            style={{ maxHeight: '100%', width: 'auto' }}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-300"
+                            style={{ 
+                              objectPosition: 'center',
+                              objectFit: 'cover'
+                            }}
                           />
                         </div>
                       ) : (
