@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const page = searchParams.get('page') || '1'
@@ -19,10 +19,20 @@ export async function GET(request: Request) {
     })
 
     const backendUrl = process.env.BACKEND_URL || 'https://1753website-production.up.railway.app'
-    const response = await fetch(`${backendUrl}/api/raw-materials?${queryParams}`)
+    const response = await fetch(`${backendUrl}/api/raw-materials?${queryParams}`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      // Don't cache for now to avoid cache issues
+      cache: 'no-store'
+    })
     
     if (!response.ok) {
-      throw new Error(`Backend responded with ${response.status}`)
+      console.error('Backend error:', response.status, response.statusText)
+      return NextResponse.json(
+        { error: 'Failed to fetch raw materials' },
+        { status: response.status }
+      )
     }
     
     const data = await response.json()
@@ -31,7 +41,7 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error('Error fetching raw materials:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch raw materials' },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }

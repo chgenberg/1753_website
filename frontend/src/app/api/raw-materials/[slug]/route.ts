@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(
-  request: Request,
-  { params }: { params: { slug: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const slug = params.slug
+    const { slug } = await params
     
     // Forward to backend API
     const backendUrl = process.env.BACKEND_URL || 'https://1753website-production.up.railway.app'
@@ -19,16 +19,20 @@ export async function GET(
     }
     
     if (!response.ok) {
-      throw new Error(`Backend responded with ${response.status}`)
+      console.error('Backend error:', response.status, response.statusText)
+      return NextResponse.json(
+        { error: 'Failed to fetch raw material' },
+        { status: response.status }
+      )
     }
     
     const data = await response.json()
-    return NextResponse.json(data)
     
+    return NextResponse.json(data)
   } catch (error) {
     console.error('Error fetching raw material:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch raw material' },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }
