@@ -89,7 +89,21 @@ export function SafeProductsSection() {
         const data = await response.json()
         if (data.success && Array.isArray(data.data)) {
           const validProducts = data.data
-            .filter((p: any) => p && p.name && p.slug && !p.name.toLowerCase().includes('store review'))
+            .filter((p: any) => {
+              if (!p || !p.name || !p.slug || p.name.toLowerCase().includes('store review')) {
+                return false
+              }
+              // Check if product has valid images or can be matched by name
+              const hasValidImages = p.images && p.images.length > 0 && 
+                (p.images[0].url || p.images[0].src)
+              const canMatchByName = p.name.toLowerCase().includes('fungtastic') ||
+                p.name.toLowerCase().includes('naturel') ||
+                p.name.toLowerCase().includes('the one') ||
+                p.name.toLowerCase().includes('i love') ||
+                p.name.toLowerCase().includes('ta-da') ||
+                p.name.toLowerCase().includes('duo')
+              return hasValidImages || canMatchByName
+            })
             .slice(0, 5)
           
           if (validProducts.length > 0) {
@@ -107,7 +121,8 @@ export function SafeProductsSection() {
   const getImageUrl = (product: Product): string => {
     if (product.images && product.images.length > 0) {
       const firstImage = product.images[0]
-      return firstImage.url || firstImage.src || ''
+      const imageUrl = firstImage.url || firstImage.src
+      if (imageUrl) return imageUrl
     }
     // Try to match product name to image
     const productNameLower = product.name.toLowerCase()
@@ -117,7 +132,8 @@ export function SafeProductsSection() {
     if (productNameLower.includes('i love')) return '/images/products/ILOVE.png'
     if (productNameLower.includes('ta-da')) return '/images/products/TA-DA.png'
     if (productNameLower.includes('duo')) return '/images/products/DUO.png'
-    return ''
+    // Always return a valid fallback image
+    return '/images/products/DUO.png'
   }
 
   return (
@@ -174,6 +190,14 @@ export function SafeProductsSection() {
                         width={400}
                         height={400}
                         className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700"
+                        onError={(e) => {
+                          console.warn(`Failed to load product image: ${getImageUrl(product)} for ${product.name}`)
+                          // Set a fallback image if the current one fails
+                          const target = e.target as HTMLImageElement
+                          if (target.src !== '/images/products/DUO.png') {
+                            target.src = '/images/products/DUO.png'
+                          }
+                        }}
                       />
                       
                       {product.compareAtPrice && product.compareAtPrice > product.price && (
