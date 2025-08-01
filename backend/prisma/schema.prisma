@@ -880,3 +880,25 @@ model OrderDiscount {
 // discounts        OrderDiscount[]
 // totalBeforeDiscount Float?
 // totalDiscount    Float    @default(0)
+
+// Quiz Submission model
+model QuizSubmission {
+  id          String   @id @default(cuid())
+  email       String
+  name        String
+  gender      String
+  age         Int
+  answers     String   @db.Text // JSON string of all quiz answers
+  
+  // Analysis results (if generated)
+  results     String?  @db.Text // JSON string of AI-generated results
+  
+  // Tracking
+  timestamp   DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("quiz_submissions")
+  @@index([email])
+  @@index([createdAt])
+}

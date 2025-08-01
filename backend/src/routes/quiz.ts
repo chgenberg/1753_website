@@ -1,97 +1,66 @@
-import express from 'express'
-import { OpenAIService, QuizAnswers } from '../services/openaiService'
-import { body, validationResult } from 'express-validator'
+import { Router } from 'express'
+import { PrismaClient } from '@prisma/client'
+import { logger } from '../utils/logger'
 
-const router = express.Router()
+const router = Router()
+const prisma = new PrismaClient()
 
-/**
- * POST /api/quiz/results
- * Generera personaliserade hudvårdsresultat baserat på quiz-svar
- */
-router.post('/results', [
-  body('skinType').notEmpty().withMessage('Hudtyp krävs'),
-  body('concerns').isArray().withMessage('Hudproblem måste vara en array'),
-  body('lifestyle').isArray().withMessage('Livsstil måste vara en array'),
-  body('currentProducts').isArray().withMessage('Nuvarande produkter måste vara en array'),
-  body('goals').isArray().withMessage('Mål måste vara en array'),
-  body('age').notEmpty().withMessage('Ålder krävs'),
-  body('budget').notEmpty().withMessage('Budget krävs'),
-], async (req, res) => {
+// Save quiz submission
+router.post('/save', async (req, res) => {
   try {
-    // Validera input
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        message: 'Ogiltiga quiz-svar',
-        errors: errors.array()
-      })
-    }
+    const { email, name, gender, age, answers, timestamp } = req.body
 
-    const quizAnswers: QuizAnswers = {
-      skinType: req.body.skinType,
-      concerns: req.body.concerns,
-      lifestyle: req.body.lifestyle,
-      currentProducts: req.body.currentProducts,
-      goals: req.body.goals,
-      age: req.body.age,
-      budget: req.body.budget
-    }
+    // Save to database
+    const quizSubmission = await prisma.quizSubmission.create({
+      data: {
+        email,
+        name,
+        gender,
+        age: parseInt(age),
+        answers: JSON.stringify(answers),
+        timestamp: new Date(timestamp)
+      }
+    })
 
-    // Generera personaliserade resultat med OpenAI
-    const results = await OpenAIService.generateQuizResults(quizAnswers)
+    logger.info(`Quiz submission saved for ${email}`)
 
     res.json({
       success: true,
-      data: results
+      id: quizSubmission.id
     })
-
   } catch (error) {
-    console.error('Quiz results error:', error)
+    logger.error('Error saving quiz submission:', error)
     res.status(500).json({
       success: false,
-      message: 'Kunde inte generera personaliserade resultat',
-      error: error instanceof Error ? error.message : 'Okänt fel'
+      error: 'Failed to save quiz submission'
     })
   }
 })
 
-/**
- * POST /api/quiz/product-description
- * Generera AI-baserad produktbeskrivning
- */
-router.post('/product-description', [
-  body('productName').notEmpty().withMessage('Produktnamn krävs'),
-  body('ingredients').isArray().withMessage('Ingredienser måste vara en array'),
-], async (req, res) => {
+// Get quiz statistics
+router.get('/stats', async (req, res) => {
   try {
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        message: 'Ogiltiga parametrar',
-        errors: errors.array()
-      })
-    }
-
-    const { productName, ingredients } = req.body
-
-    const description = await OpenAIService.generateProductDescription(productName, ingredients)
+    const totalSubmissions = await prisma.quizSubmission.count()
+    const last30Days = await prisma.quizSubmission.count({
+      where: {
+        timestamp: {
+          gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+        }
+      }
+    })
 
     res.json({
       success: true,
       data: {
-        productName,
-        description
+        totalSubmissions,
+        last30Days
       }
     })
-
   } catch (error) {
-    console.error('Product description error:', error)
+    logger.error('Error getting quiz stats:', error)
     res.status(500).json({
       success: false,
-      message: 'Kunde inte generera produktbeskrivning',
-      error: error instanceof Error ? error.message : 'Okänt fel'
+      error: 'Failed to get quiz statistics'
     })
   }
 })

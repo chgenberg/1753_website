@@ -26,6 +26,7 @@ import rawMaterialsRoutes from './routes/rawMaterials'
 import contactRoutes from './routes/contact'
 import orderRoutes from './routes/orders'
 import discountRoutes from './routes/discounts'
+import quizRoutes from './routes/quiz'
 
 // Validate environment variables
 const envConfig = validateEnv()

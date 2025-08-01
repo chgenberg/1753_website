@@ -1,520 +1,729 @@
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
-import { questions } from '@/components/quiz/quizData';
-import { motion, AnimatePresence } from 'framer-motion';
-import { LoadingAnimation } from '@/components/quiz/LoadingAnimation';
-import QuizResults from '@/components/quiz/QuizResults';
-import { User, Mail, Shield, Sparkles, ArrowRight, ArrowLeft, Home } from 'lucide-react';
-import { RegisterModal } from '@/components/auth/RegisterModal';
-import Link from 'next/link';
-import Image from 'next/image';
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { 
+  User, Mail, Calendar, Check, ChevronRight, ChevronLeft, 
+  Sparkles, Heart, Sun, Moon, Droplets, Leaf, Timer, 
+  AlertCircle, Shield, Home
+} from 'lucide-react'
+import Link from 'next/link'
+import Image from 'next/image'
+import ImprovedQuizResults from '@/components/quiz/ImprovedQuizResults'
+
+// Soft cloud shape component
+const CloudShape = ({ children, className = "" }: { children: React.ReactNode, className?: string }) => (
+  <motion.div
+    className={`relative ${className}`}
+    whileHover={{ scale: 1.02 }}
+    transition={{ type: "spring", stiffness: 300 }}
+  >
+    <svg className="absolute inset-0 w-full h-full" viewBox="0 0 200 100" preserveAspectRatio="none">
+      <path
+        d="M 20,50 Q 20,20 50,20 Q 80,10 120,20 Q 150,20 180,50 Q 180,80 150,80 Q 120,90 80,80 Q 50,80 20,50"
+        fill="currentColor"
+        className="text-white/90 drop-shadow-lg"
+      />
+    </svg>
+    <div className="relative z-10 p-8">
+      {children}
+    </div>
+  </motion.div>
+)
+
+interface UserInfo {
+  email: string
+  name: string
+  gender: 'male' | 'female' | 'other' | ''
+  age: string
+}
 
 export default function QuizPage() {
-  const t = useTranslations('Quiz');
-  const [currentStep, setCurrentStep] = useState('welcome'); // 'welcome', 'questions', 'loading', 'results'
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [results, setResults] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [loadingProgress, setLoadingProgress] = useState(0);
-  const [userName, setUserName] = useState('');
-  const [userEmail, setUserEmail] = useState('');
-  const [privacyAccepted, setPrivacyAccepted] = useState(false);
-  const [errors, setErrors] = useState<{name?: string, email?: string, privacy?: string}>({});
-  const [showRegisterModal, setShowRegisterModal] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [currentStep, setCurrentStep] = useState<'welcome' | 'userInfo' | 'questions' | 'loading' | 'results'>('welcome')
+  const [userInfo, setUserInfo] = useState<UserInfo>({
+    email: '',
+    name: '',
+    gender: '',
+    age: ''
+  })
+  const [privacyAccepted, setPrivacyAccepted] = useState(false)
+  const [currentQuestion, setCurrentQuestion] = useState(0)
+  const [answers, setAnswers] = useState<Record<string, any>>({})
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [loadingProgress, setLoadingProgress] = useState(0)
+  const [results, setResults] = useState<any>(null)
 
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
+  // Gender-specific questions will be loaded based on user selection
+  const [questions, setQuestions] = useState<any[]>([])
 
-  const totalQuestions = questions.length;
-  const progress = currentStep === 'questions' ? ((currentQuestion + 1) / totalQuestions) * 100 : 0;
+  const validateEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  }
 
-  // Validate email format
-  const isValidEmail = (email: string) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  };
+  const handleUserInfoSubmit = () => {
+    const newErrors: Record<string, string> = {}
 
-  // Handle welcome form submission
-  const handleWelcomeSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const newErrors: {email?: string, privacy?: string} = {};
+    if (!userInfo.email) {
+      newErrors.email = 'E-postadress krävs'
+    } else if (!validateEmail(userInfo.email)) {
+      newErrors.email = 'Ogiltig e-postadress'
+    }
 
-    if (!userEmail || userEmail.trim() === '') {
-      newErrors.email = 'E-postadress krävs';
-    } else if (!isValidEmail(userEmail)) {
-      newErrors.email = 'Ogiltig e-postadress';
+    if (!userInfo.name) {
+      newErrors.name = 'Namn krävs'
+    }
+
+    if (!userInfo.gender) {
+      newErrors.gender = 'Vänligen välj kön'
+    }
+
+    if (!userInfo.age) {
+      newErrors.age = 'Ålder krävs'
+    } else if (parseInt(userInfo.age) < 15 || parseInt(userInfo.age) > 100) {
+      newErrors.age = 'Ange en giltig ålder (15-100)'
     }
 
     if (!privacyAccepted) {
-      newErrors.privacy = 'Du måste acceptera integritetspolicyn';
+      newErrors.privacy = 'Du måste acceptera integritetspolicyn'
     }
 
     if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
+      setErrors(newErrors)
+      return
     }
 
-    setErrors({});
-    setCurrentStep('questions');
-  };
+    setErrors({})
+    loadQuestionsForUser()
+    setCurrentStep('questions')
+  }
 
-  const handleAnswer = (questionId: string, answer: string) => {
-    const currentQuestionData = questions[currentQuestion]
-    
-    if (currentQuestionData.multiSelect) {
-      // For multi-select questions, toggle the answer
-      const currentAnswers = answers[questionId] ? answers[questionId].split(',') : []
-      const answerIndex = currentAnswers.indexOf(answer)
-      
-      if (answerIndex > -1) {
-        // Remove answer if already selected
-        currentAnswers.splice(answerIndex, 1)
-      } else {
-        // Add answer if not selected
-        currentAnswers.push(answer)
+  const loadQuestionsForUser = () => {
+    // This would load dynamic questions based on gender and age
+    // For now, using a base set
+    setQuestions(getQuestionsForUser(userInfo))
+  }
+
+  const getQuestionsForUser = (info: UserInfo) => {
+    // Base questions that everyone gets
+    const baseQuestions = [
+      {
+        id: 'skin_type',
+        text: 'Hur skulle du beskriva din hudtyp?',
+        type: 'single',
+        options: [
+          { value: 'dry', label: 'Torr', icon: '🏜️', description: 'Känns stram och kan fjälla' },
+          { value: 'oily', label: 'Oljig', icon: '💧', description: 'Glansig, särskilt i T-zonen' },
+          { value: 'combination', label: 'Kombinerad', icon: '🎭', description: 'Torr på vissa ställen, oljig på andra' },
+          { value: 'normal', label: 'Normal', icon: '✨', description: 'Välbalanserad utan större problem' },
+          { value: 'sensitive', label: 'Känslig', icon: '🌸', description: 'Reagerar lätt på produkter' }
+        ]
+      },
+      {
+        id: 'skin_concerns',
+        text: 'Vilka hudproblem vill du främst adressera?',
+        type: 'multiple',
+        options: [
+          { value: 'acne', label: 'Akne', icon: '🔴', description: '' },
+          { value: 'aging', label: 'Åldrande', icon: '⏰', description: '' },
+          { value: 'pigmentation', label: 'Pigmentering', icon: '🎨', description: '' },
+          { value: 'redness', label: 'Rodnad', icon: '🌹', description: '' },
+          { value: 'dryness', label: 'Torrhet', icon: '🏜️', description: '' },
+          { value: 'oiliness', label: 'Oljighet', icon: '💧', description: '' },
+          { value: 'sensitivity', label: 'Känslighet', icon: '🌸', description: '' },
+          { value: 'texture', label: 'Ojämn hudstruktur', icon: '🏔️', description: '' }
+        ]
+      },
+      {
+        id: 'lifestyle_stress',
+        text: 'Hur skulle du beskriva din stressnivå i vardagen?',
+        type: 'single',
+        options: [
+          { value: 'low', label: 'Låg', icon: '😌', description: 'Jag känner mig oftast lugn och avslappnad' },
+          { value: 'moderate', label: 'Måttlig', icon: '😐', description: 'Normal vardagsstress som jag hanterar bra' },
+          { value: 'high', label: 'Hög', icon: '😰', description: 'Känner mig ofta stressad' },
+          { value: 'very_high', label: 'Mycket hög', icon: '😣', description: 'Konstant stress som påverkar mitt välmående' }
+        ]
+      },
+      {
+        id: 'sleep_quality',
+        text: 'Hur är din sömnkvalitet?',
+        type: 'single',
+        options: [
+          { value: 'excellent', label: 'Utmärkt', icon: '😴', description: '7-9 timmar djup sömn' },
+          { value: 'good', label: 'Bra', icon: '😪', description: 'Sover oftast gott' },
+          { value: 'fair', label: 'Okej', icon: '😑', description: 'Vaknar ibland på natten' },
+          { value: 'poor', label: 'Dålig', icon: '😫', description: 'Svårt att somna eller sova djupt' }
+        ]
+      },
+      {
+        id: 'water_intake',
+        text: 'Hur mycket vatten dricker du dagligen?',
+        type: 'single',
+        options: [
+          { value: 'less_1L', label: 'Mindre än 1 liter', icon: '💧', description: '' },
+          { value: '1_2L', label: '1-2 liter', icon: '💧💧', description: '' },
+          { value: '2_3L', label: '2-3 liter', icon: '💧💧💧', description: '' },
+          { value: 'more_3L', label: 'Mer än 3 liter', icon: '💧💧💧💧', description: '' }
+        ]
+      },
+      {
+        id: 'sun_exposure',
+        text: 'Hur mycket tid spenderar du utomhus i solljus?',
+        type: 'single',
+        options: [
+          { value: 'minimal', label: 'Minimal', icon: '🏢', description: 'Mest inomhus' },
+          { value: 'moderate', label: 'Måttlig', icon: '⛅', description: '30-60 min dagligen' },
+          { value: 'high', label: 'Mycket', icon: '☀️', description: '1-3 timmar dagligen' },
+          { value: 'extensive', label: 'Omfattande', icon: '🏖️', description: 'Mer än 3 timmar' }
+        ]
+      },
+      {
+        id: 'diet_quality',
+        text: 'Hur skulle du beskriva din kost?',
+        type: 'single',
+        options: [
+          { value: 'whole_foods', label: 'Hela livsmedel', icon: '🥗', description: 'Mest obearbetad mat' },
+          { value: 'balanced', label: 'Balanserad', icon: '🍱', description: 'Blandning av hälsosamt och mindre hälsosamt' },
+          { value: 'processed', label: 'Bearbetad', icon: '🍕', description: 'Mycket färdigmat och snabbmat' },
+          { value: 'special', label: 'Specialkost', icon: '🌱', description: 'Vegetarisk/vegan/keto etc.' }
+        ]
+      },
+      {
+        id: 'exercise_frequency',
+        text: 'Hur ofta tränar du?',
+        type: 'single',
+        options: [
+          { value: 'never', label: 'Aldrig', icon: '🛋️', description: '' },
+          { value: '1_2_week', label: '1-2 ggr/vecka', icon: '🚶', description: '' },
+          { value: '3_4_week', label: '3-4 ggr/vecka', icon: '🏃', description: '' },
+          { value: 'daily', label: 'Dagligen', icon: '💪', description: '' }
+        ]
+      },
+      {
+        id: 'current_routine',
+        text: 'Hur ser din nuvarande hudvårdsrutin ut?',
+        type: 'single',
+        options: [
+          { value: 'none', label: 'Ingen rutin', icon: '🚫', description: 'Använder sällan hudvård' },
+          { value: 'basic', label: 'Enkel', icon: '💧', description: 'Rengöring och fukt' },
+          { value: 'moderate', label: 'Måttlig', icon: '🧴', description: '3-4 produkter' },
+          { value: 'extensive', label: 'Omfattande', icon: '🧪', description: '5+ produkter' }
+        ]
+      },
+      {
+        id: 'environmental_factors',
+        text: 'Vilken typ av miljö befinner du dig mest i?',
+        type: 'single',
+        options: [
+          { value: 'urban', label: 'Stadsmiljö', icon: '🏙️', description: 'Föroreningar och stress' },
+          { value: 'suburban', label: 'Förort', icon: '🏘️', description: 'Balanserad miljö' },
+          { value: 'rural', label: 'Landsbygd', icon: '🌳', description: 'Ren luft och natur' },
+          { value: 'mixed', label: 'Blandat', icon: '🗺️', description: 'Reser mycket' }
+        ]
       }
+    ]
+
+    // Add gender-specific questions
+    if (info.gender === 'female') {
+      baseQuestions.push({
+        id: 'hormonal_factors',
+        text: 'Upplever du hormonella förändringar som påverkar din hud?',
+        type: 'single',
+        options: [
+          { value: 'menstrual', label: 'Menstruationscykel', icon: '🌙', description: '' },
+          { value: 'pregnancy', label: 'Graviditet', icon: '🤰', description: '' },
+          { value: 'menopause', label: 'Klimakteriet', icon: '🦋', description: '' },
+          { value: 'none', label: 'Inga märkbara', icon: '✨', description: '' }
+        ]
+      })
+    }
+
+    // Add age-specific questions
+    if (parseInt(info.age) < 25) {
+      baseQuestions.push({
+        id: 'acne_severity',
+        text: 'Hur allvarlig är din akne?',
+        type: 'single',
+        options: [
+          { value: 'none', label: 'Ingen akne', icon: '✨', description: '' },
+          { value: 'mild', label: 'Mild', icon: '🟡', description: 'Enstaka finnar' },
+          { value: 'moderate', label: 'Måttlig', icon: '🟠', description: 'Regelbundna utbrott' },
+          { value: 'severe', label: 'Svår', icon: '🔴', description: 'Omfattande problem' }
+        ]
+      })
+    } else if (parseInt(info.age) > 40) {
+      baseQuestions.push({
+        id: 'aging_concerns',
+        text: 'Vilka åldrande hudproblem oroar dig mest?',
+        type: 'multiple',
+        options: [
+          { value: 'wrinkles', label: 'Rynkor', icon: '〰️', description: '' },
+          { value: 'sagging', label: 'Slapphet', icon: '📉', description: '' },
+          { value: 'spots', label: 'Åldersfläckar', icon: '🟤', description: '' },
+          { value: 'dullness', label: 'Glansloshet', icon: '☁️', description: '' }
+        ]
+      })
+    }
+
+    return baseQuestions
+  }
+
+  const handleAnswer = (questionId: string, value: any) => {
+    const question = questions[currentQuestion]
+    
+    if (question.type === 'multiple') {
+      const currentAnswers = answers[questionId] || []
+      const newAnswers = currentAnswers.includes(value)
+        ? currentAnswers.filter((v: string) => v !== value)
+        : [...currentAnswers, value]
       
-      setAnswers({ ...answers, [questionId]: currentAnswers.join(',') })
+      setAnswers({ ...answers, [questionId]: newAnswers })
     } else {
-      // For single-select questions, replace the answer and move to next
-      setAnswers({ ...answers, [questionId]: answer })
+      setAnswers({ ...answers, [questionId]: value })
       
+      // Auto-advance for single select
       if (currentQuestion < questions.length - 1) {
         setTimeout(() => setCurrentQuestion(currentQuestion + 1), 300)
-      } else {
-        // All questions answered, start loading
-        setTimeout(() => {
-          setCurrentStep('loading')
-          setIsLoading(true)
-          
-          // Animate loading progress
-          const duration = 4500
-          const interval = 50
-          const steps = duration / interval
-          const increment = 100 / steps
-          
-          let currentProgress = 0
-          const timer = setInterval(() => {
-            currentProgress += increment
-            setLoadingProgress(Math.min(currentProgress, 100))
-            
-            if (currentProgress >= 100) {
-              clearInterval(timer)
-              setTimeout(() => {
-                calculateResults()
-              }, 500)
-            }
-          }, interval)
-        }, 300)
       }
     }
+  }
+
+  const handleQuizComplete = async () => {
+    setCurrentStep('loading')
+    
+    // Simulate loading progress
+    const duration = 3000
+    const interval = 50
+    const increment = 100 / (duration / interval)
+    
+    const timer = setInterval(() => {
+      setLoadingProgress(prev => {
+        const newProgress = prev + increment
+        if (newProgress >= 100) {
+          clearInterval(timer)
+          calculateResults()
+        }
+        return Math.min(newProgress, 100)
+      })
+    }, interval)
   }
 
   const calculateResults = async () => {
     try {
+      // Save to database first
+      const saveResponse = await fetch('/api/quiz/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userInfo,
+          answers,
+          timestamp: new Date().toISOString()
+        })
+      })
+
+      // Get AI recommendations
       const response = await fetch('/api/quiz/results', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          answers,
-          name: userName,
-          email: userEmail 
-        }),
-      });
-      const data = await response.json();
-      setResults(data);
-      setCurrentStep('results');
-      
-      // Track quiz completion in Drip
-      if (userEmail) {
-        try {
-          await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002'}/api/newsletter/track`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              email: userEmail,
-              action: 'quiz_completed',
-              data: {
-                answers,
-                results: data,
-                name: userName
-              }
-            })
-          });
-        } catch (trackingError) {
-          console.error('Error tracking quiz completion:', trackingError);
-        }
-      }
-      
-      setIsLoading(false);
+        body: JSON.stringify({
+          userInfo,
+          answers
+        })
+      })
+
+      const data = await response.json()
+      setResults(data)
+      setCurrentStep('results')
     } catch (error) {
-      console.error('Error calculating results:', error);
+      console.error('Error:', error)
+      // Fallback results
       setResults({
-        skinType: 'normal',
-        recommendedProducts: ['duo-kit', 'face-oil', 'cream'],
-        tips: ['Tip 1', 'Tip 2', 'Tip 3']
-      });
-      setCurrentStep('results');
-      setIsLoading(false);
+        summary: 'Vi har analyserat dina svar',
+        recommendations: []
+      })
+      setCurrentStep('results')
     }
-  };
-
-  const goToPrevious = () => {
-    if (currentQuestion > 0) {
-      setCurrentQuestion(currentQuestion - 1);
-    } else if (currentQuestion === 0) {
-      setCurrentStep('welcome');
-    }
-  };
-
-  const goToNextQuestion = () => {
-    if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
-    }
-  };
-
-  if (currentStep === 'loading') {
-    return <LoadingAnimation progress={loadingProgress} />;
   }
 
-  if (currentStep === 'results' && results) {
-    return (
-      <>
-        <QuizResults 
-          answers={answers} 
-          userName={userName}
-          userEmail={userEmail}
-          results={results} 
-        />
-      </>
-    );
-  }
+  const progress = currentStep === 'questions' 
+    ? ((currentQuestion + 1) / questions.length) * 100 
+    : 0
 
   return (
-    <div className="fixed inset-0 bg-gray-50 flex items-center justify-center overflow-hidden">
-      {/* Background Image */}
-      <div className="absolute inset-0 z-0">
-        <img
-          src={isMobile ? "/QUIZ/bathroom_mobile.png" : "/QUIZ/bathroom_desktop.png"}
-          alt="Background"
-          className="w-full h-full object-cover opacity-20"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-white/40 to-white/60" />
+    <div className="min-h-screen bg-gradient-to-br from-[#FAF8F5] via-white to-[#F5F3F0]">
+      {/* Background Pattern */}
+      <div className="fixed inset-0 opacity-5">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `radial-gradient(circle at 20% 80%, #8B6B47 0%, transparent 50%),
+                           radial-gradient(circle at 80% 20%, #4A3428 0%, transparent 50%),
+                           radial-gradient(circle at 40% 40%, #6B5337 0%, transparent 50%)`
+        }} />
       </div>
 
-      {/* Logo and Back to Home - Outside main container for desktop */}
-      <div className="fixed top-4 left-4 z-20 flex items-center gap-4">
-        <Link href="/" className="flex items-center">
-          <Image
-            src="/1753.png"
-            alt="1753 Skincare"
-            width={120}
-            height={40}
-            className="h-10 w-auto"
-          />
-        </Link>
-        <Link 
-          href="/" 
-          className="hidden md:flex items-center gap-2 text-sm text-[#8B6B47] hover:text-[#6B5337] transition-colors"
-        >
-          <Home className="w-4 h-4" />
-          <span>Tillbaka till startsida</span>
-        </Link>
-      </div>
-
-      <div className="relative z-10 max-w-2xl md:max-w-4xl lg:max-w-5xl w-full p-4">
-        {/* Mobile Back Button */}
-        <div className="md:hidden absolute top-4 right-4 z-20">
-          <Link 
-            href="/" 
-            className="flex items-center gap-2 text-sm text-[#8B6B47] hover:text-[#6B5337] transition-colors"
-          >
-            <Home className="w-4 h-4" />
-            <span>Hem</span>
-          </Link>
-        </div>
-
-        {/* Welcome Screen */}
-        {currentStep === 'welcome' && (
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center"
-          >
-            <div className="mb-8">
-              <motion.div
-                animate={{ 
-                  rotate: [0, 5, -5, 0],
-                  scale: [1, 1.05, 1],
-                }}
-                transition={{ 
-                  duration: 4,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-                className="w-16 h-16 bg-gradient-to-br from-[#4A3428] to-[#3A2418] rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg"
-              >
-                <Sparkles className="w-8 h-8 text-white" />
-              </motion.div>
-              
-              <h1 className="text-2xl md:text-3xl font-light text-gray-900 mb-4 uppercase tracking-wider">
-                KOSTNADSFRI HUDANALYS
-              </h1>
-              <p className="text-gray-600 text-base max-w-sm mx-auto">
-                2 minuter • AI-driven • Personliga tips
-              </p>
+      {/* Header */}
+      <div className="fixed top-0 left-0 right-0 z-20 bg-white/80 backdrop-blur-sm border-b border-gray-100">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-4">
+            <Image
+              src="/1753.png"
+              alt="1753 Skincare"
+              width={100}
+              height={33}
+              className="h-8 w-auto"
+            />
+            <div className="hidden md:flex items-center gap-2 text-sm text-gray-600">
+              <Home className="w-4 h-4" />
+              <span>Tillbaka till startsida</span>
             </div>
+          </Link>
+          
+          {currentStep === 'questions' && (
+            <div className="text-sm text-gray-600">
+              Fråga {currentQuestion + 1} av {questions.length}
+            </div>
+          )}
+        </div>
+      </div>
 
-            <form onSubmit={handleWelcomeSubmit} className="space-y-4 max-w-md mx-auto">
-              {/* Email Input */}
-              <div className="text-left">
-                <label className="flex items-center text-gray-700 text-sm font-medium mb-2">
-                  <Mail className="w-4 h-4 mr-2 text-[#4A3428]" />
-                  Din e-postadress
-                </label>
-                <input
-                  type="email"
-                  value={userEmail}
-                  onChange={(e) => setUserEmail(e.target.value)}
-                  placeholder="din@email.com"
-                  className={`w-full px-4 py-3 bg-white border ${errors.email ? 'border-red-400' : 'border-gray-200'} rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#4A3428] transition-colors`}
-                />
-                {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
-              </div>
+      {/* Main Content */}
+      <div className="relative z-10 pt-24 pb-12 px-4">
+        <div className="container mx-auto max-w-4xl">
+          
+          {/* Welcome Screen */}
+          {currentStep === 'welcome' && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center"
+            >
+              <CloudShape className="inline-block mb-8">
+                <Sparkles className="w-16 h-16 text-[#8B6B47] mx-auto mb-4" />
+                <h1 className="text-3xl md:text-4xl font-light text-gray-900 mb-4">
+                  Välkommen till din hudresa
+                </h1>
+                <p className="text-gray-600 max-w-md mx-auto">
+                  Få personliga rekommendationer baserade på din unika hud, 
+                  livsstil och behov - helt naturligt och holistiskt.
+                </p>
+              </CloudShape>
 
-              {/* Privacy Policy */}
-              <div className="text-left">
-                <label className="flex items-start space-x-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={privacyAccepted}
-                    onChange={(e) => setPrivacyAccepted(e.target.checked)}
-                    className="mt-1 h-4 w-4 text-[#4A3428] focus:ring-[#4A3428] border-gray-300 rounded"
-                  />
-                  <div className="flex-1">
-                    <div className="text-gray-600 text-sm">
-                      Jag godkänner{' '}
-                      <a href="/integritetspolicy" target="_blank" className="text-[#4A3428] hover:text-[#3A2418] underline">
-                        integritetspolicyn
-                      </a>{' '}
-                      och samtycker till att få personliga hudvårdsrekommendationer
-                    </div>
-                    {errors.privacy && <p className="text-red-500 text-sm mt-1">{errors.privacy}</p>}
-                  </div>
-                </label>
-              </div>
-
-              {/* Submit Button */}
               <motion.button
-                type="submit"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="w-full flex items-center justify-center px-8 py-4 bg-[#4A3428] text-white rounded-full font-medium hover:bg-[#3A2418] transition-all duration-300 shadow-lg"
+                onClick={() => setCurrentStep('userInfo')}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="inline-flex items-center gap-3 px-8 py-4 bg-[#4A3428] text-white rounded-full text-lg font-medium hover:bg-[#3A2418] transition-colors shadow-lg"
               >
-                <span>Starta Min Hudanalys</span>
-                <ArrowRight className="w-5 h-5 ml-2" />
+                Börja min hudanalys
+                <ChevronRight className="w-5 h-5" />
               </motion.button>
 
-              {/* Trust Indicators */}
-              <div className="flex items-center justify-center gap-6 text-gray-500 text-xs mt-6">
-                <span className="flex items-center gap-1">
-                  <div className="w-1.5 h-1.5 bg-[#8B6B47] rounded-full"></div>
-                  100% Kostnadsfritt
+              <div className="mt-8 flex items-center justify-center gap-8 text-sm text-gray-500">
+                <span className="flex items-center gap-2">
+                  <Timer className="w-4 h-4" />
+                  10-14 frågor
                 </span>
-                <span className="flex items-center gap-1">
-                  <div className="w-1.5 h-1.5 bg-[#8B6B47] rounded-full"></div>
-                  2 minuter
+                <span className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4" />
+                  AI-driven analys
                 </span>
-                <span className="flex items-center gap-1">
-                  <div className="w-1.5 h-1.5 bg-[#8B6B47] rounded-full"></div>
-                  AI-driven
-                </span>
-              </div>
-            </form>
-          </motion.div>
-        )}
-
-        {/* Questions */}
-        {currentStep === 'questions' && (
-          <>
-            {/* Progress Bar */}
-            <div className="mb-6">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-gray-600 text-sm">
-                  Fråga {currentQuestion + 1} av {totalQuestions}
-                </span>
-                <span className="text-gray-600 text-sm">
-                  {Math.round(progress)}%
+                <span className="flex items-center gap-2">
+                  <Shield className="w-4 h-4" />
+                  100% säker
                 </span>
               </div>
-              <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                <motion.div 
-                  className="h-full rounded-full bg-gradient-to-r from-[#8B6B47] to-[#6B5337]"
-                  style={{ width: `${progress}%` }}
-                  transition={{ duration: 0.5, ease: "easeOut" }}
-                />
-              </div>
-            </div>
+            </motion.div>
+          )}
 
-            {/* Question Content */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentQuestion}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
-                className="bg-white rounded-2xl p-6 md:p-8 shadow-sm"
-              >
-                <div className="text-center mb-6">
-                  {questions[currentQuestion]?.icon && (
-                    <div className="text-3xl mb-3">{questions[currentQuestion].icon}</div>
-                  )}
-                  <h2 className="text-xl md:text-2xl font-medium text-gray-900 mb-2">
-                    {questions[currentQuestion]?.text}
-                  </h2>
-                  {questions[currentQuestion]?.description && (
-                    <p className="text-gray-600 text-sm">
-                      {questions[currentQuestion].description}
-                    </p>
-                  )}
-                </div>
+          {/* User Info Screen */}
+          {currentStep === 'userInfo' && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+            >
+              <CloudShape className="max-w-2xl mx-auto">
+                <h2 className="text-2xl font-light text-gray-900 mb-6 text-center">
+                  Låt oss lära känna dig
+                </h2>
 
-                <div className="space-y-2">
-                  {questions[currentQuestion]?.options.map((option) => {
-                    const isMultiSelect = questions[currentQuestion].multiSelect
-                    const currentAnswers = answers[questions[currentQuestion].id]?.split(',') || []
-                    const isSelected = isMultiSelect 
-                      ? currentAnswers.includes(option.value)
-                      : answers[questions[currentQuestion].id] === option.value
-                    
-                    return (
-                      <motion.button
-                        key={option.value}
-                        onClick={() => handleAnswer(questions[currentQuestion].id, option.value)}
-                        whileHover={{ scale: 1.01 }}
-                        whileTap={{ scale: 0.99 }}
-                        className={`w-full p-4 rounded-lg border text-left transition-all duration-200 ${
-                          isSelected
-                            ? 'border-[#8B6B47] bg-[#8B6B47]/10'
-                            : 'border-gray-200 hover:border-[#8B6B47]/50 bg-white'
-                        }`}
-                      >
-                        <div className="flex items-center">
-                          <span className="text-xl mr-3">{option.emoji}</span>
-                          <div className="flex-1">
-                            <h3 className={`font-medium text-sm ${isSelected ? 'text-[#4A3428]' : 'text-gray-900'}`}>
-                              {option.label}
-                            </h3>
-                            {option.description && (
-                              <p className={`text-xs mt-0.5 ${isSelected ? 'text-[#6B5337]' : 'text-gray-500'}`}>
-                                {option.description}
-                              </p>
-                            )}
-                          </div>
-                          {isSelected && (
-                            <div className="ml-auto">
-                              <div className="w-5 h-5 bg-[#8B6B47] rounded-full flex items-center justify-center">
-                                <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                </svg>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </motion.button>
-                    )
-                  })}
-                </div>
-
-                {/* Continue button for multi-select questions */}
-                {questions[currentQuestion]?.multiSelect && (
-                  <div className="mt-6 flex justify-center">
-                    <motion.button
-                      onClick={() => {
-                        if (currentQuestion < questions.length - 1) {
-                          setCurrentQuestion(currentQuestion + 1)
-                        } else {
-                          // Start loading if this was the last question
-                          setCurrentStep('loading')
-                          setIsLoading(true)
-                          
-                          const duration = 4500
-                          const interval = 50
-                          const steps = duration / interval
-                          const increment = 100 / steps
-                          
-                          let currentProgress = 0
-                          const timer = setInterval(() => {
-                            currentProgress += increment
-                            setLoadingProgress(Math.min(currentProgress, 100))
-                            
-                            if (currentProgress >= 100) {
-                              clearInterval(timer)
-                              setTimeout(() => {
-                                calculateResults()
-                              }, 500)
-                            }
-                          }, interval)
-                        }
-                      }}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      disabled={!answers[questions[currentQuestion].id]}
-                      className="px-6 py-2.5 bg-[#4A3428] text-white rounded-full text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 shadow-md"
-                    >
-                      <span>Fortsätt</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </motion.button>
+                <div className="space-y-6">
+                  {/* Email */}
+                  <div>
+                    <label className="flex items-center gap-2 text-gray-700 mb-2">
+                      <Mail className="w-4 h-4" />
+                      E-postadress
+                    </label>
+                    <input
+                      type="email"
+                      value={userInfo.email}
+                      onChange={(e) => setUserInfo({ ...userInfo, email: e.target.value })}
+                      className={`w-full px-4 py-3 rounded-xl border ${
+                        errors.email ? 'border-red-400' : 'border-gray-200'
+                      } focus:outline-none focus:border-[#8B6B47] transition-colors`}
+                      placeholder="din@email.com"
+                    />
+                    {errors.email && (
+                      <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+                    )}
                   </div>
-                )}
-              </motion.div>
-            </AnimatePresence>
 
-            {/* Navigation */}
-            <div className="flex justify-between mt-6">
-              <button
-                onClick={goToPrevious}
-                className="flex items-center px-4 py-2 text-gray-600 hover:text-[#8B6B47] transition-colors text-sm"
-              >
-                <ArrowLeft className="w-4 h-4 mr-1" />
-                Föregående
-              </button>
-              
-              {answers[questions[currentQuestion]?.id] && !questions[currentQuestion]?.multiSelect && (
-                <button
-                  onClick={goToNextQuestion}
-                  className="flex items-center px-4 py-2 bg-[#4A3428] text-white rounded-full text-sm font-medium hover:bg-[#3A2A1E] transition-colors"
+                  {/* Name */}
+                  <div>
+                    <label className="flex items-center gap-2 text-gray-700 mb-2">
+                      <User className="w-4 h-4" />
+                      Namn
+                    </label>
+                    <input
+                      type="text"
+                      value={userInfo.name}
+                      onChange={(e) => setUserInfo({ ...userInfo, name: e.target.value })}
+                      className={`w-full px-4 py-3 rounded-xl border ${
+                        errors.name ? 'border-red-400' : 'border-gray-200'
+                      } focus:outline-none focus:border-[#8B6B47] transition-colors`}
+                      placeholder="Ditt namn"
+                    />
+                    {errors.name && (
+                      <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+                    )}
+                  </div>
+
+                  {/* Gender */}
+                  <div>
+                    <label className="flex items-center gap-2 text-gray-700 mb-2">
+                      <Heart className="w-4 h-4" />
+                      Kön
+                    </label>
+                    <div className="grid grid-cols-3 gap-3">
+                      {[
+                        { value: 'female', label: 'Kvinna', icon: '👩', description: '' },
+                        { value: 'male', label: 'Man', icon: '👨', description: '' },
+                        { value: 'other', label: 'Vill ej ange', icon: '🌟', description: '' }
+                      ].map((option) => (
+                        <button
+                          key={option.value}
+                          onClick={() => setUserInfo({ ...userInfo, gender: option.value as any })}
+                          className={`p-3 rounded-xl border transition-all ${
+                            userInfo.gender === option.value
+                              ? 'border-[#8B6B47] bg-[#8B6B47]/10'
+                              : 'border-gray-200 hover:border-[#8B6B47]/50'
+                          }`}
+                        >
+                          <div className="text-2xl mb-1">{option.icon}</div>
+                          <div className="text-sm">{option.label}</div>
+                        </button>
+                      ))}
+                    </div>
+                    {errors.gender && (
+                      <p className="text-red-500 text-sm mt-1">{errors.gender}</p>
+                    )}
+                  </div>
+
+                  {/* Age */}
+                  <div>
+                    <label className="flex items-center gap-2 text-gray-700 mb-2">
+                      <Calendar className="w-4 h-4" />
+                      Ålder
+                    </label>
+                    <input
+                      type="number"
+                      value={userInfo.age}
+                      onChange={(e) => setUserInfo({ ...userInfo, age: e.target.value })}
+                      className={`w-full px-4 py-3 rounded-xl border ${
+                        errors.age ? 'border-red-400' : 'border-gray-200'
+                      } focus:outline-none focus:border-[#8B6B47] transition-colors`}
+                      placeholder="Din ålder"
+                      min="15"
+                      max="100"
+                    />
+                    {errors.age && (
+                      <p className="text-red-500 text-sm mt-1">{errors.age}</p>
+                    )}
+                  </div>
+
+                  {/* Privacy */}
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={privacyAccepted}
+                      onChange={(e) => setPrivacyAccepted(e.target.checked)}
+                      className="mt-1 w-4 h-4 text-[#8B6B47] rounded focus:ring-[#8B6B47]"
+                    />
+                    <span className="text-sm text-gray-600">
+                      Jag godkänner{' '}
+                      <Link href="/integritetspolicy" className="text-[#8B6B47] underline">
+                        integritetspolicyn
+                      </Link>{' '}
+                      och samtycker till att mina svar sparas för att ge mig personliga rekommendationer
+                    </span>
+                  </label>
+                  {errors.privacy && (
+                    <p className="text-red-500 text-sm">{errors.privacy}</p>
+                  )}
+
+                  {/* Submit */}
+                  <motion.button
+                    onClick={handleUserInfoSubmit}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="w-full py-4 bg-[#4A3428] text-white rounded-xl font-medium hover:bg-[#3A2418] transition-colors"
+                  >
+                    Fortsätt till frågorna
+                  </motion.button>
+                </div>
+              </CloudShape>
+            </motion.div>
+          )}
+
+          {/* Questions */}
+          {currentStep === 'questions' && questions.length > 0 && (
+            <div>
+              {/* Progress Bar */}
+              <div className="mb-8">
+                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full bg-gradient-to-r from-[#8B6B47] to-[#4A3428]"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progress}%` }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </div>
+              </div>
+
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentQuestion}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
                 >
-                  {currentQuestion === questions.length - 1 ? 'Få Mina Resultat' : 'Nästa'}
-                  <ArrowRight className="w-4 h-4 ml-1" />
-                </button>
-              )}
-            </div>
-          </>
-        )}
+                  <CloudShape className="max-w-3xl mx-auto">
+                    <h3 className="text-xl md:text-2xl font-light text-gray-900 mb-6 text-center">
+                      {questions[currentQuestion].text}
+                    </h3>
 
-        {/* Register Modal */}
-        <RegisterModal
-          isOpen={showRegisterModal}
-          onClose={() => setShowRegisterModal(false)}
-          quizData={{
-            answers,
-            results,
-            userName,
-            userEmail
-          }}
-        />
+                    <div className="grid gap-3">
+                      {questions[currentQuestion].options.map((option: any) => {
+                        const isSelected = questions[currentQuestion].type === 'multiple'
+                          ? (answers[questions[currentQuestion].id] || []).includes(option.value)
+                          : answers[questions[currentQuestion].id] === option.value
+
+                        return (
+                          <motion.button
+                            key={option.value}
+                            onClick={() => handleAnswer(questions[currentQuestion].id, option.value)}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            className={`p-4 rounded-xl border transition-all text-left ${
+                              isSelected
+                                ? 'border-[#8B6B47] bg-[#8B6B47]/10'
+                                : 'border-gray-200 hover:border-[#8B6B47]/50 bg-white'
+                            }`}
+                          >
+                            <div className="flex items-center gap-4">
+                              <span className="text-2xl">{option.icon}</span>
+                              <div className="flex-1">
+                                <div className="font-medium text-gray-900">
+                                  {option.label}
+                                </div>
+                                {option.description && (
+                                  <div className="text-sm text-gray-600 mt-1">
+                                    {option.description}
+                                  </div>
+                                )}
+                              </div>
+                              {isSelected && (
+                                <Check className="w-5 h-5 text-[#8B6B47]" />
+                              )}
+                            </div>
+                          </motion.button>
+                        )
+                      })}
+                    </div>
+
+                    {/* Navigation */}
+                    <div className="flex justify-between mt-6">
+                      <button
+                        onClick={() => currentQuestion > 0 ? setCurrentQuestion(currentQuestion - 1) : setCurrentStep('userInfo')}
+                        className="flex items-center gap-2 text-gray-600 hover:text-[#8B6B47] transition-colors"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                        Tillbaka
+                      </button>
+
+                      {questions[currentQuestion].type === 'multiple' && (
+                        <button
+                          onClick={() => {
+                            if (currentQuestion < questions.length - 1) {
+                              setCurrentQuestion(currentQuestion + 1)
+                            } else {
+                              handleQuizComplete()
+                            }
+                          }}
+                          disabled={!answers[questions[currentQuestion].id] || answers[questions[currentQuestion].id].length === 0}
+                          className="flex items-center gap-2 px-6 py-2 bg-[#4A3428] text-white rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {currentQuestion === questions.length - 1 ? 'Få resultat' : 'Nästa'}
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                  </CloudShape>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          )}
+
+          {/* Loading */}
+          {currentStep === 'loading' && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center"
+            >
+              <CloudShape className="inline-block">
+                <div className="w-24 h-24 mx-auto mb-6 relative">
+                  <svg className="w-full h-full transform -rotate-90">
+                    <circle
+                      cx="48"
+                      cy="48"
+                      r="40"
+                      stroke="#E5E7EB"
+                      strokeWidth="8"
+                      fill="none"
+                    />
+                    <circle
+                      cx="48"
+                      cy="48"
+                      r="40"
+                      stroke="#8B6B47"
+                      strokeWidth="8"
+                      fill="none"
+                      strokeDasharray={`${2 * Math.PI * 40}`}
+                      strokeDashoffset={`${2 * Math.PI * 40 * (1 - loadingProgress / 100)}`}
+                      className="transition-all duration-300"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-2xl font-light text-gray-900">
+                      {Math.round(loadingProgress)}%
+                    </span>
+                  </div>
+                </div>
+                <h3 className="text-xl font-light text-gray-900 mb-2">
+                  Analyserar dina svar...
+                </h3>
+                <p className="text-gray-600">
+                  Vår AI skapar dina personliga rekommendationer
+                </p>
+              </CloudShape>
+            </motion.div>
+          )}
+
+          {/* Results */}
+          {currentStep === 'results' && results && (
+            <ImprovedQuizResults results={results} userInfo={userInfo} />
+          )}
+        </div>
       </div>
     </div>
-  );
+  )
 } 
