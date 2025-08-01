@@ -177,7 +177,7 @@ export function Footer() {
       </div>
 
       {/* Bottom Bar */}
-      <div className="bg-[#3A2418]">
+      <div className="bg-[#4A3428]">
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-white/60 text-sm">

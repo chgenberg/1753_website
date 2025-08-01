@@ -74,11 +74,16 @@ export function SafeReviewsCarousel() {
   const [reviews, setReviews] = useState<Review[]>(defaultReviews)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isAutoPlaying, setIsAutoPlaying] = useState(true)
+  const [stats, setStats] = useState({
+    totalReviews: 750,
+    averageRating: 4.8
+  })
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     // Try to fetch real reviews, but use defaults if it fails
     fetchReviews()
+    fetchStats()
   }, [])
 
   useEffect(() => {
@@ -107,6 +112,24 @@ export function SafeReviewsCarousel() {
     } catch (error) {
       console.error('Error fetching reviews:', error)
       // Keep using default reviews
+    }
+  }
+
+  const fetchStats = async () => {
+    try {
+      const response = await fetch('/api/reviews/stats')
+      if (response.ok) {
+        const data = await response.json()
+        if (data.totalReviews && data.averageRating) {
+          setStats({
+            totalReviews: data.totalReviews,
+            averageRating: data.averageRating
+          })
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching review stats:', error)
+      // Keep default stats
     }
   }
 
@@ -152,7 +175,7 @@ export function SafeReviewsCarousel() {
                 <Star key={i} className="w-6 h-6 fill-yellow-400 text-yellow-400" />
               ))}
             </div>
-            <span className="text-2xl font-semibold text-gray-900">4.8/5</span>
+            <span className="text-2xl font-semibold text-gray-900">{stats.averageRating.toFixed(1)}/5</span>
           </motion.div>
           
           <motion.p
@@ -162,7 +185,7 @@ export function SafeReviewsCarousel() {
             transition={{ delay: 0.2 }}
             className="text-gray-600"
           >
-            Baserat på {reviews.length}+ recensioner
+            Baserat på {stats.totalReviews}+ recensioner
           </motion.p>
         </div>
 

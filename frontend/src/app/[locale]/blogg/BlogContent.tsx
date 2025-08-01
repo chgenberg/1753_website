@@ -11,7 +11,6 @@ import { BlogPost } from '@/types'
 // Extend BlogPost type to include image fields
 interface BlogPostWithImages extends BlogPost {
   image?: string
-  thumbnail?: string
 }
 
 interface BlogContentProps {
@@ -232,7 +231,7 @@ export default function BlogContent({ posts }: BlogContentProps) {
                     <div className="relative aspect-[3/4] bg-gradient-to-b from-gray-50 to-gray-100 overflow-hidden">
                       <div className="w-full h-full flex items-center justify-center">
                         <Image
-                          src={(post as BlogPostWithImages).image || (post as BlogPostWithImages).thumbnail || getFallbackImage(post.slug, index)}
+                          src={(post as BlogPostWithImages).image || getFallbackImage(post.slug, index)}
                           alt={post.title}
                           fill
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

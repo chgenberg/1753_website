@@ -38,7 +38,7 @@ async function assignBlogImages() {
     console.log(`Found ${blogPosts.length} published blog posts`)
     
     // Smart image assignment to avoid duplicates side-by-side
-    const imageAssignments: { [postId: string]: { image: string, thumbnail: string } } = {}
+    const imageAssignments: { [postId: string]: { image: string } } = {}
     
     // Create a rotation pattern that maximizes distance between same images
     const totalImages = availableImages.length
@@ -56,8 +56,7 @@ async function assignBlogImages() {
       const imageData = imageMapping[imageKey]
       
       imageAssignments[post.id] = {
-        image: imageData.full,
-        thumbnail: imageData.thumbnail
+        image: imageData.full
       }
       
       console.log(`Post ${i + 1}/${totalPosts}: "${post.title}" → ${imageKey}`)
@@ -68,8 +67,7 @@ async function assignBlogImages() {
       prisma.blogPost.update({
         where: { id: parseInt(postId) },
         data: {
-          image: images.image,
-          thumbnail: images.thumbnail
+          image: images.image
         }
       })
     )
@@ -98,7 +96,7 @@ async function assignBlogImages() {
     console.log(`📋 Assignment summary saved to: ${summaryPath}`)
     
     // Verify no adjacent duplicates
-    const adjacentCheck = []
+    const adjacentCheck: string[] = []
     for (let i = 0; i < blogPosts.length - 1; i++) {
       const currentImageIndex = (i * spacing) % totalImages
       const nextImageIndex = ((i + 1) * spacing) % totalImages

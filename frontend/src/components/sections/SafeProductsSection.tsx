@@ -33,34 +33,43 @@ const fallbackProducts: Product[] = [
   },
   {
     id: '2',
-    name: 'DUO-KIT THE ONE',
-    slug: 'duo-kit-the-one-i-love',
-    description: 'Vårt mest populära kit för daglig hudvård',
-    price: 1199,
-    compareAtPrice: 1499,
-    images: [{ url: '/images/products/DUO.png' }],
+    name: 'FUNGTASTIC MUSHROOM EXTRACT',
+    slug: 'fungtastic-mushroom-extract',
+    description: 'Upplev naturens kraft med Fungtastic Mushroom Extract',
+    price: 399,
+    images: [{ url: '/images/products/Fungtastic.png' }],
     averageRating: 4.9,
     reviewCount: 89
   },
   {
     id: '3',
-    name: 'TA-DA SERUM',
-    slug: 'ta-da-serum',
-    description: 'Revolutionerande serum med CBD',
-    price: 599,
-    images: [{ url: '/images/products/TA-DA.png' }],
+    name: 'AU NATUREL MAKEUP REMOVER',
+    slug: 'au-naturel-makeup-remover',
+    description: 'Upptäck hemligheten till ren och frisk hud',
+    price: 399,
+    images: [{ url: '/images/products/Naturel.png' }],
     averageRating: 4.7,
     reviewCount: 156
   },
   {
     id: '4',
+    name: 'THE ONE FACIAL OIL',
+    slug: 'the-one-facial-oil',
+    description: 'Få en strålande och frisk hud med The ONE Facial Oil',
+    price: 649,
+    images: [{ url: '/images/products/TheONE.png' }],
+    averageRating: 4.8,
+    reviewCount: 203
+  },
+  {
+    id: '5',
     name: 'I LOVE FACIAL OIL',
     slug: 'i-love-facial-oil',
-    description: 'Närande ansiktsolja för alla hudtyper',
-    price: 499,
+    description: 'Ge din hud det bästa med I LOVE Facial Oil',
+    price: 849,
     images: [{ url: '/images/products/ILOVE.png' }],
     averageRating: 4.9,
-    reviewCount: 203
+    reviewCount: 178
   }
 ]
 
@@ -74,14 +83,14 @@ export function SafeProductsSection() {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch('/api/products?featured=true&limit=4')
+      const response = await fetch('/api/products?featured=true&limit=5')
       
       if (response.ok) {
         const data = await response.json()
         if (data.success && Array.isArray(data.data)) {
           const validProducts = data.data
             .filter((p: any) => p && p.name && p.slug && !p.name.toLowerCase().includes('store review'))
-            .slice(0, 4)
+            .slice(0, 5)
           
           if (validProducts.length > 0) {
             setProducts(validProducts)
@@ -98,9 +107,17 @@ export function SafeProductsSection() {
   const getImageUrl = (product: Product): string => {
     if (product.images && product.images.length > 0) {
       const firstImage = product.images[0]
-      return firstImage.url || firstImage.src || '/images/products/DUO.png'
+      return firstImage.url || firstImage.src || ''
     }
-    return '/images/products/DUO.png'
+    // Try to match product name to image
+    const productNameLower = product.name.toLowerCase()
+    if (productNameLower.includes('fungtastic')) return '/images/products/Fungtastic.png'
+    if (productNameLower.includes('naturel')) return '/images/products/Naturel.png'
+    if (productNameLower.includes('the one')) return '/images/products/TheONE.png'
+    if (productNameLower.includes('i love')) return '/images/products/ILOVE.png'
+    if (productNameLower.includes('ta-da')) return '/images/products/TA-DA.png'
+    if (productNameLower.includes('duo')) return '/images/products/DUO.png'
+    return ''
   }
 
   return (
