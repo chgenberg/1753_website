@@ -47,8 +47,8 @@ export function HeroSection() {
       <div className="absolute inset-0 z-0">
         <img
           src={isMobile 
-            ? "/Porträtt_hemsidan/Omslag_2025_mobile.png"
-            : "/Porträtt_hemsidan/Omslag_2025_desktop.png"
+            ? "/portrait_home/Omslag_2025_mobile.png"
+            : "/portrait_home/Omslag_2025_desktop.png"
           }
           alt="1753 Skincare 2025 Omslag"
           className="w-full h-full object-cover"
@@ -81,7 +81,7 @@ export function HeroSection() {
             {/* Author Info */}
             <div className="flex items-center gap-4 p-6 bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm">
               <img 
-                src="/Porträtt/c-and-e-2.jpg" 
+                src="/portrait/c-and-e-2.jpg" 
                 alt="Christopher Genberg"
                 className="w-16 h-16 rounded-full object-cover"
               />
