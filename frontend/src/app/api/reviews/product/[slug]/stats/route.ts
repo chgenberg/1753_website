@@ -7,7 +7,7 @@ export async function GET(
   try {
     const { slug } = await params
     
-    const backendUrl = process.env.BACKEND_URL || 'https://1753website-production.up.railway.app'
+    const backendUrl = process.env.BACKEND_URL || 'https://1753websitebackend-production.up.railway.app'
     const response = await fetch(`${backendUrl}/api/reviews/product/${slug}/stats`, {
       headers: {
         'Content-Type': 'application/json',
