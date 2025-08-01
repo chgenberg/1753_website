@@ -58,7 +58,7 @@ const fallbackProducts: Product[] = [
     slug: 'i-love-facial-oil',
     description: 'Närande ansiktsolja för alla hudtyper',
     price: 499,
-    images: [{ url: '/images/products/ILOVEFACIALOIL.png' }],
+    images: [{ url: '/images/products/ILOVE.png' }],
     averageRating: 4.9,
     reviewCount: 203
   }
@@ -98,9 +98,9 @@ export function SafeProductsSection() {
   const getImageUrl = (product: Product): string => {
     if (product.images && product.images.length > 0) {
       const firstImage = product.images[0]
-      return firstImage.url || firstImage.src || '/images/products/placeholder.jpg'
+      return firstImage.url || firstImage.src || '/images/products/DUO.png'
     }
-    return '/images/products/placeholder.jpg'
+    return '/images/products/DUO.png'
   }
 
   return (

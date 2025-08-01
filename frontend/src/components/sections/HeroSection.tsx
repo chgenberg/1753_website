@@ -47,10 +47,10 @@ export function HeroSection() {
       <div className="absolute inset-0 z-0">
         <img
           src={isMobile 
-            ? "/images/hero-bg.jpg"
-            : "/images/hero-bg.jpg"
+            ? "/Porträtt_hemsidan/Omslag_2025_mobile.png"
+            : "/Porträtt_hemsidan/Omslag_2025_desktop.png"
           }
-          alt="1753 Skincare Background"
+          alt="1753 Skincare 2025 Omslag"
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/70 md:from-black/40 md:via-black/30 md:to-black/60" />

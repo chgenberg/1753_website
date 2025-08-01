@@ -141,7 +141,7 @@ export default function RelatedProducts({ currentProductSlug, locale }: RelatedP
                   <div className="relative aspect-square bg-gradient-to-br from-[#F5F3F0] to-[#E8E5E0] p-4">
                     {product.images && product.images.length > 0 ? (
                       <Image
-                        src={product.images[0]?.url || '/images/products/placeholder.jpg'}
+                        src={product.images[0]?.url || '/images/products/DUO.png'}
                         alt={product.name}
                         width={300}
                         height={300}
