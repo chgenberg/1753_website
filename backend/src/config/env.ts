@@ -16,7 +16,7 @@ const envSchema = z.object({
   // CORS
   CORS_ORIGIN: z.string().default('*'),
   FRONTEND_URL: z.string().default('https://1753website-production.up.railway.app'),
-  BACKEND_URL: z.string().default('https://1753website-production.up.railway.app'),
+  BACKEND_URL: z.string().default('https://1753websitebackend-production.up.railway.app'),
   
   // Rate limiting
   RATE_LIMIT_WINDOW_MS: z.string().default('900000'),
@@ -128,7 +128,7 @@ export function validateEnv() {
         REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET || 'fallback-refresh-secret-for-production',
         CORS_ORIGIN: process.env.CORS_ORIGIN || '*',
         FRONTEND_URL: process.env.FRONTEND_URL || 'https://1753skincare.com',
-        BACKEND_URL: process.env.BACKEND_URL || 'https://1753website-production.up.railway.app',
+        BACKEND_URL: process.env.BACKEND_URL || 'https://1753websitebackend-production.up.railway.app',
         RATE_LIMIT_WINDOW_MS: process.env.RATE_LIMIT_WINDOW_MS || '900000',
         RATE_LIMIT_MAX_REQUESTS: process.env.RATE_LIMIT_MAX_REQUESTS || '1000',
         BCRYPT_ROUNDS: process.env.BCRYPT_ROUNDS || '12',
