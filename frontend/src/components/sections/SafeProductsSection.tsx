@@ -18,7 +18,7 @@ interface Product {
   reviewCount?: number
 }
 
-// Fallback products if API fails
+// Fallback products if API fails - exactly 4 products in the desired order
 const fallbackProducts: Product[] = [
   {
     id: '1',
@@ -33,13 +33,14 @@ const fallbackProducts: Product[] = [
   },
   {
     id: '2',
-    name: 'FUNGTASTIC MUSHROOM EXTRACT',
-    slug: 'fungtastic-mushroom-extract',
-    description: 'Upplev naturens kraft med Fungtastic Mushroom Extract',
-    price: 399,
-    images: [{ url: '/images/products/Fungtastic.png' }],
-    averageRating: 4.9,
-    reviewCount: 89
+    name: 'DUO-KIT',
+    slug: 'duo-kit-the-one-i-love',
+    description: 'Vårt populära DUO-kit med THE ONE och I LOVE ansiktsoljor',
+    price: 1199,
+    compareAtPrice: 1498,
+    images: [{ url: '/images/products/DUO.png' }],
+    averageRating: 4.8,
+    reviewCount: 187
   },
   {
     id: '3',
@@ -53,23 +54,13 @@ const fallbackProducts: Product[] = [
   },
   {
     id: '4',
-    name: 'THE ONE FACIAL OIL',
-    slug: 'the-one-facial-oil',
-    description: 'Få en strålande och frisk hud med The ONE Facial Oil',
-    price: 649,
-    images: [{ url: '/images/products/TheONE.png' }],
-    averageRating: 4.8,
-    reviewCount: 203
-  },
-  {
-    id: '5',
-    name: 'I LOVE FACIAL OIL',
-    slug: 'i-love-facial-oil',
-    description: 'Ge din hud det bästa med I LOVE Facial Oil',
-    price: 849,
-    images: [{ url: '/images/products/ILOVE.png' }],
+    name: 'FUNGTASTIC MUSHROOM EXTRACT',
+    slug: 'fungtastic-mushroom-extract',
+    description: 'Upplev naturens kraft med Fungtastic Mushroom Extract',
+    price: 399,
+    images: [{ url: '/images/products/Fungtastic.png' }],
     averageRating: 4.9,
-    reviewCount: 178
+    reviewCount: 89
   }
 ]
 
@@ -83,31 +74,38 @@ export function SafeProductsSection() {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch('/api/products?featured=true&limit=5')
+      const response = await fetch('/api/products?featured=true&limit=10')
       
       if (response.ok) {
         const data = await response.json()
         if (data.success && Array.isArray(data.data)) {
-          const validProducts = data.data
-            .filter((p: any) => {
-              if (!p || !p.name || !p.slug || p.name.toLowerCase().includes('store review')) {
-                return false
-              }
-              // Check if product has valid images or can be matched by name
-              const hasValidImages = p.images && p.images.length > 0 && 
-                (p.images[0].url || p.images[0].src)
-              const canMatchByName = p.name.toLowerCase().includes('fungtastic') ||
-                p.name.toLowerCase().includes('naturel') ||
-                p.name.toLowerCase().includes('the one') ||
-                p.name.toLowerCase().includes('i love') ||
-                p.name.toLowerCase().includes('ta-da') ||
-                p.name.toLowerCase().includes('duo')
-              return hasValidImages || canMatchByName
-            })
-            .slice(0, 5)
+          // Define the exact products we want in order
+          const desiredProductSlugs = [
+            'duo-kit-ta-da-serum',
+            'duo-kit-the-one-i-love',
+            'au-naturel-makeup-remover',
+            'fungtastic-mushroom-extract'
+          ]
           
-          if (validProducts.length > 0) {
-            setProducts(validProducts)
+          // Filter out store reviews and get all valid products
+          const allValidProducts = data.data.filter((p: any) => {
+            if (!p || !p.name || !p.slug || p.name.toLowerCase().includes('store review')) {
+              return false
+            }
+            return true
+          })
+          
+          // Sort products according to our desired order
+          const sortedProducts = desiredProductSlugs
+            .map(slug => allValidProducts.find((p: any) => p.slug === slug))
+            .filter(p => p !== undefined)
+          
+          if (sortedProducts.length === 4) {
+            setProducts(sortedProducts)
+          } else {
+            // If we can't find all 4 products, use what we found
+            console.warn('Could not find all desired products, found:', sortedProducts.length)
+            setProducts(sortedProducts.length > 0 ? sortedProducts : fallbackProducts.slice(0, 4))
           }
         }
       }
