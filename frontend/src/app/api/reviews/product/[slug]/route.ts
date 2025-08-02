@@ -15,7 +15,7 @@ export async function GET(
     const queryParams = new URLSearchParams({
       page: searchParams.get('page') || '1',
       limit: searchParams.get('limit') || '10',
-      sortBy: searchParams.get('sortBy') || 'createdAt',
+      sortBy: searchParams.get('sortBy') || 'newest',
       ...(searchParams.get('rating') && { rating: searchParams.get('rating')! })
     })
     
