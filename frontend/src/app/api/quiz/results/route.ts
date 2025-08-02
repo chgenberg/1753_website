@@ -5,10 +5,12 @@ export async function POST(request: NextRequest) {
     const { answers, userInfo } = await request.json()
     
     console.log('Quiz API called with userInfo:', userInfo)
+    console.log('OpenAI API Key available:', !!process.env.OPENAI_API_KEY)
 
     // Always generate comprehensive plan with OpenAI
     if (process.env.OPENAI_API_KEY) {
       try {
+        console.log('Attempting to use OpenAI...')
         const { default: OpenAI } = await import('openai')
         const openai = new OpenAI({
           apiKey: process.env.OPENAI_API_KEY!,
@@ -16,6 +18,7 @@ export async function POST(request: NextRequest) {
 
         const holisticPrompt = generateHolisticPrompt(answers, userInfo)
         
+        console.log('Making OpenAI request...')
         const completion = await openai.chat.completions.create({
           model: "gpt-4o-mini", // Using GPT-4o-mini for better results at lower cost
           messages: [{ role: "user", content: holisticPrompt }],
@@ -23,32 +26,41 @@ export async function POST(request: NextRequest) {
           max_tokens: 4000, // Increased for comprehensive responses
         })
 
+        console.log('OpenAI request completed')
         const aiResponse = completion.choices[0]?.message?.content
         
         try {
           const parsed = JSON.parse(aiResponse || '{}')
           console.log('AI plan generated successfully')
           return NextResponse.json(parsed)
-        } catch {
-          console.log('AI response was not valid JSON, using enhanced fallback')
+        } catch (parseError) {
+          console.log('AI response was not valid JSON, using enhanced fallback. Parse error:', parseError)
+          console.log('AI Response was:', aiResponse)
           // Use enhanced fallback if parsing fails
           const fallbackPlan = generateEnhancedFallbackPlan(answers, userInfo)
           return NextResponse.json(fallbackPlan)
         }
       } catch (error) {
         console.error('OpenAI error:', error)
+        console.log('Falling back to enhanced fallback plan due to OpenAI error')
       }
+    } else {
+      console.log('No OpenAI API key found, using fallback plan')
     }
     
     // Generate enhanced fallback plan
+    console.log('Generating enhanced fallback plan...')
     const plan = generateEnhancedFallbackPlan(answers, userInfo)
+    console.log('Enhanced fallback plan generated successfully')
     return NextResponse.json(plan)
 
   } catch (error) {
     console.error('Quiz results error:', error)
+    console.error('Error details:', error instanceof Error ? error.message : 'Unknown error')
     return NextResponse.json({
       error: 'Failed to generate results',
-      fallback: true
+      fallback: true,
+      details: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 })
   }
 }
