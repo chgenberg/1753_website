@@ -10,6 +10,7 @@ import {
 import Link from 'next/link'
 import Image from 'next/image'
 import ImprovedQuizResults from '@/components/quiz/ImprovedQuizResults'
+import { LoadingAnimation } from '@/components/quiz/LoadingAnimation'
 
 // Soft cloud shape component
 const CloudShape = ({ children, className = "" }: { children: React.ReactNode, className?: string }) => (
@@ -291,19 +292,23 @@ export default function QuizPage() {
   const handleQuizComplete = async () => {
     setCurrentStep('loading')
     
-    // Simulate loading progress
-    const duration = 3000
-    const interval = 50
+    // Start loading with 45 second duration
+    const duration = 45000 // 45 seconds
+    const interval = 100 // Update every 100ms for smooth animation
     const increment = 100 / (duration / interval)
     
+    // Start the API calls immediately
+    calculateResults()
+    
+    // Animate the progress bar over 45 seconds
     const timer = setInterval(() => {
       setLoadingProgress(prev => {
         const newProgress = prev + increment
         if (newProgress >= 100) {
           clearInterval(timer)
-          calculateResults()
+          return 100
         }
-        return Math.min(newProgress, 100)
+        return newProgress
       })
     }, interval)
   }
@@ -705,48 +710,7 @@ export default function QuizPage() {
 
           {/* Loading */}
           {currentStep === 'loading' && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center"
-            >
-              <CloudShape className="inline-block">
-                <div className="w-24 h-24 mx-auto mb-6 relative">
-                  <svg className="w-full h-full transform -rotate-90">
-                    <circle
-                      cx="48"
-                      cy="48"
-                      r="40"
-                      stroke="#E5E7EB"
-                      strokeWidth="8"
-                      fill="none"
-                    />
-                    <circle
-                      cx="48"
-                      cy="48"
-                      r="40"
-                      stroke="#8B6B47"
-                      strokeWidth="8"
-                      fill="none"
-                      strokeDasharray={`${2 * Math.PI * 40}`}
-                      strokeDashoffset={`${2 * Math.PI * 40 * (1 - loadingProgress / 100)}`}
-                      className="transition-all duration-300"
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-2xl font-light text-gray-900">
-                      {Math.round(loadingProgress)}%
-                    </span>
-                  </div>
-                </div>
-                <h3 className="text-xl font-light text-gray-900 mb-2">
-                  Analyserar dina svar...
-                </h3>
-                <p className="text-gray-600">
-                  Vår AI skapar dina personliga rekommendationer
-                </p>
-              </CloudShape>
-            </motion.div>
+            <LoadingAnimation progress={loadingProgress} />
           )}
 
           {/* Results */}
