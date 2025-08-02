@@ -26,28 +26,50 @@ export default function ProductReviews({ productId, productSlug }: ProductReview
   const [displayCount, setDisplayCount] = useState(3)
 
   useEffect(() => {
-    fetchReviews()
-    fetchStats()
+    console.log('ProductReviews: Component mounted/updated with productSlug:', productSlug)
+    console.log('ProductReviews: productId:', productId)
+    if (productSlug) {
+      fetchReviews()
+      fetchStats()
+    } else {
+      console.log('ProductReviews: No productSlug provided, skipping fetch')
+    }
   }, [productSlug])
 
   const fetchReviews = async () => {
     try {
+      console.log('ProductReviews: Fetching reviews for productSlug:', productSlug)
+      console.log('ProductReviews: API URL:', `/api/reviews/product/${productSlug}`)
+      
       const response = await fetch(`/api/reviews/product/${productSlug}`)
-      if (!response.ok) throw new Error('Failed to fetch reviews')
+      console.log('ProductReviews: Response status:', response.status)
+      console.log('ProductReviews: Response OK:', response.ok)
+      console.log('ProductReviews: Response headers:', Object.fromEntries(response.headers.entries()))
+      
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('ProductReviews: Response error text:', errorText)
+        throw new Error(`Failed to fetch reviews: ${response.status} - ${errorText}`)
+      }
+      
       const data = await response.json()
+      console.log('ProductReviews: Full response data:', data)
       
       // Handle the API response format: { success: true, data: { reviews, stats } }
       if (data.success && data.data) {
+        console.log('ProductReviews: Found reviews:', data.data.reviews?.length || 0)
+        console.log('ProductReviews: Found stats:', data.data.stats)
         setReviews(data.data.reviews || [])
         // Also set stats if included in the same response
         if (data.data.stats) {
           setStats(data.data.stats)
         }
       } else {
+        console.log('ProductReviews: No success or data in response')
         setReviews([])
       }
     } catch (error) {
-      console.error('Error fetching reviews:', error)
+      console.error('ProductReviews: Error fetching reviews:', error)
       setReviews([])
     } finally {
       setLoading(false)
@@ -56,18 +78,29 @@ export default function ProductReviews({ productId, productSlug }: ProductReview
 
   const fetchStats = async () => {
     try {
+      console.log('ProductReviews: Fetching stats for productSlug:', productSlug)
       const response = await fetch(`/api/reviews/product/${productSlug}/stats`)
-      if (!response.ok) throw new Error('Failed to fetch stats')
+      console.log('ProductReviews Stats: Response status:', response.status)
+      
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('ProductReviews Stats: Response error:', errorText)
+        throw new Error(`Failed to fetch stats: ${response.status} - ${errorText}`)
+      }
+      
       const data = await response.json()
+      console.log('ProductReviews Stats: Full response data:', data)
       
       // Handle the API response format: { success: true, data: stats }
       if (data.success && data.data) {
+        console.log('ProductReviews Stats: Setting stats:', data.data)
         setStats(data.data)
       } else {
+        console.log('ProductReviews Stats: No success or data in response')
         setStats(null)
       }
     } catch (error) {
-      console.error('Error fetching stats:', error)
+      console.error('ProductReviews Stats: Error fetching stats:', error)
       setStats(null)
     }
   }
@@ -102,6 +135,30 @@ export default function ProductReviews({ productId, productSlug }: ProductReview
         <button className="px-6 py-2 bg-[#4A3428] text-white rounded-full hover:bg-[#6B5D54] transition-colors">
           Skriv en recension
         </button>
+      </div>
+    )
+  }
+
+  if (loading) {
+    return (
+      <div className="py-8">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4A3428] mx-auto mb-4"></div>
+          <p className="text-gray-500">Laddar recensioner...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!loading && reviews.length === 0) {
+    return (
+      <div className="py-8">
+        <div className="text-center">
+          <p className="text-gray-500 mb-4">Inga recensioner än. Bli den första att recensera denna produkt!</p>
+          <button className="px-6 py-2 bg-[#4A3428] text-white rounded-full hover:bg-[#3A2418] transition-colors">
+            Skriv en recension
+          </button>
+        </div>
       </div>
     )
   }
