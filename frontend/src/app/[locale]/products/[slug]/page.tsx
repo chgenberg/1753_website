@@ -28,6 +28,7 @@ import {
 import ProductReviews from '@/components/reviews/ProductReviews'
 import RelatedProducts from '@/components/sections/RelatedProducts'
 import FloatingReviews from '@/components/reviews/FloatingReviews'
+import { useTranslations } from 'next-intl'
 
 interface Product {
   id: string
@@ -71,6 +72,7 @@ const skinTypeTranslations: Record<string, string> = {
 }
 
 export default function ProductPage() {
+  const t = useTranslations()
   const params = useParams()
   const { addToCart } = useCart()
   const [product, setProduct] = useState<Product | null>(null)
@@ -195,7 +197,7 @@ export default function ProductPage() {
   if (!product) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-500">Produkten kunde inte hittas.</p>
+        <p className="text-gray-500">{t('productDetail.notFound')}</p>
       </div>
     )
   }
@@ -211,9 +213,9 @@ export default function ProductPage() {
       {/* Breadcrumbs */}
       <div className="container mx-auto px-4 py-4">
         <nav className="flex items-center gap-2 text-sm text-gray-600">
-          <Link href="/" className="hover:text-[#4A3428] transition-colors">Hem</Link>
+          <Link href="/" className="hover:text-[#4A3428] transition-colors">{t('navigation.home')}</Link>
           <ChevronRight className="w-4 h-4" />
-          <Link href="/products" className="hover:text-[#4A3428] transition-colors">Produkter</Link>
+          <Link href="/products" className="hover:text-[#4A3428] transition-colors">{t('navigation.products')}</Link>
           <ChevronRight className="w-4 h-4" />
           <span className="text-gray-900">{product.name}</span>
         </nav>
@@ -363,7 +365,7 @@ export default function ProductPage() {
                     {product.compareAtPrice} kr
                   </span>
                   <span className="bg-[#E5DDD5] text-[#3A2A1E] text-sm px-2 py-1 rounded">
-                    Du sparar {product.compareAtPrice - product.price} kr
+                    {t('productDetail.saved', { amount: product.compareAtPrice - product.price })}
                   </span>
                 </>
               )}
@@ -376,11 +378,11 @@ export default function ProductPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
               >
-                <h3 className="text-sm font-semibold text-gray-700 mb-2">Passar hudtyper:</h3>
+                <h3 className="text-sm font-semibold text-gray-700 mb-2">{t('productDetail.skinTypesTitle')}</h3>
                 <div className="flex flex-wrap gap-2">
                   {product.skinTypes.map((type) => (
                     <span key={type} className="bg-[#E5DDD5] text-[#3A2A1E] px-3 py-1 rounded-full text-sm">
-                      {skinTypeTranslations[type]}
+                      {t(`skinTypes.${type}`)}
                     </span>
                   ))}
                 </div>
@@ -396,7 +398,7 @@ export default function ProductPage() {
             >
               {/* Quantity Selector */}
               <div className="flex items-center gap-4">
-                <span className="text-sm font-semibold text-gray-700">Antal:</span>
+                <span className="text-sm font-semibold text-gray-700">{t('productDetail.quantity')}</span>
                 <div className="flex items-center border border-gray-300 rounded-lg">
                   <button
                     onClick={() => handleQuantityChange(-1)}
@@ -419,7 +421,7 @@ export default function ProductPage() {
               {/* Action Buttons */}
               <div className="flex gap-3">
                 <button
-                  onClick={handleAddToCart}
+                  onClick={() => { handleAddToCart(); setAddedToCart(true); setTimeout(() => setAddedToCart(false), 1500) }}
                   disabled={addedToCart}
                   className={`flex-1 py-4 px-6 rounded-xl font-semibold transition-all transform ${
                     addedToCart
@@ -430,12 +432,12 @@ export default function ProductPage() {
                   {addedToCart ? (
                     <span className="flex items-center justify-center gap-2">
                       <Check className="w-5 h-5" />
-                      Tillagd i varukorgen
+                      {t('productDetail.addedToCart')}
                     </span>
                   ) : (
                     <span className="flex items-center justify-center gap-2">
                       <ShoppingBag className="w-5 h-5" />
-                      Lägg i varukorg
+                      {t('productsPage.addToCart')}
                     </span>
                   )}
                 </button>
@@ -475,15 +477,15 @@ export default function ProductPage() {
             >
               <div className="space-y-2">
                 <Truck className="w-6 h-6 mx-auto text-[#4A3428]" />
-                <p className="text-xs text-gray-600">Fri frakt över 500 kr</p>
+                <p className="text-xs text-gray-600">{t('productDetail.trust.freeShipping')}</p>
               </div>
               <div className="space-y-2">
                 <Shield className="w-6 h-6 mx-auto text-[#4A3428]" />
-                <p className="text-xs text-gray-600">100% säker betalning</p>
+                <p className="text-xs text-gray-600">{t('productDetail.trust.securePayment')}</p>
               </div>
               <div className="space-y-2">
                 <Leaf className="w-6 h-6 mx-auto text-[#4A3428]" />
-                <p className="text-xs text-gray-600">100% naturligt</p>
+                <p className="text-xs text-gray-600">{t('productDetail.trust.natural')}</p>
               </div>
             </motion.div>
           </div>
@@ -502,7 +504,7 @@ export default function ProductPage() {
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
-            Beskrivning
+            {t('productDetail.tabs.description')}
             {activeTab === 'description' && (
               <motion.div
                 layoutId="activeTab"
@@ -518,7 +520,7 @@ export default function ProductPage() {
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
-            Ingredienser
+            {t('productDetail.tabs.ingredients')}
             {activeTab === 'ingredients' && (
               <motion.div
                 layoutId="activeTab"
@@ -534,7 +536,7 @@ export default function ProductPage() {
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
-            Användning
+            {t('productDetail.tabs.usage')}
             {activeTab === 'usage' && (
               <motion.div
                 layoutId="activeTab"
@@ -550,7 +552,7 @@ export default function ProductPage() {
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
-            Recensioner
+            {t('productDetail.tabs.reviews')}
             {activeTab === 'reviews' && (
               <motion.div
                 layoutId="activeTab"
@@ -586,7 +588,7 @@ export default function ProductPage() {
                 
                 {product.benefits.length > 0 && (
                   <div className="mt-8">
-                    <h3 className="text-xl font-semibold mb-4">Fördelar</h3>
+                    <h3 className="text-xl font-semibold mb-4">{t('productDetail.benefitsTitle')}</h3>
                     <ul className="space-y-2">
                       {product.benefits.map((benefit, index) => (
                         <li key={index} className="flex items-start gap-3">
@@ -637,7 +639,7 @@ export default function ProductPage() {
                       <p className="text-gray-700 mb-3">{ingredient.description}</p>
                       {ingredient.benefits.length > 0 && (
                         <div className="space-y-1">
-                          <p className="text-sm font-semibold text-gray-600">Fördelar:</p>
+                          <p className="text-sm font-semibold text-gray-600">{t('productDetail.benefitsLabel')}</p>
                           <ul className="text-sm text-gray-600 space-y-1">
                             {ingredient.benefits.map((benefit, i) => (
                               <li key={i} className="flex items-center gap-2">
@@ -657,7 +659,7 @@ export default function ProductPage() {
               {product.slug === 'fungtastic-svampextrakt' && (
                 <div className="mt-12 bg-gradient-to-r from-[#F5F3F0] to-[#F5F3F0] rounded-xl p-8">
                   <h3 className="text-2xl font-bold text-center mb-8 text-gray-900">
-                    Fyra kraftfulla medicinska svampar
+                    {t('productDetail.mushroomShowcase')}
                   </h3>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                     {product.ingredients.map((ingredient, index) => (
@@ -704,7 +706,7 @@ export default function ProductPage() {
                 />
               ) : (
                 <div className="bg-gradient-to-r from-[#F5F3F0] to-[#F5F3F0] rounded-xl p-8">
-                  <h3 className="text-xl font-semibold mb-4">Så här använder du {product.name}</h3>
+                  <h3 className="text-xl font-semibold mb-4">{t('productDetail.usageTitle', { name: product.name })}</h3>
                   <p className="text-gray-700 whitespace-pre-line">
                     {product.howToUse}
                   </p>

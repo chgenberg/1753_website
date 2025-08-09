@@ -272,5 +272,27 @@
       "bestseller": "MÁS VENDIDO",
       "new": "NUEVO"
     }
+  },
+  "productDetail": {
+    "notFound": "No se pudo encontrar el producto.",
+    "saved": "Ahorras {amount} kr",
+    "skinTypesTitle": "Apto para tipos de piel:",
+    "quantity": "Cantidad:",
+    "addedToCart": "Añadido al carrito",
+    "trust": {
+      "freeShipping": "Envío gratis a partir de 500 kr",
+      "securePayment": "Pago 100% seguro",
+      "natural": "100% natural"
+    },
+    "tabs": {
+      "description": "Descripción",
+      "ingredients": "Ingredientes",
+      "usage": "Uso",
+      "reviews": "Reseñas"
+    },
+    "benefitsTitle": "Beneficios",
+    "benefitsLabel": "Beneficios:",
+    "usageTitle": "Cómo usar {name}",
+    "mushroomShowcase": "Cuatro poderosos hongos medicinales"
   }
 }

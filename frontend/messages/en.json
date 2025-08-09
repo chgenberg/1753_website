@@ -272,5 +272,27 @@
       "bestseller": "BESTSELLER",
       "new": "NEW"
     }
+  },
+  "productDetail": {
+    "notFound": "Product could not be found.",
+    "saved": "You save {amount} kr",
+    "skinTypesTitle": "Suitable for skin types:",
+    "quantity": "Quantity:",
+    "addedToCart": "Added to cart",
+    "trust": {
+      "freeShipping": "Free shipping over 500 kr",
+      "securePayment": "100% secure payment",
+      "natural": "100% natural"
+    },
+    "tabs": {
+      "description": "Description",
+      "ingredients": "Ingredients",
+      "usage": "How to use",
+      "reviews": "Reviews"
+    },
+    "benefitsTitle": "Benefits",
+    "benefitsLabel": "Benefits:",
+    "usageTitle": "How to use {name}",
+    "mushroomShowcase": "Four powerful medicinal mushrooms"
   }
 } 

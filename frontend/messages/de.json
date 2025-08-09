@@ -272,5 +272,27 @@
       "bestseller": "BESTSELLER",
       "new": "NEU"
     }
+  },
+  "productDetail": {
+    "notFound": "Produkt konnte nicht gefunden werden.",
+    "saved": "Du sparst {amount} kr",
+    "skinTypesTitle": "Geeignet für Hauttypen:",
+    "quantity": "Menge:",
+    "addedToCart": "Zum Warenkorb hinzugefügt",
+    "trust": {
+      "freeShipping": "Kostenloser Versand über 500 kr",
+      "securePayment": "100% sichere Zahlung",
+      "natural": "100% natürlich"
+    },
+    "tabs": {
+      "description": "Beschreibung",
+      "ingredients": "Inhaltsstoffe",
+      "usage": "Anwendung",
+      "reviews": "Bewertungen"
+    },
+    "benefitsTitle": "Vorteile",
+    "benefitsLabel": "Vorteile:",
+    "usageTitle": "So verwendest du {name}",
+    "mushroomShowcase": "Vier kraftvolle medizinische Pilze"
   }
 }

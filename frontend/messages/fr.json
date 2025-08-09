@@ -147,7 +147,8 @@
     "newsletter": "Newsletter",
     "newsletterDescription": "Recevez les dernières actualités sur le soin de la peau et le CBD",
     "subscribe": "S’abonner",
-    "copyright": "© 2024 1753 Skincare. Tous droits réservés."
+    "copyright": "© 2024 1753 Skincare. Tous droits réservés.",
+    "help": "Aide"
   },
   "Reviews": {
     "pageTitle": "Avis - 1753 Skincare",
@@ -233,5 +234,65 @@
         }
       }
     }
+  },
+  "productsPage": {
+    "badgeCBD": "SOINS INFUSÉS AU CBD",
+    "title": "NOS PRODUITS",
+    "subtitle": "Découvrez la puissance du soin naturel avec nos produits au CBD et CBG soigneusement sélectionnés",
+    "filter": "FILTRE",
+    "categories": {
+      "all": "Tous",
+      "bestseller": "Meilleures ventes",
+      "new": "Nouveau"
+    },
+    "sort": {
+      "featured": "Mise en avant d’abord",
+      "name": "Nom A–Z",
+      "priceLow": "Prix : du plus bas au plus élevé",
+      "priceHigh": "Prix : du plus élevé au plus bas"
+    },
+    "activeFilters": "{count} filtre actif",
+    "resetFilters": "Réinitialiser les filtres",
+    "loading": "Chargement des produits...",
+    "empty": {
+      "title": "Aucun produit trouvé avec les filtres actuels.",
+      "showAll": "Voir tous les produits"
+    },
+    "quickView": "Aperçu rapide",
+    "addToCart": "Ajouter au panier",
+    "newsletter": {
+      "title": "Ne manquez pas nos nouveautés",
+      "description": "Abonnez‑vous à notre newsletter pour des offres exclusives et des conseils soin",
+      "placeholderEmail": "Votre adresse e‑mail",
+      "subscribe": "S’abonner"
+    },
+    "quizCta": "Faire notre analyse de peau",
+    "badges": {
+      "recommended": "RECOMMANDÉ",
+      "bestseller": "MEILLEURE VENTE",
+      "new": "NOUVEAU"
+    }
+  },
+  "productDetail": {
+    "notFound": "Le produit est introuvable.",
+    "saved": "Vous économisez {amount} kr",
+    "skinTypesTitle": "Convient aux types de peau :",
+    "quantity": "Quantité :",
+    "addedToCart": "Ajouté au panier",
+    "trust": {
+      "freeShipping": "Livraison gratuite dès 500 kr",
+      "securePayment": "Paiement 100% sécurisé",
+      "natural": "100% naturel"
+    },
+    "tabs": {
+      "description": "Description",
+      "ingredients": "Ingrédients",
+      "usage": "Utilisation",
+      "reviews": "Avis"
+    },
+    "benefitsTitle": "Bénéfices",
+    "benefitsLabel": "Bénéfices :",
+    "usageTitle": "Comment utiliser {name}",
+    "mushroomShowcase": "Quatre puissants champignons médicinaux"
   }
 }

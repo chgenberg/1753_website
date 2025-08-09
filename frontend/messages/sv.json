@@ -273,5 +273,27 @@
         }
       }
     }
+  },
+  "productDetail": {
+    "notFound": "Produkten kunde inte hittas.",
+    "saved": "Du sparar {amount} kr",
+    "skinTypesTitle": "Passar hudtyper:",
+    "quantity": "Antal:",
+    "addedToCart": "Tillagd i varukorgen",
+    "trust": {
+      "freeShipping": "Fri frakt över 500 kr",
+      "securePayment": "100% säker betalning",
+      "natural": "100% naturligt"
+    },
+    "tabs": {
+      "description": "Beskrivning",
+      "ingredients": "Ingredienser",
+      "usage": "Användning",
+      "reviews": "Recensioner"
+    },
+    "benefitsTitle": "Fördelar",
+    "benefitsLabel": "Fördelar:",
+    "usageTitle": "Så här använder du {name}",
+    "mushroomShowcase": "Fyra kraftfulla medicinska svampar"
   }
 } 
