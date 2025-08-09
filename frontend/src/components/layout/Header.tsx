@@ -277,66 +277,78 @@ export function Header() {
             </div>
           </div>
 
-          {/* Fullscreen Overlay Menu (all breakpoints) */}
+          {/* Left Drawer Menu (all breakpoints) */}
           <AnimatePresence>
             {isMobileMenuOpen && (
-              <motion.div
-                ref={menuRef}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed inset-0 z-[60] bg-white/95 backdrop-blur-md"
-                role="dialog"
-                aria-modal
-              >
-                <div className="container mx-auto px-4 py-6 h-full flex flex-col">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-500">Meny</span>
-                    <button aria-label="Stäng meny" onClick={() => setIsMobileMenuOpen(false)} className="p-2 rounded hover:bg-gray-100">
-                      <X className="w-6 h-6" />
-                    </button>
-                  </div>
-                  <div className="mt-8 grid gap-3 max-w-2xl mx-auto w-full">
-                    <Link href={localize('/')} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-5 py-4 rounded-xl border hover:border-[#4A3428] hover:bg-[#4A3428]/5 transition-colors">
-                      <span className="flex items-center gap-3 text-lg"><Home className="w-5 h-5" />{t('navigation.home')}</span>
-                      <ChevronDown className="w-4 h-4 rotate-[-90deg]" />
-                    </Link>
-                    <Link href={localize('/products')} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-5 py-4 rounded-xl border hover:border-[#4A3428] hover:bg-[#4A3428]/5 transition-colors">
-                      <span className="flex items-center gap-3 text-lg"><Package className="w-5 h-5" />{t('navigation.products')}</span>
-                      <ChevronDown className="w-4 h-4 rotate-[-90deg]" />
-                    </Link>
-                    <div className="px-5 py-4 rounded-xl border">
-                      <div className="flex items-center justify-between">
-                        <span className="flex items-center gap-3 text-lg"><Info className="w-5 h-5" />{t('navigation.about')}</span>
-                      </div>
-                      <div className="mt-3 grid gap-2 pl-8 text-gray-700">
-                        <Link href={localize('/om-oss')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#4A3428]">{t('navigation.about')}</Link>
-                        {isSv && (
-                          <Link href={localize('/om-oss/aterforsaljare')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#4A3428]">Återförsäljare</Link>
-                        )}
-                        <Link href={localize('/om-oss/faq')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#4A3428]">Q&A</Link>
-                      </div>
+              <div className="fixed inset-0 z-[60]">
+                {/* Backdrop */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="absolute inset-0 bg-black/20 backdrop-blur-[2px]"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                />
+                {/* Drawer */}
+                <motion.aside
+                  ref={menuRef}
+                  initial={{ x: -420, opacity: 1 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  exit={{ x: -420, opacity: 1 }}
+                  transition={{ type: 'spring', stiffness: 260, damping: 30 }}
+                  className="absolute left-0 top-0 h-full w-[86%] max-w-[420px] bg-white shadow-2xl"
+                  role="dialog"
+                  aria-modal
+                >
+                  <div className="px-4 py-6 h-full flex flex-col">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-500">Meny</span>
+                      <button aria-label="Stäng meny" onClick={() => setIsMobileMenuOpen(false)} className="p-2 rounded hover:bg-gray-100">
+                        <X className="w-6 h-6" />
+                      </button>
                     </div>
-                    <div className="px-5 py-4 rounded-xl border">
-                      <div className="flex items-center justify-between">
-                        <span className="flex items-center gap-3 text-lg"><BookOpen className="w-5 h-5" />{t('navigation.knowledge')}</span>
+                    <div className="mt-6 grid gap-3 w-full">
+                      <Link href={localize('/')} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-5 py-4 rounded-xl border hover:border-[#4A3428] hover:bg-[#4A3428]/5 transition-colors">
+                        <span className="flex items-center gap-3 text-lg"><Home className="w-5 h-5" />{t('navigation.home')}</span>
+                        <ChevronDown className="w-4 h-4 rotate-[-90deg]" />
+                      </Link>
+                      <Link href={localize('/products')} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-5 py-4 rounded-xl border hover:border-[#4A3428] hover:bg-[#4A3428]/5 transition-colors">
+                        <span className="flex items-center gap-3 text-lg"><Package className="w-5 h-5" />{t('navigation.products')}</span>
+                        <ChevronDown className="w-4 h-4 rotate-[-90deg]" />
+                      </Link>
+                      <div className="px-5 py-4 rounded-xl border">
+                        <div className="flex items-center justify-between">
+                          <span className="flex items-center gap-3 text-lg"><Info className="w-5 h-5" />{t('navigation.about')}</span>
+                        </div>
+                        <div className="mt-3 grid gap-2 pl-8 text-gray-700">
+                          <Link href={localize('/om-oss')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#4A3428]">{t('navigation.about')}</Link>
+                          {isSv && (
+                            <Link href={localize('/om-oss/aterforsaljare')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#4A3428]">Återförsäljare</Link>
+                          )}
+                          <Link href={localize('/om-oss/faq')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#4A3428]">Q&A</Link>
+                        </div>
                       </div>
-                      <div className="mt-3 grid gap-2 pl-8 text-gray-700">
-                        <Link href={localize('/blogg')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#4A3428]">{t('navigation.blog')}</Link>
-                        <Link href={localize('/kunskap/e-bok')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#4A3428]">E-bok: Weed Your Skin</Link>
-                        <Link href={localize('/quiz')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#4A3428]">{t('Quiz.title')}</Link>
-                        <Link href={localize('/om-oss/ingredienser')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#4A3428]">Våra ingredienser</Link>
-                        <Link href={localize('/kunskap/funktionella-ravaror')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#4A3428]">Funktionella råvaror</Link>
+                      <div className="px-5 py-4 rounded-xl border">
+                        <div className="flex items-center justify-between">
+                          <span className="flex items-center gap-3 text-lg"><BookOpen className="w-5 h-5" />{t('navigation.knowledge')}</span>
+                        </div>
+                        <div className="mt-3 grid gap-2 pl-8 text-gray-700">
+                          <Link href={localize('/blogg')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#4A3428]">{t('navigation.blog')}</Link>
+                          <Link href={localize('/kunskap/e-bok')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#4A3428]">E-bok: Weed Your Skin</Link>
+                          <Link href={localize('/quiz')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#4A3428]">{t('Quiz.title')}</Link>
+                          <Link href={localize('/om-oss/ingredienser')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#4A3428]">Våra ingredienser</Link>
+                          <Link href={localize('/kunskap/funktionella-ravaror')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#4A3428]">Funktionella råvaror</Link>
+                        </div>
                       </div>
+                      <Link href={localize('/kontakt')} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-5 py-4 rounded-xl border hover:border-[#4A3428] hover:bg-[#4A3428]/5 transition-colors">
+                        <span className="flex items-center gap-3 text-lg"><Phone className="w-5 h-5" />{t('navigation.contact')}</span>
+                        <ChevronDown className="w-4 h-4 rotate-[-90deg]" />
+                      </Link>
                     </div>
-                    <Link href={localize('/kontakt')} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-5 py-4 rounded-xl border hover:border-[#4A3428] hover:bg-[#4A3428]/5 transition-colors">
-                      <span className="flex items-center gap-3 text-lg"><Phone className="w-5 h-5" />{t('navigation.contact')}</span>
-                      <ChevronDown className="w-4 h-4 rotate-[-90deg]" />
-                    </Link>
+                    <div className="mt-auto text-center text-xs text-gray-500 py-4">© 1753 Skincare</div>
                   </div>
-                  <div className="mt-auto text-center text-xs text-gray-500 py-4">© 1753 Skincare</div>
-                </div>
-              </motion.div>
+                </motion.aside>
+              </div>
             )}
           </AnimatePresence>
         </div>
