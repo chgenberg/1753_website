@@ -2,6 +2,8 @@
 
 import 'leaflet/dist/leaflet.css'
 import { MapContainer, TileLayer, Popup, CircleMarker, useMap } from 'react-leaflet'
+import MarkerClusterGroup from 'react-leaflet-cluster'
+import { useEffect } from 'react'
 import type { FC } from 'react'
 
 export interface CityPoint {
@@ -37,34 +39,51 @@ const RetailersLeafletMap: FC<{ points: CityPoint[] }> = ({ points }) => {
     return [[minLat, minLon], [maxLat, maxLon]] as [[number, number], [number, number]]
   })()
 
+  const FocusListener: FC = () => {
+    const map = useMap()
+    useEffect(() => {
+      const handler = (e: any) => {
+        const city = String(e.detail || '')
+        const p = points.find(pt => pt.city === city)
+        if (p) map.setView([p.lat, p.lon], 9)
+      }
+      window.addEventListener('focus-city' as any, handler as any)
+      return () => window.removeEventListener('focus-city' as any, handler as any)
+    }, [map])
+    return null
+  }
+
   return (
     <MapContainer className="w-full h-full" center={[62, 16]} zoom={5} scrollWheelZoom={true} style={{ background: '#F5F3F0' }}>
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution='&copy; OpenStreetMap &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        url="https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
       />
-      {points.map((p, idx) => (
-        <CircleMarker key={idx} center={[p.lat, p.lon]} radius={6 + Math.min(6, p.retailers.length)} pathOptions={{ color: '#4A3428', fillColor: '#4A3428', fillOpacity: 0.85 }}>
-          <Popup>
-            <div className="text-sm">
-              <div className="font-semibold mb-1">{p.city}</div>
-              <ul className="space-y-1">
-                {p.retailers.map((r, i) => (
-                  <li key={i}>
-                    <div className="font-medium">{r.name}</div>
-                    <div className="text-gray-600">{r.address}, {r.postalCode}</div>
-                    {r.phone && <div className="text-gray-600">{r.phone}</div>}
-                    {r.website && r.website !== 'Hemsida' && (
-                      <a className="text-[#4A3428] underline" href={r.website.startsWith('http') ? r.website : `https://${r.website}`} target="_blank" rel="noopener noreferrer">Besök webbplats</a>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </Popup>
-        </CircleMarker>
-      ))}
+      <MarkerClusterGroup chunkedLoading>
+        {points.map((p, idx) => (
+          <CircleMarker key={idx} center={[p.lat, p.lon]} radius={6 + Math.min(6, p.retailers.length)} pathOptions={{ color: '#4A3428', fillColor: '#4A3428', fillOpacity: 0.85 }}>
+            <Popup>
+              <div className="text-sm">
+                <div className="font-semibold mb-1">{p.city}</div>
+                <ul className="space-y-1">
+                  {p.retailers.map((r, i) => (
+                    <li key={i}>
+                      <div className="font-medium">{r.name}</div>
+                      <div className="text-gray-600">{r.address}, {r.postalCode}</div>
+                      {r.phone && <div className="text-gray-600">{r.phone}</div>}
+                      {r.website && r.website !== 'Hemsida' && (
+                        <a className="text-[#4A3428] underline" href={r.website.startsWith('http') ? r.website : `https://${r.website}`} target="_blank" rel="noopener noreferrer">Besök webbplats</a>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Popup>
+          </CircleMarker>
+        ))}
+      </MarkerClusterGroup>
       <FitBounds bounds={bounds} />
+      <FocusListener />
     </MapContainer>
   )
 }

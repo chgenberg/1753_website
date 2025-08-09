@@ -590,9 +590,18 @@ function SwedenMap({ items }: { items: Retailer[] }) {
   return (
     <section className="bg-white py-8">
       <div className="container mx-auto px-4">
-        <div className="mb-4">
-          <h2 className="text-2xl font-semibold text-gray-900">Återförsäljare på kartan</h2>
-          <p className="text-gray-600">Klicka på en pin för att se återförsäljare i området.</p>
+        <div className="mb-4 flex items-center justify-between gap-4">
+          <div>
+            <h2 className="text-2xl font-semibold text-gray-900">Återförsäljare på kartan</h2>
+            <p className="text-gray-600">Klicka på en pin för att se återförsäljare i området.</p>
+          </div>
+          <div>
+            <label className="sr-only" htmlFor="citySelect">Välj stad</label>
+            <select id="citySelect" className="border border-gray-300 rounded-lg px-3 py-2 text-sm" onChange={(e) => (window as any).dispatchEvent(new CustomEvent('focus-city', { detail: e.target.value }))}>
+              <option value="">Visa alla</option>
+              {points.map(p => <option key={p.city} value={p.city}>{p.city}</option>)}
+            </select>
+          </div>
         </div>
         <div className="relative w-full h-[520px] rounded-2xl shadow-inner overflow-hidden border border-gray-200">
           <RetailersLeafletMap points={points} />

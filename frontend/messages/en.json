@@ -174,5 +174,17 @@
       "loading": "Preparing your personalized skin analysis...",
       "error": "Could not load results. Please try again."
     }
+  },
+  "Blog": {
+    "metaTitle": "Blog - 1753 Skincare",
+    "metaDescription": "Read our latest articles on skincare, CBD and natural beauty. Expert advice and tips for healthy skin.",
+    "title": "Blog",
+    "subtitle": "Inspiration, tips and knowledge about natural skincare",
+    "readMore": "Read more",
+    "shareArticle": "Share article",
+    "relatedArticles": "Related articles",
+    "backToBlog": "Back to blog",
+    "noArticles": "No articles published yet",
+    "loading": "Loading articles..."
   }
 } 
