@@ -87,6 +87,36 @@ export default function CheckoutPage() {
     paymentMethod: 'card',
     newsletter: false
   })
+  const [rememberInfo, setRememberInfo] = useState(false)
+
+  useEffect(() => {
+    try {
+      const consent = localStorage.getItem('cookieConsent')
+      const saved = localStorage.getItem('checkoutInfo')
+      if (consent && saved) {
+        const prefs = JSON.parse(consent)
+        const allowStorage = typeof prefs === 'boolean' ? prefs : Boolean(prefs?.necessary)
+        if (allowStorage) {
+          const parsed = JSON.parse(saved)
+          setForm((prev) => ({ ...prev, ...parsed }))
+          setRememberInfo(true)
+        }
+      }
+    } catch {}
+  }, [])
+
+  useEffect(() => {
+    if (!rememberInfo) return
+    try {
+      const consent = localStorage.getItem('cookieConsent')
+      const prefs = consent ? JSON.parse(consent) : null
+      const allowStorage = typeof prefs === 'boolean' ? prefs : Boolean(prefs?.necessary)
+      if (allowStorage) {
+        const { email, firstName, lastName, phone, address, apartment, city, postalCode } = form
+        localStorage.setItem('checkoutInfo', JSON.stringify({ email, firstName, lastName, phone, address, apartment, city, postalCode }))
+      }
+    } catch {}
+  }, [form, rememberInfo])
 
   // Calculate totals with discount
   const originalTotal = total
@@ -195,8 +225,10 @@ export default function CheckoutPage() {
     setForm(prev => ({ ...prev, [field]: value }))
   }
 
+  const [formErrors, setFormErrors] = useState<string[]>([])
+
   const validateStep1 = () => {
-    const errors = []
+    const errors: string[] = []
     if (!form.email) errors.push('E-post krävs')
     if (!form.firstName) errors.push('Förnamn krävs')
     if (!form.lastName) errors.push('Efternamn krävs')
@@ -204,11 +236,13 @@ export default function CheckoutPage() {
     if (!form.address) errors.push('Adress krävs')
     if (!form.city) errors.push('Stad krävs')
     if (!form.postalCode) errors.push('Postnummer krävs')
-    
+
     if (errors.length > 0) {
       toast.error(errors[0])
+      setFormErrors(errors)
       return false
     }
+    setFormErrors([])
     return true
   }
 
@@ -286,6 +320,11 @@ export default function CheckoutPage() {
             </div>
           </div>
 
+          {/* Live region for form errors */}
+          <div aria-live="polite" className="sr-only" id="form-errors-live">
+            {formErrors?.join('. ')}
+          </div>
+
           <div className="grid lg:grid-cols-2 gap-8">
             {/* Left column - Form */}
             <div className="space-y-6">
@@ -300,56 +339,82 @@ export default function CheckoutPage() {
                   {/* Personal Info */}
                   <div className="space-y-4 mb-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                         E-postadress *
                       </label>
                       <input
+                        id="email"
                         type="email"
                         value={form.email}
                         onChange={(e) => handleInputChange('email', e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4A3428]"
                         required
+                        aria-invalid={formErrors?.includes('E-post krävs')}
+                        aria-describedby={formErrors?.includes('E-post krävs') ? 'email-error' : undefined}
                       />
+                      {formErrors?.includes('E-post krävs') && (
+                        <p id="email-error" className="mt-1 text-sm text-red-600">E-post krävs</p>
+                      )}
                     </div>
                     
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
                           Förnamn *
                         </label>
                         <input
+                          id="firstName"
                           type="text"
                           value={form.firstName}
                           onChange={(e) => handleInputChange('firstName', e.target.value)}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4A3428]"
                           required
+                          aria-invalid={formErrors?.includes('Förnamn krävs')}
+                          aria-describedby={formErrors?.includes('Förnamn krävs') ? 'firstName-error' : undefined}
                         />
+                        {formErrors?.includes('Förnamn krävs') && (
+                          <p id="firstName-error" className="mt-1 text-sm text-red-600">Förnamn krävs</p>
+                        )}
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
                           Efternamn *
                         </label>
                         <input
+                          id="lastName"
                           type="text"
                           value={form.lastName}
                           onChange={(e) => handleInputChange('lastName', e.target.value)}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4A3428]"
                           required
+                          aria-invalid={formErrors?.includes('Efternamn krävs')}
+                          aria-describedby={formErrors?.includes('Efternamn krävs') ? 'lastName-error' : undefined}
                         />
+                        {formErrors?.includes('Efternamn krävs') && (
+                          <p id="lastName-error" className="mt-1 text-sm text-red-600">Efternamn krävs</p>
+                        )}
                       </div>
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
                         Telefonnummer *
                       </label>
                       <input
+                        id="phone"
                         type="tel"
+                        inputMode="tel"
+                        pattern="[0-9 +()-]{6,}"
                         value={form.phone}
                         onChange={(e) => handleInputChange('phone', e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4A3428]"
                         required
+                        aria-invalid={formErrors?.includes('Telefon krävs')}
+                        aria-describedby={formErrors?.includes('Telefon krävs') ? 'phone-error' : undefined}
                       />
+                      {formErrors?.includes('Telefon krävs') && (
+                        <p id="phone-error" className="mt-1 text-sm text-red-600">Telefon krävs</p>
+                      )}
                     </div>
                   </div>
 
@@ -358,10 +423,11 @@ export default function CheckoutPage() {
                     <h3 className="font-medium text-gray-900">Leveransadress</h3>
                     
                     <div className="relative">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
                         Adress *
                       </label>
                       <input
+                        id="address"
                         ref={addressInputRef}
                         type="text"
                         value={form.address}
@@ -370,17 +436,25 @@ export default function CheckoutPage() {
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4A3428]"
                         placeholder="Börja skriv din adress..."
                         required
+                        aria-invalid={formErrors?.includes('Adress krävs')}
+                        aria-describedby={formErrors?.includes('Adress krävs') ? 'address-error' : undefined}
+                        aria-autocomplete="list"
+                        aria-controls="address-suggestions"
                       />
+                      {formErrors?.includes('Adress krävs') && (
+                        <p id="address-error" className="mt-1 text-sm text-red-600">Adress krävs</p>
+                      )}
                       
                       {/* Address Suggestions */}
                       {showAddressSuggestions && addressSuggestions.length > 0 && (
-                        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto">
+                        <div id="address-suggestions" className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto" role="listbox">
                           {addressSuggestions.map((suggestion, index) => (
                             <button
                               key={index}
                               type="button"
                               onClick={() => selectAddressSuggestion(suggestion)}
                               className="w-full px-4 py-2 text-left hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
+                              role="option"
                             >
                               <div className="font-medium">{suggestion.address}</div>
                               <div className="text-sm text-gray-500">
@@ -393,10 +467,11 @@ export default function CheckoutPage() {
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label htmlFor="apartment" className="block text-sm font-medium text-gray-700 mb-1">
                         Lägenhet, svit, etc. (valfritt)
                       </label>
                       <input
+                        id="apartment"
                         type="text"
                         value={form.apartment}
                         onChange={(e) => handleInputChange('apartment', e.target.value)}
@@ -406,28 +481,42 @@ export default function CheckoutPage() {
                     
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">
                           Stad *
                         </label>
                         <input
+                          id="city"
                           type="text"
                           value={form.city}
                           onChange={(e) => handleInputChange('city', e.target.value)}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4A3428]"
                           required
+                          aria-invalid={formErrors?.includes('Stad krävs')}
+                          aria-describedby={formErrors?.includes('Stad krävs') ? 'city-error' : undefined}
                         />
+                        {formErrors?.includes('Stad krävs') && (
+                          <p id="city-error" className="mt-1 text-sm text-red-600">Stad krävs</p>
+                        )}
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700 mb-1">
                           Postnummer *
                         </label>
                         <input
+                          id="postalCode"
                           type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]{3}[ ]?[0-9]{2}"
                           value={form.postalCode}
                           onChange={(e) => handleInputChange('postalCode', e.target.value)}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4A3428]"
                           required
+                          aria-invalid={formErrors?.includes('Postnummer krävs')}
+                          aria-describedby={formErrors?.includes('Postnummer krävs') ? 'postalCode-error' : undefined}
                         />
+                        {formErrors?.includes('Postnummer krävs') && (
+                          <p id="postalCode-error" className="mt-1 text-sm text-red-600">Postnummer krävs</p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -443,6 +532,21 @@ export default function CheckoutPage() {
                       />
                       <span className="text-sm text-gray-700">
                         Ja, jag vill gärna ta utbildande information och erbjudanden via e-post
+                      </span>
+                    </label>
+                  </div>
+
+                  {/* Remember info */}
+                  <div className="mb-6">
+                    <label className="flex items-start gap-3">
+                      <input
+                        type="checkbox"
+                        checked={rememberInfo}
+                        onChange={(e) => setRememberInfo(e.target.checked)}
+                        className="mt-1 h-4 w-4 text-[#4A3428] focus:ring-[#4A3428] border-gray-300 rounded"
+                      />
+                      <span className="text-sm text-gray-700">
+                        Spara mina uppgifter på den här enheten
                       </span>
                     </label>
                   </div>
@@ -582,32 +686,29 @@ export default function CheckoutPage() {
                     </div>
                   ) : (
                     <div className="flex gap-2">
+                      <label htmlFor="discountCode" className="sr-only">Rabattkod</label>
                       <input
+                        id="discountCode"
                         type="text"
                         value={discountCode}
                         onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
                         placeholder="Ange rabattkod"
                         className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#4A3428]"
+                        aria-invalid={Boolean(discountError)}
+                        aria-describedby={discountError ? 'discount-error' : undefined}
                       />
                       <button
                         onClick={handleApplyDiscount}
-                        disabled={isValidatingDiscount || !discountCode.trim()}
-                        className="px-4 py-2 bg-[#4A3428] text-white rounded-md text-sm hover:bg-[#3A2418] disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-4 py-2 bg-[#4A3428] text-white rounded-md text-sm hover:bg-[#3A2418] disabled:opacity-50"
+                        disabled={isValidatingDiscount}
+                        aria-busy={isValidatingDiscount}
                       >
-                        {isValidatingDiscount ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          'Använd'
-                        )}
+                        {isValidatingDiscount ? 'Kontrollerar…' : 'Lägg till'}
                       </button>
                     </div>
                   )}
-                  
                   {discountError && (
-                    <p className="text-red-600 text-sm mt-2 flex items-center gap-1">
-                      <AlertCircle className="w-4 h-4" />
-                      {discountError}
-                    </p>
+                    <p id="discount-error" className="mt-2 text-sm text-red-600" role="alert">{discountError}</p>
                   )}
                 </div>
 

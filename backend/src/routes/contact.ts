@@ -4,138 +4,35 @@ import { sendEmail } from '../services/emailService'
 import { dripService } from '../services/dripService'
 import { logger } from '../utils/logger'
 import { prisma } from '../lib/prisma'
+import { Router } from 'express'
+import { z } from 'zod'
 
-const router = express.Router()
+const router = Router()
+
+const ContactSchema = z.object({
+  name: z.string().min(1),
+  email: z.string().email(),
+  subject: z.string().min(1),
+  message: z.string().min(10),
+})
 
 /**
  * Send contact form email
  * POST /api/contact/send
  */
-router.post(
-  '/send',
-  [
-    body('name').trim().isLength({ min: 1, max: 100 }).withMessage('Namn krävs (1-100 tecken)'),
-    body('email').isEmail().normalizeEmail().withMessage('Giltig e-postadress krävs'),
-    body('subject').trim().isLength({ min: 1, max: 200 }).withMessage('Ämne krävs (1-200 tecken)'),
-    body('message').trim().isLength({ min: 1, max: 2000 }).withMessage('Meddelande krävs (1-2000 tecken)')
-  ],
-  async (req, res) => {
-    try {
-      const errors = validationResult(req)
-      if (!errors.isEmpty()) {
-        return res.status(400).json({
-          success: false,
-          errors: errors.array()
-        })
-      }
-
-      const { name, email, subject, message } = req.body
-
-      // Auto-categorize based on subject/message content
-      const categorizeMessage = (subject: string, message: string): string => {
-        const content = `${subject} ${message}`.toLowerCase()
-        
-        if (content.includes('produkt') || content.includes('ingredient') || content.includes('hudvård')) {
-          return 'product_question'
-        }
-        if (content.includes('beställning') || content.includes('order') || content.includes('leverans')) {
-          return 'order_issue'
-        }
-        if (content.includes('återförsäljare') || content.includes('partner') || content.includes('grossist')) {
-          return 'business_inquiry'
-        }
-        if (content.includes('press') || content.includes('media') || content.includes('journalist')) {
-          return 'press_media'
-        }
-        return 'general'
-      }
-
-      // Extract additional metadata
-      const userAgent = req.get('User-Agent') || null
-      const ipAddress = req.ip || req.connection.remoteAddress || null
-      const referrer = req.get('Referer') || null
-      const category = categorizeMessage(subject, message)
-
-      // Save to database for analysis
-      let contactSubmission = null
-      try {
-        contactSubmission = await prisma.contactSubmission.create({
-          data: {
-            name,
-            email,
-            subject,
-            message,
-            userAgent,
-            ipAddress,
-            referrer,
-            category,
-            tags: [category, 'website_contact'],
-            sessionData: {
-              timestamp: new Date().toISOString(),
-              source: 'contact_form'
-            }
-          }
-        })
-
-        logger.info(`Contact submission saved to database with ID: ${contactSubmission.id}`)
-      } catch (dbError) {
-        logger.error('Failed to save contact submission to database:', dbError)
-        // Continue even if DB save fails
-      }
-
-      // Send email to Christopher
-      try {
-        await sendEmail({
-          to: 'christopher@1753skincare.com',
-          subject: `Kontaktformulär: ${subject}`,
-          template: 'contactForm',
-          data: {
-            name,
-            email,
-            subject,
-            message,
-            timestamp: new Date().toLocaleString('sv-SE')
-          }
-        })
-
-        logger.info(`Contact form email sent from ${email}`)
-      } catch (emailError) {
-        logger.error('Failed to send contact form email:', emailError)
-        // Continue with Drip tracking even if email fails
-      }
-
-      // Track in Drip for marketing automation
-      try {
-        await dripService.subscribeUser({
-          email,
-          first_name: name.split(' ')[0] || name,
-          last_name: name.split(' ').slice(1).join(' ') || '',
-          custom_fields: {
-            source: 'contact_form',
-            contact_subject: subject,
-            last_contact: new Date().toISOString()
-          },
-          tags: ['Contact Form Submission', `Subject: ${subject}`]
-        })
-      } catch (dripError) {
-        logger.error('Failed to track contact form in Drip:', dripError)
-        // Don't fail the request if Drip tracking fails
-      }
-
-      res.json({
-        success: true,
-        message: 'Tack för ditt meddelande! Vi svarar så snart som möjligt.'
-      })
-
-    } catch (error: any) {
-      logger.error('Contact form error:', error)
-      res.status(500).json({
-        success: false,
-        message: 'Ett fel uppstod när meddelandet skulle skickas. Försök igen senare.'
-      })
+router.post('/send', async (req, res, next) => {
+  try {
+    const parse = ContactSchema.safeParse(req.body)
+    if (!parse.success) {
+      return res.status(400).json({ success: false, message: 'Invalid input', issues: parse.error.issues })
     }
+    const { name, email, subject, message } = parse.data
+    const submission = await prisma.contactSubmission.create({ data: { name, email, subject, message } })
+    res.json({ success: true, submissionId: submission.id })
+  } catch (err) {
+    next(err)
   }
-)
+})
 
 /**
  * Get contact submissions for analysis

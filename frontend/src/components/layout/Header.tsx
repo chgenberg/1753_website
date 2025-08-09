@@ -143,6 +143,17 @@ export function Header() {
                         ? 'bg-[#4A3428] text-white' 
                         : 'hover:bg-gray-100 text-gray-700'
                     }`}
+                    aria-haspopup="menu"
+                    aria-expanded={activeDropdown === 'om-oss'}
+                    aria-controls="menu-om-oss"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
+                        setActiveDropdown(prev => prev === 'om-oss' ? null : 'om-oss')
+                      }
+                      if (e.key === 'Escape') setActiveDropdown(null)
+                      if (e.key === 'ArrowDown') setActiveDropdown('om-oss')
+                    }}
                   >
                     <Info className="w-4 h-4" />
                     <span className="font-medium">Om oss</span>
@@ -159,22 +170,32 @@ export function Header() {
                         onMouseEnter={() => setActiveDropdown('om-oss')}
                         onMouseLeave={() => setActiveDropdown(null)}
                         className="absolute top-full left-0 mt-1 w-64 bg-white rounded-lg shadow-lg py-2 border border-gray-200"
+                        id="menu-om-oss"
+                        role="menu"
+                        aria-labelledby="menu-om-oss"
+                        onKeyDown={(e) => { if (e.key === 'Escape') setActiveDropdown(null) }}
                       >
                         <Link
                           href="/om-oss"
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          role="menuitem"
+                          tabIndex={0}
                         >
                           Om oss
                         </Link>
                         <Link
                           href="/om-oss/aterforsaljare"
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          role="menuitem"
+                          tabIndex={0}
                         >
                           Återförsäljare
                         </Link>
                         <Link
                           href="/om-oss/faq"
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          role="menuitem"
+                          tabIndex={0}
                         >
                           Q&A
                         </Link>
@@ -193,6 +214,17 @@ export function Header() {
                         ? 'bg-[#4A3428] text-white'
                         : 'hover:bg-gray-100 text-gray-700'
                     }`}
+                    aria-haspopup="menu"
+                    aria-expanded={activeDropdown === 'kunskap'}
+                    aria-controls="menu-kunskap"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
+                        setActiveDropdown(prev => prev === 'kunskap' ? null : 'kunskap')
+                      }
+                      if (e.key === 'Escape') setActiveDropdown(null)
+                      if (e.key === 'ArrowDown') setActiveDropdown('kunskap')
+                    }}
                   >
                     <BookOpen className="w-4 h-4" />
                     <span className="font-medium">Kunskap</span>
@@ -209,10 +241,16 @@ export function Header() {
                         onMouseEnter={() => setActiveDropdown('kunskap')}
                         onMouseLeave={() => setActiveDropdown(null)}
                         className="absolute top-full left-0 mt-1 w-64 bg-white rounded-lg shadow-lg py-2 border border-gray-200"
+                        id="menu-kunskap"
+                        role="menu"
+                        aria-labelledby="menu-kunskap"
+                        onKeyDown={(e) => { if (e.key === 'Escape') setActiveDropdown(null) }}
                       >
                         <Link
                           href="/blogg"
                           className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          role="menuitem"
+                          tabIndex={0}
                         >
                           Blogg
                           <PenTool className="w-4 h-4" />
@@ -220,12 +258,16 @@ export function Header() {
                         <Link
                           href="/kunskap/e-bok"
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          role="menuitem"
+                          tabIndex={0}
                         >
                           E-bok: Weed Your Skin
                         </Link>
                         <Link
                           href="/quiz"
                           className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          role="menuitem"
+                          tabIndex={0}
                         >
                           Hudanalys
                           <Sparkles className="w-4 h-4 text-amber-600" />
@@ -233,12 +275,16 @@ export function Header() {
                         <Link
                           href="/om-oss/ingredienser"
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          role="menuitem"
+                          tabIndex={0}
                         >
                           Våra ingredienser
                         </Link>
                         <Link
                           href="/kunskap/funktionella-ravaror"
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          role="menuitem"
+                          tabIndex={0}
                         >
                           Funktionella råvaror
                         </Link>

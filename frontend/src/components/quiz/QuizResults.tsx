@@ -824,10 +824,12 @@ export default function QuizResults({
                       {Object.entries(productData).map(([name, product]) => (
                         <div key={name} className="p-4 border border-gray-200 rounded-lg">
                           <div className="aspect-square bg-gray-100 rounded-lg mb-3 relative overflow-hidden">
-                            <img 
+                            <Image 
                               src={product.image} 
-                              alt={name}
-                              className="w-full h-full object-cover"
+                              alt={`Produktbild: ${name}`}
+                              fill
+                              className="object-cover"
+                              sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 300px"
                             />
                           </div>
                           <h4 className="font-medium text-gray-900 mb-2">{name}</h4>

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ChevronRight, Sparkles, Target, TrendingUp, Star, ArrowRight, X } from 'lucide-react'
+import Image from 'next/image'
 
 export function HeroSection() {
   const [isMobile, setIsMobile] = useState(false)
@@ -45,13 +46,16 @@ export function HeroSection() {
     <section className="relative min-h-screen overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
-        <img
+        <Image
           src={isMobile 
             ? "/portrait_home/Omslag_2025_mobile.png"
             : "/portrait_home/Omslag_2025_desktop.png"
           }
-          alt="1753 Skincare 2025 Omslag"
-          className="w-full h-full object-cover"
+          alt="Omslagsbild för 1753 Skincare 2025"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/70 md:from-black/40 md:via-black/30 md:to-black/60" />
       </div>
@@ -80,10 +84,13 @@ export function HeroSection() {
 
             {/* Author Info */}
             <div className="flex items-center gap-4 p-6 bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm">
-              <img 
+              <Image 
                 src="/portrait/c-and-e-2.jpg" 
-                alt="Christopher Genberg"
+                alt="Porträtt av Christopher Genberg"
+                width={64}
+                height={64}
                 className="w-16 h-16 rounded-full object-cover"
+                sizes="64px"
               />
               <div>
                 <p className="text-lg font-semibold text-gray-900">Christopher Genberg</p>

@@ -8,6 +8,7 @@ interface SitemapEntry {
 }
 
 const BASE_URL = 'https://1753skincare.com'
+const LOCALES = ['sv', 'en'] as const
 
 // Static pages with their priorities and update frequencies
 const STATIC_PAGES = [
@@ -111,14 +112,18 @@ async function fetchRawMaterials(): Promise<SitemapEntry[]> {
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const currentDate = new Date()
+
+  const withLocales = (path: string): SitemapEntry[] => {
+    return LOCALES.map((locale) => ({
+      url: `${BASE_URL}/${locale}${path.startsWith('/') ? path : `/${path}`}`.replace(/\/$/, ''),
+      lastModified: currentDate,
+      changeFrequency: 'weekly',
+      priority: 0.5,
+    }))
+  }
   
   // Static pages
-  const staticPages: SitemapEntry[] = STATIC_PAGES.map(page => ({
-    url: `${BASE_URL}${page.path}`,
-    lastModified: currentDate,
-    changeFrequency: page.changeFrequency,
-    priority: page.priority
-  }))
+  const staticPages: SitemapEntry[] = STATIC_PAGES.flatMap(page => withLocales(page.path))
   
   // Dynamic content
   const [products, blogPosts, rawMaterials] = await Promise.all([
@@ -127,23 +132,29 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     fetchRawMaterials()
   ])
   
+  // Prefix dynamic URLs per locale
+  const localizedProducts: SitemapEntry[] = products.flatMap(entry =>
+    LOCALES.map((l) => ({ ...entry, url: entry.url.replace(BASE_URL, `${BASE_URL}/${l}`) }))
+  )
+  const localizedBlogPosts: SitemapEntry[] = blogPosts.flatMap(entry =>
+    LOCALES.map((l) => ({ ...entry, url: entry.url.replace(BASE_URL, `${BASE_URL}/${l}`) }))
+  )
+  const localizedRawMaterials: SitemapEntry[] = rawMaterials.flatMap(entry =>
+    LOCALES.map((l) => ({ ...entry, url: entry.url.replace(BASE_URL, `${BASE_URL}/${l}`) }))
+  )
+
   // Ingredient pages (static but numerous)
   const ingredientPages: SitemapEntry[] = [
     'cbd', 'cbg', 'chaga', 'cordyceps', 'lions-mane', 'reishi', 
     'jojoba-olja', 'mct-kokosolja'
-  ].map(ingredient => ({
-    url: `${BASE_URL}/om-oss/ingredienser/${ingredient}`,
-    lastModified: currentDate,
-    changeFrequency: 'monthly' as const,
-    priority: 0.5
-  }))
+  ].flatMap(ingredient => withLocales(`/om-oss/ingredienser/${ingredient}`))
   
   // Combine all entries
   const allEntries = [
     ...staticPages,
-    ...products,
-    ...blogPosts,
-    ...rawMaterials,
+    ...localizedProducts,
+    ...localizedBlogPosts,
+    ...localizedRawMaterials,
     ...ingredientPages
   ]
   

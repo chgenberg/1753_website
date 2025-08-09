@@ -10,7 +10,8 @@ export async function GET() {
       headers: {
         'Content-Type': 'application/json',
       },
-      cache: 'no-store'
+      cache: 'no-store',
+      next: { revalidate: 600 }
     })
 
     console.log('Backend stats response status:', response.status)

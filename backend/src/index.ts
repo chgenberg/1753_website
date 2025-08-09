@@ -41,6 +41,30 @@ app.set('trust proxy', 1)
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
 }))
+app.use(helmet.hsts({ maxAge: 15552000, includeSubDomains: true, preload: true }))
+app.use(helmet.permittedCrossDomainPolicies())
+app.use(helmet.referrerPolicy({ policy: 'origin-when-cross-origin' }))
+app.use(helmet.crossOriginOpenerPolicy({ policy: 'same-origin' }))
+app.use(helmet.crossOriginEmbedderPolicy({ policy: 'require-corp' }))
+app.use(helmet.contentSecurityPolicy({
+  useDefaults: true,
+  directives: {
+    defaultSrc: ["'self'"],
+    scriptSrc: ["'self'"],
+    styleSrc: ["'self'", "'unsafe-inline'"],
+    imgSrc: ["'self'", 'data:', 'https:'],
+    connectSrc: ["'self'", 'https://1753skincare.com', 'https://1753websitebackend-production.up.railway.app'],
+    fontSrc: ["'self'", 'https:', 'data:'],
+    objectSrc: ["'none'"],
+    frameAncestors: ["'none'"],
+    baseUri: ["'self'"],
+    formAction: ["'self'"],
+  }
+}))
+app.use((_req, res, next) => {
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
+  next()
+})
 
 // Rate limiting - more lenient for production
 const limiter = rateLimit({
