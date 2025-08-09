@@ -147,7 +147,8 @@
     "newsletter": "Boletín",
     "newsletterDescription": "Recibe las últimas noticias sobre cuidado de la piel y CBD",
     "subscribe": "Suscribirse",
-    "copyright": "© 2024 1753 Skincare. Todos los derechos reservados."
+    "copyright": "© 2024 1753 Skincare. Todos los derechos reservados.",
+    "help": "Ayuda"
   },
   "Reviews": {
     "pageTitle": "Reseñas - 1753 Skincare",
@@ -232,6 +233,44 @@
           "description": "En 3 meses notarás una mejora visible en la calidad y el aspecto de tu piel.\n\nCon nuestros productos naturales con CBD y CBG y una rutina personalizada, tu piel estará más equilibrada, clara y radiante." 
         }
       }
+    }
+  },
+  "productsPage": {
+    "badgeCBD": "CUIDADO INFUNDIDO CON CBD",
+    "title": "NUESTROS PRODUCTOS",
+    "subtitle": "Descubre el poder del cuidado natural con nuestros productos de CBD y CBG",
+    "filter": "FILTRO",
+    "categories": {
+      "all": "Todos",
+      "bestseller": "Más vendidos",
+      "new": "Nuevo"
+    },
+    "sort": {
+      "featured": "Destacados primero",
+      "name": "Nombre A–Z",
+      "priceLow": "Precio: de menor a mayor",
+      "priceHigh": "Precio: de mayor a menor"
+    },
+    "activeFilters": "{count} filtro activo",
+    "resetFilters": "Restablecer filtros",
+    "loading": "Cargando productos...",
+    "empty": {
+      "title": "No se encontraron productos con los filtros actuales.",
+      "showAll": "Ver todos los productos"
+    },
+    "quickView": "Vista rápida",
+    "addToCart": "Añadir al carrito",
+    "newsletter": {
+      "title": "No te pierdas nuestras novedades",
+      "description": "Suscríbete a nuestro boletín para ofertas exclusivas y consejos de cuidado",
+      "placeholderEmail": "Tu correo electrónico",
+      "subscribe": "Suscribirse"
+    },
+    "quizCta": "Haz nuestro análisis de piel",
+    "badges": {
+      "recommended": "RECOMENDADO",
+      "bestseller": "MÁS VENDIDO",
+      "new": "NUEVO"
     }
   }
 }

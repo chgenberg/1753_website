@@ -147,7 +147,8 @@
     "newsletter": "Newsletter",
     "newsletterDescription": "Get the latest news about skincare and CBD",
     "subscribe": "Subscribe",
-    "copyright": "© 2024 1753 Skincare. All rights reserved."
+    "copyright": "© 2024 1753 Skincare. All rights reserved.",
+    "help": "Help"
   },
   "Reviews": {
     "pageTitle": "Reviews - 1753 Skincare",
@@ -232,6 +233,44 @@
           "description": "Within 3 months you will see a noticeable improvement in your skin’s quality and appearance.\n\nWith our natural CBD and CBG products and a personalised routine, your skin becomes balanced, clearer and radiant." 
         }
       }
+    }
+  },
+  "productsPage": {
+    "badgeCBD": "CBD-INFUSED SKINCARE",
+    "title": "OUR PRODUCTS",
+    "subtitle": "Discover the power of natural skincare with our carefully selected CBD and CBG products",
+    "filter": "FILTER",
+    "categories": {
+      "all": "All",
+      "bestseller": "Bestsellers",
+      "new": "New"
+    },
+    "sort": {
+      "featured": "Featured first",
+      "name": "Name A–Z",
+      "priceLow": "Price: Low to high",
+      "priceHigh": "Price: High to low"
+    },
+    "activeFilters": "{count} active filter",
+    "resetFilters": "Reset filters",
+    "loading": "Loading products...",
+    "empty": {
+      "title": "No products found with the current filters.",
+      "showAll": "Show all products"
+    },
+    "quickView": "Quick view",
+    "addToCart": "Add to cart",
+    "newsletter": {
+      "title": "Don’t miss our updates",
+      "description": "Subscribe to our newsletter for exclusive offers and skincare tips",
+      "placeholderEmail": "Your email address",
+      "subscribe": "Subscribe"
+    },
+    "quizCta": "Take our skin analysis",
+    "badges": {
+      "recommended": "RECOMMENDED",
+      "bestseller": "BESTSELLER",
+      "new": "NEW"
     }
   }
 } 
