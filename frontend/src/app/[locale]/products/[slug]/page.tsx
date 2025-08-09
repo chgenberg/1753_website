@@ -90,16 +90,14 @@ export default function ProductPage() {
   const fetchProduct = async () => {
     setLoading(true)
     try {
-      // Fetch product from API
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002'}/api/products`)
+      const locale = (typeof window !== 'undefined' ? window.location.pathname.split('/')[1] : 'sv') || 'sv'
+      const response = await fetch(`/api/products?locale=${encodeURIComponent(locale)}`)
       const data = await response.json()
       
       if (data.success) {
-        // Find product by slug
         const foundProduct = data.data.find((p: any) => p.slug === params.slug)
         
         if (foundProduct) {
-          // Transform API product to match our interface
           const transformedProduct: Product = {
             id: foundProduct.id,
             name: foundProduct.name,
@@ -140,13 +138,11 @@ export default function ProductPage() {
           
           setProduct(transformedProduct)
         } else {
-          // Product not found, redirect to products page
           window.location.href = '/products'
         }
       }
     } catch (error) {
       console.error('Error fetching product:', error)
-      // Fallback to products page
       window.location.href = '/products'
     } finally {
       setLoading(false)

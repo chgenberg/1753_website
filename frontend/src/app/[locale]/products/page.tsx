@@ -54,7 +54,8 @@ export default function ProductsPage() {
   const fetchProducts = async () => {
     setLoading(true)
     try {
-      const apiUrl = 'https://1753website-production.up.railway.app/api/products?sort=featured'
+      const locale = (typeof window !== 'undefined' ? window.location.pathname.split('/')[1] : 'sv') || 'sv'
+      const apiUrl = `/api/products?sort=featured&locale=${encodeURIComponent(locale)}`
       const response = await fetch(apiUrl)
       const data = await response.json()
       const productsArray = Array.isArray(data) ? data : (data.data || data.products || [])

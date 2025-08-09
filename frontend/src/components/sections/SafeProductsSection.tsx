@@ -74,7 +74,8 @@ export function SafeProductsSection() {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch('/api/products?featured=true&limit=10')
+      const locale = (typeof window !== 'undefined' ? window.location.pathname.split('/')[1] : 'sv') || 'sv'
+      const response = await fetch(`/api/products?featured=true&limit=10&locale=${encodeURIComponent(locale)}`)
       
       if (response.ok) {
         const data = await response.json()

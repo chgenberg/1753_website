@@ -1,16 +1,18 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   User, Mail, Calendar, Check, ChevronRight, ChevronLeft, 
   Sparkles, Heart, Sun, Moon, Droplets, Leaf, Timer, 
-  AlertCircle, Shield, Home
+  AlertCircle, Shield, Home, Info
 } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import ImprovedQuizResults from '@/components/quiz/ImprovedQuizResults'
 import { LoadingAnimation } from '@/components/quiz/LoadingAnimation'
+import FacePhotoAnalyzer, { ImageMetricsResult } from '@/components/quiz/FacePhotoAnalyzer'
+import confetti from 'canvas-confetti'
 
 // Soft cloud shape component
 const CloudShape = ({ children, className = "" }: { children: React.ReactNode, className?: string }) => (
@@ -32,6 +34,51 @@ const CloudShape = ({ children, className = "" }: { children: React.ReactNode, c
   </motion.div>
 )
 
+// Animated subtle background orbs
+const AnimatedOrbs = () => (
+  <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+    <motion.div
+      className="absolute -top-24 -left-24 w-80 h-80 rounded-full bg-[#8B6B47]/20 blur-3xl"
+      animate={{ x: [0, 40, -20, 0], y: [0, 20, -10, 0], opacity: [0.6, 0.8, 0.7, 0.6] }}
+      transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut' }}
+    />
+    <motion.div
+      className="absolute -bottom-24 -right-24 w-[28rem] h-[28rem] rounded-full bg-[#4A3428]/10 blur-3xl"
+      animate={{ x: [0, -30, 10, 0], y: [0, -15, 25, 0], opacity: [0.5, 0.65, 0.55, 0.5] }}
+      transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
+    />
+  </div>
+)
+
+// Accessible hint tooltip
+function HintPopover({ text }: { text: string }) {
+  const [open, setOpen] = useState(false)
+  const btnRef = useRef<HTMLButtonElement | null>(null)
+  return (
+    <span className="relative inline-block">
+      <button
+        ref={btnRef}
+        type="button"
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        aria-label={text}
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => setOpen(false)}
+        onFocus={() => setOpen(true)}
+        onBlur={() => setOpen(false)}
+        className="p-1 rounded hover:bg-gray-100"
+      >
+        <Info className="w-4 h-4 text-gray-500" />
+      </button>
+      {open && (
+        <div role="tooltip" className="absolute left-1/2 -translate-x-1/2 mt-2 w-64 text-xs bg-white border border-gray-200 shadow-md rounded p-2 z-10">
+          {text}
+        </div>
+      )}
+    </span>
+  )
+}
+
 interface UserInfo {
   email: string
   name: string
@@ -40,7 +87,7 @@ interface UserInfo {
 }
 
 export default function QuizPage() {
-  const [currentStep, setCurrentStep] = useState<'welcome' | 'userInfo' | 'questions' | 'loading' | 'results'>('welcome')
+  const [currentStep, setCurrentStep] = useState<'welcome' | 'userInfo' | 'questions' | 'review' | 'loading' | 'results'>('welcome')
   const [userInfo, setUserInfo] = useState<UserInfo>({
     email: '',
     name: '',
@@ -53,9 +100,70 @@ export default function QuizPage() {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [loadingProgress, setLoadingProgress] = useState(0)
   const [results, setResults] = useState<any>(null)
+  const [resumePrompt, setResumePrompt] = useState(false)
+  const [activeDescendantId, setActiveDescendantId] = useState<string | undefined>(undefined)
+  const [imageMetrics, setImageMetrics] = useState<ImageMetricsResult | null>(null)
+
+  // Focus heading on question change for better accessibility
+  const questionHeadingRef = useRef<HTMLHeadingElement | null>(null)
+  useEffect(() => {
+    if (currentStep === 'questions') {
+      setTimeout(() => questionHeadingRef.current?.focus(), 50)
+    }
+  }, [currentStep, currentQuestion])
+
+  // Confetti celebration on results
+  useEffect(() => {
+    if (currentStep === 'results') {
+      confetti({ particleCount: 100, spread: 70, origin: { y: 0.2 } })
+      setTimeout(() => confetti({ particleCount: 60, spread: 60, origin: { y: 0.2, x: 0.9 } }), 250)
+    }
+  }, [currentStep])
 
   // Gender-specific questions will be loaded based on user selection
   const [questions, setQuestions] = useState<any[]>([])
+
+  useEffect(() => {
+    // Offer resume from localStorage
+    try {
+      const raw = localStorage.getItem('quizProgress')
+      if (raw) setResumePrompt(true)
+    } catch {}
+  }, [])
+
+  const resumeFromStorage = () => {
+    try {
+      const raw = localStorage.getItem('quizProgress')
+      if (!raw) return setResumePrompt(false)
+      const data = JSON.parse(raw)
+      setUserInfo(data.userInfo || userInfo)
+      setPrivacyAccepted(!!data.privacyAccepted)
+      setQuestions(data.questions || [])
+      setAnswers(data.answers || {})
+      setCurrentQuestion(typeof data.currentQuestion === 'number' ? data.currentQuestion : 0)
+      setCurrentStep(data.currentStep || 'welcome')
+    } catch {}
+    setResumePrompt(false)
+  }
+
+  const discardStorage = () => {
+    try { localStorage.removeItem('quizProgress') } catch {}
+    setResumePrompt(false)
+  }
+
+  // Auto-save progress (with consent)
+  useEffect(() => {
+    if (!privacyAccepted) return
+    const payload = {
+      currentStep,
+      userInfo,
+      privacyAccepted,
+      currentQuestion,
+      answers,
+      questions
+    }
+    try { localStorage.setItem('quizProgress', JSON.stringify(payload)) } catch {}
+  }, [currentStep, userInfo, privacyAccepted, currentQuestion, answers, questions])
 
   const validateEmail = (email: string) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
@@ -105,44 +213,61 @@ export default function QuizPage() {
   }
 
   const getQuestionsForUser = (info: UserInfo) => {
+    const hints: Record<string, string> = {
+      skin_type: 'Om du är osäker, välj Osäker så kalibrerar vi i resultatet.',
+      skin_concerns: 'Välj 1–3 viktigaste områden att fokusera på först.',
+      lifestyle_stress: 'Stress påverkar hudens lyster och inflammation.',
+      sleep_quality: 'Sömn är kroppens reparationsfönster för huden.',
+      water_intake: 'Hudbarriären mår bättre vid jämn vätskenivå.',
+      sun_exposure: 'Gradvis exponering bygger tolerans – undvik rodnad.',
+      diet_quality: 'Hel och obearbetad mat gynnar tarm-hud-axeln.',
+      exercise_frequency: 'Rörelse ökar cirkulation och stödjer hudens läkning.',
+      current_routine: 'Vi anpassar rekommendationer utifrån din nivå.',
+      environmental_factors: 'Miljön påverkar behovet av skyddande strategier.'
+    }
+
     // Base questions that everyone gets
     const baseQuestions = [
       {
         id: 'skin_type',
         text: 'Hur skulle du beskriva din hudtyp?',
+        hint: hints.skin_type,
         type: 'single',
         options: [
           { value: 'dry', label: 'Torr', icon: '🏜️', description: 'Känns stram och kan fjälla' },
           { value: 'oily', label: 'Oljig', icon: '💧', description: 'Glansig, särskilt i T-zonen' },
           { value: 'combination', label: 'Kombinerad', icon: '🎭', description: 'Torr på vissa ställen, oljig på andra' },
           { value: 'normal', label: 'Normal', icon: '✨', description: 'Välbalanserad utan större problem' },
-          { value: 'sensitive', label: 'Känslig', icon: '🌸', description: 'Reagerar lätt på produkter' }
+          { value: 'sensitive', label: 'Känslig', icon: '🌸', description: 'Reagerar lätt på produkter' },
+          { value: 'not_sure', label: 'Osäker', icon: '❓', description: 'Jag vet inte / svårt att säga' }
         ]
       },
       {
         id: 'skin_concerns',
         text: 'Vilka hudproblem vill du främst adressera?',
+        hint: hints.skin_concerns,
         type: 'multiple',
         options: [
-          { value: 'acne', label: 'Akne', icon: '🔴', description: '' },
-          { value: 'aging', label: 'Åldrande', icon: '⏰', description: '' },
-          { value: 'pigmentation', label: 'Pigmentering', icon: '🎨', description: '' },
-          { value: 'redness', label: 'Rodnad', icon: '🌹', description: '' },
-          { value: 'dryness', label: 'Torrhet', icon: '🏜️', description: '' },
-          { value: 'oiliness', label: 'Oljighet', icon: '💧', description: '' },
-          { value: 'sensitivity', label: 'Känslighet', icon: '🌸', description: '' },
-          { value: 'texture', label: 'Ojämn hudstruktur', icon: '🏔️', description: '' }
+          { value: 'acne', label: 'Akne', icon: '🔴', description: 'Utbrott, finnar' },
+          { value: 'aging', label: 'Åldrande', icon: '⏰', description: 'Rynkor, fasthet' },
+          { value: 'pigmentation', label: 'Pigmentering', icon: '🎨', description: 'Fläckar, ojämn ton' },
+          { value: 'redness', label: 'Rodnad', icon: '🌹', description: 'Känslighet, reaktivitet' },
+          { value: 'dryness', label: 'Torrhet', icon: '🏜️', description: 'Stram, flagnande' },
+          { value: 'oiliness', label: 'Oljighet', icon: '💧', description: 'Glans, utvidgade porer' },
+          { value: 'sensitivity', label: 'Känslighet', icon: '🌸', description: 'Reagerar lätt' },
+          { value: 'texture', label: 'Ojämn hudstruktur', icon: '🏔️', description: 'Knottror, förtjockning' }
         ]
       },
       {
         id: 'lifestyle_stress',
         text: 'Hur skulle du beskriva din stressnivå i vardagen?',
+        hint: hints.lifestyle_stress,
         type: 'single',
         options: [
-          { value: 'low', label: 'Låg', icon: '😌', description: 'Jag känner mig oftast lugn och avslappnad' },
-          { value: 'moderate', label: 'Måttlig', icon: '😐', description: 'Normal vardagsstress som jag hanterar bra' },
-          { value: 'high', label: 'Hög', icon: '😰', description: 'Känner mig ofta stressad' },
-          { value: 'very_high', label: 'Mycket hög', icon: '😣', description: 'Konstant stress som påverkar mitt välmående' }
+          { value: 'low', label: 'Låg', icon: '😌', description: 'Oftast lugn' },
+          { value: 'moderate', label: 'Måttlig', icon: '😐', description: 'Hanterbar stress' },
+          { value: 'high', label: 'Hög', icon: '😰', description: 'Ofta stressad' },
+          { value: 'very_high', label: 'Mycket hög', icon: '😣', description: 'Påverkar välmående' }
         ]
       },
       {
@@ -234,7 +359,8 @@ export default function QuizPage() {
           { value: 'menstrual', label: 'Menstruationscykel', icon: '🌙', description: '' },
           { value: 'pregnancy', label: 'Graviditet', icon: '🤰', description: '' },
           { value: 'menopause', label: 'Klimakteriet', icon: '🦋', description: '' },
-          { value: 'none', label: 'Inga märkbara', icon: '✨', description: '' }
+          { value: 'none', label: 'Inga märkbara', icon: '✨', description: '' },
+          { value: 'not_sure', label: 'Osäker', icon: '❓', description: '' }
         ]
       })
     }
@@ -249,7 +375,8 @@ export default function QuizPage() {
           { value: 'none', label: 'Ingen akne', icon: '✨', description: '' },
           { value: 'mild', label: 'Mild', icon: '🟡', description: 'Enstaka finnar' },
           { value: 'moderate', label: 'Måttlig', icon: '🟠', description: 'Regelbundna utbrott' },
-          { value: 'severe', label: 'Svår', icon: '🔴', description: 'Omfattande problem' }
+          { value: 'severe', label: 'Svår', icon: '🔴', description: 'Omfattande problem' },
+          { value: 'not_sure', label: 'Osäker', icon: '❓', description: '' }
         ]
       })
     } else if (parseInt(info.age) > 40) {
@@ -281,11 +408,73 @@ export default function QuizPage() {
       setAnswers({ ...answers, [questionId]: newAnswers })
     } else {
       setAnswers({ ...answers, [questionId]: value })
-      
-      // Auto-advance for single select
+      // update activedescendant for a11y
+      setActiveDescendantId(`opt-${questionId}-${value}`)
       if (currentQuestion < questions.length - 1) {
         setTimeout(() => setCurrentQuestion(currentQuestion + 1), 300)
       }
+    }
+  }
+
+  // Helper: option label lookup and mini summary
+  const getOptionLabel = (qid: string, val: string) => {
+    const q = questions.find((x) => x.id === qid)
+    const o = q?.options?.find((op: any) => op.value === val)
+    return o?.label || val
+  }
+  const miniSummary = () => {
+    const parts: string[] = []
+    if (answers.skin_type) parts.push(`Hudtyp: ${getOptionLabel('skin_type', answers.skin_type)}`)
+    if (Array.isArray(answers.skin_concerns) && answers.skin_concerns.length) {
+      const labels = answers.skin_concerns.slice(0, 3).map((v: string) => getOptionLabel('skin_concerns', v))
+      parts.push(`Fokus: ${labels.join(', ')}`)
+    }
+    return parts.join(' · ')
+  }
+
+  // Keyboard shortcuts: 1-9 for options, Backspace to go back, Enter to continue for multiple
+  const onRadioGroupKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const q = questions[currentQuestion]
+    if (!q) return
+
+    // Numeric selection
+    if (/^[1-9]$/.test(e.key)) {
+      const idx = parseInt(e.key, 10) - 1
+      const opt = q.options[idx]
+      if (opt) {
+        e.preventDefault()
+        handleAnswer(q.id, opt.value)
+        return
+      }
+    }
+
+    if (q.type === 'single') {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight' && e.key !== 'Backspace') return
+      e.preventDefault()
+      if (e.key === 'Backspace') {
+        if (currentQuestion > 0) setCurrentQuestion(currentQuestion - 1)
+        return
+      }
+      const opts = q.options
+      const currentVal = answers[q.id]
+      const idx = Math.max(0, opts.findIndex((o: any) => o.value === currentVal))
+      const nextIdx = e.key === 'ArrowRight' ? Math.min(idx + 1, opts.length - 1) : Math.max(idx - 1, 0)
+      const nextVal = opts[nextIdx]?.value
+      if (nextVal != null) handleAnswer(q.id, nextVal)
+    } else {
+      if (e.key === 'Enter') {
+        e.preventDefault()
+        if (currentQuestion < questions.length - 1) setCurrentQuestion(currentQuestion + 1)
+        else setCurrentStep('review')
+      }
+    }
+  }
+
+  const handleNextFromMultiple = () => {
+    if (currentQuestion < questions.length - 1) {
+      setCurrentQuestion(currentQuestion + 1)
+    } else {
+      setCurrentStep('review')
     }
   }
 
@@ -325,6 +514,7 @@ export default function QuizPage() {
         body: JSON.stringify({
           userInfo,
           answers,
+          imageMetrics, // include metrics snapshot
           timestamp: new Date().toISOString()
         })
       })
@@ -348,7 +538,8 @@ export default function QuizPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userInfo,
-          answers
+          answers,
+          imageMetrics
         })
       })
 
@@ -385,8 +576,26 @@ export default function QuizPage() {
     ? ((currentQuestion + 1) / questions.length) * 100 
     : 0
 
+  const remaining = currentStep === 'questions' ? Math.max(questions.length - (currentQuestion + 1), 0) : 0
+  const etaSeconds = remaining * 7
+  const etaMinutes = Math.floor(etaSeconds / 60)
+  const etaRemainder = etaSeconds % 60
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#FAF8F5] via-white to-[#F5F3F0]">
+      <AnimatedOrbs />
+      {/* Resume prompt */}
+      {resumePrompt && (
+        <div className="fixed top-0 inset-x-0 z-30 bg-amber-50 border-b border-amber-200 text-amber-900">
+          <div className="container mx-auto px-4 py-3 flex items-center justify-between text-sm">
+            <span>Fortsätt där du slutade?</span>
+            <div className="flex gap-2">
+              <button onClick={resumeFromStorage} className="px-3 py-1 rounded bg-amber-600 text-white">Fortsätt</button>
+              <button onClick={discardStorage} className="px-3 py-1 rounded border border-amber-300">Nej tack</button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Background Pattern */}
       <div className="fixed inset-0 opacity-5">
         <div className="absolute inset-0" style={{
@@ -412,10 +621,17 @@ export default function QuizPage() {
               <span>Tillbaka till startsida</span>
             </div>
           </Link>
-          
           {currentStep === 'questions' && (
-            <div className="text-sm text-gray-600">
-              Fråga {currentQuestion + 1} av {questions.length}
+            <div className="text-xs md:text-sm text-gray-600 flex items-center gap-3">
+              <span>Fråga {currentQuestion + 1} av {questions.length}</span>
+              <span className="w-1 h-1 rounded-full bg-gray-300" />
+              <span>ETA ~ {etaMinutes}:{etaRemainder.toString().padStart(2,'0')}</span>
+              {miniSummary() && (
+                <>
+                  <span className="w-1 h-1 rounded-full bg-gray-300 hidden md:inline-block" />
+                  <span className="hidden md:inline text-gray-500">{miniSummary()}</span>
+                </>
+              )}
             </div>
           )}
         </div>
@@ -441,6 +657,11 @@ export default function QuizPage() {
                   Få personliga rekommendationer baserade på din unika hud, 
                   livsstil och behov - helt naturligt och holistiskt.
                 </p>
+                <div className="mt-6 flex flex-wrap items-center justify-center gap-3 text-xs text-gray-600">
+                  <span className="px-3 py-1 rounded-full bg-gray-100">Snabbt: 10–14 frågor</span>
+                  <span className="px-3 py-1 rounded-full bg-gray-100">AI-stödd analys</span>
+                  <span className="px-3 py-1 rounded-full bg-gray-100">Säker och privat</span>
+                </div>
               </CloudShape>
 
               <motion.button
@@ -476,6 +697,10 @@ export default function QuizPage() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
             >
+              {/* Live region for validation messages */}
+              <div className="sr-only" aria-live="polite">
+                {Object.values(errors).join('. ')}
+              </div>
               <CloudShape className="max-w-2xl mx-auto">
                 <h2 className="text-2xl font-light text-gray-900 mb-6 text-center">
                   Låt oss lära känna dig
@@ -484,11 +709,12 @@ export default function QuizPage() {
                 <div className="space-y-6">
                   {/* Email */}
                   <div>
-                    <label className="flex items-center gap-2 text-gray-700 mb-2">
+                    <label className="flex items-center gap-2 text-gray-700 mb-2" htmlFor="quiz-email">
                       <Mail className="w-4 h-4" />
                       E-postadress
                     </label>
                     <input
+                      id="quiz-email"
                       type="email"
                       value={userInfo.email}
                       onChange={(e) => setUserInfo({ ...userInfo, email: e.target.value })}
@@ -496,19 +722,22 @@ export default function QuizPage() {
                         errors.email ? 'border-red-400' : 'border-gray-200'
                       } focus:outline-none focus:border-[#8B6B47] transition-colors`}
                       placeholder="din@email.com"
+                      aria-invalid={!!errors.email}
+                      aria-describedby={errors.email ? 'err-email' : undefined}
                     />
                     {errors.email && (
-                      <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+                      <p id="err-email" className="text-red-500 text-sm mt-1">{errors.email}</p>
                     )}
                   </div>
 
                   {/* Name */}
                   <div>
-                    <label className="flex items-center gap-2 text-gray-700 mb-2">
+                    <label className="flex items-center gap-2 text-gray-700 mb-2" htmlFor="quiz-name">
                       <User className="w-4 h-4" />
                       Namn
                     </label>
                     <input
+                      id="quiz-name"
                       type="text"
                       value={userInfo.name}
                       onChange={(e) => setUserInfo({ ...userInfo, name: e.target.value })}
@@ -516,9 +745,11 @@ export default function QuizPage() {
                         errors.name ? 'border-red-400' : 'border-gray-200'
                       } focus:outline-none focus:border-[#8B6B47] transition-colors`}
                       placeholder="Ditt namn"
+                      aria-invalid={!!errors.name}
+                      aria-describedby={errors.name ? 'err-name' : undefined}
                     />
                     {errors.name && (
-                      <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+                      <p id="err-name" className="text-red-500 text-sm mt-1">{errors.name}</p>
                     )}
                   </div>
 
@@ -528,12 +759,8 @@ export default function QuizPage() {
                       <Heart className="w-4 h-4" />
                       Kön
                     </label>
-                    <div className="grid grid-cols-3 gap-3">
-                      {[
-                        { value: 'female', label: 'Kvinna', icon: '👩', description: '' },
-                        { value: 'male', label: 'Man', icon: '👨', description: '' },
-                        { value: 'other', label: 'Vill ej ange', icon: '🌟', description: '' }
-                      ].map((option) => (
+                    <div className="grid grid-cols-3 gap-3" role="radiogroup" aria-label="Välj kön">
+                      {[{ value: 'female', label: 'Kvinna', icon: '👩' }, { value: 'male', label: 'Man', icon: '👨' }, { value: 'other', label: 'Vill ej ange', icon: '🌟' }].map((option) => (
                         <button
                           key={option.value}
                           onClick={() => setUserInfo({ ...userInfo, gender: option.value as any })}
@@ -542,6 +769,8 @@ export default function QuizPage() {
                               ? 'border-[#8B6B47] bg-[#8B6B47]/10'
                               : 'border-gray-200 hover:border-[#8B6B47]/50'
                           }`}
+                          role="radio"
+                          aria-checked={userInfo.gender === option.value}
                         >
                           <div className="text-2xl mb-1">{option.icon}</div>
                           <div className="text-sm">{option.label}</div>
@@ -549,17 +778,18 @@ export default function QuizPage() {
                       ))}
                     </div>
                     {errors.gender && (
-                      <p className="text-red-500 text-sm mt-1">{errors.gender}</p>
+                      <p className="text-red-500 text-sm mt-1" id="err-gender">{errors.gender}</p>
                     )}
                   </div>
 
                   {/* Age */}
                   <div>
-                    <label className="flex items-center gap-2 text-gray-700 mb-2">
+                    <label className="flex items-center gap-2 text-gray-700 mb-2" htmlFor="quiz-age">
                       <Calendar className="w-4 h-4" />
                       Ålder
                     </label>
                     <input
+                      id="quiz-age"
                       type="number"
                       value={userInfo.age}
                       onChange={(e) => setUserInfo({ ...userInfo, age: e.target.value })}
@@ -569,9 +799,11 @@ export default function QuizPage() {
                       placeholder="Din ålder"
                       min="15"
                       max="100"
+                      aria-invalid={!!errors.age}
+                      aria-describedby={errors.age ? 'err-age' : undefined}
                     />
                     {errors.age && (
-                      <p className="text-red-500 text-sm mt-1">{errors.age}</p>
+                      <p id="err-age" className="text-red-500 text-sm mt-1">{errors.age}</p>
                     )}
                   </div>
 
@@ -582,17 +814,14 @@ export default function QuizPage() {
                       checked={privacyAccepted}
                       onChange={(e) => setPrivacyAccepted(e.target.checked)}
                       className="mt-1 w-4 h-4 text-[#8B6B47] rounded focus:ring-[#8B6B47]"
+                      aria-describedby={errors.privacy ? 'err-privacy' : undefined}
                     />
                     <span className="text-sm text-gray-600">
-                      Jag godkänner{' '}
-                      <Link href="/integritetspolicy" className="text-[#8B6B47] underline">
-                        integritetspolicyn
-                      </Link>{' '}
-                      och samtycker till att mina svar sparas för att ge mig personliga rekommendationer
+                      Jag godkänner <Link href="/integritetspolicy" className="text-[#8B6B47] underline">integritetspolicyn</Link> och samtycker till att mina svar sparas för att ge mig personliga rekommendationer
                     </span>
                   </label>
                   {errors.privacy && (
-                    <p className="text-red-500 text-sm">{errors.privacy}</p>
+                    <p id="err-privacy" className="text-red-500 text-sm">{errors.privacy}</p>
                   )}
 
                   {/* Submit */}
@@ -613,7 +842,7 @@ export default function QuizPage() {
           {currentStep === 'questions' && questions.length > 0 && (
             <div>
               {/* Progress Bar */}
-              <div className="mb-8">
+              <div className="mb-4">
                 <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                   <motion.div
                     className="h-full bg-gradient-to-r from-[#8B6B47] to-[#4A3428]"
@@ -622,6 +851,19 @@ export default function QuizPage() {
                     transition={{ duration: 0.3 }}
                   />
                 </div>
+              </div>
+              {/* Progress dots */}
+              <div className="mb-6 flex flex-wrap gap-2">
+                {questions.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => i < currentQuestion ? setCurrentQuestion(i) : null}
+                    className={`h-2.5 w-2.5 rounded-full transition-colors ${
+                      i === currentQuestion ? 'bg-[#8B6B47]' : i < currentQuestion ? 'bg-[#8B6B47]/40' : 'bg-gray-200'
+                    }`}
+                    aria-label={`Gå till fråga ${i + 1}`}
+                  />
+                ))}
               </div>
 
               <AnimatePresence mode="wait">
@@ -632,32 +874,54 @@ export default function QuizPage() {
                   exit={{ opacity: 0, x: -20 }}
                 >
                   <CloudShape className="max-w-3xl mx-auto">
-                    <h3 className="text-xl md:text-2xl font-light text-gray-900 mb-6 text-center">
+                    <h3
+                      ref={questionHeadingRef}
+                      tabIndex={-1}
+                      className="text-xl md:text-2xl font-light text-gray-900 mb-2 text-center flex items-center justify-center gap-2 focus:outline-none"
+                    >
                       {questions[currentQuestion].text}
+                      {questions[currentQuestion].hint && (
+                        <HintPopover text={questions[currentQuestion].hint} />
+                      )}
                     </h3>
+                    <p className="text-center text-xs text-gray-500 mb-4">Tips: Använd siffrorna 1–9 på tangentbordet för snabbval.</p>
 
-                    <div className="grid gap-3">
-                      {questions[currentQuestion].options.map((option: any) => {
+                    <div
+                      className="grid md:grid-cols-2 gap-3"
+                      role={questions[currentQuestion].type === 'single' ? 'radiogroup' : 'listbox'}
+                      aria-multiselectable={questions[currentQuestion].type === 'multiple' ? true : undefined}
+                      aria-activedescendant={activeDescendantId}
+                      onKeyDown={onRadioGroupKeyDown}
+                      tabIndex={0}
+                      aria-label="Svarsalternativ"
+                    >
+                      {questions[currentQuestion].options.map((option: any, idx: number) => {
                         const isSelected = questions[currentQuestion].type === 'multiple'
                           ? (answers[questions[currentQuestion].id] || []).includes(option.value)
                           : answers[questions[currentQuestion].id] === option.value
-
+                        const optId = `opt-${questions[currentQuestion].id}-${option.value}`
                         return (
                           <motion.button
                             key={option.value}
+                            id={optId}
                             onClick={() => handleAnswer(questions[currentQuestion].id, option.value)}
-                            whileHover={{ scale: 1.02 }}
+                            whileHover={{ scale: 1.02, rotate: 0.2 }}
                             whileTap={{ scale: 0.98 }}
-                            className={`p-4 rounded-xl border transition-all text-left ${
+                            className={`group relative p-4 rounded-xl border transition-all text-left overflow-hidden ${
                               isSelected
-                                ? 'border-[#8B6B47] bg-[#8B6B47]/10'
+                                ? 'border-[#8B6B47] bg-[#8B6B47]/10 shadow'
                                 : 'border-gray-200 hover:border-[#8B6B47]/50 bg-white'
                             }`}
+                            role={questions[currentQuestion].type === 'single' ? 'radio' : 'option'}
+                            aria-checked={questions[currentQuestion].type === 'single' ? isSelected : undefined}
+                            aria-selected={questions[currentQuestion].type === 'multiple' ? isSelected : undefined}
                           >
-                            <div className="flex items-center gap-4">
-                              <span className="text-2xl">{option.icon}</span>
+                            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-br from-[#8B6B47]/5 to-transparent" />
+                            <div className="flex items-center gap-4 relative">
+                              <span className="text-2xl" aria-hidden>{option.icon}</span>
                               <div className="flex-1">
                                 <div className="font-medium text-gray-900">
+                                  <span className="mr-2 text-xs text-gray-400">{idx + 1}.</span>
                                   {option.label}
                                 </div>
                                 {option.description && (
@@ -685,27 +949,87 @@ export default function QuizPage() {
                         Tillbaka
                       </button>
 
-                      {questions[currentQuestion].type === 'multiple' && (
+                      {questions[currentQuestion].type === 'multiple' ? (
                         <button
-                          onClick={() => {
-                            if (currentQuestion < questions.length - 1) {
-                              setCurrentQuestion(currentQuestion + 1)
-                            } else {
-                              handleQuizComplete()
-                            }
-                          }}
+                          onClick={handleNextFromMultiple}
                           disabled={!answers[questions[currentQuestion].id] || answers[questions[currentQuestion].id].length === 0}
                           className="flex items-center gap-2 px-6 py-2 bg-[#4A3428] text-white rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          {currentQuestion === questions.length - 1 ? 'Få resultat' : 'Nästa'}
+                          {currentQuestion === questions.length - 1 ? 'Granska svar' : 'Nästa'}
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            if (currentQuestion < questions.length - 1) setCurrentQuestion(currentQuestion + 1)
+                            else setCurrentStep('review')
+                          }}
+                          className="hidden md:inline-flex items-center gap-2 px-6 py-2 bg-[#4A3428] text-white rounded-full"
+                        >
+                          {currentQuestion === questions.length - 1 ? 'Granska svar' : 'Nästa'}
                           <ChevronRight className="w-4 h-4" />
                         </button>
                       )}
+                    </div>
+
+                    {/* Save for later */}
+                    <div className="mt-4 text-center">
+                      <button
+                        onClick={() => { try { localStorage.setItem('quizProgress', JSON.stringify({ currentStep, userInfo, privacyAccepted, currentQuestion, answers, questions })) } catch {} }}
+                        className="text-sm text-gray-600 underline hover:text-[#8B6B47]"
+                      >
+                        Spara och fortsätt senare
+                      </button>
                     </div>
                   </CloudShape>
                 </motion.div>
               </AnimatePresence>
             </div>
+          )}
+
+          {/* Review */}
+          {currentStep === 'review' && (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+              <CloudShape className="max-w-3xl mx-auto">
+                <h2 className="text-2xl font-light text-gray-900 mb-4 text-center">Granska dina svar</h2>
+                <div className="space-y-4">
+                  {questions.map((q, idx) => (
+                    <div key={q.id} className="p-4 rounded-xl border border-gray-200">
+                      <div className="text-sm text-gray-500 mb-1">Fråga {idx + 1}</div>
+                      <div className="font-medium text-gray-900 mb-1">{q.text}</div>
+                      <div className="text-sm text-gray-700">
+                        {Array.isArray(answers[q.id])
+                          ? (answers[q.id] || []).join(', ')
+                          : (answers[q.id] ?? '—')}
+                      </div>
+                      <div className="mt-2">
+                        <button onClick={() => { setCurrentStep('questions'); setCurrentQuestion(idx) }} className="text-sm text-[#8B6B47] underline">Ändra</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Optional photo analysis */}
+                <div className="mt-6">
+                  <FacePhotoAnalyzer onAnalyze={(m) => setImageMetrics(m)} />
+                  {imageMetrics && (
+                    <div className="mt-3 text-sm text-gray-600">
+                      Bilddata bifogas (konfidens {Math.round(imageMetrics.confidence*100)}%).
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex justify-between mt-6">
+                  <button onClick={() => setCurrentStep('questions')} className="flex items-center gap-2 text-gray-600 hover:text-[#8B6B47]">
+                    <ChevronLeft className="w-4 h-4" />
+                    Tillbaka
+                  </button>
+                  <button onClick={handleQuizComplete} className="px-6 py-2 bg-[#4A3428] text-white rounded-full hover:bg-[#3A2418]">
+                    Bekräfta och visa resultat
+                  </button>
+                </div>
+              </CloudShape>
+            </motion.div>
           )}
 
           {/* Loading */}
@@ -715,7 +1039,7 @@ export default function QuizPage() {
 
           {/* Results */}
           {currentStep === 'results' && results && (
-            <ImprovedQuizResults results={results} userInfo={userInfo} />
+            <ImprovedQuizResults results={results} userInfo={userInfo} imageMetrics={imageMetrics} />
           )}
         </div>
       </div>

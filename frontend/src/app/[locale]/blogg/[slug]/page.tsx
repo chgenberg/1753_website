@@ -9,12 +9,12 @@ type Props = {
   params: Promise<{ slug: string; locale: string }>;
 };
 
-async function getPost(slug: string) {
+async function getPost(slug: string, locale: string) {
   // Use internal API route that proxies to backend
   const baseUrl = process.env.NODE_ENV === 'production' 
     ? 'https://1753website-production.up.railway.app' 
     : 'http://localhost:3000';
-  const res = await fetch(`${baseUrl}/api/blog/${slug}`, { next: { revalidate: 3600 } });
+  const res = await fetch(`${baseUrl}/api/blog/${slug}?locale=${encodeURIComponent(locale)}`, { next: { revalidate: 3600 } });
 
   if (res.status === 404) {
     return null;
@@ -57,8 +57,8 @@ function formatBlogContent(content: string): string {
 
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
-  const post = await getPost(slug);
+  const { slug, locale } = await params;
+  const post = await getPost(slug, locale);
   
   if (!post) {
     return {
@@ -67,16 +67,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
   }
 
+  const title = post.metaTitle || post.title
+  const description = post.metaDescription || post.content.substring(0, 160).replace(/<[^>]*>/g, '')
+
   return {
-    title: post.title,
-    description: post.content.substring(0, 160).replace(/<[^>]*>/g, ''),
+    title,
+    description,
   };
 }
 
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug, locale } = await params;
-  const post = await getPost(slug);
+  const post = await getPost(slug, locale);
 
   if (!post) {
     // Show a custom not found page instead of Next.js default

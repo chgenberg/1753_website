@@ -40,6 +40,13 @@ export function Footer() {
   const t = useTranslations()
   const pathname = usePathname()
   const isSv = (pathname.split('/')[1] || 'sv') === 'sv'
+  const currentLocale = (pathname.split('/')[1] || 'sv') as string
+  const localizeHref = (href: string) => {
+    if (!href.startsWith('/')) return href
+    const firstSeg = href.split('/')[1]
+    if (['sv','en','es','de','fr'].includes(firstSeg)) return href
+    return `/${currentLocale}${href}`
+  }
   return (
     <footer className="bg-[#4A3428] text-white">
       {/* Main Footer */}
@@ -47,7 +54,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Brand Column */}
           <div className="lg:col-span-2">
-            <Link href="/" className="inline-block mb-6">
+            <Link href={localizeHref('/')} className="inline-block mb-6">
               <Image
                 src="/1753.png"
                 alt="1753 Skincare"
@@ -96,7 +103,7 @@ export function Footer() {
               {footerLinks.products.map((link) => (
                 <li key={link.name}>
                   <Link
-                    href={link.href}
+                    href={localizeHref(link.href)}
                     className="text-white/80 hover:text-white transition-colors duration-200"
                   >
                     {link.name}
@@ -113,7 +120,7 @@ export function Footer() {
               {(isSv ? footerLinks.company : footerLinks.company.filter(l => l.href !== '/om-oss/aterforsaljare')).map((link) => (
                 <li key={link.name}>
                   <Link
-                    href={link.href}
+                    href={localizeHref(link.href)}
                     className="text-white/80 hover:text-white transition-colors duration-200"
                   >
                     {link.name}
@@ -130,7 +137,7 @@ export function Footer() {
               {footerLinks.knowledge.map((link) => (
                 <li key={link.name}>
                   <Link
-                    href={link.href}
+                    href={localizeHref(link.href)}
                     className="text-white/80 hover:text-white transition-colors duration-200"
                   >
                     {link.name}
@@ -147,7 +154,7 @@ export function Footer() {
               {footerLinks.help.map((link) => (
                 <li key={link.name}>
                   <Link
-                    href={link.href}
+                    href={localizeHref(link.href)}
                     className="text-white/80 hover:text-white transition-colors duration-200"
                   >
                     {link.name}
@@ -189,13 +196,13 @@ export function Footer() {
               {t('footer.copyright')}
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
-              <Link href="/integritetspolicy" className="text-white/60 hover:text-white text-sm transition-colors">
+              <Link href={localizeHref('/integritetspolicy')} className="text-white/60 hover:text-white text-sm transition-colors">
                 {t('navigation.privacyPolicy') || 'Integritetspolicy'}
               </Link>
-              <Link href="/villkor" className="text-white/60 hover:text-white text-sm transition-colors">
+              <Link href={localizeHref('/villkor')} className="text-white/60 hover:text-white text-sm transition-colors">
                 {t('navigation.terms') || 'Villkor'}
               </Link>
-              <Link href="/cookies" className="text-white/60 hover:text-white text-sm transition-colors">
+              <Link href={localizeHref('/cookies')} className="text-white/60 hover:text-white text-sm transition-colors">
                 {t('navigation.cookies') || 'Cookies'}
               </Link>
             </div>

@@ -12,7 +12,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { 
   ShoppingBag, User, ChevronDown, LogOut,
   Sparkles, Leaf, ShieldCheck, Package,
-  BookOpen, Phone, Info, Home, Menu, X, PenTool
+  BookOpen, Phone, Info, Home, Menu, X, PenTool, MapPin
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -74,6 +74,14 @@ export function Header() {
     return `/${locale}${pathname.startsWith('/') ? '' : '/'}${pathname}`
   }
 
+  const currentLocale = (pathname.split('/')[1] || 'sv') as string
+  const localize = (href: string) => {
+    if (!href.startsWith('/')) return href
+    const seg1 = href.split('/')[1]
+    if (['sv','en','es','de','fr'].includes(seg1)) return href
+    return `/${currentLocale}${href}`
+  }
+
   const isSv = (pathname.split('/')[1] || 'sv') === 'sv'
 
   return (
@@ -125,7 +133,7 @@ export function Header() {
                 {/* Hem */}
                 <li>
                   <Link
-                    href="/"
+                    href={localize('/')}
                     className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all text-sm ${
                       isActive('/') 
                         ? 'bg-[#4A3428] text-white' 
@@ -140,7 +148,7 @@ export function Header() {
                 {/* Produkter */}
                 <li>
                   <Link
-                    href="/products"
+                    href={localize('/products')}
                     className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all text-sm ${
                       isActive('/products') 
                         ? 'bg-[#4A3428] text-white' 
@@ -195,7 +203,7 @@ export function Header() {
                         onKeyDown={(e) => { if (e.key === 'Escape') setActiveDropdown(null) }}
                       >
                         <Link
-                          href="/om-oss"
+                          href={localize('/om-oss')}
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                           role="menuitem"
                           tabIndex={0}
@@ -204,7 +212,7 @@ export function Header() {
                         </Link>
                         {isSv && (
                           <Link
-                            href="/om-oss/aterforsaljare"
+                            href={localize('/om-oss/aterforsaljare')}
                             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                             role="menuitem"
                             tabIndex={0}
@@ -213,7 +221,7 @@ export function Header() {
                           </Link>
                         )}
                         <Link
-                          href="/om-oss/faq"
+                          href={localize('/om-oss/faq')}
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                           role="menuitem"
                           tabIndex={0}
@@ -268,7 +276,7 @@ export function Header() {
                         onKeyDown={(e) => { if (e.key === 'Escape') setActiveDropdown(null) }}
                       >
                         <Link
-                          href="/blogg"
+                          href={localize('/blogg')}
                           className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                           role="menuitem"
                           tabIndex={0}
@@ -277,7 +285,7 @@ export function Header() {
                           <PenTool className="w-4 h-4" />
                         </Link>
                         <Link
-                          href="/kunskap/e-bok"
+                          href={localize('/kunskap/e-bok')}
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                           role="menuitem"
                           tabIndex={0}
@@ -285,7 +293,7 @@ export function Header() {
                           E-bok: Weed Your Skin
                         </Link>
                         <Link
-                          href="/quiz"
+                          href={localize('/quiz')}
                           className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                           role="menuitem"
                           tabIndex={0}
@@ -294,7 +302,7 @@ export function Header() {
                           <Sparkles className="w-4 h-4 text-amber-600" />
                         </Link>
                         <Link
-                          href="/om-oss/ingredienser"
+                          href={localize('/om-oss/ingredienser')}
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                           role="menuitem"
                           tabIndex={0}
@@ -302,7 +310,7 @@ export function Header() {
                           Våra ingredienser
                         </Link>
                         <Link
-                          href="/kunskap/funktionella-ravaror"
+                          href={localize('/kunskap/funktionella-ravaror')}
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                           role="menuitem"
                           tabIndex={0}
@@ -319,7 +327,7 @@ export function Header() {
                 {/* Kontakt */}
                 <li>
                   <Link
-                    href="/kontakt"
+                    href={localize('/kontakt')}
                     className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all text-sm ${
                       isActive('/kontakt') 
                         ? 'bg-[#4A3428] text-white' 
@@ -334,7 +342,7 @@ export function Header() {
             </nav>
 
             {/* Logo - Left side */}
-            <Link href="/" className="order-first mr-auto">
+            <Link href={localize('/')} className="order-first mr-auto">
               <Image
                 src="/1753.png"
                 alt="1753 Skincare"
@@ -392,7 +400,7 @@ export function Header() {
                   </button>
                 ) : (
                   <Link
-                    href="/auth/login"
+                    href={localize('/auth/login')}
                     className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-2"
                   >
                     <Sparkles className="w-5 h-5 text-amber-600" />
@@ -411,14 +419,14 @@ export function Header() {
                       className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 border border-gray-200"
                     >
                       <Link
-                        href="/dashboard"
+                        href={localize('/dashboard')}
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => setShowUserDropdown(false)}
                       >
                         {t('account.profile')}
                       </Link>
                       <Link
-                        href="/dashboard"
+                        href={localize('/dashboard')}
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => setShowUserDropdown(false)}
                       >
@@ -465,7 +473,7 @@ export function Header() {
                 <ul className="py-4 space-y-2">
                   <li>
                     <Link
-                      href="/"
+                      href={localize('/')}
                       onClick={() => setIsMobileMenuOpen(false)}
                       className={`flex items-center gap-2 px-4 py-3 rounded-lg transition-all ${
                         isActive('/') 
@@ -480,7 +488,7 @@ export function Header() {
 
                   <li>
                     <Link
-                      href="/products"
+                      href={localize('/products')}
                       onClick={() => setIsMobileMenuOpen(false)}
                       className={`flex items-center gap-2 px-4 py-3 rounded-lg transition-all ${
                         isActive('/products') 
@@ -498,14 +506,14 @@ export function Header() {
                       <p className="text-sm font-semibold text-gray-600 mb-2">{t('navigation.about')}</p>
                       <div className="space-y-1 ml-4">
                         <Link
-                          href="/om-oss"
+                          href={localize('/om-oss')}
                           onClick={() => setIsMobileMenuOpen(false)}
                           className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
                         >
                           Vilka är vi?
                         </Link>
                         <Link
-                          href="/om-oss/faq"
+                          href={localize('/om-oss/faq')}
                           onClick={() => setIsMobileMenuOpen(false)}
                           className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
                         >
@@ -513,7 +521,7 @@ export function Header() {
                         </Link>
                         {isSv && (
                           <Link
-                            href="/om-oss/aterforsaljare"
+                            href={localize('/om-oss/aterforsaljare')}
                             onClick={() => setIsMobileMenuOpen(false)}
                             className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
                           >
@@ -521,7 +529,7 @@ export function Header() {
                           </Link>
                         )}
                         <Link
-                          href="/recensioner"
+                          href={localize('/recensioner')}
                           onClick={() => setIsMobileMenuOpen(false)}
                           className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
                         >
@@ -536,35 +544,35 @@ export function Header() {
                       <p className="text-sm font-semibold text-gray-600 mb-2">{t('navigation.knowledge')}</p>
                       <div className="space-y-1 ml-4">
                         <Link
-                          href="/blogg"
+                          href={localize('/blogg')}
                           onClick={() => setIsMobileMenuOpen(false)}
                           className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
                         >
                           {t('navigation.blog')}
                         </Link>
                         <Link
-                          href="/kunskap/e-bok"
+                          href={localize('/kunskap/e-bok')}
                           onClick={() => setIsMobileMenuOpen(false)}
                           className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
                         >
                           E-bok: Weed Your Skin
                         </Link>
                         <Link
-                          href="/quiz"
+                          href={localize('/quiz')}
                           onClick={() => setIsMobileMenuOpen(false)}
                           className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
                         >
                           {t('Quiz.title')}
                         </Link>
                         <Link
-                          href="/om-oss/ingredienser"
+                          href={localize('/om-oss/ingredienser')}
                           onClick={() => setIsMobileMenuOpen(false)}
                           className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
                         >
                           Våra ingredienser
                         </Link>
                         <Link
-                          href="/kunskap/funktionella-ravaror"
+                          href={localize('/kunskap/funktionella-ravaror')}
                           onClick={() => setIsMobileMenuOpen(false)}
                           className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
                         >
@@ -576,7 +584,7 @@ export function Header() {
 
                   <li>
                     <Link
-                      href="/kontakt"
+                      href={localize('/kontakt')}
                       onClick={() => setIsMobileMenuOpen(false)}
                       className={`flex items-center gap-2 px-4 py-3 rounded-lg transition-all ${
                         isActive('/kontakt') 

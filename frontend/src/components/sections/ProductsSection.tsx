@@ -35,7 +35,8 @@ export function ProductsSection() {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch('/api/products?featured=true&limit=8')
+      const locale = (typeof window !== 'undefined' ? window.location.pathname.split('/')[1] : 'sv') || 'sv'
+      const response = await fetch(`/api/products?featured=true&limit=8&locale=${encodeURIComponent(locale)}`)
       
       if (!response.ok) {
         throw new Error('Failed to fetch products')

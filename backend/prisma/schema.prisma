@@ -195,8 +195,26 @@ model EducationalContent {
   // Relations
   learningProgress LearningProgress[]
   ingredients     IngredientInfo[]
+  translations    EducationalContentTranslation[]
   
   @@map("educational_content")
+}
+
+model EducationalContentTranslation {
+  id              String   @id @default(cuid())
+  contentId       String
+  locale          String
+  title           String?
+  content         String?
+  excerpt         String?
+  metaTitle       String?
+  metaDescription String?
+  keywords        String[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  contentRef      EducationalContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  @@unique([contentId, locale])
+  @@map("educational_content_translations")
 }
 
 // User Learning Progress
@@ -387,6 +405,7 @@ model IngredientInfo {
   // Relations
   products        Product[] @relation("ProductIngredients")
   educationalContent EducationalContent[]
+  translations    IngredientInfoTranslation[]
   
   @@map("ingredient_info")
 }
@@ -463,6 +482,7 @@ model Product {
   reviews       Review[]
   discounts     ProductDiscount[]
   ingredients   IngredientInfo[] @relation("ProductIngredients")
+  translations  ProductTranslation[]
   
   @@map("products")
 }
@@ -721,8 +741,27 @@ model BlogPost {
   thumbnail     String?  // Thumbnail for blog list
   published     Boolean  @default(false)
   publishedAt   DateTime?
+  metaTitle     String?
+  metaDescription String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  translations  BlogPostTranslation[]
+}
+
+model BlogPostTranslation {
+  id          String   @id @default(cuid())
+  postId      Int
+  locale      String
+  title       String?
+  content     String?
+  excerpt     String?
+  metaTitle   String?
+  metaDescription String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  post        BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  @@unique([postId, locale])
+  @@map("blog_post_translations")
 }
 
 // Raw Material model for functional foods and ingredients
@@ -756,8 +795,26 @@ model RawMaterial {
   isActive         Boolean  @default(true)
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+  translations     RawMaterialTranslation[]
   
   @@map("raw_materials")
+}
+
+model RawMaterialTranslation {
+  id               String   @id @default(cuid())
+  rawMaterialId    String
+  locale           String
+  name             String?
+  description      String?
+  healthBenefits   String[]
+  nutrients        String[]
+  metaTitle        String?
+  metaDescription  String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  rawMaterial      RawMaterial @relation(fields: [rawMaterialId], references: [id], onDelete: Cascade)
+  @@unique([rawMaterialId, locale])
+  @@map("raw_material_translations")
 }
 
 // Contact form submissions for learning customer patterns
@@ -901,4 +958,47 @@ model QuizSubmission {
   @@map("quiz_submissions")
   @@index([email])
   @@index([createdAt])
+}
+
+// New: Product translations
+model ProductTranslation {
+  id            String   @id @default(cuid())
+  productId     String
+  locale        String
+  name          String?
+  description   String?
+  longDescription String?
+  metaTitle     String?
+  metaDescription String?
+  howToUse      String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  @@unique([productId, locale])
+  @@map("product_translations")
+}
+
+// New: Ingredient translations
+model IngredientInfoTranslation {
+  id              String   @id @default(cuid())
+  ingredientId    String
+  locale          String
+  displayName     String?
+  description     String?
+  benefits        String[]
+  suitableFor     String[]
+  notSuitableFor  String[]
+  concentration   String?
+  pHRange         String?
+  timeOfDay       String?
+  frequency       String?
+  worksWellWith   String[]
+  avoidWith       String[]
+  metaDescription String?
+  keywords        String[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  ingredient      IngredientInfo @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+  @@unique([ingredientId, locale])
+  @@map("ingredient_translations")
 }

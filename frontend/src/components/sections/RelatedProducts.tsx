@@ -23,7 +23,8 @@ export default function RelatedProducts({ currentProductSlug, locale }: RelatedP
   useEffect(() => {
     const fetchRelatedProducts = async () => {
       try {
-        const response = await fetch(`/api/products/${currentProductSlug}/related?limit=4`)
+        const url = `/api/products/${currentProductSlug}/related?limit=4${locale ? `&locale=${encodeURIComponent(locale)}` : ''}`
+        const response = await fetch(url)
         if (response.ok) {
           const data = await response.json()
           if (data.success) {
@@ -40,7 +41,7 @@ export default function RelatedProducts({ currentProductSlug, locale }: RelatedP
     if (currentProductSlug) {
       fetchRelatedProducts()
     }
-  }, [currentProductSlug])
+  }, [currentProductSlug, locale])
 
   const handleAddToCart = (product: Product) => {
     addToCart(product, 1)

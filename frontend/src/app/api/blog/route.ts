@@ -1,20 +1,22 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url)
+    const locale = searchParams.get('locale') || (request.headers.get('x-locale') || '').toLowerCase() || undefined
+
     const backendUrl = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002';
-    const url = `${backendUrl}/api/blog`;
+    const url = `${backendUrl}/api/blog${locale ? `?locale=${encodeURIComponent(locale)}` : ''}`;
     
     const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
-      cache: 'no-store', // Disable cache to avoid 2MB limit
+      cache: 'no-store',
     });
 
     if (!response.ok) {
-      // Return empty array if backend is not available or has no blog posts
       return NextResponse.json([]);
     }
 
@@ -22,7 +24,6 @@ export async function GET() {
     return NextResponse.json(data);
   } catch (error) {
     console.error('Error proxying to backend blog:', error);
-    // Return empty array instead of error to prevent page crash
     return NextResponse.json([]);
   }
 } 

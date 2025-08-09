@@ -10,10 +10,13 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useCart } from '@/contexts/CartContext'
+import type { ImageMetricsResult } from './FacePhotoAnalyzer'
 
 interface QuizResultsProps {
   results: any
   userInfo: any
+  imageMetrics?: ImageMetricsResult | null
 }
 
 const TabButton = ({ active, onClick, icon: Icon, label, notification = false }: any) => (
@@ -35,9 +38,96 @@ const TabButton = ({ active, onClick, icon: Icon, label, notification = false }:
   </motion.button>
 )
 
-export default function ImprovedQuizResults({ results, userInfo }: QuizResultsProps) {
+export default function ImprovedQuizResults({ results, userInfo, imageMetrics }: QuizResultsProps) {
   const [activeTab, setActiveTab] = useState('summary')
   const [copiedEmail, setCopiedEmail] = useState(false)
+  const [tier, setTier] = useState<'budget' | 'standard' | 'premium'>('standard')
+  const { addToCart } = useCart()
+  const [metric, setMetric] = useState<'rednessIndex' | 'highlightRatio' | 'textureVariance'>('rednessIndex')
+
+  // Map results.products into a flat list for selected tier
+  const getRecommendedProducts = () => {
+    const buckets = [results.products?.morning, results.products?.evening, results.products?.weekly].filter(Boolean)
+    const all = buckets.flatMap((b: any) => (b?.steps || []).map((s: any) => s.product).filter(Boolean))
+    // If products include tier options, pick by current tier; otherwise include as-is
+    return all.map((p: any) => {
+      if (!p) return null
+      if (p.variants && p.variants[tier]) return { ...p, ...p.variants[tier] }
+      return p
+    }).filter(Boolean)
+  }
+
+  const addRoutineToCart = () => {
+    const products = getRecommendedProducts()
+    products.forEach((p: any) => {
+      try {
+        addToCart({
+          id: p.id || p.slug || p.name,
+          name: p.name,
+          slug: p.slug || p.name?.toLowerCase().replace(/\s+/g,'-'),
+          price: Number(p.price || p.compareAtPrice || 0),
+          images: (p.images || p.image ? [p.image || p.images?.[0]] : []),
+        } as any, 1)
+      } catch (e) {
+        console.warn('Failed to add product', p, e)
+      }
+    })
+  }
+
+  const heatColor = (value: number, max: number) => {
+    // value normalized 0..1
+    const t = Math.max(0, Math.min(1, value / max))
+    // simple gradient from #22c55e (green) -> #eab308 (amber) -> #ef4444 (red)
+    const interp = (a: number, b: number, k: number) => Math.round(a + (b - a) * k)
+    let r, g, b
+    if (t < 0.5) {
+      const k = t / 0.5
+      // green to amber
+      r = interp(34, 234, k)
+      g = interp(197, 179, k)
+      b = interp(94, 8, k)
+    } else {
+      const k = (t - 0.5) / 0.5
+      // amber to red
+      r = interp(234, 239, k)
+      g = interp(179, 68, k)
+      b = interp(8, 68, k)
+    }
+    return `rgb(${r}, ${g}, ${b})`
+  }
+
+  const metricMax: Record<string, number> = {
+    rednessIndex: 40, // typical upper seen
+    highlightRatio: 20,
+    textureVariance: 2000
+  }
+
+  const getZone = (z: any, key: string) => (z ? z[key] ?? 0 : 0)
+
+  const HeatMap = () => {
+    if (!imageMetrics?.zones) return null
+    const z = imageMetrics.zones
+    const max = metricMax[metric]
+    // Simple schematic with labeled rectangles
+    return (
+      <div className="mt-4">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="text-sm text-gray-600">Välj metrisk:</span>
+          <button onClick={() => setMetric('rednessIndex')} className={`px-2 py-1 text-xs rounded-full ${metric==='rednessIndex'?'bg-[#4A3428] text-white':'bg-gray-100'}`}>Rodnad</button>
+          <button onClick={() => setMetric('highlightRatio')} className={`px-2 py-1 text-xs rounded-full ${metric==='highlightRatio'?'bg-[#4A3428] text-white':'bg-gray-100'}`}>Glans</button>
+          <button onClick={() => setMetric('textureVariance')} className={`px-2 py-1 text-xs rounded-full ${metric==='textureVariance'?'bg-[#4A3428] text-white':'bg-gray-100'}`}>Textur</button>
+        </div>
+        <div className="grid grid-cols-3 gap-2 max-w-sm">
+          <div className="col-span-3 h-12 rounded" style={{ background: heatColor(getZone(z.forehead, metric), max) }} />
+          <div className="h-16 rounded" style={{ background: heatColor(getZone(z.leftCheek, metric), max) }} />
+          <div className="h-16 rounded" style={{ background: heatColor(getZone(z.nose, metric), max) }} />
+          <div className="h-16 rounded" style={{ background: heatColor(getZone(z.rightCheek, metric), max) }} />
+          <div className="col-span-3 h-12 rounded" style={{ background: heatColor(getZone(z.chin, metric), max) }} />
+        </div>
+        <div className="mt-2 text-xs text-gray-500">Överst: panna • Mitten vänster: vänster kind • Mitten: näsa • Mitten höger: höger kind • Nederst: haka</div>
+      </div>
+    )
+  }
 
   const tabs = [
     { id: 'summary', label: 'Översikt', icon: Sparkles },
@@ -221,17 +311,41 @@ export default function ImprovedQuizResults({ results, userInfo }: QuizResultsPr
                     </div>
                   </div>
                 )}
+                {/* Heatmap (if provided) */}
+                {imageMetrics && (
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">Zonkarta</h3>
+                    <p className="text-sm text-gray-600">Värmekarta per zon (högre värden = mer intensitet).</p>
+                    <HeatMap />
+                  </div>
+                )}
               </div>
             )}
 
             {/* Products Tab */}
             {activeTab === 'products' && results.products && (
               <div className="space-y-6">
-                <div>
-                  <h2 className="text-2xl font-light text-gray-900 mb-4">Dina produktrekommendationer</h2>
-                  <p className="text-gray-600 mb-6">
-                    Baserat på din hudanalys har vi valt ut de perfekta produkterna för dig.
-                  </p>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-2xl font-light text-gray-900 mb-1">Dina produktrekommendationer</h2>
+                    <p className="text-gray-600">Baserat på din hudanalys har vi valt ut de perfekta produkterna för dig.</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => setTier('budget')} className={`px-3 py-1 rounded-full text-sm ${tier==='budget'?'bg-[#4A3428] text-white':'bg-gray-100'}`}>Budget</button>
+                    <button onClick={() => setTier('standard')} className={`px-3 py-1 rounded-full text-sm ${tier==='standard'?'bg-[#4A3428] text-white':'bg-gray-100'}`}>Standard</button>
+                    <button onClick={() => setTier('premium')} className={`px-3 py-1 rounded-full text-sm ${tier==='premium'?'bg-[#4A3428] text-white':'bg-gray-100'}`}>Premium</button>
+                  </div>
+                </div>
+
+                {/* Add full routine CTA */}
+                <div className="flex items-center justify-between p-4 border rounded-xl bg-[#FAF8F5]">
+                  <div>
+                    <div className="font-medium text-gray-900">Lägg hela rutinen i varukorgen</div>
+                    <div className="text-sm text-gray-600">Välj nivå ovan. Du kan justera i varukorgen.</div>
+                  </div>
+                  <button onClick={addRoutineToCart} className="inline-flex items-center gap-2 px-4 py-2 bg-[#4A3428] text-white rounded-full">
+                    <ShoppingBag className="w-4 h-4" /> Lägg till allt
+                  </button>
                 </div>
 
                 {/* Morning Routine */}

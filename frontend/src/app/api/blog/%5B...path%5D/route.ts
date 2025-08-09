@@ -2,21 +2,28 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
+    const { pathname, searchParams } = new URL(request.url);
+    const apiPath = pathname.replace('/api/blog/', '');
     const locale = searchParams.get('locale') || (request.headers.get('x-locale') || '').toLowerCase() || undefined
-
+    
     const backendUrl = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002';
-    const url = `${backendUrl}/api/products${locale ? `?locale=${encodeURIComponent(locale)}` : ''}`;
+    const url = `${backendUrl}/api/blog/${apiPath}${locale ? `?locale=${encodeURIComponent(locale)}` : ''}`;
     
     const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
-      next: { revalidate: 60 }, // Cache for 1 minute
+      next: { revalidate: 3600 },
     });
 
     if (!response.ok) {
+      if (response.status === 404) {
+        return NextResponse.json(
+          { error: 'Blog post not found' },
+          { status: 404 }
+        );
+      }
       throw new Error(`Backend responded with ${response.status}`);
     }
 
@@ -25,7 +32,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Error proxying to backend:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch products' },
+      { error: 'Failed to fetch blog post' },
       { status: 500 }
     );
   }

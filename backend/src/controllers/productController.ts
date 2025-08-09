@@ -2,6 +2,43 @@ import { Request, Response, NextFunction } from 'express'
 import { prisma } from '../lib/prisma'
 import { AppError } from '../middleware/errorHandler'
 
+const SUPPORTED_LOCALES = ['sv', 'en', 'es', 'de', 'fr'] as const
+
+type SupportedLocale = typeof SUPPORTED_LOCALES[number]
+
+function getRequestedLocale(req: Request): SupportedLocale {
+  const q = (req.query.locale as string | undefined)?.toLowerCase()
+  if (q && (SUPPORTED_LOCALES as readonly string[]).includes(q)) return q as SupportedLocale
+  const h = (req.headers['accept-language'] as string | undefined) || ''
+  const candidate = h.split(',')[0]?.split('-')[0]?.toLowerCase()
+  if (candidate && (SUPPORTED_LOCALES as readonly string[]).includes(candidate)) return candidate as SupportedLocale
+  return 'sv'
+}
+
+function overlayProductWithTranslation(p: any, t: any | null) {
+  if (!t) return p
+  return {
+    ...p,
+    name: t.name ?? p.name,
+    description: t.description ?? p.description,
+    longDescription: t.longDescription ?? p.longDescription,
+    howToUse: t.howToUse ?? p.howToUse,
+    metaTitle: t.metaTitle ?? p.metaTitle,
+    metaDescription: t.metaDescription ?? p.metaDescription
+  }
+}
+
+async function applyTranslations(products: any[], locale: SupportedLocale) {
+  if (locale === 'sv' || products.length === 0) return products
+  const ids = products.map(p => p.id)
+  const translations = await prisma.productTranslation.findMany({
+    where: { productId: { in: ids }, locale }
+  })
+  const byId: Record<string, any> = {}
+  for (const t of translations) byId[t.productId] = t
+  return products.map(p => overlayProductWithTranslation(p, byId[p.id] || null))
+}
+
 // @desc    Get all products
 // @route   GET /api/products
 // @access  Public
@@ -14,6 +51,7 @@ export const getProducts = async (
     const page = parseInt(req.query.page as string) || 1
     const limit = parseInt(req.query.limit as string) || 12
     const skip = (page - 1) * limit
+    const locale = getRequestedLocale(req)
 
     // Build where clause
     const where: any = { isActive: true }
@@ -96,16 +134,12 @@ export const getProducts = async (
     let productsWithRatings = products.map(product => {
       const approvedReviews = product.reviews || []
       const reviewCount = product._count.reviews
-      
       let averageRating = 0
       if (approvedReviews.length > 0) {
         const totalRating = approvedReviews.reduce((sum, review) => sum + review.rating, 0)
         averageRating = totalRating / approvedReviews.length
       }
-
-      // Remove the raw reviews data and replace with rating info
       const { reviews, _count, ...productData } = product
-      
       return {
         ...productData,
         rating: {
@@ -126,28 +160,20 @@ export const getProducts = async (
         'i-love-facial-oil',
         'the-one-facial-oil'
       ]
-      
       productsWithRatings.sort((a, b) => {
         const aIndex = customOrder.indexOf(a.slug)
         const bIndex = customOrder.indexOf(b.slug)
-        
-        // If both products are in custom order, sort by custom order
-        if (aIndex !== -1 && bIndex !== -1) {
-          return aIndex - bIndex
-        }
-        
-        // If only a is in custom order, a comes first
+        if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex
         if (aIndex !== -1 && bIndex === -1) return -1
-        
-        // If only b is in custom order, b comes first
         if (aIndex === -1 && bIndex !== -1) return 1
-        
-        // If neither is in custom order, fall back to featured/creation date logic
         if (a.isFeatured && !b.isFeatured) return -1
         if (!a.isFeatured && b.isFeatured) return 1
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       })
     }
+
+    // Apply locale translations
+    productsWithRatings = await applyTranslations(productsWithRatings, locale)
 
     // Pagination info
     const totalPages = Math.ceil(total / limit)
@@ -181,6 +207,7 @@ export const getProductBySlug = async (
 ): Promise<void> => {
   try {
     const { slug } = req.params
+    const locale = getRequestedLocale(req)
 
     const product = await prisma.product.findUnique({
       where: { slug, isActive: true },
@@ -203,25 +230,26 @@ export const getProductBySlug = async (
       return next(new AppError('Product not found', 404))
     }
 
-    // Calculate rating
     const approvedReviews = product.reviews || []
     const reviewCount = product._count.reviews
-    
     let averageRating = 0
     if (approvedReviews.length > 0) {
       const totalRating = approvedReviews.reduce((sum, review) => sum + review.rating, 0)
       averageRating = totalRating / approvedReviews.length
     }
 
-    // Remove the raw reviews data and replace with rating info
     const { reviews, _count, ...productData } = product
-    
-    const productWithRating = {
+    let productWithRating: any = {
       ...productData,
       rating: {
         average: Math.round(averageRating * 10) / 10,
         count: reviewCount
       }
+    }
+
+    if (locale !== 'sv') {
+      const t = await prisma.productTranslation.findUnique({ where: { productId_locale: { productId: product.id, locale } } })
+      productWithRating = overlayProductWithTranslation(productWithRating, t)
     }
 
     res.status(200).json({
@@ -243,6 +271,7 @@ export const getFeaturedProducts = async (
 ): Promise<void> => {
   try {
     const limit = parseInt(req.query.limit as string) || 4
+    const locale = getRequestedLocale(req)
 
     const products = await prisma.product.findMany({
       where: { 
@@ -266,20 +295,15 @@ export const getFeaturedProducts = async (
       }
     })
 
-    // Calculate ratings for each product
-    const productsWithRatings = products.map(product => {
+    let productsWithRatings = products.map(product => {
       const approvedReviews = product.reviews || []
       const reviewCount = product._count.reviews
-      
       let averageRating = 0
       if (approvedReviews.length > 0) {
         const totalRating = approvedReviews.reduce((sum, review) => sum + review.rating, 0)
         averageRating = totalRating / approvedReviews.length
       }
-
-      // Remove the raw reviews data and replace with rating info
       const { reviews, _count, ...productData } = product
-      
       return {
         ...productData,
         rating: {
@@ -288,6 +312,8 @@ export const getFeaturedProducts = async (
         }
       }
     })
+
+    productsWithRatings = await applyTranslations(productsWithRatings, locale)
 
     res.status(200).json({
       success: true,
@@ -309,6 +335,7 @@ export const getRelatedProducts = async (
   try {
     const { slug } = req.params
     const limit = parseInt(req.query.limit as string) || 4
+    const locale = getRequestedLocale(req)
 
     // First get the current product
     const currentProduct = await prisma.product.findUnique({
@@ -341,7 +368,7 @@ export const getRelatedProducts = async (
     })
 
     // Score and sort products by relevance
-    const scoredProducts = relatedProducts.map(product => {
+    let scoredProducts = relatedProducts.map(product => {
       let score = 0
 
       // Category match (highest weight)
@@ -384,15 +411,12 @@ export const getRelatedProducts = async (
       // Calculate rating for final sorting
       const approvedReviews = product.reviews || []
       const reviewCount = product._count.reviews
-      
       let averageRating = 0
       if (approvedReviews.length > 0) {
         const totalRating = approvedReviews.reduce((sum, review) => sum + review.rating, 0)
         averageRating = totalRating / approvedReviews.length
       }
-
       const { reviews, _count, ...productData } = product
-      
       return {
         ...productData,
         rating: {
@@ -403,11 +427,14 @@ export const getRelatedProducts = async (
       }
     })
 
+    // Apply locale translations before sorting (name/desc may matter for UI, score unaffected)
+    scoredProducts = await applyTranslations(scoredProducts, locale)
+
     // Sort by relevance score (descending) and take top results
     const topRelatedProducts = scoredProducts
       .sort((a, b) => b.relevanceScore - a.relevanceScore)
       .slice(0, limit)
-      .map(({ relevanceScore, ...product }) => product) // Remove score from final result
+      .map(({ relevanceScore, ...product }) => product)
 
     res.status(200).json({
       success: true,

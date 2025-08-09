@@ -7,6 +7,7 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { ChevronDown, ChevronUp, ChevronRight } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { usePathname } from 'next/navigation'
 
 interface RawMaterial {
   id: string
@@ -125,6 +126,8 @@ export default function FunctionalRawMaterialsPage() {
   const [rawMaterials, setRawMaterials] = useState<RawMaterial[]>(fallbackRawMaterials)
   const [loading, setLoading] = useState(true)
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set())
+  const pathname = usePathname()
+  const currentLocale = (pathname.split('/')[1] || 'sv') as string
 
   useEffect(() => {
     fetchRawMaterials()
@@ -134,7 +137,7 @@ export default function FunctionalRawMaterialsPage() {
     try {
       setLoading(true)
       // Always fetch all raw materials and sort them alphabetically by Swedish name
-      const response = await fetch(`/api/raw-materials`)
+      const response = await fetch(`/api/raw-materials?locale=${encodeURIComponent(currentLocale)}`)
       
       if (response.ok) {
         const data = await response.json()
@@ -316,7 +319,7 @@ export default function FunctionalRawMaterialsPage() {
               din hud för optimal hälsa och skönhet inifrån.
             </p>
             <Link
-              href="/kunskap"
+              href={`/${currentLocale}/kunskap`}
               className="inline-flex items-center gap-2 px-6 py-3 bg-amber-600 text-white rounded-full hover:bg-amber-700 transition-colors"
             >
               Utforska mer kunskap

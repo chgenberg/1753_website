@@ -130,37 +130,36 @@ export async function GET(
 ) {
   try {
     const { slug } = await params;
-    
-    // Check if we have a mock post for this slug
-    const mockPost = mockBlogPosts[slug];
-    if (mockPost) {
-      return NextResponse.json(mockPost);
-    }
-    
-    // Try to fetch from backend
+    const { searchParams } = new URL(request.url)
+    const locale = searchParams.get('locale') || (request.headers.get('x-locale') || '').toLowerCase() || undefined
+
+    // Try to fetch from backend first
     const backendUrl = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002';
-    const url = `${backendUrl}/api/blog/${slug}`;
-    
+    const url = `${backendUrl}/api/blog/${slug}${locale ? `?locale=${encodeURIComponent(locale)}` : ''}`;
     const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
-      next: { revalidate: 3600 }, // Cache for 1 hour
+      next: { revalidate: 3600 },
     });
 
-    if (!response.ok) {
-      if (response.status === 404) {
-        return NextResponse.json(
-          { error: 'Blog post not found' },
-          { status: 404 }
-        );
-      }
-      throw new Error(`Backend responded with ${response.status}`);
+    if (response.ok) {
+      const data = await response.json();
+      return NextResponse.json(data);
     }
 
-    const data = await response.json();
-    return NextResponse.json(data);
+    if (response.status === 404) {
+      // fallback to mock if available
+      const mockPost = mockBlogPosts[slug];
+      if (mockPost) return NextResponse.json(mockPost);
+      return NextResponse.json({ error: 'Blog post not found' }, { status: 404 });
+    }
+
+    // If backend error not 404, try mock
+    const mockPost = mockBlogPosts[slug];
+    if (mockPost) return NextResponse.json(mockPost);
+    throw new Error(`Backend responded with ${response.status}`);
   } catch (error) {
     console.error('Error proxying to backend blog post:', error);
     // Return 404 instead of 500 to show not found page

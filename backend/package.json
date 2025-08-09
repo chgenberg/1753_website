@@ -20,7 +20,9 @@
     "import:all": "npm run import:products && npm run import:reviews",
     "prisma:migrate": "prisma migrate dev",
     "prisma:generate": "prisma generate",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "translate:db": "ts-node --transpile-only src/scripts/translate-db.ts",
+    "seed:raw-materials": "ts-node --transpile-only src/scripts/seedRawMaterials.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.12.0",

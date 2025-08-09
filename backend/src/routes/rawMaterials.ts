@@ -4,15 +4,47 @@ import { PrismaClient } from '@prisma/client';
 const router = Router();
 const prisma = new PrismaClient();
 
+const SUPPORTED_LOCALES = ['sv', 'en', 'es', 'de', 'fr'] as const
+
+type SupportedLocale = typeof SUPPORTED_LOCALES[number]
+
+function getRequestedLocale(req: any): SupportedLocale {
+  const q = (req.query.locale as string | undefined)?.toLowerCase()
+  if (q && (SUPPORTED_LOCALES as readonly string[]).includes(q)) return q as SupportedLocale
+  const h = (req.headers['accept-language'] as string | undefined) || ''
+  const candidate = h.split(',')[0]?.split('-')[0]?.toLowerCase()
+  if (candidate && (SUPPORTED_LOCALES as readonly string[]).includes(candidate)) return candidate as SupportedLocale
+  return 'sv'
+}
+
+function overlayRawMaterial(r: any, t: any | null) {
+  if (!t) return r
+  return {
+    ...r,
+    name: t.name ?? r.name,
+    description: t.description ?? r.description,
+    healthBenefits: Array.isArray(t.healthBenefits) && t.healthBenefits.length ? t.healthBenefits : r.healthBenefits,
+    nutrients: Array.isArray(t.nutrients) && t.nutrients.length ? t.nutrients : r.nutrients,
+    metaTitle: t.metaTitle ?? r.metaTitle,
+    metaDescription: t.metaDescription ?? r.metaDescription
+  }
+}
+
 // Get all raw materials with Swedish sorting
 router.get('/', async (req, res) => {
   try {
-    const rawMaterials = await prisma.rawMaterial.findMany({
-      // Removed: where: { isActive: true },
-      orderBy: {
-        name: 'asc', // This will sort alphabetically by Swedish name
-      },
+    const locale = getRequestedLocale(req)
+    let rawMaterials = await prisma.rawMaterial.findMany({
+      orderBy: { name: 'asc' },
     });
+
+    if (locale !== 'sv' && rawMaterials.length) {
+      const ids = rawMaterials.map((r) => r.id)
+      const translations = await prisma.rawMaterialTranslation.findMany({ where: { rawMaterialId: { in: ids }, locale } })
+      const byId: Record<string, any> = {}
+      for (const t of translations) byId[t.rawMaterialId] = t
+      rawMaterials = rawMaterials.map((r) => overlayRawMaterial(r, byId[r.id] || null))
+    }
 
     res.json({
       success: true,
@@ -30,6 +62,7 @@ router.get('/', async (req, res) => {
 // Get single raw material by slug
 router.get('/:slug', async (req, res) => {
   try {
+    const locale = getRequestedLocale(req)
     const { slug } = req.params;
     
     const rawMaterial = await prisma.rawMaterial.findUnique({
@@ -38,6 +71,12 @@ router.get('/:slug', async (req, res) => {
     
     if (!rawMaterial) {
       return res.status(404).json({ error: 'Raw material not found' });
+    }
+
+    if (locale !== 'sv') {
+      const t = await prisma.rawMaterialTranslation.findUnique({ where: { rawMaterialId_locale: { rawMaterialId: rawMaterial.id, locale } } })
+      const overlaid = overlayRawMaterial(rawMaterial, t)
+      return res.json(overlaid)
     }
     
     res.json(rawMaterial);

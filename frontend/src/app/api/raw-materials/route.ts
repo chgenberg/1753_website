@@ -8,22 +8,18 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category') || ''
     const search = searchParams.get('search') || ''
     const sort = searchParams.get('sort') || 'name'
+    const locale = searchParams.get('locale') || (request.headers.get('x-locale') || '').toLowerCase() || undefined
 
-    // Build query string
-    const queryParams = new URLSearchParams({
-      page,
-      limit,
-      ...(category && { category }),
-      ...(search && { search }),
-      sort
-    })
+    const queryParams = new URLSearchParams({ page, limit, sort })
+    if (category) queryParams.set('category', category)
+    if (search) queryParams.set('search', search)
+    if (locale) queryParams.set('locale', locale)
 
     const backendUrl = process.env.BACKEND_URL || 'https://1753websitebackend-production.up.railway.app'
     const response = await fetch(`${backendUrl}/api/raw-materials?${queryParams}`, {
       headers: {
         'Content-Type': 'application/json',
       },
-      // Don't cache for now to avoid cache issues
       cache: 'no-store'
     })
     
