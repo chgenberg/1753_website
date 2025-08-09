@@ -69,6 +69,8 @@ export function Header() {
     return `/${locale}${pathname.startsWith('/') ? '' : '/'}${pathname}`
   }
 
+  const isSv = (pathname.split('/')[1] || 'sv') === 'sv'
+
   return (
     <>
       {/* Fixed Top Bar */}
@@ -195,14 +197,16 @@ export function Header() {
                         >
                           Om oss
                         </Link>
-                        <Link
-                          href="/om-oss/aterforsaljare"
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          role="menuitem"
-                          tabIndex={0}
-                        >
-                          Återförsäljare
-                        </Link>
+                        {isSv && (
+                          <Link
+                            href="/om-oss/aterforsaljare"
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            role="menuitem"
+                            tabIndex={0}
+                          >
+                            Återförsäljare
+                          </Link>
+                        )}
                         <Link
                           href="/om-oss/faq"
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -494,13 +498,15 @@ export function Header() {
                         >
                           Q&A
                         </Link>
-                        <Link
-                          href="/om-oss/aterforsaljare"
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
-                        >
-                          Återförsäljare
-                        </Link>
+                        {isSv && (
+                          <Link
+                            href="/om-oss/aterforsaljare"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
+                          >
+                            Återförsäljare
+                          </Link>
+                        )}
                         <Link
                           href="/recensioner"
                           onClick={() => setIsMobileMenuOpen(false)}
