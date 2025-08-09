@@ -156,9 +156,9 @@ export function Header() {
       </div>
        
       {/* Main Header - full white background */}
-      <header ref={headerRef} className={`fixed left-0 right-0 z-40 bg-white transition-all duration-300 ${
+      <header ref={headerRef} className={`fixed left-0 right-0 z-40 bg-white border-b border-gray-100 transition-all duration-300 ${
         isScrolled ? 'shadow-lg' : 'shadow-md'
-      }`}>
+      }`} style={{ top: topBarHeight + 4 }}>
         <div className="container mx-auto px-4">
           {/* Centered logo, hamburger left, actions right */}
           <div className="relative flex items-center justify-between py-6 md:py-7">
@@ -185,7 +185,7 @@ export function Header() {
                 alt="1753 Skincare"
                 width={200}
                 height={70}
-                className="h-20 w-auto md:h-24"
+                className="h-16 w-auto md:h-20"
                 priority
               />
             </Link>
@@ -301,7 +301,7 @@ export function Header() {
           {/* Left Drawer Menu (all breakpoints) */}
           <AnimatePresence>
             {isMobileMenuOpen && (
-              <div className="fixed left-0 right-0 bottom-0 z-[60]" style={{ top: headerHeight }}>
+              <div className="fixed left-0 right-0 bottom-0 z-[60]" style={{ top: topBarHeight + headerHeight + 4 }}>
                 {/* Backdrop */}
                 <motion.div
                   initial={{ opacity: 0 }}
@@ -376,7 +376,7 @@ export function Header() {
       </header>
 
       {/* Spacer adjusted for taller header */}
-      <div className="h-36 md:h-40" />
+      <div style={{ height: topBarHeight + headerHeight + 4 }} />
 
       {/* Cart Drawer */}
       <CartDrawer />

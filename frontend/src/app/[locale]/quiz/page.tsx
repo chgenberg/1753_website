@@ -87,7 +87,8 @@ interface UserInfo {
 }
 
 export default function QuizPage() {
-  const [currentStep, setCurrentStep] = useState<'welcome' | 'userInfo' | 'questions' | 'review' | 'loading' | 'results'>('welcome')
+  type Step = 'welcome' | 'userInfo' | 'photo' | 'questions' | 'review' | 'loading' | 'results'
+  const [currentStep, setCurrentStep] = useState<Step>('welcome')
   const [userInfo, setUserInfo] = useState<UserInfo>({
     email: '',
     name: '',
@@ -203,7 +204,7 @@ export default function QuizPage() {
 
     setErrors({})
     loadQuestionsForUser()
-    setCurrentStep('questions')
+    setCurrentStep('photo')
   }
 
   const loadQuestionsForUser = () => {
@@ -833,6 +834,24 @@ export default function QuizPage() {
                   >
                     Fortsätt till frågorna
                   </motion.button>
+                </div>
+              </CloudShape>
+            </motion.div>
+          )}
+
+          {/* Photo upload step */}
+          {currentStep === 'photo' && (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+              <CloudShape className="max-w-3xl mx-auto">
+                <h2 className="text-2xl font-light text-gray-900 mb-4 text-center">Valfri fotobaserad analys</h2>
+                <p className="text-sm text-gray-600 text-center mb-6">Ladda upp en selfie i neutralt ljus. Vi analyserar fem zoner (panna, kinder, näsa, haka) lokalt på din enhet och använder måtten i din rekommendation.</p>
+                <FacePhotoAnalyzer onAnalyze={(m) => setImageMetrics(m)} />
+                <div className="mt-6 flex justify-between">
+                  <button onClick={() => setCurrentStep('userInfo')} className="text-gray-600 hover:text-[#8B6B47]">Tillbaka</button>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => setCurrentStep('questions')} className="px-5 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-50">Hoppa över</button>
+                    <button onClick={() => setCurrentStep('questions')} className="px-6 py-2 bg-[#4A3428] text-white rounded-full hover:bg-[#3A2418]">Fortsätt</button>
+                  </div>
                 </div>
               </CloudShape>
             </motion.div>
