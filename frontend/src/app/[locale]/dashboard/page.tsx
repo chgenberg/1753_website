@@ -20,7 +20,9 @@ import {
   Droplets,
   Sun,
   Moon,
-  Thermometer
+  Thermometer,
+  ShoppingBag,
+  Check
 } from 'lucide-react'
 import { Line } from 'react-chartjs-2'
 import {
@@ -33,6 +35,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js'
+import { useCart } from '@/contexts/CartContext'
 
 // Register Chart.js components
 ChartJS.register(
@@ -77,36 +80,113 @@ interface ProgressData {
   }>
 }
 
+type ProductLite = {
+  id: string
+  slug: string
+  name: string
+  price: number
+  images?: string[]
+}
+
+type UserProfile = {
+  id: string
+  firstName?: string
+  lastName?: string
+  email: string
+  skinType?: string | null
+  skinConcerns?: string[] | null
+  orders?: Array<{ id: string; createdAt: string; total: number; status?: string }>
+}
+
 export default function DashboardPage() {
   const { user, isAuthenticated, isLoading } = useAuth()
+  const { addToCart } = useCart()
   const [progressData, setProgressData] = useState<ProgressData | null>(null)
   const [isLoadingData, setIsLoadingData] = useState(true)
   const [activeTab, setActiveTab] = useState('overview')
+  const [profile, setProfile] = useState<UserProfile | null>(null)
+  const [featured, setFeatured] = useState<ProductLite[]>([])
+  const [routineDone, setRoutineDone] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
-    if (!isAuthenticated || !user) return
+    if (!isAuthenticated) return
+    fetchAll()
+  }, [isAuthenticated])
 
-    fetchProgressData()
-  }, [isAuthenticated, user])
-
-  const fetchProgressData = async () => {
+  const fetchAll = async () => {
     try {
-      const token = localStorage.getItem('authToken')
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002'}/api/progress/overview`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
+      setIsLoadingData(true)
+      const token = localStorage.getItem('authToken') || ''
+      const api = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002'
+      const locale = (typeof window !== 'undefined' ? window.location.pathname.split('/')[1] : 'sv') || 'sv'
 
-      if (response.ok) {
-        const data = await response.json()
-        setProgressData(data.data)
+      // Parallel requests
+      const [progressRes, profileRes, productsRes] = await Promise.all([
+        fetch(`${api}/api/progress/overview`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${api}/api/auth/profile`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${api}/api/products?featured=true&limit=8&locale=${encodeURIComponent(locale)}`),
+      ])
+
+      if (progressRes.ok) {
+        const d = await progressRes.json(); setProgressData(d.data)
       }
-    } catch (error) {
-      console.error('Error fetching progress data:', error)
+      if (profileRes.ok) {
+        const p = await profileRes.json(); setProfile(p.data)
+      }
+      if (productsRes.ok) {
+        const pr = await productsRes.json(); const arr = Array.isArray(pr) ? pr : (pr.data || pr.products || [])
+        setFeatured(arr)
+      }
+
+      // Load routine done map
+      const key = `routine_done_${new Date().toISOString().slice(0,10)}`
+      const stored = localStorage.getItem(key)
+      if (stored) setRoutineDone(JSON.parse(stored))
+      else setRoutineDone({})
+
+    } catch (e) {
+      console.error(e)
     } finally {
       setIsLoadingData(false)
     }
+  }
+
+  const markStepDone = (id: string, val: boolean) => {
+    const key = `routine_done_${new Date().toISOString().slice(0,10)}`
+    setRoutineDone(prev => {
+      const next = { ...prev, [id]: val }
+      try { localStorage.setItem(key, JSON.stringify(next)) } catch {}
+      return next
+    })
+  }
+
+  const getRoutine = () => {
+    // Simple routine based on skin type/concerns, fallback to featured
+    const st = (profile?.skinType || '').toLowerCase()
+    const isOily = st.includes('oily') || (profile?.skinConcerns || []).includes('oiliness')
+    const isDry = st.includes('dry') || (profile?.skinConcerns || []).includes('dryness')
+
+    const pick = (slugHints: string[]) => featured.find(p => slugHints.some(h => (p.slug || '').toLowerCase().includes(h)))
+    const cleanser = pick(['clean', 'rens', 'wash']) || featured[0]
+    const serum = pick(['serum', 'active']) || featured[1]
+    const oilOrMoist = isOily ? (pick(['gel', 'light']) || featured[2]) : (pick(['oil', 'cream', 'moist']) || featured[2])
+    const spf = pick(['spf', 'sun', 'uv']) || featured[3]
+
+    const steps = [
+      { id: 'am_cleanser', title: 'Rengöring (AM)', product: cleanser },
+      { id: 'am_serum', title: 'Serum (AM)', product: serum },
+      { id: 'am_moist', title: 'Fukt/Olja (AM)', product: oilOrMoist },
+      { id: 'am_spf', title: 'SPF (AM)', product: spf },
+      { id: 'pm_cleanser', title: 'Rengöring (PM)', product: cleanser },
+      { id: 'pm_serum', title: 'Serum (PM)', product: serum },
+      { id: 'pm_moist', title: 'Fukt/Olja (PM)', product: oilOrMoist },
+    ]
+    return steps.filter(s => !!s.product)
+  }
+
+  const addRoutineToCart = () => {
+    const steps = getRoutine()
+    steps.forEach(s => { if (s.product) addToCart(s.product as any, 1) })
   }
 
   if (isLoading || isLoadingData) {
@@ -149,40 +229,23 @@ export default function DashboardPage() {
   const chartOptions = {
     responsive: true,
     plugins: {
-      legend: {
-        position: 'top' as const,
-      },
-      title: {
-        display: true,
-        text: 'Din Hudresa över Tid',
-      },
+      legend: { position: 'top' as const },
+      title: { display: true, text: 'Din Hudresa över Tid' },
     },
-    scales: {
-      y: {
-        beginAtZero: true,
-        max: 10,
-      },
-    },
+    scales: { y: { beginAtZero: true, max: 10 } },
   }
+
+  const routine = getRoutine()
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      
       <main className="pt-20 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Welcome Header */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-8"
-          >
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Välkommen tillbaka, {user?.firstName}! 👋
-            </h1>
-            <p className="text-gray-600">
-              Här är din personliga hudresa och rekommendationer
-            </p>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Välkommen tillbaka, {profile?.firstName || user?.firstName}! 👋</h1>
+            <p className="text-gray-600">Din personliga hudresa och rekommendationer</p>
           </motion.div>
 
           {/* Quick Stats */}
@@ -266,8 +329,38 @@ export default function DashboardPage() {
 
           {/* Main Content Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left Column - Progress Chart */}
+            {/* Left Column - Progress Chart + Routine */}
             <div className="lg:col-span-2">
+              {/* Routine Section */}
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="bg-white rounded-xl p-6 shadow-sm mb-8">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-bold text-gray-900">Din rutin</h2>
+                  <button onClick={addRoutineToCart} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#4A3428] text-white hover:bg-[#3A2418]">
+                    <ShoppingBag className="w-4 h-4" /> Lägg allt i varukorgen
+                  </button>
+                </div>
+                {routine.length ? (
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    {routine.map(step => (
+                      <label key={step.id} className="flex items-center gap-3 p-3 border rounded-lg hover:border-[#4A3428]/50">
+                        <input type="checkbox" checked={!!routineDone[step.id]} onChange={e => markStepDone(step.id, e.target.checked)} className="w-4 h-4" />
+                        <div className="flex-1">
+                          <div className="font-medium text-gray-900">{step.title}</div>
+                          <div className="text-sm text-gray-600">{step.product?.name || 'Produkt'}</div>
+                        </div>
+                        {step.product?.images?.[0] && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={step.product.images[0]} alt={step.product.name} className="w-10 h-10 object-cover rounded" />
+                        )}
+                      </label>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-600">Vi laddar din rutin…</p>
+                )}
+              </motion.div>
+
+              {/* Existing Progress Chart */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -329,8 +422,31 @@ export default function DashboardPage() {
               </motion.div>
             </div>
 
-            {/* Right Column - Suggestions & Quick Actions */}
+            {/* Right Column - Orders + Suggestions + Quick Actions */}
             <div className="space-y-8">
+              {/* Orders */}
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white rounded-xl p-6 shadow-sm">
+                <h2 className="text-xl font-bold text-gray-900 mb-4">Mina ordrar</h2>
+                {profile?.orders?.length ? (
+                  <div className="space-y-3">
+                    {profile!.orders!.slice(0,5).map(o => (
+                      <div key={o.id} className="flex items-center justify-between p-3 border rounded-lg">
+                        <div>
+                          <div className="font-medium text-gray-900">#{o.id.slice(0,6)}…</div>
+                          <div className="text-xs text-gray-600">{new Date(o.createdAt).toLocaleDateString('sv-SE')}</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-gray-900 font-medium">{Math.round((o.total || 0))} kr</div>
+                          <div className="text-xs text-gray-500">{o.status || '—'}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-600">Inga ordrar ännu</p>
+                )}
+              </motion.div>
+
               {/* Personalized Suggestions */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -425,7 +541,6 @@ export default function DashboardPage() {
           </div>
         </div>
       </main>
-
       <Footer />
     </div>
   )
