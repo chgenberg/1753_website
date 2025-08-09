@@ -147,7 +147,46 @@
     "newsletter": "Nyhetsbrev",
     "newsletterDescription": "Få de senaste nyheterna om hudvård och CBD",
     "subscribe": "Prenumerera",
-    "copyright": "© 2024 1753 Skincare. Alla rättigheter förbehållna."
+    "copyright": "© 2024 1753 Skincare. Alla rättigheter förbehållna.",
+    "help": "Hjälp"
+  },
+  "productsPage": {
+    "badgeCBD": "CBD-BERIKAD HUDVÅRD",
+    "title": "VÅRA PRODUKTER",
+    "subtitle": "Upptäck kraften i naturlig hudvård med våra noggrant utvalda CBD- och CBG-produkter",
+    "filter": "FILTER",
+    "categories": {
+      "all": "Alla",
+      "bestseller": "Bästsäljare",
+      "new": "Nytt"
+    },
+    "sort": {
+      "featured": "Utvalda först",
+      "name": "Namn A–Ö",
+      "priceLow": "Pris: Låg till hög",
+      "priceHigh": "Pris: Hög till låg"
+    },
+    "activeFilters": "{count} aktivt filter",
+    "resetFilters": "Rensa filter",
+    "loading": "Laddar produkter...",
+    "empty": {
+      "title": "Inga produkter hittades med nuvarande filter.",
+      "showAll": "Visa alla produkter"
+    },
+    "quickView": "Snabbtitt",
+    "addToCart": "Lägg i varukorg",
+    "newsletter": {
+      "title": "Missa inte våra nyheter",
+      "description": "Prenumerera på vårt nyhetsbrev för exklusiva erbjudanden och hudvårdstips",
+      "placeholderEmail": "Din e‑postadress",
+      "subscribe": "Prenumerera"
+    },
+    "quizCta": "Gör vår hudanalys",
+    "badges": {
+      "recommended": "REKOMMENDERAT",
+      "bestseller": "BESTSELLER",
+      "new": "NYTT"
+    }
   },
   "Reviews": {
     "pageTitle": "Recensioner - 1753 Skincare",
