@@ -294,5 +294,30 @@
     "benefitsLabel": "Bénéfices :",
     "usageTitle": "Comment utiliser {name}",
     "mushroomShowcase": "Quatre puissants champignons médicinaux"
+  },
+  "cookieBanner": {
+    "title": "Nous respectons votre vie privée 🍪",
+    "description": "Nous utilisons des cookies pour améliorer votre expérience, analyser le trafic et personnaliser le contenu. Vous pouvez choisir les cookies à accepter.",
+    "acceptAll": "Tout accepter",
+    "onlyNecessary": "Essentiels uniquement",
+    "customize": "Personnaliser",
+    "learnMore": "En savoir plus dans notre",
+    "and": "et",
+    "saveSettings": "Enregistrer les paramètres",
+    "settings": {
+      "title": "Paramètres des cookies",
+      "necessary": {
+        "title": "Cookies essentiels",
+        "desc": "Ces cookies sont indispensables au bon fonctionnement du site. Ils ne peuvent pas être désactivés."
+      },
+      "analytics": {
+        "title": "Cookies d’analyse",
+        "desc": "Nous aident à comprendre comment les visiteurs utilisent le site en recueillant et en rapportant des informations anonymes."
+      },
+      "marketing": {
+        "title": "Cookies marketing",
+        "desc": "Utilisés pour afficher des publicités pertinentes et mesurer l’efficacité de nos campagnes."
+      }
+    }
   }
 }

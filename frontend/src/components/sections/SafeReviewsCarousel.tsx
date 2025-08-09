@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Star, ChevronLeft, ChevronRight, Quote } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 interface Review {
   id: string
@@ -71,6 +72,7 @@ const defaultReviews: Review[] = [
 ]
 
 export function SafeReviewsCarousel() {
+  const t = useTranslations()
   const [reviews, setReviews] = useState<Review[]>(defaultReviews)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isAutoPlaying, setIsAutoPlaying] = useState(true)
@@ -154,22 +156,11 @@ export function SafeReviewsCarousel() {
     <section className="py-20 bg-[#FAF8F5]">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-4xl md:text-5xl font-bold mb-6"
-          >
-            Vad våra kunder säger
+          <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-4xl md:text-5xl font-bold mb-6">
+            {t('Reviews.title')}
           </motion.h2>
           
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="flex items-center justify-center gap-4 mb-4"
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="flex items-center justify-center gap-4 mb-4">
             <div className="flex items-center gap-1">
               {[...Array(5)].map((_, i) => (
                 <Star key={i} className="w-6 h-6 fill-yellow-400 text-yellow-400" />
@@ -178,27 +169,14 @@ export function SafeReviewsCarousel() {
             <span className="text-2xl font-semibold text-gray-900">{stats.averageRating.toFixed(1)}/5</span>
           </motion.div>
           
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="text-gray-600"
-          >
-            Baserat på {stats.totalReviews}+ recensioner
+          <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.2 }} className="text-gray-600">
+            {t('Reviews.totalReviews')}: {stats.totalReviews}+
           </motion.p>
         </div>
 
         <div className="relative max-w-4xl mx-auto">
           <AnimatePresence mode="wait">
-            <motion.div
-              key={currentIndex}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-              className="bg-white rounded-2xl shadow-lg p-8 md:p-12"
-            >
+            <motion.div key={currentIndex} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }} className="bg-white rounded-2xl shadow-lg p-8 md:p-12">
               <Quote className="w-12 h-12 text-[#8B6B47] mb-6" />
               
               <p className="text-lg md:text-xl text-gray-700 mb-8 leading-relaxed">
@@ -210,18 +188,11 @@ export function SafeReviewsCarousel() {
                   <div className="flex items-center gap-2 mb-2">
                     <div className="flex">
                       {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`w-5 h-5 ${
-                            i < reviews[currentIndex].rating
-                              ? 'fill-yellow-400 text-yellow-400'
-                              : 'fill-gray-200 text-gray-200'
-                          }`}
-                        />
+                        <Star key={i} className={`w-5 h-5 ${i < reviews[currentIndex].rating ? 'fill-yellow-400 text-yellow-400' : 'fill-gray-200 text-gray-200'}`} />
                       ))}
                     </div>
                     {reviews[currentIndex].verified && (
-                      <span className="text-sm text-green-600 font-medium">Verifierad</span>
+                      <span className="text-sm text-green-600 font-medium">{t('Reviews.verifiedPurchase')}</span>
                     )}
                   </div>
                   
@@ -235,35 +206,18 @@ export function SafeReviewsCarousel() {
           </AnimatePresence>
 
           {/* Navigation */}
-          <button
-            onClick={goToPrevious}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all"
-            aria-label="Föregående recension"
-          >
+          <button onClick={goToPrevious} className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all" aria-label={t('Reviews.prevAria')}>
             <ChevronLeft className="w-6 h-6 text-[#4A3428]" />
           </button>
           
-          <button
-            onClick={goToNext}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all"
-            aria-label="Nästa recension"
-          >
+          <button onClick={goToNext} className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all" aria-label={t('Reviews.nextAria')}>
             <ChevronRight className="w-6 h-6 text-[#4A3428]" />
           </button>
 
           {/* Dots */}
           <div className="flex items-center justify-center gap-2 mt-8">
             {reviews.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => goToSlide(index)}
-                className={`w-2 h-2 rounded-full transition-all ${
-                  index === currentIndex 
-                    ? 'w-8 bg-[#4A3428]' 
-                    : 'bg-gray-300 hover:bg-gray-400'
-                }`}
-                aria-label={`Gå till recension ${index + 1}`}
-              />
+              <button key={index} onClick={() => goToSlide(index)} className={`w-2 h-2 rounded-full transition-all ${index === currentIndex ? 'w-8 bg-[#4A3428]' : 'bg-gray-300 hover:bg-gray-400'}`} aria-label={t('Reviews.gotoAria', { index: index + 1 })} />
             ))}
           </div>
         </div>

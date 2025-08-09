@@ -193,7 +193,7 @@
     "pageDescription": "Läs vad våra kunder säger om 1753 Skincare. Äkta recensioner från människor som upptäckt kraften i naturlig hudvård.",
     "title": "Vad våra kunder säger",
     "subtitle": "Äkta berättelser från människor som upptäckt kraften i naturlig hudvård",
-    "totalReviews": "Recensioner",
+    "totalReviews": "Baserat på",
     "averageRating": "Genomsnittligt betyg",
     "fiveStarPercentage": "5-stjärniga betyg",
     "allRatings": "Alla betyg",
@@ -203,11 +203,14 @@
     "sortHighest": "Högsta betyg först",
     "sortLowest": "Lägsta betyg först",
     "resetFilters": "Återställ filter",
-    "verifiedPurchase": "Verifierad köpare",
+    "verifiedPurchase": "Verifierad",
     "loading": "Laddar...",
     "loadMore": "Visa fler",
     "noReviews": "Inga recensioner hittades",
-    "readAllReviews": "LÄS ALLA RECENSIONER"
+    "readAllReviews": "LÄS ALLA RECENSIONER",
+    "prevAria": "Föregående recension",
+    "nextAria": "Nästa recension",
+    "gotoAria": "Gå till recension {index}"
   },
   "Quiz": {
     "title": "Hudanalys Quiz",
@@ -295,5 +298,30 @@
     "benefitsLabel": "Fördelar:",
     "usageTitle": "Så här använder du {name}",
     "mushroomShowcase": "Fyra kraftfulla medicinska svampar"
+  },
+  "cookieBanner": {
+    "title": "Vi värnar om din integritet 🍪",
+    "description": "Vi använder cookies för att förbättra din upplevelse på vår webbplats, analysera trafik och anpassa innehåll. Du kan välja vilka cookies du godkänner.",
+    "acceptAll": "Acceptera alla",
+    "onlyNecessary": "Endast nödvändiga",
+    "customize": "Anpassa",
+    "learnMore": "Läs mer i vår",
+    "and": "och",
+    "saveSettings": "Spara inställningar",
+    "settings": {
+      "title": "Cookie-inställningar",
+      "necessary": {
+        "title": "Nödvändiga cookies",
+        "desc": "Dessa cookies är nödvändiga för att webbplatsen ska fungera korrekt. De kan inte stängas av."
+      },
+      "analytics": {
+        "title": "Analyserande cookies",
+        "desc": "Hjälper oss förstå hur besökare använder webbplatsen genom att samla in och rapportera anonym information."
+      },
+      "marketing": {
+        "title": "Marknadsföringscookies",
+        "desc": "Används för att visa relevanta annonser och mäta effektiviteten av våra marknadsföringskampanjer."
+      }
+    }
   }
 } 

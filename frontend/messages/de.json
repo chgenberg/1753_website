@@ -294,5 +294,30 @@
     "benefitsLabel": "Vorteile:",
     "usageTitle": "So verwendest du {name}",
     "mushroomShowcase": "Vier kraftvolle medizinische Pilze"
+  },
+  "cookieBanner": {
+    "title": "Wir respektieren deine Privatsphäre 🍪",
+    "description": "Wir verwenden Cookies, um deine Erfahrung zu verbessern, den Verkehr zu analysieren und Inhalte zu personalisieren. Du kannst wählen, welche Cookies du akzeptierst.",
+    "acceptAll": "Alle akzeptieren",
+    "onlyNecessary": "Nur notwendige",
+    "customize": "Anpassen",
+    "learnMore": "Mehr erfahren in unserer",
+    "and": "und",
+    "saveSettings": "Einstellungen speichern",
+    "settings": {
+      "title": "Cookie-Einstellungen",
+      "necessary": {
+        "title": "Notwendige Cookies",
+        "desc": "Diese Cookies sind für das einwandfreie Funktionieren der Website erforderlich. Sie können nicht deaktiviert werden."
+      },
+      "analytics": {
+        "title": "Analyse-Cookies",
+        "desc": "Helfen uns zu verstehen, wie Besucher die Website nutzen, indem sie anonyme Informationen sammeln und berichten."
+      },
+      "marketing": {
+        "title": "Marketing-Cookies",
+        "desc": "Werden verwendet, um relevante Anzeigen anzuzeigen und die Wirksamkeit unserer Kampagnen zu messen."
+      }
+    }
   }
 }

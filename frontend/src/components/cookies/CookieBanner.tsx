@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Cookie, X, Settings, Check } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 interface CookiePreferences {
   necessary: boolean
@@ -18,6 +19,7 @@ declare global {
 }
 
 export default function CookieBanner() {
+  const t = useTranslations()
   const [showBanner, setShowBanner] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [preferences, setPreferences] = useState<CookiePreferences>({
@@ -27,43 +29,31 @@ export default function CookieBanner() {
   })
 
   useEffect(() => {
-    // Check if user has already made a choice
     const cookieConsent = localStorage.getItem('cookieConsent')
     if (!cookieConsent) {
       setShowBanner(true)
     } else {
-      // Apply saved preferences
       const savedPreferences = JSON.parse(cookieConsent)
       applyPreferences(savedPreferences)
     }
   }, [])
 
   const applyPreferences = (prefs: CookiePreferences) => {
-    // Apply analytics cookies
     if (prefs.analytics) {
-      // Enable Google Analytics, etc.
       if (typeof window !== 'undefined' && window.gtag) {
-        window.gtag('consent', 'update', {
-          'analytics_storage': 'granted'
-        })
+        window.gtag('consent', 'update', { 'analytics_storage': 'granted' })
       }
     } else {
-      // Disable analytics
       if (typeof window !== 'undefined' && window.gtag) {
-        window.gtag('consent', 'update', {
-          'analytics_storage': 'denied'
-        })
+        window.gtag('consent', 'update', { 'analytics_storage': 'denied' })
       }
     }
 
-    // Apply marketing cookies
     if (prefs.marketing) {
-      // Enable marketing cookies (Drip, etc.)
       if (typeof window !== 'undefined') {
         window._drip_allowed = true
       }
     } else {
-      // Disable marketing cookies
       if (typeof window !== 'undefined') {
         window._drip_allowed = false
       }
@@ -71,11 +61,7 @@ export default function CookieBanner() {
   }
 
   const acceptAll = () => {
-    const allAccepted = {
-      necessary: true,
-      analytics: true,
-      marketing: true
-    }
+    const allAccepted = { necessary: true, analytics: true, marketing: true }
     setPreferences(allAccepted)
     localStorage.setItem('cookieConsent', JSON.stringify(allAccepted))
     applyPreferences(allAccepted)
@@ -90,11 +76,7 @@ export default function CookieBanner() {
   }
 
   const declineAll = () => {
-    const onlyNecessary = {
-      necessary: true,
-      analytics: false,
-      marketing: false
-    }
+    const onlyNecessary = { necessary: true, analytics: false, marketing: false }
     setPreferences(onlyNecessary)
     localStorage.setItem('cookieConsent', JSON.stringify(onlyNecessary))
     applyPreferences(onlyNecessary)
@@ -136,53 +118,40 @@ export default function CookieBanner() {
                       
                       <div className="flex-1">
                         <h3 className="text-xl font-bold text-gray-900 mb-2">
-                          Vi värnar om din integritet 🍪
+                          {t('cookieBanner.title')}
                         </h3>
                         <p className="text-gray-600 mb-6">
-                          Vi använder cookies för att förbättra din upplevelse på vår webbplats, 
-                          analysera trafik och anpassa innehåll. Du kan välja vilka cookies du godkänner.
+                          {t('cookieBanner.description')}
                         </p>
                         
                         <div className="flex flex-col sm:flex-row gap-3">
-                          <button
-                            onClick={acceptAll}
-                            className="px-6 py-3 bg-[#4A3428] text-white rounded-full font-medium hover:bg-[#3A2418] transition-colors"
-                          >
-                            Acceptera alla
+                          <button onClick={acceptAll} className="px-6 py-3 bg-[#4A3428] text-white rounded-full font-medium hover:bg-[#3A2418] transition-colors">
+                            {t('cookieBanner.acceptAll')}
                           </button>
                           
-                          <button
-                            onClick={declineAll}
-                            className="px-6 py-3 bg-gray-200 text-gray-800 rounded-full font-medium hover:bg-gray-300 transition-colors"
-                          >
-                            Endast nödvändiga
+                          <button onClick={declineAll} className="px-6 py-3 bg-gray-200 text-gray-800 rounded-full font-medium hover:bg-gray-300 transition-colors">
+                            {t('cookieBanner.onlyNecessary')}
                           </button>
                           
-                          <button
-                            onClick={() => setShowSettings(!showSettings)}
-                            className="px-6 py-3 border-2 border-[#4A3428] text-[#4A3428] rounded-full font-medium hover:bg-[#4A3428] hover:text-white transition-colors flex items-center justify-center gap-2"
-                          >
+                          <button onClick={() => setShowSettings(!showSettings)} className="px-6 py-3 border-2 border-[#4A3428] text-[#4A3428] rounded-full font-medium hover:bg-[#4A3428] hover:text-white transition-colors flex items-center justify-center gap-2">
                             <Settings className="w-4 h-4" />
-                            Anpassa
+                            {t('cookieBanner.customize')}
                           </button>
                         </div>
                         
                         <p className="text-sm text-gray-500 mt-4">
-                          Läs mer i vår{' '}
+                          {t('cookieBanner.learnMore')}{' '}
                           <a href="/integritetspolicy" className="text-[#4A3428] hover:underline">
-                            integritetspolicy
+                            {t('navigation.privacyPolicy')}
                           </a>
-                          {' '}och{' '}
+                          {' '}{t('cookieBanner.and')}{' '}
                           <a href="/cookies" className="text-[#4A3428] hover:underline">
-                            cookie-policy
+                            {t('navigation.cookies')}
                           </a>
                         </p>
                       </div>
                       
-                      <button
-                        onClick={() => setShowBanner(false)}
-                        className="flex-shrink-0 text-gray-400 hover:text-gray-600"
-                      >
+                      <button onClick={() => setShowBanner(false)} className="flex-shrink-0 text-gray-400 hover:text-gray-600">
                         <X className="w-6 h-6" />
                       </button>
                     </div>
@@ -192,12 +161,9 @@ export default function CookieBanner() {
                   <div className="p-6 md:p-8">
                     <div className="flex items-center justify-between mb-6">
                       <h3 className="text-xl font-bold text-gray-900">
-                        Cookie-inställningar
+                        {t('cookieBanner.settings.title')}
                       </h3>
-                      <button
-                        onClick={() => setShowSettings(false)}
-                        className="text-gray-400 hover:text-gray-600"
-                      >
+                      <button onClick={() => setShowSettings(false)} className="text-gray-400 hover:text-gray-600">
                         <X className="w-6 h-6" />
                       </button>
                     </div>
@@ -208,11 +174,10 @@ export default function CookieBanner() {
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <h4 className="font-semibold text-gray-900 mb-1">
-                              Nödvändiga cookies
+                              {t('cookieBanner.settings.necessary.title')}
                             </h4>
                             <p className="text-sm text-gray-600">
-                              Dessa cookies är nödvändiga för att webbplatsen ska fungera korrekt. 
-                              De kan inte stängas av.
+                              {t('cookieBanner.settings.necessary.desc')}
                             </p>
                           </div>
                           <div className="ml-4">
@@ -228,25 +193,15 @@ export default function CookieBanner() {
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <h4 className="font-semibold text-gray-900 mb-1">
-                              Analyserande cookies
+                              {t('cookieBanner.settings.analytics.title')}
                             </h4>
                             <p className="text-sm text-gray-600">
-                              Hjälper oss förstå hur besökare använder webbplatsen genom att samla 
-                              in och rapportera anonym information.
+                              {t('cookieBanner.settings.analytics.desc')}
                             </p>
                           </div>
                           <div className="ml-4">
-                            <button
-                              onClick={() => setPreferences({ ...preferences, analytics: !preferences.analytics })}
-                              className={`w-12 h-7 rounded-full transition-colors relative ${
-                                preferences.analytics ? 'bg-[#4A3428]' : 'bg-gray-300'
-                              }`}
-                            >
-                              <motion.div
-                                className="w-5 h-5 bg-white rounded-full absolute top-1"
-                                animate={{ x: preferences.analytics ? 20 : 2 }}
-                                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                              />
+                            <button onClick={() => setPreferences({ ...preferences, analytics: !preferences.analytics })} className={`w-12 h-7 rounded-full transition-colors relative ${preferences.analytics ? 'bg-[#4A3428]' : 'bg-gray-300'}`}>
+                              <motion.div className="w-5 h-5 bg-white rounded-full absolute top-1" animate={{ x: preferences.analytics ? 20 : 2 }} transition={{ type: 'spring', stiffness: 500, damping: 30 }} />
                             </button>
                           </div>
                         </div>
@@ -257,25 +212,15 @@ export default function CookieBanner() {
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <h4 className="font-semibold text-gray-900 mb-1">
-                              Marknadsföringscookies
+                              {t('cookieBanner.settings.marketing.title')}
                             </h4>
                             <p className="text-sm text-gray-600">
-                              Används för att visa relevanta annonser och mäta effektiviteten 
-                              av våra marknadsföringskampanjer.
+                              {t('cookieBanner.settings.marketing.desc')}
                             </p>
                           </div>
                           <div className="ml-4">
-                            <button
-                              onClick={() => setPreferences({ ...preferences, marketing: !preferences.marketing })}
-                              className={`w-12 h-7 rounded-full transition-colors relative ${
-                                preferences.marketing ? 'bg-[#4A3428]' : 'bg-gray-300'
-                              }`}
-                            >
-                              <motion.div
-                                className="w-5 h-5 bg-white rounded-full absolute top-1"
-                                animate={{ x: preferences.marketing ? 20 : 2 }}
-                                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                              />
+                            <button onClick={() => setPreferences({ ...preferences, marketing: !preferences.marketing })} className={`w-12 h-7 rounded-full transition-colors relative ${preferences.marketing ? 'bg-[#4A3428]' : 'bg-gray-300'}`}>
+                              <motion.div className="w-5 h-5 bg-white rounded-full absolute top-1" animate={{ x: preferences.marketing ? 20 : 2 }} transition={{ type: 'spring', stiffness: 500, damping: 30 }} />
                             </button>
                           </div>
                         </div>
@@ -283,17 +228,11 @@ export default function CookieBanner() {
                     </div>
                     
                     <div className="flex gap-3 mt-8">
-                      <button
-                        onClick={acceptSelected}
-                        className="flex-1 px-6 py-3 bg-[#4A3428] text-white rounded-full font-medium hover:bg-[#3A2418] transition-colors"
-                      >
-                        Spara inställningar
+                      <button onClick={acceptSelected} className="flex-1 px-6 py-3 bg-[#4A3428] text-white rounded-full font-medium hover:bg-[#3A2418] transition-colors">
+                        {t('cookieBanner.saveSettings')}
                       </button>
-                      <button
-                        onClick={acceptAll}
-                        className="flex-1 px-6 py-3 border-2 border-[#4A3428] text-[#4A3428] rounded-full font-medium hover:bg-[#4A3428] hover:text-white transition-colors"
-                      >
-                        Acceptera alla
+                      <button onClick={acceptAll} className="flex-1 px-6 py-3 border-2 border-[#4A3428] text-[#4A3428] rounded-full font-medium hover:bg-[#4A3428] hover:text-white transition-colors">
+                        {t('cookieBanner.acceptAll')}
                       </button>
                     </div>
                   </div>

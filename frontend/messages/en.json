@@ -152,23 +152,27 @@
   },
   "Reviews": {
     "pageTitle": "Reviews - 1753 Skincare",
-    "pageDescription": "Read what our customers say about 1753 Skincare. Real reviews from people who have discovered the power of natural skincare.",
-    "title": "What Our Customers Say",
-    "subtitle": "Real stories from people who have discovered the power of natural skincare",
-    "totalReviews": "Reviews",
-    "averageRating": "Average Rating",
+    "pageDescription": "Read what our customers say about 1753 Skincare. Genuine reviews from people who discovered the power of natural skincare.",
+    "title": "What our customers say",
+    "subtitle": "Real stories from people who discovered the power of natural skincare",
+    "totalReviews": "Based on",
+    "averageRating": "Average rating",
     "fiveStarPercentage": "5-star ratings",
     "allRatings": "All ratings",
     "allProducts": "All products",
     "sortNewest": "Newest first",
+    "sortOldest": "Oldest first",
     "sortHighest": "Highest rating first",
     "sortLowest": "Lowest rating first",
     "resetFilters": "Reset filters",
-    "verifiedPurchase": "Verified Buyer",
+    "verifiedPurchase": "Verified",
     "loading": "Loading...",
-    "loadMore": "Show more",
+    "loadMore": "Load more",
     "noReviews": "No reviews found",
-    "readAllReviews": "READ ALL REVIEWS"
+    "readAllReviews": "READ ALL REVIEWS",
+    "prevAria": "Previous review",
+    "nextAria": "Next review",
+    "gotoAria": "Go to review {index}"
   },
   "Quiz": {
     "title": "Skin Analysis Quiz",
@@ -294,5 +298,30 @@
     "benefitsLabel": "Benefits:",
     "usageTitle": "How to use {name}",
     "mushroomShowcase": "Four powerful medicinal mushrooms"
+  },
+  "cookieBanner": {
+    "title": "We value your privacy 🍪",
+    "description": "We use cookies to improve your experience, analyze traffic and personalize content. You can choose which cookies to accept.",
+    "acceptAll": "Accept all",
+    "onlyNecessary": "Only necessary",
+    "customize": "Customize",
+    "learnMore": "Learn more in our",
+    "and": "and",
+    "saveSettings": "Save settings",
+    "settings": {
+      "title": "Cookie settings",
+      "necessary": {
+        "title": "Necessary cookies",
+        "desc": "These cookies are essential for the website to function properly. They cannot be turned off."
+      },
+      "analytics": {
+        "title": "Analytics cookies",
+        "desc": "Help us understand how visitors use the site by collecting and reporting anonymous information."
+      },
+      "marketing": {
+        "title": "Marketing cookies",
+        "desc": "Used to show relevant ads and measure the effectiveness of our marketing campaigns."
+      }
+    }
   }
 } 

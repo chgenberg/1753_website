@@ -294,5 +294,30 @@
     "benefitsLabel": "Beneficios:",
     "usageTitle": "Cómo usar {name}",
     "mushroomShowcase": "Cuatro poderosos hongos medicinales"
+  },
+  "cookieBanner": {
+    "title": "Valoramos tu privacidad 🍪",
+    "description": "Usamos cookies para mejorar tu experiencia, analizar el tráfico y personalizar el contenido. Puedes elegir qué cookies aceptar.",
+    "acceptAll": "Aceptar todo",
+    "onlyNecessary": "Solo necesarias",
+    "customize": "Personalizar",
+    "learnMore": "Lee más en nuestra",
+    "and": "y",
+    "saveSettings": "Guardar configuración",
+    "settings": {
+      "title": "Configuración de cookies",
+      "necessary": {
+        "title": "Cookies necesarias",
+        "desc": "Estas cookies son esenciales para que el sitio funcione correctamente. No se pueden desactivar."
+      },
+      "analytics": {
+        "title": "Cookies de analítica",
+        "desc": "Nos ayudan a entender cómo los visitantes usan el sitio recopilando y reportando información anónima."
+      },
+      "marketing": {
+        "title": "Cookies de marketing",
+        "desc": "Se utilizan para mostrar anuncios relevantes y medir la efectividad de nuestras campañas."
+      }
+    }
   }
 }
