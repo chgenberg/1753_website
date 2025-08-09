@@ -2,9 +2,16 @@
 
 import 'leaflet/dist/leaflet.css'
 import { MapContainer, TileLayer, Popup, CircleMarker, useMap } from 'react-leaflet'
-import MarkerClusterGroup from 'react-leaflet-cluster'
 import { useEffect } from 'react'
 import type { FC } from 'react'
+import L from 'leaflet'
+
+// Fix marker icon paths for SSR/build
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png'
+})
 
 export interface CityPoint {
   city: string
@@ -59,29 +66,27 @@ const RetailersLeafletMap: FC<{ points: CityPoint[] }> = ({ points }) => {
         attribution='&copy; OpenStreetMap &copy; <a href="https://carto.com/attributions">CARTO</a>'
         url="https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
       />
-      <MarkerClusterGroup chunkedLoading>
-        {points.map((p, idx) => (
-          <CircleMarker key={idx} center={[p.lat, p.lon]} radius={6 + Math.min(6, p.retailers.length)} pathOptions={{ color: '#4A3428', fillColor: '#4A3428', fillOpacity: 0.85 }}>
-            <Popup>
-              <div className="text-sm">
-                <div className="font-semibold mb-1">{p.city}</div>
-                <ul className="space-y-1">
-                  {p.retailers.map((r, i) => (
-                    <li key={i}>
-                      <div className="font-medium">{r.name}</div>
-                      <div className="text-gray-600">{r.address}, {r.postalCode}</div>
-                      {r.phone && <div className="text-gray-600">{r.phone}</div>}
-                      {r.website && r.website !== 'Hemsida' && (
-                        <a className="text-[#4A3428] underline" href={r.website.startsWith('http') ? r.website : `https://${r.website}`} target="_blank" rel="noopener noreferrer">Besök webbplats</a>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </Popup>
-          </CircleMarker>
-        ))}
-      </MarkerClusterGroup>
+      {points.map((p, idx) => (
+        <CircleMarker key={idx} center={[p.lat, p.lon]} radius={6 + Math.min(6, p.retailers.length)} pathOptions={{ color: '#4A3428', fillColor: '#4A3428', fillOpacity: 0.85 }}>
+          <Popup>
+            <div className="text-sm">
+              <div className="font-semibold mb-1">{p.city}</div>
+              <ul className="space-y-1">
+                {p.retailers.map((r, i) => (
+                  <li key={i}>
+                    <div className="font-medium">{r.name}</div>
+                    <div className="text-gray-600">{r.address}, {r.postalCode}</div>
+                    {r.phone && <div className="text-gray-600">{r.phone}</div>}
+                    {r.website && r.website !== 'Hemsida' && (
+                      <a className="text-[#4A3428] underline" href={r.website.startsWith('http') ? r.website : `https://${r.website}`} target="_blank" rel="noopener noreferrer">Besök webbplats</a>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </Popup>
+        </CircleMarker>
+      ))}
       <FitBounds bounds={bounds} />
       <FocusListener />
     </MapContainer>
