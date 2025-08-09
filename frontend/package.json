@@ -11,7 +11,7 @@
     "optimize-images": "node scripts/optimize-images.js",
     "fix-filenames": "node scripts/fix-filenames.js",
     "update-image-refs": "node scripts/update-image-references.js",
-    "i18n:seed": "node src/scripts/translate-site.ts"
+    "i18n:seed": "node src/scripts/translate-site.js"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.4",
