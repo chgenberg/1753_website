@@ -80,24 +80,19 @@ export default function BlogContent({ posts }: BlogContentProps) {
     })
   }, [safePosts, searchQuery, selectedCategory, selectedTag])
 
-  // Pre-assign image per filtered post to avoid adjacent duplicates
+  // Assign images sequentially from Kapitel 1..64 based on visible index to avoid near-duplicates
   const assignedImages = useMemo(() => {
-    let lastIdx = -1
     return filteredPosts.map((post, index) => {
       const explicit = (post as BlogPostWithImages).image
       if (explicit) return explicit
-      const base = (slugHash(post.slug) + index * 13) % portraitImages.length
-      let imgIdx = base
-      if (imgIdx === lastIdx) imgIdx = (imgIdx + 7) % portraitImages.length
-      lastIdx = imgIdx
+      const imgIdx = index % portraitImages.length
       return `/Bilder_kvinnor%20boken_2025/${portraitImages[imgIdx]}`
     })
   }, [filteredPosts])
 
   // Function to get fallback image for a post when no explicit image found
   const getFallbackImage = (slug: string, index: number) => {
-    const spacing = Math.max(3, Math.floor(portraitImages.length / 8))
-    const imageIndex = (index * spacing) % portraitImages.length
+    const imageIndex = index % portraitImages.length
     return `/Bilder_kvinnor%20boken_2025/${portraitImages[imageIndex]}`
   }
 
