@@ -236,7 +236,22 @@ export default function DashboardPage() {
   }
 
   const routine = getRoutine()
-
+ 
+  const lastQuizDate = (() => {
+    const d = (profile as any)?.skinJourneyEntries?.[0]?.createdAt
+    return d ? new Date(d) : null
+  })()
+  const daysSinceQuiz = lastQuizDate ? Math.floor((Date.now() - lastQuizDate.getTime()) / (1000*60*60*24)) : null
+ 
+  // naive buy-again suggestion: use latest order if available and featured list to find matches by slug
+  const buyAgainItems = (() => {
+    const latest = profile?.orders?.[0] as any
+    const items: Array<{ name: string; slug?: string; idGuess?: string }> = latest?.items || []
+    // If backend doesn’t include items yet, fallback: offer featured
+    if (!items?.length) return featured.slice(0,3).map(p => ({ name: p.name, slug: p.slug }))
+    return items.slice(0,3)
+  })()
+  
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -246,6 +261,11 @@ export default function DashboardPage() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Välkommen tillbaka, {profile?.firstName || user?.firstName}! 👋</h1>
             <p className="text-gray-600">Din personliga hudresa och rekommendationer</p>
+            {daysSinceQuiz == null || daysSinceQuiz > 60 ? (
+              <div className="mt-3 inline-flex items-center gap-2 px-3 py-2 rounded-full bg-amber-50 text-amber-800 text-sm">
+                Din profil kan vara inaktuell – <a href="/sv/quiz" className="underline">återtesta quizet</a>
+              </div>
+            ) : null}
           </motion.div>
 
           {/* Quick Stats */}
@@ -444,6 +464,31 @@ export default function DashboardPage() {
                   </div>
                 ) : (
                   <p className="text-gray-600">Inga ordrar ännu</p>
+                )}
+              </motion.div>
+
+              {/* Buy again */}
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="bg-white rounded-xl p-6 shadow-sm">
+                <h2 className="text-xl font-bold text-gray-900 mb-4">Köp igen</h2>
+                {buyAgainItems.length ? (
+                  <div className="space-y-3">
+                    {buyAgainItems.map((it, idx) => (
+                      <div key={idx} className="flex items-center justify-between p-3 border rounded-lg">
+                        <div className="text-gray-900">{it.name}</div>
+                        <button
+                          onClick={() => {
+                            const match = featured.find(p => p.slug === it.slug || p.name === it.name)
+                            if (match) addToCart(match as any, 1)
+                          }}
+                          className="px-3 py-1.5 rounded-full bg-[#4A3428] text-white text-sm"
+                        >
+                          Lägg i varukorgen
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-600">Inget att köpa igen ännu</p>
                 )}
               </motion.div>
 
