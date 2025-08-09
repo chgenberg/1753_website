@@ -190,7 +190,8 @@ export const getProfile = async (req: Request, res: Response) => {
         addresses: true,
         orders: {
           orderBy: { createdAt: 'desc' },
-          take: 10
+          take: 10,
+          include: { items: true }
         }
       }
     })
