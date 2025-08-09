@@ -233,6 +233,25 @@
           "description": "En 3 mois, vous verrez une nette amélioration de la qualité et de l’aspect de votre peau.\n\nAvec nos produits naturels au CBD et CBG et une routine personnalisée, votre peau devient équilibrée, plus nette et rayonnante." 
         }
       }
+    },
+    "about": {
+      "title": "NOTRE PHILOSOPHIE",
+      "subtitle": "Une tradition intemporelle de soins naturels, fondée sur la science et l’amour de la nature",
+      "heading": "DEPUIS 1753, NOUS COMPRENONS LES BESOINS NATURELS DE LA PEAU",
+      "p1": "Au cœur de la nature suédoise est née notre vision : créer des soins qui fonctionnent en harmonie avec les processus naturels de votre peau. Nous allions savoir-faire traditionnel et recherche moderne.",
+      "p2": "Nos produits contiennent des ingrédients soigneusement sélectionnés tels que le CBD et le CBG, reconnus pour leurs propriétés apaisantes et équilibrantes. Chaque formule est élaborée pour offrir à votre peau exactement ce dont elle a besoin—ni plus, ni moins.",
+      "values": {
+        "natural": { "title": "Naturel", "desc": "Uniquement des ingrédients naturels" },
+        "loving": { "title": "Bienveillant", "desc": "Créé avec soin pour votre peau" },
+        "safe": { "title": "Sûr", "desc": "Soins testés et certifiés" }
+      },
+      "cta": "En savoir plus sur notre histoire",
+      "imageAlt": "Soins naturels de la peau",
+      "foundersAlt": "Fondateurs",
+      "foundersHeading": "UNE PASSION POUR LA BEAUTÉ NATURELLE",
+      "foundersQuote": "\"Notre aventure a commencé par une simple conviction : la nature détient toutes les réponses pour une peau saine et éclatante. Après des années de recherche et de développement, nous avons créé des produits que nous adorons utiliser chaque jour.\"",
+      "foundersNames": "Christopher & Ebba",
+      "foundersTitle": "Fondateurs, 1753 Skincare"
     }
   },
   "productsPage": {

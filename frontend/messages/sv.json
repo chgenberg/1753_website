@@ -275,6 +275,25 @@
           "description": "Inom 3 månader kommer du att se en märkbar förbättring av din huds kvalitet och utseende.\n\nMed våra naturliga produkter innehållande CBD och CBG, kombinerat med din personliga hudvårdsrutin, kommer din hud att bli mer balanserad, klarare och strålande.\n\nMånga av våra kunder rapporterar synliga resultat redan efter några veckor, men den fulla effekten uppnås vanligtvis inom 3 månader av konsekvent användning." 
         }
       }
+    },
+    "about": {
+      "title": "VÅR FILOSOFI",
+      "subtitle": "En tidlös tradition av naturlig hudvård, grundad på vetenskap och kärlek till naturen",
+      "heading": "SEDAN 1753 HAR VI FÖRSTÅTT HUDENS NATURLIGA BEHOV",
+      "p1": "I hjärtat av svensk natur föddes vår vision om att skapa hudvård som arbetar i harmoni med din huds naturliga processer. Vi kombinerar traditionell kunskap med modern forskning.",
+      "p2": "Våra produkter innehåller noggrant utvalda ingredienser som CBD och CBG, kända för sina lugnande och balanserande egenskaper. Varje formula är utvecklad för att ge din hud det den behöver - inget mer, inget mindre.",
+      "values": {
+        "natural": { "title": "Naturlig", "desc": "Endast naturliga ingredienser från naturen" },
+        "loving": { "title": "Kärleksfull", "desc": "Skapad med omsorg för din hud" },
+        "safe": { "title": "Säker", "desc": "Testad och certifierad hudvård" }
+      },
+      "cta": "Läs mer om vår historia",
+      "imageAlt": "Naturlig hudvård",
+      "foundersAlt": "Grundare",
+      "foundersHeading": "EN PASSION FÖR NATURLIG SKÖNHET",
+      "foundersQuote": "\"Vår resa började med en enkel tro - att naturen har alla svar för en frisk och strålande hud. Efter år av forskning och utveckling har vi skapat produkter som vi själva älskar att använda varje dag.\"",
+      "foundersNames": "Christopher & Ebba",
+      "foundersTitle": "Grundare, 1753 Skincare"
     }
   },
   "productDetail": {

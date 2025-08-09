@@ -237,6 +237,25 @@
           "description": "Within 3 months you will see a noticeable improvement in your skin’s quality and appearance.\n\nWith our natural CBD and CBG products and a personalised routine, your skin becomes balanced, clearer and radiant." 
         }
       }
+    },
+    "about": {
+      "title": "OUR PHILOSOPHY",
+      "subtitle": "A timeless tradition of natural skincare, grounded in science and a love for nature",
+      "heading": "SINCE 1753, WE’VE UNDERSTOOD SKIN’S NATURAL NEEDS",
+      "p1": "In the heart of Swedish nature, our vision was born: to create skincare that works in harmony with your skin’s natural processes. We combine traditional knowledge with modern research.",
+      "p2": "Our products contain carefully selected ingredients like CBD and CBG, known for their calming and balancing properties. Every formula is developed to give your skin exactly what it needs—nothing more, nothing less.",
+      "values": {
+        "natural": { "title": "Natural", "desc": "Only natural ingredients from nature" },
+        "loving": { "title": "Loving", "desc": "Created with care for your skin" },
+        "safe": { "title": "Safe", "desc": "Tested and certified skincare" }
+      },
+      "cta": "Read more about our story",
+      "imageAlt": "Natural skincare",
+      "foundersAlt": "Founders",
+      "foundersHeading": "A PASSION FOR NATURAL BEAUTY",
+      "foundersQuote": "\"Our journey began with a simple belief—that nature holds all the answers for healthy, radiant skin. After years of research and development, we’ve created products we love to use every day.\"",
+      "foundersNames": "Christopher & Ebba",
+      "foundersTitle": "Founders, 1753 Skincare"
     }
   },
   "productsPage": {
