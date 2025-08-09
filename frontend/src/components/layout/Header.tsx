@@ -38,7 +38,9 @@ export function Header() {
   const menuRef = useRef<HTMLDivElement | null>(null)
   const headerRef = useRef<HTMLElement | null>(null)
   const [headerHeight, setHeaderHeight] = useState<number>(0)
-
+  const topBarRef = useRef<HTMLDivElement | null>(null)
+  const [topBarHeight, setTopBarHeight] = useState<number>(0)
+ 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10)
@@ -49,27 +51,31 @@ export function Header() {
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
-
+ 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentMessageIndex((prev) => (prev + 1) % TopBarMessages({ t }).length)
     }, 4000)
     return () => clearInterval(interval)
   }, [])
-
-  // Measure header height to offset the drawer below it
+ 
+  // Measure header & top bar height to offset the drawer below them
   useEffect(() => {
-    const measure = () => setHeaderHeight(headerRef.current?.offsetHeight || 0)
+    const measure = () => {
+      setHeaderHeight(headerRef.current?.offsetHeight || 0)
+      setTopBarHeight(topBarRef.current?.offsetHeight || 0)
+    }
     measure()
     const ro = new ResizeObserver(measure)
     if (headerRef.current) ro.observe(headerRef.current)
+    if (topBarRef.current) ro.observe(topBarRef.current)
     window.addEventListener('resize', measure)
     return () => {
       window.removeEventListener('resize', measure)
       ro.disconnect()
     }
   }, [])
-
+ 
   // Close language dropdown on outside click / ESC / route change
   useEffect(() => {
     const onDocClick = (e: MouseEvent) => {
@@ -84,14 +90,14 @@ export function Header() {
     window.addEventListener('keydown', onKey)
     return () => { document.removeEventListener('mousedown', onDocClick); window.removeEventListener('keydown', onKey) }
   }, [])
-
+ 
   useEffect(() => {
     // When route changes, make sure all menus close
     setIsLangOpen(false)
     setActiveDropdown(null)
     setIsMobileMenuOpen(false)
   }, [pathname])
-
+ 
   const handleLogout = async () => {
     await logout()
     setShowUserDropdown(false)
@@ -128,10 +134,29 @@ export function Header() {
 
   return (
     <>
-      {/* Top bar removed per request */}
-      
+      {/* Restored Top Bar */}
+      <div ref={topBarRef} className="fixed top-0 left-0 right-0 bg-[#4A3428] text-white text-xs sm:text-sm py-2 z-50">
+        <div className="container mx-auto px-4">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentMessageIndex}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.3 }}
+              className="flex items-center justify-center gap-2"
+            >
+              {TopBarMessages({ t })[currentMessageIndex].icon}
+              <span className="font-medium tracking-wider">
+                {t('headerTopBar.bannerPrefix')} • {TopBarMessages({ t })[currentMessageIndex].text}
+              </span>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </div>
+       
       {/* Main Header - full white background */}
-      <header ref={headerRef} className={`fixed top-0 left-0 right-0 z-40 bg-white transition-all duration-300 ${
+      <header ref={headerRef} className={`fixed left-0 right-0 z-40 bg-white transition-all duration-300 ${
         isScrolled ? 'shadow-lg' : 'shadow-md'
       }`}>
         <div className="container mx-auto px-4">
