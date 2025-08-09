@@ -113,35 +113,16 @@ export function Header() {
 
   return (
     <>
-      {/* Fixed Top Bar */}
-      <div className="fixed top-0 left-0 right-0 bg-[#4A3428] text-white text-xs sm:text-sm py-2 z-50">
-        <div className="container mx-auto px-4">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentMessageIndex}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              transition={{ duration: 0.3 }}
-              className="flex items-center justify-center gap-2"
-            >
-              {TopBarMessages({ t })[currentMessageIndex].icon}
-              <span className="font-medium tracking-wider">
-                {t('headerTopBar.bannerPrefix')} • {TopBarMessages({ t })[currentMessageIndex].text}
-              </span>
-            </motion.div>
-          </AnimatePresence>
-        </div>
-      </div>
-
-      {/* Main Header */}
-      <header className={`fixed top-8 left-0 right-0 z-40 transition-all duration-300 ${
-        isScrolled ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-white shadow-md'
+      {/* Top bar removed per request */}
+      
+      {/* Main Header - full white background */}
+      <header className={`fixed top-0 left-0 right-0 z-40 bg-white transition-all duration-300 ${
+        isScrolled ? 'shadow-lg' : 'shadow-md'
       }`}>
         <div className="container mx-auto px-4">
-          {/* Compact header with centered logo, hamburger left, actions right */}
-          <div className="relative flex items-center justify-between py-4 md:py-5">
-            {/* Hamburger (all breakpoints) */}
+          {/* Centered logo, hamburger left, actions right */}
+          <div className="relative flex items-center justify-between py-6 md:py-7">
+            {/* Hamburger */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -157,19 +138,19 @@ export function Header() {
             {/* filler */}
             <div className="w-10" />
 
-            {/* Logo - Left side */}
+            {/* Logo */}
             <Link href={localize('/')} className="absolute left-1/2 -translate-x-1/2">
               <Image
                 src="/1753.png"
                 alt="1753 Skincare"
-                width={180}
-                height={60}
-                className="h-16 w-auto md:h-20"
+                width={200}
+                height={70}
+                className="h-20 w-auto md:h-24"
                 priority
               />
             </Link>
 
-            {/* User & Cart - Far right */}
+            {/* User & Cart */}
             <div className="flex items-center gap-2">
               {/* Locale Switcher */}
               <div ref={langRef} className="relative">
@@ -354,8 +335,8 @@ export function Header() {
         </div>
       </header>
 
-      {/* Spacer to prevent content from going under fixed header */}
-      <div className="h-28 md:h-32" />
+      {/* Spacer adjusted for taller header */}
+      <div className="h-36 md:h-40" />
 
       {/* Cart Drawer */}
       <CartDrawer />
@@ -369,7 +350,6 @@ export function Header() {
           }}
         />
       )}
-      {/* Optional overlay when language dropdown is open on mobile to ensure outside click closes it */}
       {isLangOpen && (
         <div
           className="fixed inset-0 z-20 md:hidden"
