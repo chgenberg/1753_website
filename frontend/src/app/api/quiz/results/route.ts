@@ -36,14 +36,15 @@ export async function POST(request: NextRequest) {
           const parsed = safeParseJson(aiResponse || '')
           if (parsed) {
             console.log('AI plan generated successfully (strict JSON)')
-            return NextResponse.json(parsed)
+            const normalized = normalizeResults(parsed)
+            return NextResponse.json(normalized)
           }
           throw new Error('Parsed result was null')
         } catch (parseError) {
           console.log('AI response was not valid JSON, using enhanced fallback. Parse error:', parseError)
           console.log('AI Response was:', aiResponse)
           const fallbackPlan = generateEnhancedFallbackPlan(answers, userInfo)
-          return NextResponse.json(fallbackPlan)
+          return NextResponse.json(normalizeResults(fallbackPlan))
         }
       } catch (error) {
         console.error('OpenAI error:', error)
@@ -57,7 +58,7 @@ export async function POST(request: NextRequest) {
     console.log('Generating enhanced fallback plan...')
     const plan = generateEnhancedFallbackPlan(answers, userInfo)
     console.log('Enhanced fallback plan generated successfully')
-    return NextResponse.json(plan)
+    return NextResponse.json(normalizeResults(plan))
 
   } catch (error) {
     console.error('Quiz results error:', error)
@@ -81,6 +82,76 @@ function safeParseJson(text: string) {
     }
     return null
   }
+}
+
+function toStringValue(val: any): string {
+  if (val == null) return ''
+  if (typeof val === 'string') return val
+  if (Array.isArray(val)) return val.map(toStringValue).join(', ')
+  if (typeof val === 'object') return Object.values(val).map(toStringValue).join(' ')
+  return String(val)
+}
+
+function normalizeResults(input: any) {
+  const r: any = { ...input }
+  r.summary = r.summary || {}
+  r.quickTips = Array.isArray(r.quickTips) ? r.quickTips : []
+  r.products = r.products || {}
+  r.products.morning = r.products.morning || { routine: [], totalTime: '', proTip: '' }
+  r.products.evening = r.products.evening || { routine: [], totalTime: '', proTip: '' }
+
+  // Normalize lifestyle container
+  r.lifestyle = r.lifestyle || {}
+  // If top-level nutrition exists, fold into lifestyle
+  if (r.nutrition && !r.lifestyle.nutrition) r.lifestyle.nutrition = r.nutrition
+  if (r.stress && !r.lifestyle.stress) r.lifestyle.stress = r.stress
+  if (r.movement && !r.lifestyle.movement) r.lifestyle.movement = r.movement
+  if (r.sunExposure && !r.lifestyle.sunExposure) r.lifestyle.sunExposure = r.sunExposure
+
+  // Coerce lifestyle subfields to strings/arrays of strings as UI expects
+  if (r.lifestyle.nutrition) {
+    const n = r.lifestyle.nutrition
+    n.philosophy = toStringValue(n.philosophy)
+    n.guidelines = Array.isArray(n.guidelines) ? n.guidelines.map(toStringValue) : []
+    n.skinFoods = Array.isArray(n.skinFoods) ? n.skinFoods : []
+    n.avoid = Array.isArray(n.avoid) ? n.avoid.map(toStringValue) : []
+  }
+  if (r.lifestyle.sleep) {
+    const s = r.lifestyle.sleep
+    s.current = toStringValue(s.current)
+    s.target = toStringValue(s.target)
+    s.protocol = Array.isArray(s.protocol) ? s.protocol.map(toStringValue) : []
+  }
+  if (r.lifestyle.movement) {
+    const m = r.lifestyle.movement
+    m.principle = toStringValue(m.principle)
+    m.daily = Array.isArray(m.daily) ? m.daily.map(toStringValue) : []
+    m.weekly = Array.isArray(m.weekly) ? m.weekly.map(toStringValue) : []
+  }
+  if (r.lifestyle.stress) {
+    const s = r.lifestyle.stress
+    s.impact = toStringValue(s.impact)
+    if (Array.isArray(s.techniques)) {
+      s.techniques = s.techniques.map((t: any) => ({
+        name: toStringValue(t?.name),
+        how: toStringValue(t?.how),
+        when: toStringValue(t?.when)
+      }))
+    } else {
+      s.techniques = []
+    }
+  }
+  if (r.lifestyle.sunExposure) {
+    const se = r.lifestyle.sunExposure
+    se.philosophy = toStringValue(se.philosophy)
+    se.guidelines = Array.isArray(se.guidelines) ? se.guidelines.map(toStringValue) : []
+    se.benefits = Array.isArray(se.benefits) ? se.benefits.map(toStringValue) : []
+  }
+
+  // Ensure holisticProtocol is an object
+  r.holisticProtocol = r.holisticProtocol || {}
+
+  return r
 }
 
 // Generate holistic prompt for AI
