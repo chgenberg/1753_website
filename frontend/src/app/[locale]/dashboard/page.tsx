@@ -246,10 +246,9 @@ export default function DashboardPage() {
   // naive buy-again suggestion: use latest order if available and featured list to find matches by slug
   const buyAgainItems = (() => {
     const latest = profile?.orders?.[0] as any
-    const items: Array<{ name: string; slug?: string; idGuess?: string }> = latest?.items || []
-    // If backend doesn’t include items yet, fallback: offer featured
-    if (!items?.length) return featured.slice(0,3).map(p => ({ name: p.name, slug: p.slug }))
-    return items.slice(0,3)
+    const items: Array<{ name: string; productId?: string; variantId?: string }> = latest?.items || []
+    if (!items?.length) return featured.slice(0,3).map(p => ({ name: p.name, productId: p.id }))
+    return items.slice(0,5)
   })()
   
   return (
@@ -477,7 +476,7 @@ export default function DashboardPage() {
                         <div className="text-gray-900">{it.name}</div>
                         <button
                           onClick={() => {
-                            const match = featured.find(p => p.slug === it.slug || p.name === it.name)
+                            const match = featured.find(p => p.id === (it as any).productId || p.name === it.name)
                             if (match) addToCart(match as any, 1)
                           }}
                           className="px-3 py-1.5 rounded-full bg-[#4A3428] text-white text-sm"
