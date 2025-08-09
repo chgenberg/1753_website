@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { CartDrawer } from '@/components/cart/CartDrawer'
 import { useCart } from '@/contexts/CartContext'
@@ -23,11 +24,13 @@ const TopBarMessages = ({ t }: { t: (k: string) => string }) => ([
 
 export function Header() {
   const t = useTranslations()
+  const router = useRouter()
   const [isScrolled, setIsScrolled] = useState(false)
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0)
   const [showUserDropdown, setShowUserDropdown] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isLangOpen, setIsLangOpen] = useState(false)
   const pathname = usePathname()
   const { cartCount, openCart } = useCart()
   const { user, logout } = useAuth()
@@ -345,27 +348,35 @@ export function Header() {
             {/* User & Cart - Far right */}
             <div className="flex items-center gap-2">
               {/* Locale Switcher */}
-              <div className="relative">
+              <div className="relative" onMouseLeave={() => setIsLangOpen(false)}>
                 <button
                   className="px-3 py-2 text-sm rounded-lg hover:bg-gray-100 border border-gray-200"
                   aria-haspopup="listbox"
                   aria-label="Byt språk"
+                  aria-expanded={isLangOpen}
+                  onClick={() => setIsLangOpen((o) => !o)}
                 >
                   {pathname.split('/')[1] || 'sv'}
                 </button>
-                <div className="absolute right-0 mt-2 w-32 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
-                  {['sv', 'en', 'es', 'de', 'fr'].map((loc) => (
-                    <Link
-                      key={loc}
-                      href={buildLocaleHref(loc)}
-                      className={`block px-3 py-2 text-sm hover:bg-gray-50 ${pathname.startsWith(`/${loc}`) ? 'text-[#4A3428] font-medium' : 'text-gray-700'}`}
-                      role="option"
-                      aria-selected={pathname.startsWith(`/${loc}`)}
-                    >
-                      {loc.toUpperCase()}
-                    </Link>
-                  ))}
-                </div>
+                {isLangOpen && (
+                  <div className="absolute right-0 mt-2 w-32 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                    {['sv', 'en', 'es', 'de', 'fr'].map((loc) => {
+                      const href = buildLocaleHref(loc)
+                      const isActiveLoc = pathname.startsWith(`/${loc}`)
+                      return (
+                        <button
+                          key={loc}
+                          onClick={() => { setIsLangOpen(false); router.push(href) }}
+                          className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-50 ${isActiveLoc ? 'text-[#4A3428] font-medium' : 'text-gray-700'}`}
+                          role="option"
+                          aria-selected={isActiveLoc}
+                        >
+                          {loc.toUpperCase()}
+                        </button>
+                      )
+                    })}
+                  </div>
+                )}
               </div>
               {/* User Account */}
               <div className="relative">
