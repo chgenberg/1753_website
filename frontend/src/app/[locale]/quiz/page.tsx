@@ -665,15 +665,17 @@ export default function QuizPage() {
                 </div>
               </CloudShape>
 
-              <motion.button
-                onClick={() => setCurrentStep('userInfo')}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="inline-flex items-center gap-3 px-8 py-4 bg-[#4A3428] text-white rounded-full text-lg font-medium hover:bg-[#3A2418] transition-colors shadow-lg"
-              >
-                Börja min hudanalys
-                <ChevronRight className="w-5 h-5" />
-              </motion.button>
+              <div className="mt-6 flex justify-center">
+                <motion.button
+                  onClick={() => setCurrentStep('userInfo')}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="inline-flex items-center gap-3 px-8 py-4 bg-[#4A3428] text-white rounded-full text-lg font-medium hover:bg-[#3A2418] transition-colors shadow-lg"
+                >
+                  Börja min hudanalys
+                  <ChevronRight className="w-5 h-5" />
+                </motion.button>
+              </div>
 
               <div className="mt-8 flex items-center justify-center gap-8 text-sm text-gray-500">
                 <span className="flex items-center gap-2">
