@@ -42,11 +42,13 @@ export default function BlogContent({ posts }: BlogContentProps) {
     'Kapitel 61.png', 'Kapitel 62.png', 'Kapitel 63.png', 'Kapitel 64.png'
   ]
 
-  // Function to get fallback image for a post when no explicit image found
-  const getFallbackImage = (slug: string, index: number) => {
-    const spacing = Math.max(3, Math.floor(portraitImages.length / 8))
-    const imageIndex = (index * spacing) % portraitImages.length
-    return `/Bilder_kvinnor%20boken_2025/${portraitImages[imageIndex]}`
+  // Hash helper to distribute images per slug
+  const slugHash = (slug: string) => {
+    let h = 0
+    for (let i = 0; i < slug.length; i++) {
+      h = (h * 31 + slug.charCodeAt(i)) >>> 0
+    }
+    return h
   }
 
   // Extract unique categories and tags
@@ -77,6 +79,27 @@ export default function BlogContent({ posts }: BlogContentProps) {
       return matchesSearch && matchesCategory && matchesTag
     })
   }, [safePosts, searchQuery, selectedCategory, selectedTag])
+
+  // Pre-assign image per filtered post to avoid adjacent duplicates
+  const assignedImages = useMemo(() => {
+    let lastIdx = -1
+    return filteredPosts.map((post, index) => {
+      const explicit = (post as BlogPostWithImages).image
+      if (explicit) return explicit
+      const base = (slugHash(post.slug) + index * 13) % portraitImages.length
+      let imgIdx = base
+      if (imgIdx === lastIdx) imgIdx = (imgIdx + 7) % portraitImages.length
+      lastIdx = imgIdx
+      return `/Bilder_kvinnor%20boken_2025/${portraitImages[imgIdx]}`
+    })
+  }, [filteredPosts])
+
+  // Function to get fallback image for a post when no explicit image found
+  const getFallbackImage = (slug: string, index: number) => {
+    const spacing = Math.max(3, Math.floor(portraitImages.length / 8))
+    const imageIndex = (index * spacing) % portraitImages.length
+    return `/Bilder_kvinnor%20boken_2025/${portraitImages[imageIndex]}`
+  }
 
   return (
     <main className="pt-20 pb-20">
@@ -231,7 +254,7 @@ export default function BlogContent({ posts }: BlogContentProps) {
                     <div className="relative aspect-[3/4] bg-gradient-to-b from-gray-50 to-gray-100 overflow-hidden">
                       <div className="w-full h-full flex items-center justify-center">
                         <Image
-                          src={(post as BlogPostWithImages).image || getFallbackImage(post.slug, index)}
+                          src={assignedImages[index]}
                           alt={post.title}
                           fill
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
