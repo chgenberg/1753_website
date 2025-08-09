@@ -35,6 +35,7 @@ export function Header() {
   const { cartCount, openCart } = useCart()
   const { user, logout } = useAuth()
   const langRef = useRef<HTMLDivElement | null>(null)
+  const menuRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -61,7 +62,9 @@ export function Header() {
         setIsLangOpen(false)
       }
     }
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setIsLangOpen(false) }
+    const onKey = (e: KeyboardEvent) => { 
+      if (e.key === 'Escape') { setIsLangOpen(false); setIsMobileMenuOpen(false) }
+    }
     document.addEventListener('mousedown', onDocClick)
     window.addEventListener('keydown', onKey)
     return () => { document.removeEventListener('mousedown', onDocClick); window.removeEventListener('keydown', onKey) }
@@ -71,6 +74,7 @@ export function Header() {
     // When route changes, make sure all menus close
     setIsLangOpen(false)
     setActiveDropdown(null)
+    setIsMobileMenuOpen(false)
   }, [pathname])
 
   const handleLogout = async () => {
@@ -135,13 +139,13 @@ export function Header() {
         isScrolled ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-white shadow-md'
       }`}>
         <div className="container mx-auto px-4">
-          {/* Compact header with navigation, logo, and user/cart on same line */}
-          <div className="flex items-center justify-between py-3">
-            {/* Mobile menu button */}
+          {/* Compact header with centered logo, hamburger left, actions right */}
+          <div className="relative flex items-center justify-between py-3">
+            {/* Hamburger (all breakpoints) */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              aria-label="Toggle menu"
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              aria-label="Öppna meny"
             >
               {isMobileMenuOpen ? (
                 <X className="w-6 h-6" />
@@ -150,222 +154,11 @@ export function Header() {
               )}
             </button>
 
-            {/* Desktop Navigation - Center */}
-            <nav className="hidden md:block mx-auto">
-              <ul className="flex items-center gap-6">
-                {/* Hem */}
-                <li>
-                  <Link
-                    href={localize('/')}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all text-sm ${
-                      isActive('/') 
-                        ? 'bg-[#4A3428] text-white' 
-                        : 'hover:bg-gray-100 text-gray-700'
-                    }`}
-                  >
-                    <Home className="w-4 h-4" />
-                    <span className="font-medium">{t('navigation.home')}</span>
-                  </Link>
-                </li>
-
-                {/* Produkter */}
-                <li>
-                  <Link
-                    href={localize('/products')}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all text-sm ${
-                      isActive('/products') 
-                        ? 'bg-[#4A3428] text-white' 
-                        : 'hover:bg-gray-100 text-gray-700'
-                    }`}
-                  >
-                    <Package className="w-4 h-4" />
-                    <span className="font-medium">{t('navigation.products')}</span>
-                  </Link>
-                </li>
-
-                {/* Om oss - with dropdown */}
-                <li className="relative">
-                  <button
-                    onMouseEnter={() => setActiveDropdown('om-oss')}
-                    onMouseLeave={() => setActiveDropdown(null)}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all text-sm ${
-                      isActive('/om-oss') 
-                        ? 'bg-[#4A3428] text-white' 
-                        : 'hover:bg-gray-100 text-gray-700'
-                    }`}
-                    aria-haspopup="menu"
-                    aria-expanded={activeDropdown === 'om-oss'}
-                    aria-controls="menu-om-oss"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault()
-                        setActiveDropdown(prev => prev === 'om-oss' ? null : 'om-oss')
-                      }
-                      if (e.key === 'Escape') setActiveDropdown(null)
-                      if (e.key === 'ArrowDown') setActiveDropdown('om-oss')
-                    }}
-                  >
-                    <Info className="w-4 h-4" />
-                    <span className="font-medium">{t('navigation.about')}</span>
-                    <ChevronDown className="w-3 h-3" />
-                  </button>
-
-                  {/* Dropdown */}
-                  <AnimatePresence>
-                    {activeDropdown === 'om-oss' && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        onMouseEnter={() => setActiveDropdown('om-oss')}
-                        onMouseLeave={() => setActiveDropdown(null)}
-                        className="absolute top-full left-0 mt-1 w-64 bg-white rounded-lg shadow-lg py-2 border border-gray-200"
-                        id="menu-om-oss"
-                        role="menu"
-                        aria-labelledby="menu-om-oss"
-                        onKeyDown={(e) => { if (e.key === 'Escape') setActiveDropdown(null) }}
-                      >
-                        <Link
-                          href={localize('/om-oss')}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          role="menuitem"
-                          tabIndex={0}
-                        >
-                          {t('navigation.about')}
-                        </Link>
-                        {isSv && (
-                          <Link
-                            href={localize('/om-oss/aterforsaljare')}
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                            role="menuitem"
-                            tabIndex={0}
-                          >
-                            Återförsäljare
-                          </Link>
-                        )}
-                        <Link
-                          href={localize('/om-oss/faq')}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          role="menuitem"
-                          tabIndex={0}
-                        >
-                          Q&A
-                        </Link>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </li>
-
-                {/* Kunskap - with dropdown */}
-                <li className="relative">
-                  <button
-                    onMouseEnter={() => setActiveDropdown('kunskap')}
-                    onMouseLeave={() => setActiveDropdown(null)}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all text-sm ${
-                      isActive('/kunskap') || isActive('/quiz') || isActive('/blogg')
-                        ? 'bg-[#4A3428] text-white'
-                        : 'hover:bg-gray-100 text-gray-700'
-                    }`}
-                    aria-haspopup="menu"
-                    aria-expanded={activeDropdown === 'kunskap'}
-                    aria-controls="menu-kunskap"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault()
-                        setActiveDropdown(prev => prev === 'kunskap' ? null : 'kunskap')
-                      }
-                      if (e.key === 'Escape') setActiveDropdown(null)
-                      if (e.key === 'ArrowDown') setActiveDropdown('kunskap')
-                    }}
-                  >
-                    <BookOpen className="w-4 h-4" />
-                    <span className="font-medium">{t('navigation.knowledge')}</span>
-                    <ChevronDown className="w-3 h-3" />
-                  </button>
-
-                  {/* Dropdown */}
-                  <AnimatePresence>
-                    {activeDropdown === 'kunskap' && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        onMouseEnter={() => setActiveDropdown('kunskap')}
-                        onMouseLeave={() => setActiveDropdown(null)}
-                        className="absolute top-full left-0 mt-1 w-64 bg-white rounded-lg shadow-lg py-2 border border-gray-200"
-                        id="menu-kunskap"
-                        role="menu"
-                        aria-labelledby="menu-kunskap"
-                        onKeyDown={(e) => { if (e.key === 'Escape') setActiveDropdown(null) }}
-                      >
-                        <Link
-                          href={localize('/blogg')}
-                          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          role="menuitem"
-                          tabIndex={0}
-                        >
-                          {t('navigation.blog')}
-                          <PenTool className="w-4 h-4" />
-                        </Link>
-                        <Link
-                          href={localize('/kunskap/e-bok')}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          role="menuitem"
-                          tabIndex={0}
-                        >
-                          E-bok: Weed Your Skin
-                        </Link>
-                        <Link
-                          href={localize('/quiz')}
-                          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          role="menuitem"
-                          tabIndex={0}
-                        >
-                          {t('Quiz.title')}
-                          <Sparkles className="w-4 h-4 text-amber-600" />
-                        </Link>
-                        <Link
-                          href={localize('/om-oss/ingredienser')}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          role="menuitem"
-                          tabIndex={0}
-                        >
-                          Våra ingredienser
-                        </Link>
-                        <Link
-                          href={localize('/kunskap/funktionella-ravaror')}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          role="menuitem"
-                          tabIndex={0}
-                        >
-                          Funktionella råvaror
-                        </Link>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </li>
-
-
-
-                {/* Kontakt */}
-                <li>
-                  <Link
-                    href={localize('/kontakt')}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all text-sm ${
-                      isActive('/kontakt') 
-                        ? 'bg-[#4A3428] text-white' 
-                        : 'hover:bg-gray-100 text-gray-700'
-                    }`}
-                  >
-                    <Phone className="w-4 h-4" />
-                    <span className="font-medium">{t('navigation.contact')}</span>
-                  </Link>
-                </li>
-              </ul>
-            </nav>
+            {/* filler */}
+            <div className="w-10" />
 
             {/* Logo - Left side */}
-            <Link href={localize('/')} className="order-first mr-auto">
+            <Link href={localize('/')} className="absolute left-1/2 -translate-x-1/2">
               <Image
                 src="/1753.png"
                 alt="1753 Skincare"
@@ -484,143 +277,66 @@ export function Header() {
             </div>
           </div>
 
-          {/* Mobile Navigation Menu */}
+          {/* Fullscreen Overlay Menu (all breakpoints) */}
           <AnimatePresence>
             {isMobileMenuOpen && (
-              <motion.nav
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                className="md:hidden border-t border-gray-100 overflow-hidden"
+              <motion.div
+                ref={menuRef}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[60] bg-white/95 backdrop-blur-md"
+                role="dialog"
+                aria-modal
               >
-                <ul className="py-4 space-y-2">
-                  <li>
-                    <Link
-                      href={localize('/')}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className={`flex items-center gap-2 px-4 py-3 rounded-lg transition-all ${
-                        isActive('/') 
-                          ? 'bg-[#4A3428] text-white' 
-                          : 'hover:bg-gray-100 text-gray-700'
-                      }`}
-                    >
-                      <Home className="w-4 h-4" />
-                      <span className="font-medium">{t('navigation.home')}</span>
+                <div className="container mx-auto px-4 py-6 h-full flex flex-col">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-500">Meny</span>
+                    <button aria-label="Stäng meny" onClick={() => setIsMobileMenuOpen(false)} className="p-2 rounded hover:bg-gray-100">
+                      <X className="w-6 h-6" />
+                    </button>
+                  </div>
+                  <div className="mt-8 grid gap-3 max-w-2xl mx-auto w-full">
+                    <Link href={localize('/')} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-5 py-4 rounded-xl border hover:border-[#4A3428] hover:bg-[#4A3428]/5 transition-colors">
+                      <span className="flex items-center gap-3 text-lg"><Home className="w-5 h-5" />{t('navigation.home')}</span>
+                      <ChevronDown className="w-4 h-4 rotate-[-90deg]" />
                     </Link>
-                  </li>
-
-                  <li>
-                    <Link
-                      href={localize('/products')}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className={`flex items-center gap-2 px-4 py-3 rounded-lg transition-all ${
-                        isActive('/products') 
-                          ? 'bg-[#4A3428] text-white' 
-                          : 'hover:bg-gray-100 text-gray-700'
-                      }`}
-                    >
-                      <Package className="w-4 h-4" />
-                      <span className="font-medium">{t('navigation.products')}</span>
+                    <Link href={localize('/products')} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-5 py-4 rounded-xl border hover:border-[#4A3428] hover:bg-[#4A3428]/5 transition-colors">
+                      <span className="flex items-center gap-3 text-lg"><Package className="w-5 h-5" />{t('navigation.products')}</span>
+                      <ChevronDown className="w-4 h-4 rotate-[-90deg]" />
                     </Link>
-                  </li>
-
-                  <li>
-                    <div className="px-4 py-2">
-                      <p className="text-sm font-semibold text-gray-600 mb-2">{t('navigation.about')}</p>
-                      <div className="space-y-1 ml-4">
-                        <Link
-                          href={localize('/om-oss')}
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
-                        >
-                          Vilka är vi?
-                        </Link>
-                        <Link
-                          href={localize('/om-oss/faq')}
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
-                        >
-                          Q&A
-                        </Link>
+                    <div className="px-5 py-4 rounded-xl border">
+                      <div className="flex items-center justify-between">
+                        <span className="flex items-center gap-3 text-lg"><Info className="w-5 h-5" />{t('navigation.about')}</span>
+                      </div>
+                      <div className="mt-3 grid gap-2 pl-8 text-gray-700">
+                        <Link href={localize('/om-oss')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#4A3428]">{t('navigation.about')}</Link>
                         {isSv && (
-                          <Link
-                            href={localize('/om-oss/aterforsaljare')}
-                            onClick={() => setIsMobileMenuOpen(false)}
-                            className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
-                          >
-                            Återförsäljare
-                          </Link>
+                          <Link href={localize('/om-oss/aterforsaljare')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#4A3428]">Återförsäljare</Link>
                         )}
-                        <Link
-                          href={localize('/recensioner')}
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
-                        >
-                          Recensioner
-                        </Link>
+                        <Link href={localize('/om-oss/faq')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#4A3428]">Q&A</Link>
                       </div>
                     </div>
-                  </li>
-
-                  <li>
-                    <div className="px-4 py-2">
-                      <p className="text-sm font-semibold text-gray-600 mb-2">{t('navigation.knowledge')}</p>
-                      <div className="space-y-1 ml-4">
-                        <Link
-                          href={localize('/blogg')}
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
-                        >
-                          {t('navigation.blog')}
-                        </Link>
-                        <Link
-                          href={localize('/kunskap/e-bok')}
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
-                        >
-                          E-bok: Weed Your Skin
-                        </Link>
-                        <Link
-                          href={localize('/quiz')}
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
-                        >
-                          {t('Quiz.title')}
-                        </Link>
-                        <Link
-                          href={localize('/om-oss/ingredienser')}
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
-                        >
-                          Våra ingredienser
-                        </Link>
-                        <Link
-                          href={localize('/kunskap/funktionella-ravaror')}
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
-                        >
-                          Funktionella råvaror
-                        </Link>
+                    <div className="px-5 py-4 rounded-xl border">
+                      <div className="flex items-center justify-between">
+                        <span className="flex items-center gap-3 text-lg"><BookOpen className="w-5 h-5" />{t('navigation.knowledge')}</span>
+                      </div>
+                      <div className="mt-3 grid gap-2 pl-8 text-gray-700">
+                        <Link href={localize('/blogg')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#4A3428]">{t('navigation.blog')}</Link>
+                        <Link href={localize('/kunskap/e-bok')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#4A3428]">E-bok: Weed Your Skin</Link>
+                        <Link href={localize('/quiz')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#4A3428]">{t('Quiz.title')}</Link>
+                        <Link href={localize('/om-oss/ingredienser')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#4A3428]">Våra ingredienser</Link>
+                        <Link href={localize('/kunskap/funktionella-ravaror')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#4A3428]">Funktionella råvaror</Link>
                       </div>
                     </div>
-                  </li>
-
-                  <li>
-                    <Link
-                      href={localize('/kontakt')}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className={`flex items-center gap-2 px-4 py-3 rounded-lg transition-all ${
-                        isActive('/kontakt') 
-                          ? 'bg-[#4A3428] text-white' 
-                          : 'hover:bg-gray-100 text-gray-700'
-                      }`}
-                    >
-                      <Phone className="w-4 h-4" />
-                      <span className="font-medium">{t('navigation.contact')}</span>
+                    <Link href={localize('/kontakt')} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-5 py-4 rounded-xl border hover:border-[#4A3428] hover:bg-[#4A3428]/5 transition-colors">
+                      <span className="flex items-center gap-3 text-lg"><Phone className="w-5 h-5" />{t('navigation.contact')}</span>
+                      <ChevronDown className="w-4 h-4 rotate-[-90deg]" />
                     </Link>
-                  </li>
-                </ul>
-              </motion.nav>
+                  </div>
+                  <div className="mt-auto text-center text-xs text-gray-500 py-4">© 1753 Skincare</div>
+                </div>
+              </motion.div>
             )}
           </AnimatePresence>
         </div>
