@@ -7,6 +7,8 @@ export async function POST(request: NextRequest) {
     console.log('Quiz API called with userInfo:', userInfo)
     console.log('OpenAI API Key available:', !!process.env.OPENAI_API_KEY)
 
+    const model = process.env.OPENAI_MODEL || 'gpt-4o-mini' // Set to 'gpt-5' when available
+
     // Always generate comprehensive plan with OpenAI
     if (process.env.OPENAI_API_KEY) {
       try {
@@ -18,25 +20,28 @@ export async function POST(request: NextRequest) {
 
         const holisticPrompt = generateHolisticPrompt(answers, userInfo)
         
-        console.log('Making OpenAI request...')
+        console.log('Making OpenAI request with model:', model)
         const completion = await openai.chat.completions.create({
-          model: "gpt-4o-mini", // Using GPT-4o-mini for better results at lower cost
+          model,
           messages: [{ role: "user", content: holisticPrompt }],
           temperature: 0.8,
-          max_tokens: 4000, // Increased for comprehensive responses
+          max_tokens: 4000,
+          response_format: { type: 'json_object' }
         })
 
         console.log('OpenAI request completed')
         const aiResponse = completion.choices[0]?.message?.content
         
         try {
-          const parsed = JSON.parse(aiResponse || '{}')
-          console.log('AI plan generated successfully')
-          return NextResponse.json(parsed)
+          const parsed = safeParseJson(aiResponse || '')
+          if (parsed) {
+            console.log('AI plan generated successfully (strict JSON)')
+            return NextResponse.json(parsed)
+          }
+          throw new Error('Parsed result was null')
         } catch (parseError) {
           console.log('AI response was not valid JSON, using enhanced fallback. Parse error:', parseError)
           console.log('AI Response was:', aiResponse)
-          // Use enhanced fallback if parsing fails
           const fallbackPlan = generateEnhancedFallbackPlan(answers, userInfo)
           return NextResponse.json(fallbackPlan)
         }
@@ -62,6 +67,19 @@ export async function POST(request: NextRequest) {
       fallback: true,
       details: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 })
+  }
+}
+
+function safeParseJson(text: string) {
+  try {
+    return JSON.parse(text)
+  } catch {
+    // Try to extract first JSON object/array block
+    const match = text.match(/[\{\[][\s\S]*[\}\]]/)
+    if (match) {
+      try { return JSON.parse(match[0]) } catch {}
+    }
+    return null
   }
 }
 

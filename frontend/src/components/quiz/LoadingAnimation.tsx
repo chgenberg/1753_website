@@ -72,6 +72,10 @@ export function LoadingAnimation({ progress }: LoadingAnimationProps) {
   const [currentPhase, setCurrentPhase] = useState(0)
   const [showPulse, setShowPulse] = useState(true)
 
+  // Assume ~45s total duration to estimate remaining time
+  const totalSeconds = 45
+  const secondsRemaining = Math.max(0, Math.ceil(((100 - progress) / 100) * totalSeconds))
+
   useEffect(() => {
     const phase = loadingPhases.findIndex(
       p => progress >= p.startProgress && progress < p.endProgress
@@ -112,7 +116,7 @@ export function LoadingAnimation({ progress }: LoadingAnimationProps) {
         ))}
       </div>
 
-      <div className="text-center relative z-10 max-w-lg mx-auto px-6">
+      <div className="text-center relative z-10 max-w-2xl mx-auto px-6">
         {/* Animated Icon Container */}
         <div className="relative mb-12">
           <motion.div
@@ -217,88 +221,92 @@ export function LoadingAnimation({ progress }: LoadingAnimationProps) {
             <h2 className="text-3xl md:text-4xl font-light text-gray-900 mb-3">
               {activePhase.title}
             </h2>
-            <p className="text-lg text-gray-600 mb-8">
+            <p className="text-lg text-gray-600 mb-2">
               {activePhase.message}
             </p>
+            <p className="text-sm text-gray-500">≈ {secondsRemaining} sekunder kvar</p>
           </motion.div>
         </AnimatePresence>
 
         {/* Progress Section */}
-        <div className="max-w-md mx-auto">
-          {/* Percentage */}
-          <motion.div 
-            className="text-6xl font-light text-[#8B6B47] mb-6"
-            key={Math.floor(progress)}
-            initial={{ scale: 1.2, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            {Math.round(progress)}%
-          </motion.div>
-          
-          {/* Progress Bar Container */}
-          <div className="relative">
-            {/* Background */}
-            <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
-              {/* Main Progress */}
-              <motion.div
-                className="h-full bg-gradient-to-r from-[#8B6B47] to-[#6B5337] rounded-full relative"
-                style={{ width: `${progress}%` }}
-                transition={{ duration: 0.5, ease: "easeOut" }}
-              >
-                {/* Shimmer effect */}
+        <div className="max-w-2xl mx-auto mt-6 grid md:grid-cols-3 gap-8 items-start">
+          {/* Percentage and Bar */}
+          <div className="md:col-span-2">
+            <motion.div 
+              className="text-6xl font-light text-[#8B6B47] mb-6"
+              key={Math.floor(progress)}
+              initial={{ scale: 1.2, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              {Math.round(progress)}%
+            </motion.div>
+            <div className="relative">
+              <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                  animate={{
-                    x: ['-100%', '200%']
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "linear"
-                  }}
-                />
-              </motion.div>
-            </div>
-            
-            {/* Phase indicators */}
-            <div className="absolute inset-0 flex justify-between items-center px-1">
-              {loadingPhases.map((phase, index) => (
-                <motion.div
-                  key={index}
-                  className={`w-2 h-2 rounded-full ${
-                    progress >= phase.startProgress ? 'bg-[#8B6B47]' : 'bg-gray-300'
-                  }`}
-                  initial={{ scale: 0 }}
-                  animate={{ 
-                    scale: progress >= phase.startProgress ? [1, 1.3, 1] : 0.8
-                  }}
-                  transition={{ 
-                    duration: 0.5,
-                    delay: progress >= phase.startProgress ? 0 : 0.1 * index
-                  }}
-                />
-              ))}
+                  className="h-full bg-gradient-to-r from-[#8B6B47] to-[#6B5337] rounded-full relative"
+                  style={{ width: `${progress}%` }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
+                >
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                    animate={{ x: ['-100%', '200%'] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                  />
+                </motion.div>
+              </div>
+              <div className="absolute inset-0 flex justify-between items-center px-1">
+                {loadingPhases.map((phase, index) => (
+                  <motion.div
+                    key={index}
+                    className={`w-2 h-2 rounded-full ${
+                      progress >= phase.endProgress ? 'bg-[#8B6B47]' : 'bg-gray-300'
+                    }`}
+                    initial={{ scale: 0 }}
+                    animate={{ scale: progress >= phase.startProgress ? [1, 1.3, 1] : 0.8 }}
+                    transition={{ duration: 0.5, delay: 0.05 * index }}
+                  />
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* Fun facts that rotate */}
-          <AnimatePresence mode="wait">
-            <motion.p 
-              key={Math.floor(progress / 20)}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="text-sm text-gray-500 mt-8"
-            >
-              {progress < 20 && "💚 Visste du att CBD kan hjälpa till att balansera hudens naturliga oljor?"}
-              {progress >= 20 && progress < 40 && "🌿 1753 använder endast naturliga, ekologiska ingredienser"}
-              {progress >= 40 && progress < 60 && "✨ Din hudvårdsrutin anpassas efter din unika hudprofil"}
-              {progress >= 60 && progress < 80 && "🔬 Våra formler är baserade på den senaste forskningen"}
-              {progress >= 80 && "🎯 Nästan klart! Din personliga plan förbereds..."}
-            </motion.p>
-          </AnimatePresence>
+          {/* Live checklist */}
+          <div className="bg-white/70 backdrop-blur-sm rounded-xl p-4 text-left shadow-sm">
+            <h4 className="text-sm font-medium text-gray-700 mb-2">Analyssteg</h4>
+            <ul className="space-y-2">
+              {loadingPhases.map((phase, idx) => {
+                const done = progress >= phase.endProgress
+                const active = !done && progress >= phase.startProgress
+                return (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <span className={`w-5 h-5 rounded-full flex items-center justify-center ${done ? 'bg-green-100 text-green-700' : active ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-500'}`}>
+                      {done ? '✓' : active ? '•' : ''}
+                    </span>
+                    <span className={`${done ? 'line-through text-gray-400' : active ? 'text-gray-800' : 'text-gray-500'}`}>{phase.title}</span>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
         </div>
+
+        {/* Fun facts that rotate */}
+        <AnimatePresence mode="wait">
+          <motion.p 
+            key={Math.floor(progress / 20)}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="text-sm text-gray-500 mt-8"
+          >
+            {progress < 20 && "💚 Visste du att CBD kan hjälpa till att balansera hudens naturliga oljor?"}
+            {progress >= 20 && progress < 40 && "🌿 1753 använder endast naturliga, ekologiska ingredienser"}
+            {progress >= 40 && progress < 60 && "✨ Din hudvårdsrutin anpassas efter din unika hudprofil"}
+            {progress >= 60 && progress < 80 && "🔬 Våra formler är baserade på den senaste forskningen"}
+            {progress >= 80 && "🎯 Nästan klart! Din personliga plan förbereds..."}
+          </motion.p>
+        </AnimatePresence>
 
         {/* Company branding */}
         <motion.div 

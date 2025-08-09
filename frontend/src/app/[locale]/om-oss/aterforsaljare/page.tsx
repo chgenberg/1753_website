@@ -502,6 +502,143 @@ const retailers: Retailer[] = [
   }
 ]
 
+// Simple lat/lon mapping for Swedish cities used on this page
+const CITY_COORDS: Record<string, { lat: number; lon: number }> = {
+  'Alingsås': { lat: 57.93, lon: 12.53 },
+  'Almunge': { lat: 59.90, lon: 18.07 },
+  'Avesta': { lat: 60.15, lon: 16.17 },
+  'Borgholm': { lat: 56.88, lon: 16.65 },
+  'Borås': { lat: 57.72, lon: 12.94 },
+  'Bromma': { lat: 59.34, lon: 17.94 },
+  'Deje': { lat: 59.60, lon: 13.47 },
+  'Edsbruk': { lat: 57.98, lon: 16.56 },
+  'Enköping': { lat: 59.64, lon: 17.08 },
+  'Eskilstuna': { lat: 59.37, lon: 16.51 },
+  'Farsta': { lat: 59.24, lon: 18.09 },
+  'Gislaved': { lat: 57.30, lon: 13.54 },
+  'Gräsmark': { lat: 59.77, lon: 13.14 },
+  'Gråbo': { lat: 57.84, lon: 12.30 },
+  'Halmstad': { lat: 56.67, lon: 12.86 },
+  'Hudiksvall': { lat: 61.73, lon: 17.10 },
+  'Hörby': { lat: 55.85, lon: 13.66 },
+  'Jönköping': { lat: 57.78, lon: 14.16 },
+  'Karlskrona': { lat: 56.16, lon: 15.59 },
+  'Karlstad': { lat: 59.38, lon: 13.50 },
+  'Leksand': { lat: 60.73, lon: 14.99 },
+  'Lidköping': { lat: 58.50, lon: 13.16 },
+  'Ljungskile': { lat: 58.22, lon: 11.92 },
+  'Ljusdal': { lat: 61.83, lon: 16.09 },
+  'Motala': { lat: 58.54, lon: 15.04 },
+  'Mölndal': { lat: 57.66, lon: 12.01 },
+  'Mölnlycke': { lat: 57.66, lon: 12.11 },
+  'Norrtälje': { lat: 59.76, lon: 18.70 },
+  'Nyköping': { lat: 58.75, lon: 17.01 },
+  'Partille': { lat: 57.74, lon: 12.11 },
+  'Piteå': { lat: 65.32, lon: 21.48 },
+  'Sandviken': { lat: 60.62, lon: 16.78 },
+  'Stenungsund': { lat: 58.07, lon: 11.82 },
+  'Stockholm': { lat: 59.33, lon: 18.06 },
+  'Storuman': { lat: 65.10, lon: 17.12 },
+  'Strängnäs': { lat: 59.38, lon: 17.03 },
+  'Sundbyberg': { lat: 59.36, lon: 17.97 },
+  'Tjörnarp': { lat: 55.97, lon: 13.60 },
+  'Tullinge': { lat: 59.20, lon: 17.90 },
+  'Tyresö': { lat: 59.24, lon: 18.23 },
+  'Uddevalla': { lat: 58.35, lon: 11.93 },
+  'Vadstena': { lat: 58.45, lon: 14.89 },
+  'Vallentuna': { lat: 59.53, lon: 18.08 },
+  'Vimmerby': { lat: 57.67, lon: 15.86 },
+  'Visby': { lat: 57.63, lon: 18.30 },
+  'Västerås': { lat: 59.61, lon: 16.55 },
+  'Växjö': { lat: 56.88, lon: 14.81 },
+  'Ystad': { lat: 55.43, lon: 13.82 },
+  'Älmhult': { lat: 56.55, lon: 14.13 },
+  'Örebro': { lat: 59.27, lon: 15.21 },
+  'Brommaplan 403, 2tr': { lat: 59.34, lon: 17.94 }, // treat as Bromma
+  'Saltsjöqvarn': { lat: 59.31, lon: 18.12 },
+}
+
+function projectSweden(lat: number, lon: number): { x: number; y: number } {
+  // Simple equirectangular projection within Sweden bounds
+  const minLat = 55, maxLat = 69
+  const minLon = 11, maxLon = 24
+  const x = ((lon - minLon) / (maxLon - minLon)) * 100
+  const y = (1 - (lat - minLat) / (maxLat - minLat)) * 100
+  return { x, y }
+}
+
+function SwedenMap({ items }: { items: Retailer[] }) {
+  // Aggregate retailers by city
+  const points = useMemo(() => {
+    const map = new Map<string, { city: string; lat: number; lon: number; retailers: Retailer[] }>()
+    items.forEach(r => {
+      const key = r.city || r.address
+      const coords = CITY_COORDS[key] || CITY_COORDS[r.city] || CITY_COORDS[r.address]
+      if (!coords) return
+      const existing = map.get(key)
+      if (existing) {
+        existing.retailers.push(r)
+      } else {
+        map.set(key, { city: key, lat: coords.lat, lon: coords.lon, retailers: [r] })
+      }
+    })
+    return Array.from(map.values())
+  }, [items])
+
+  return (
+    <section className="bg-white py-8">
+      <div className="container mx-auto px-4">
+        <div className="mb-4">
+          <h2 className="text-2xl font-semibold text-gray-900">Återförsäljare på kartan</h2>
+          <p className="text-gray-600">Klicka på en pin för att se återförsäljare i området.</p>
+        </div>
+        <div className="relative w-full h-[520px] bg-gradient-to-br from-[#F5F3F0] to-white rounded-2xl shadow-inner overflow-hidden border border-gray-200">
+          {/* Stylized Sweden silhouette (approximate) */}
+          <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" className="absolute inset-0 w-full h-full">
+            <defs>
+              <linearGradient id="swedenFill" x1="0" x2="1">
+                <stop offset="0%" stopColor="#eae6df" />
+                <stop offset="100%" stopColor="#f7f5f1" />
+              </linearGradient>
+            </defs>
+            {/* Simple abstract path approximating Sweden shape to give context without external assets */}
+            <path d="M62,5 L58,9 L60,14 L57,18 L58,23 L55,28 L57,31 L54,35 L55,40 L52,44 L53,48 L50,53 L50,58 L48,62 L50,66 L48,70 L50,74 L47,79 L49,84 L46,89 L47,94 L44,97 L47,99 L53,95 L57,90 L60,84 L62,78 L64,72 L65,66 L66,60 L66,54 L66,48 L65,42 L64,36 L63,30 L63,24 L63,18 L63,12 L62,5 Z" fill="url(#swedenFill)" opacity="0.6" />
+            {/* Coastline/glow */}
+            <path d="M62,5 L58,9 L60,14 L57,18 L58,23 L55,28 L57,31 L54,35 L55,40 L52,44 L53,48 L50,53 L50,58 L48,62 L50,66 L48,70 L50,74 L47,79 L49,84 L46,89 L47,94 L44,97 L47,99 L53,95 L57,90 L60,84 L62,78 L64,72 L65,66 L66,60 L66,54 L66,48 L65,42 L64,36 L63,30 L63,24 L63,18 L63,12 L62,5 Z" fill="none" stroke="#d4c9ba" strokeWidth="0.6" />
+
+            {/* Pins */}
+            {points.map((p, idx) => {
+              const { x, y } = projectSweden(p.lat, p.lon)
+              return (
+                <g key={idx} transform={`translate(${x}, ${y})`}>
+                  <circle r={2.0 + Math.min(3, p.retailers.length * 0.4)} fill="#4A3428" opacity="0.9" />
+                  {/* Halo */}
+                  <circle r={4.5} fill="#4A3428" opacity="0.08" />
+                  {/* Label */}
+                  <text x={4.5} y={-4} fontSize={3} fill="#4A3428" opacity="0.9">{p.city}</text>
+                </g>
+              )
+            })}
+          </svg>
+
+          {/* Tooltip list (top-right) */}
+          <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-sm rounded-xl shadow p-3 max-w-xs max-h-64 overflow-auto border border-gray-200">
+            <div className="text-sm font-medium text-gray-800 mb-2">Områden</div>
+            <ul className="space-y-1 text-sm">
+              {points.map((p, i) => (
+                <li key={i} className="flex items-center justify-between gap-2">
+                  <span className="truncate">{p.city}</span>
+                  <span className="px-2 py-0.5 text-xs rounded-full bg-[#4A3428]/10 text-[#4A3428]">{p.retailers.length}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 export default function RetailersPage() {
   const [searchTerm, setSearchTerm] = useState('')
 
@@ -532,6 +669,8 @@ export default function RetailersPage() {
     return result
   }, [searchTerm])
 
+  const allRetailers = useMemo(() => Object.values(retailersByCity).flat(), [retailersByCity])
+
   const formatWebsite = (website: string) => {
     if (website === 'Hemsida') return null
     if (website.includes('@')) return `mailto:${website}`
@@ -543,6 +682,9 @@ export default function RetailersPage() {
     <>
       <Header />
       <main className="pt-20">
+        {/* Map Section */}
+        <SwedenMap items={allRetailers.length ? allRetailers : retailers} />
+        
         {/* Hero Section */}
         <section className="relative bg-gradient-to-br from-[#F5F3F0] to-[#F5F3F0] py-20">
           <div className="container mx-auto px-4 text-center">
