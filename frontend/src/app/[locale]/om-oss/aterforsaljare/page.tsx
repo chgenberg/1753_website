@@ -5,6 +5,9 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { MapPin, Phone, Globe, Search } from 'lucide-react'
 import { useState, useMemo } from 'react'
+import dynamic from 'next/dynamic'
+import type { CityPoint } from '@/components/maps/RetailersLeafletMap'
+const RetailersLeafletMap: any = dynamic(() => import('@/components/maps/RetailersLeafletMap'), { ssr: false })
 
 interface Retailer {
   name: string
@@ -568,8 +571,7 @@ function projectSweden(lat: number, lon: number): { x: number; y: number } {
 }
 
 function SwedenMap({ items }: { items: Retailer[] }) {
-  // Aggregate retailers by city
-  const points = useMemo(() => {
+  const points: CityPoint[] = useMemo(() => {
     const map = new Map<string, { city: string; lat: number; lon: number; retailers: Retailer[] }>()
     items.forEach(r => {
       const key = r.city || r.address
@@ -582,7 +584,7 @@ function SwedenMap({ items }: { items: Retailer[] }) {
         map.set(key, { city: key, lat: coords.lat, lon: coords.lon, retailers: [r] })
       }
     })
-    return Array.from(map.values())
+    return Array.from(map.values()) as CityPoint[]
   }, [items])
 
   return (
@@ -592,34 +594,8 @@ function SwedenMap({ items }: { items: Retailer[] }) {
           <h2 className="text-2xl font-semibold text-gray-900">Återförsäljare på kartan</h2>
           <p className="text-gray-600">Klicka på en pin för att se återförsäljare i området.</p>
         </div>
-        <div className="relative w-full h-[520px] bg-gradient-to-br from-[#F5F3F0] to-white rounded-2xl shadow-inner overflow-hidden border border-gray-200">
-          {/* Stylized Sweden silhouette (approximate) */}
-          <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" className="absolute inset-0 w-full h-full">
-            <defs>
-              <linearGradient id="swedenFill" x1="0" x2="1">
-                <stop offset="0%" stopColor="#eae6df" />
-                <stop offset="100%" stopColor="#f7f5f1" />
-              </linearGradient>
-            </defs>
-            {/* Simple abstract path approximating Sweden shape to give context without external assets */}
-            <path d="M62,5 L58,9 L60,14 L57,18 L58,23 L55,28 L57,31 L54,35 L55,40 L52,44 L53,48 L50,53 L50,58 L48,62 L50,66 L48,70 L50,74 L47,79 L49,84 L46,89 L47,94 L44,97 L47,99 L53,95 L57,90 L60,84 L62,78 L64,72 L65,66 L66,60 L66,54 L66,48 L65,42 L64,36 L63,30 L63,24 L63,18 L63,12 L62,5 Z" fill="url(#swedenFill)" opacity="0.6" />
-            {/* Coastline/glow */}
-            <path d="M62,5 L58,9 L60,14 L57,18 L58,23 L55,28 L57,31 L54,35 L55,40 L52,44 L53,48 L50,53 L50,58 L48,62 L50,66 L48,70 L50,74 L47,79 L49,84 L46,89 L47,94 L44,97 L47,99 L53,95 L57,90 L60,84 L62,78 L64,72 L65,66 L66,60 L66,54 L66,48 L65,42 L64,36 L63,30 L63,24 L63,18 L63,12 L62,5 Z" fill="none" stroke="#d4c9ba" strokeWidth="0.6" />
-
-            {/* Pins */}
-            {points.map((p, idx) => {
-              const { x, y } = projectSweden(p.lat, p.lon)
-              return (
-                <g key={idx} transform={`translate(${x}, ${y})`}>
-                  <circle r={2.0 + Math.min(3, p.retailers.length * 0.4)} fill="#4A3428" opacity="0.9" />
-                  {/* Halo */}
-                  <circle r={4.5} fill="#4A3428" opacity="0.08" />
-                  {/* Label */}
-                  <text x={4.5} y={-4} fontSize={3} fill="#4A3428" opacity="0.9">{p.city}</text>
-                </g>
-              )
-            })}
-          </svg>
+        <div className="relative w-full h-[520px] rounded-2xl shadow-inner overflow-hidden border border-gray-200">
+          <RetailersLeafletMap points={points} />
 
           {/* Tooltip list (top-right) */}
           <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-sm rounded-xl shadow p-3 max-w-xs max-h-64 overflow-auto border border-gray-200">
