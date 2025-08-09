@@ -140,21 +140,23 @@ export default function FunctionalRawMaterialsPage() {
       const response = await fetch(`/api/raw-materials?locale=${encodeURIComponent(currentLocale)}`)
       
       if (response.ok) {
-        const data = await response.json()
-        if (data && Array.isArray(data) && data.length > 0) {
-          // Sort alphabetically by Swedish name
-          const sortedData = data.sort((a: RawMaterial, b: RawMaterial) => 
-            a.swedishName.localeCompare(b.swedishName, 'sv')
-          )
+        const json = await response.json()
+        const list = Array.isArray(json) ? json : (json?.data || [])
+        if (Array.isArray(list) && list.length) {
+          const sortedData = list.sort((a: any, b: any) => {
+            const aName = (a.swedishName || a.name || '').toString()
+            const bName = (b.swedishName || b.name || '').toString()
+            return aName.localeCompare(bName, 'sv')
+          })
           setRawMaterials(sortedData)
+        } else {
+          console.warn('No raw materials from backend; keeping fallback')
         }
       } else {
         console.error('Failed to fetch raw materials, using fallback data')
-        // Keep fallback data
       }
     } catch (error) {
       console.error('Error fetching raw materials:', error)
-      // Keep fallback data
     } finally {
       setLoading(false)
     }
