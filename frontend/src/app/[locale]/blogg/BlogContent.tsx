@@ -82,17 +82,22 @@ export default function BlogContent({ posts }: BlogContentProps) {
 
   // Assign images sequentially from Kapitel 1..64 based on visible index to avoid near-duplicates
   const assignedImages = useMemo(() => {
+    // Use a stride to spread images better across the grid
+    const N = portraitImages.length
+    const stride = 5 // relatively prime w.r.t common column counts (3,4)
     return filteredPosts.map((post, index) => {
       const explicit = (post as BlogPostWithImages).image
       if (explicit) return explicit
-      const imgIdx = index % portraitImages.length
+      const imgIdx = (index * stride) % N
       return `/Bilder_kvinnor%20boken_2025/${portraitImages[imgIdx]}`
     })
   }, [filteredPosts])
 
   // Function to get fallback image for a post when no explicit image found
   const getFallbackImage = (slug: string, index: number) => {
-    const imageIndex = index % portraitImages.length
+    const N = portraitImages.length
+    const stride = 5
+    const imageIndex = (index * stride) % N
     return `/Bilder_kvinnor%20boken_2025/${portraitImages[imageIndex]}`
   }
 
