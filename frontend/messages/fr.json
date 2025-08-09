@@ -23,13 +23,23 @@
     "skinConditions": "Problèmes de peau",
     "about": "À propos",
     "blog": "Blog",
+    "knowledge": "Connaissances",
     "contact": "Contact",
     "account": "Mon compte",
     "cart": "Panier",
     "checkout": "Paiement",
     "login": "Connexion",
     "register": "S’inscrire",
-    "logout": "Déconnexion"
+    "logout": "Déconnexion",
+    "privacyPolicy": "Politique de confidentialité",
+    "terms": "Conditions",
+    "cookies": "Cookies"
+  },
+  "headerTopBar": {
+    "bannerPrefix": "LIVRAISON OFFERTE DÈS 500 SEK",
+    "freeShipping": "Service personnalisé et gratuit",
+    "naturalIngredients": "Ingrédients naturels",
+    "openPurchase": "30 jours de droit de rétractation"
   },
   "hero": {
     "title": "Découvrez la puissance du CBD pour votre peau",

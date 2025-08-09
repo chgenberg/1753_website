@@ -23,13 +23,23 @@
     "skinConditions": "Afecciones de la piel",
     "about": "Sobre nosotros",
     "blog": "Blog",
+    "knowledge": "Conocimiento",
     "contact": "Contacto",
     "account": "Mi cuenta",
     "cart": "Carrito",
     "checkout": "Pago",
     "login": "Iniciar sesión",
     "register": "Registrarse",
-    "logout": "Cerrar sesión"
+    "logout": "Cerrar sesión",
+    "privacyPolicy": "Política de privacidad",
+    "terms": "Términos",
+    "cookies": "Cookies"
+  },
+  "headerTopBar": {
+    "bannerPrefix": "ENVÍO GRATIS A PARTIR DE 500 SEK",
+    "freeShipping": "Atención personal y gratuita",
+    "naturalIngredients": "Ingredientes naturales",
+    "openPurchase": "30 días de derecho de devolución"
   },
   "hero": {
     "title": "Descubre el poder del CBD para tu piel",

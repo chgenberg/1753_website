@@ -3,6 +3,8 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Facebook, Instagram, Youtube, Mail, Phone, MapPin } from 'lucide-react'
+import { usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 
 const footerLinks = {
   products: [
@@ -35,6 +37,9 @@ const footerLinks = {
 }
 
 export function Footer() {
+  const t = useTranslations()
+  const pathname = usePathname()
+  const isSv = (pathname.split('/')[1] || 'sv') === 'sv'
   return (
     <footer className="bg-[#4A3428] text-white">
       {/* Main Footer */}
@@ -52,7 +57,7 @@ export function Footer() {
               />
             </Link>
             <p className="text-white/80 mb-6 max-w-sm">
-              Naturlig hudvård med CBD & CBG. Vi kombinerar traditionell kunskap med modern vetenskap för din huds bästa.
+              {t('footer.description')}
             </p>
             
             {/* Social Links */}
@@ -86,7 +91,7 @@ export function Footer() {
 
           {/* Products */}
           <div>
-            <h3 className="font-semibold mb-4">Produkter</h3>
+            <h3 className="font-semibold mb-4">{t('navigation.products')}</h3>
             <ul className="space-y-2">
               {footerLinks.products.map((link) => (
                 <li key={link.name}>
@@ -103,9 +108,9 @@ export function Footer() {
 
           {/* Company */}
           <div>
-            <h3 className="font-semibold mb-4">Företag</h3>
+            <h3 className="font-semibold mb-4">{t('footer.company')}</h3>
             <ul className="space-y-2">
-              {footerLinks.company.map((link) => (
+              {(isSv ? footerLinks.company : footerLinks.company.filter(l => l.href !== '/om-oss/aterforsaljare')).map((link) => (
                 <li key={link.name}>
                   <Link
                     href={link.href}
@@ -120,7 +125,7 @@ export function Footer() {
 
           {/* Knowledge */}
           <div>
-            <h3 className="font-semibold mb-4">Kunskap</h3>
+            <h3 className="font-semibold mb-4">{t('navigation.knowledge')}</h3>
             <ul className="space-y-2">
               {footerLinks.knowledge.map((link) => (
                 <li key={link.name}>
@@ -137,7 +142,7 @@ export function Footer() {
 
           {/* Help */}
           <div>
-            <h3 className="font-semibold mb-4">Hjälp</h3>
+            <h3 className="font-semibold mb-4">{t('footer.help') || 'Hjälp'}</h3>
             <ul className="space-y-2">
               {footerLinks.help.map((link) => (
                 <li key={link.name}>
@@ -181,17 +186,17 @@ export function Footer() {
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-white/60 text-sm">
-              © 2024 1753 Skincare. Alla rättigheter förbehållna.
+              {t('footer.copyright')}
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <Link href="/integritetspolicy" className="text-white/60 hover:text-white text-sm transition-colors">
-                Integritetspolicy
+                {t('navigation.privacyPolicy') || 'Integritetspolicy'}
               </Link>
               <Link href="/villkor" className="text-white/60 hover:text-white text-sm transition-colors">
-                Villkor
+                {t('navigation.terms') || 'Villkor'}
               </Link>
               <Link href="/cookies" className="text-white/60 hover:text-white text-sm transition-colors">
-                Cookies
+                {t('navigation.cookies') || 'Cookies'}
               </Link>
             </div>
           </div>

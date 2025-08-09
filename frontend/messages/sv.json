@@ -23,13 +23,23 @@
     "skinConditions": "Hudtillstånd",
     "about": "Om oss",
     "blog": "Blogg",
+    "knowledge": "Kunskap",
     "contact": "Kontakta oss",
     "account": "Mitt konto",
     "cart": "Varukorg",
     "checkout": "Kassa",
     "login": "Logga in",
     "register": "Registrera dig",
-    "logout": "Logga ut"
+    "logout": "Logga ut",
+    "privacyPolicy": "Integritetspolicy",
+    "terms": "Villkor",
+    "cookies": "Cookies"
+  },
+  "headerTopBar": {
+    "bannerPrefix": "FRI FRAKT ÖVER 500 KR",
+    "freeShipping": "KOSTNADSFRITT & PERSONLIGT",
+    "naturalIngredients": "NATURLIGA INGREDIENSER",
+    "openPurchase": "30 DAGARS ÖPPET KÖP"
   },
   "hero": {
     "title": "Upptäck kraften i CBD för din hud",

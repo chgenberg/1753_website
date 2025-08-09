@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { CartDrawer } from '@/components/cart/CartDrawer'
 import { useCart } from '@/contexts/CartContext'
 import { useAuth } from '@/contexts/AuthContext'
@@ -14,13 +15,14 @@ import {
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
-const topBarMessages = [
-  { icon: <Sparkles className="w-4 h-4" />, text: "✨ KOSTNADSFRITT & PERSONLIGT" },
-  { icon: <Leaf className="w-4 h-4" />, text: "🌿 NATURLIGA INGREDIENSER" },
-  { icon: <ShieldCheck className="w-4 h-4" />, text: "🛡️ 30 DAGARS ÖPPET KÖP" },
-]
+const TopBarMessages = ({ t }: { t: (k: string) => string }) => ([
+  { icon: <Sparkles className="w-4 h-4" />, text: t('headerTopBar.freeShipping') },
+  { icon: <Leaf className="w-4 h-4" />, text: t('headerTopBar.naturalIngredients') },
+  { icon: <ShieldCheck className="w-4 h-4" />, text: t('headerTopBar.openPurchase') },
+])
 
 export function Header() {
+  const t = useTranslations()
   const [isScrolled, setIsScrolled] = useState(false)
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0)
   const [showUserDropdown, setShowUserDropdown] = useState(false)
@@ -40,7 +42,7 @@ export function Header() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentMessageIndex((prev) => (prev + 1) % topBarMessages.length)
+      setCurrentMessageIndex((prev) => (prev + 1) % TopBarMessages({ t }).length)
     }, 4000)
     return () => clearInterval(interval)
   }, [])
@@ -85,9 +87,9 @@ export function Header() {
               transition={{ duration: 0.3 }}
               className="flex items-center justify-center gap-2"
             >
-              {topBarMessages[currentMessageIndex].icon}
+              {TopBarMessages({ t })[currentMessageIndex].icon}
               <span className="font-medium tracking-wider">
-                FRI FRAKT ÖVER 500 KR • {topBarMessages[currentMessageIndex].text}
+                {t('headerTopBar.bannerPrefix')} • {TopBarMessages({ t })[currentMessageIndex].text}
               </span>
             </motion.div>
           </AnimatePresence>
@@ -128,7 +130,7 @@ export function Header() {
                     }`}
                   >
                     <Home className="w-4 h-4" />
-                    <span className="font-medium">Hem</span>
+                    <span className="font-medium">{t('navigation.home')}</span>
                   </Link>
                 </li>
 
@@ -143,7 +145,7 @@ export function Header() {
                     }`}
                   >
                     <Package className="w-4 h-4" />
-                    <span className="font-medium">Produkter</span>
+                    <span className="font-medium">{t('navigation.products')}</span>
                   </Link>
                 </li>
 
@@ -170,7 +172,7 @@ export function Header() {
                     }}
                   >
                     <Info className="w-4 h-4" />
-                    <span className="font-medium">Om oss</span>
+                    <span className="font-medium">{t('navigation.about')}</span>
                     <ChevronDown className="w-3 h-3" />
                   </button>
 
@@ -195,7 +197,7 @@ export function Header() {
                           role="menuitem"
                           tabIndex={0}
                         >
-                          Om oss
+                          {t('navigation.about')}
                         </Link>
                         {isSv && (
                           <Link
@@ -243,7 +245,7 @@ export function Header() {
                     }}
                   >
                     <BookOpen className="w-4 h-4" />
-                    <span className="font-medium">Kunskap</span>
+                    <span className="font-medium">{t('navigation.knowledge')}</span>
                     <ChevronDown className="w-3 h-3" />
                   </button>
 
@@ -268,7 +270,7 @@ export function Header() {
                           role="menuitem"
                           tabIndex={0}
                         >
-                          Blogg
+                          {t('navigation.blog')}
                           <PenTool className="w-4 h-4" />
                         </Link>
                         <Link
@@ -285,7 +287,7 @@ export function Header() {
                           role="menuitem"
                           tabIndex={0}
                         >
-                          Hudanalys
+                          {t('Quiz.title')}
                           <Sparkles className="w-4 h-4 text-amber-600" />
                         </Link>
                         <Link
@@ -322,7 +324,7 @@ export function Header() {
                     }`}
                   >
                     <Phone className="w-4 h-4" />
-                    <span className="font-medium">Kontakt</span>
+                    <span className="font-medium">{t('navigation.contact')}</span>
                   </Link>
                 </li>
               </ul>
@@ -374,7 +376,7 @@ export function Header() {
                   >
                     <User className="w-5 h-5" />
                     <span className="hidden lg:inline text-sm">
-                      {user.firstName || 'Mitt konto'}
+                      {user.firstName || t('navigation.account')}
                     </span>
                   </button>
                 ) : (
@@ -384,7 +386,7 @@ export function Header() {
                   >
                     <Sparkles className="w-5 h-5 text-amber-600" />
                     <User className="w-5 h-5" />
-                    <span className="hidden lg:inline text-sm">Logga in</span>
+                    <span className="hidden lg:inline text-sm">{t('navigation.login')}</span>
                   </Link>
                 )}
 
@@ -402,14 +404,14 @@ export function Header() {
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => setShowUserDropdown(false)}
                       >
-                        Min profil
+                        {t('account.profile')}
                       </Link>
                       <Link
                         href="/dashboard"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => setShowUserDropdown(false)}
                       >
-                        Mina beställningar
+                        {t('account.orders')}
                       </Link>
                       <hr className="my-2" />
                       <button
@@ -417,7 +419,7 @@ export function Header() {
                         className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
                       >
                         <LogOut className="w-4 h-4" />
-                        Logga ut
+                        {t('navigation.logout')}
                       </button>
                     </motion.div>
                   )}
@@ -461,7 +463,7 @@ export function Header() {
                       }`}
                     >
                       <Home className="w-4 h-4" />
-                      <span className="font-medium">Hem</span>
+                      <span className="font-medium">{t('navigation.home')}</span>
                     </Link>
                   </li>
 
@@ -476,13 +478,13 @@ export function Header() {
                       }`}
                     >
                       <Package className="w-4 h-4" />
-                      <span className="font-medium">Produkter</span>
+                      <span className="font-medium">{t('navigation.products')}</span>
                     </Link>
                   </li>
 
                   <li>
                     <div className="px-4 py-2">
-                      <p className="text-sm font-semibold text-gray-600 mb-2">Om oss</p>
+                      <p className="text-sm font-semibold text-gray-600 mb-2">{t('navigation.about')}</p>
                       <div className="space-y-1 ml-4">
                         <Link
                           href="/om-oss"
@@ -520,14 +522,14 @@ export function Header() {
 
                   <li>
                     <div className="px-4 py-2">
-                      <p className="text-sm font-semibold text-gray-600 mb-2">Kunskap</p>
+                      <p className="text-sm font-semibold text-gray-600 mb-2">{t('navigation.knowledge')}</p>
                       <div className="space-y-1 ml-4">
                         <Link
                           href="/blogg"
                           onClick={() => setIsMobileMenuOpen(false)}
                           className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
                         >
-                          Blogg
+                          {t('navigation.blog')}
                         </Link>
                         <Link
                           href="/kunskap/e-bok"
@@ -541,7 +543,7 @@ export function Header() {
                           onClick={() => setIsMobileMenuOpen(false)}
                           className="block py-2 text-sm text-gray-700 hover:text-[#4A3428]"
                         >
-                          Hudanalys
+                          {t('Quiz.title')}
                         </Link>
                         <Link
                           href="/om-oss/ingredienser"
@@ -572,7 +574,7 @@ export function Header() {
                       }`}
                     >
                       <Phone className="w-4 h-4" />
-                      <span className="font-medium">Kontakt</span>
+                      <span className="font-medium">{t('navigation.contact')}</span>
                     </Link>
                   </li>
                 </ul>

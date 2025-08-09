@@ -23,13 +23,23 @@
     "skinConditions": "Skin Conditions",
     "about": "About Us",
     "blog": "Blog",
+    "knowledge": "Knowledge",
     "contact": "Contact",
     "account": "My Account",
     "cart": "Cart",
     "checkout": "Checkout",
     "login": "Login",
     "register": "Register",
-    "logout": "Logout"
+    "logout": "Logout",
+    "privacyPolicy": "Privacy Policy",
+    "terms": "Terms",
+    "cookies": "Cookies"
+  },
+  "headerTopBar": {
+    "bannerPrefix": "FREE SHIPPING OVER 500 SEK",
+    "freeShipping": "Personal and free",
+    "naturalIngredients": "Natural ingredients",
+    "openPurchase": "30-day open purchase"
   },
   "hero": {
     "title": "Discover the power of CBD for your skin",

@@ -23,13 +23,23 @@
     "skinConditions": "Hautzustände",
     "about": "Über uns",
     "blog": "Blog",
+    "knowledge": "Wissen",
     "contact": "Kontakt",
     "account": "Mein Konto",
     "cart": "Warenkorb",
     "checkout": "Kasse",
     "login": "Anmelden",
     "register": "Registrieren",
-    "logout": "Abmelden"
+    "logout": "Abmelden",
+    "privacyPolicy": "Datenschutz",
+    "terms": "AGB",
+    "cookies": "Cookies"
+  },
+  "headerTopBar": {
+    "bannerPrefix": "KOSTENLOSER VERSAND ÜBER 500 SEK",
+    "freeShipping": "Persönlich und kostenlos",
+    "naturalIngredients": "Natürliche Inhaltsstoffe",
+    "openPurchase": "30 Tage Rückgaberecht"
   },
   "hero": {
     "title": "Entdecke die Kraft von CBD für deine Haut",
