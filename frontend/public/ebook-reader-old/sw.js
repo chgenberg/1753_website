@@ -5,7 +5,7 @@ const urlsToCache = [
     '/ebook-reader/styles.css',
     '/ebook-reader/app.js',
     '/ebook-reader/e-book_weedyourskin_backup.pdf',
-    'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
+    // Removed external Google Fonts to comply with CSP
     'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
     'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
 ];
