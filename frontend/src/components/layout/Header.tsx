@@ -57,6 +57,18 @@ export function Header() {
     return pathname.includes(href)
   }
 
+  const buildLocaleHref = (locale: string) => {
+    // Ensure path starts with /{locale}
+    const parts = pathname.split('/')
+    if (parts.length > 1) {
+      if (['sv', 'en', 'es', 'de', 'fr'].includes(parts[1])) {
+        parts[1] = locale
+        return parts.join('/') || `/${locale}`
+      }
+    }
+    return `/${locale}${pathname.startsWith('/') ? '' : '/'}${pathname}`
+  }
+
   return (
     <>
       {/* Fixed Top Bar */}
@@ -326,6 +338,29 @@ export function Header() {
 
             {/* User & Cart - Far right */}
             <div className="flex items-center gap-2">
+              {/* Locale Switcher */}
+              <div className="relative">
+                <button
+                  className="px-3 py-2 text-sm rounded-lg hover:bg-gray-100 border border-gray-200"
+                  aria-haspopup="listbox"
+                  aria-label="Byt språk"
+                >
+                  {pathname.split('/')[1] || 'sv'}
+                </button>
+                <div className="absolute right-0 mt-2 w-32 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                  {['sv', 'en', 'es', 'de', 'fr'].map((loc) => (
+                    <Link
+                      key={loc}
+                      href={buildLocaleHref(loc)}
+                      className={`block px-3 py-2 text-sm hover:bg-gray-50 ${pathname.startsWith(`/${loc}`) ? 'text-[#4A3428] font-medium' : 'text-gray-700'}`}
+                      role="option"
+                      aria-selected={pathname.startsWith(`/${loc}`)}
+                    >
+                      {loc.toUpperCase()}
+                    </Link>
+                  ))}
+                </div>
+              </div>
               {/* User Account */}
               <div className="relative">
                 {user ? (

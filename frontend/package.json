@@ -10,7 +10,8 @@
     "type-check": "tsc --noEmit",
     "optimize-images": "node scripts/optimize-images.js",
     "fix-filenames": "node scripts/fix-filenames.js",
-    "update-image-refs": "node scripts/update-image-references.js"
+    "update-image-refs": "node scripts/update-image-references.js",
+    "i18n:seed": "node src/scripts/translate-site.ts"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.4",
