@@ -140,7 +140,7 @@ export function Header() {
       }`}>
         <div className="container mx-auto px-4">
           {/* Compact header with centered logo, hamburger left, actions right */}
-          <div className="relative flex items-center justify-between py-3">
+          <div className="relative flex items-center justify-between py-4 md:py-5">
             {/* Hamburger (all breakpoints) */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -164,7 +164,7 @@ export function Header() {
                 alt="1753 Skincare"
                 width={180}
                 height={60}
-                className="h-14 w-auto md:h-16"
+                className="h-16 w-auto md:h-20"
                 priority
               />
             </Link>
@@ -343,7 +343,7 @@ export function Header() {
       </header>
 
       {/* Spacer to prevent content from going under fixed header */}
-      <div className="h-24" />
+      <div className="h-28 md:h-32" />
 
       {/* Cart Drawer */}
       <CartDrawer />
