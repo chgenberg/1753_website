@@ -9,9 +9,7 @@ import dynamic from 'next/dynamic'
 import type { CityPoint } from '@/components/maps/RetailersLeafletMap'
 const RetailersLeafletMap: any = dynamic(() => import('@/components/maps/RetailersLeafletMap'), { ssr: false })
 
-export function generateStaticParams() {
-  return [{ locale: 'sv' }]
-}
+// generateStaticParams is defined in a sibling server file: generate-static-params.ts
 
 interface Retailer {
   name: string
