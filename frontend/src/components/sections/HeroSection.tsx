@@ -5,8 +5,10 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ChevronRight, Sparkles, Target, TrendingUp, Star, ArrowRight, X } from 'lucide-react'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 
 export function HeroSection() {
+  const t = useTranslations()
   const [isMobile, setIsMobile] = useState(false)
   const [modalContent, setModalContent] = useState<{
     title: string;
@@ -25,22 +27,22 @@ export function HeroSection() {
   // Step descriptions for the modal
   const stepDescriptions = {
     'Gör hud-QUIZ': {
-      title: '📝 Gör hud-QUIZ',
-      description: 'Vårt hudvårdsquiz tar bara 2 minuter och hjälper oss förstå din unika hudtyp och dina specifika behov.\n\nGenom att svara på några enkla frågor om din hud, livsstil och preferenser kan vi skapa en skräddarsydd hudvårdsrutin just för dig.\n\nQuizet analyserar faktorer som hudtyp, eventuella hudproblem, ålder och miljöpåverkan för att ge dig de mest relevanta produktrekommendationerna.'
+      title: t('home.hero.modal.step1.title'),
+      description: t('home.hero.modal.step1.description')
     },
     'Få rekommendation': {
-      title: '🎯 Få rekommendation',
-      description: 'Baserat på dina quiz-svar får du en personlig hudvårdsplan med produktrekommendationer som är specifikt utvalda för din hudtyp och dina behov.\n\nVår algoritm kombinerar traditionell hudvårdskunskap med modern vetenskap för att skapa en komplett rutin som inkluderar rengöring, behandling och skydd.\n\nDu får också tips om hur du bäst använder produkterna för optimala resultat.'
+      title: t('home.hero.modal.step2.title'),
+      description: t('home.hero.modal.step2.description')
     },
     'Följ upp': {
-      title: '📈 Följ upp',
-      description: 'Vi följer din hudvårdsresa varje vecka för att säkerställa att du ser kontinuerliga förbättringar.\n\nGenom regelbundna check-ins kan vi justera din rutin vid behov och ge dig personliga tips baserat på hur din hud utvecklas.\n\nDu får påminnelser om när det är dags att applicera produkterna och kan dokumentera din progress med bilder för att tydligt se förbättringarna över tid.'
+      title: t('home.hero.modal.step3.title'),
+      description: t('home.hero.modal.step3.description')
     },
     'Perfekt hud!': {
-      title: '✨ Perfekt hud!',
-      description: 'Inom 3 månader kommer du att se en märkbar förbättring av din huds kvalitet och utseende.\n\nMed våra naturliga produkter innehållande CBD och CBG, kombinerat med din personliga hudvårdsrutin, kommer din hud att bli mer balanserad, klarare och strålande.\n\nMånga av våra kunder rapporterar synliga resultat redan efter några veckor, men den fulla effekten uppnås vanligtvis inom 3 månader av konsekvent användning.'
+      title: t('home.hero.modal.step4.title'),
+      description: t('home.hero.modal.step4.description')
     }
-  };
+  } as const
 
   return (
     <section className="relative min-h-screen overflow-hidden">
@@ -51,7 +53,7 @@ export function HeroSection() {
             ? "/portrait_home/Omslag_2025_mobile.png"
             : "/portrait_home/Omslag_2025_desktop.png"
           }
-          alt="Omslagsbild för 1753 Skincare 2025"
+          alt={t('home.hero.coverAlt')}
           fill
           priority
           sizes="100vw"
@@ -74,11 +76,11 @@ export function HeroSection() {
             {/* Main Heading */}
             <div>
               <h1 className="text-5xl lg:text-7xl font-bold text-white drop-shadow-lg mb-6 leading-tight">
-                Naturlig hudvård för
-                <span className="text-white block">hudens ekosystem</span>
+                {t('home.hero.headingLine1')}
+                <span className="text-white block">{t('home.hero.headingLine2')}</span>
               </h1>
               <p className="text-xl lg:text-2xl text-white/90 leading-relaxed drop-shadow-md">
-                Vetenskapligt utvecklad hudvård som arbetar i harmoni med hudens celler, mikrobiom och endocannabinoidsystem
+                {t('home.hero.subtitle')}
               </p>
             </div>
 
@@ -86,7 +88,7 @@ export function HeroSection() {
             <div className="flex items-center gap-4 p-6 bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm">
               <Image 
                 src="/portrait/c-and-e-2.jpg" 
-                alt="Porträtt av Christopher Genberg"
+                alt={t('home.hero.authorAlt')}
                 width={64}
                 height={64}
                 className="w-16 h-16 rounded-full object-cover"
@@ -95,7 +97,7 @@ export function HeroSection() {
               <div>
                 <p className="text-lg font-semibold text-gray-900">Christopher Genberg</p>
                 <p className="text-sm text-gray-600">
-                  Grundare • 12+ års erfarenhet • Hudvårdsrebell
+                  {t('home.hero.authorTagline')}
                 </p>
               </div>
             </div>
@@ -107,13 +109,13 @@ export function HeroSection() {
                 className="inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-white bg-[#4A3428] hover:bg-[#3A2A1E] rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg"
               >
                 <Sparkles className="w-5 h-5 mr-2" />
-                Gör hud-QUIZ
+                {t('home.hero.ctaQuiz')}
               </Link>
               <Link
                 href="/products"
                 className="inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-[#4A3428] bg-white hover:bg-gray-50 rounded-full transition-all duration-300 border-2 border-[#4A3428]"
               >
-                Se produkter
+                {t('home.hero.ctaProducts')}
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Link>
             </div>
@@ -131,14 +133,14 @@ export function HeroSection() {
             
             {/* Timeline Content */}
             <div className="relative z-10 p-8 lg:p-12">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-8">Din resa till perfekt hud</h2>
+              <h2 className="text-2xl font-semibold text-gray-900 mb-8">{t('home.hero.timelineTitle')}</h2>
               
               <div className="space-y-6">
                 {[
-                  { emoji: '📝', text: 'Gör hud-QUIZ', subtext: '2 minuter' },
-                  { emoji: '🎯', text: 'Få rekommendation', subtext: 'Personlig plan' },
-                  { emoji: '📈', text: 'Följ upp', subtext: 'Veckovis förbättring' },
-                  { emoji: '✨', text: 'Perfekt hud!', subtext: 'Inom 3 månader' }
+                  { emoji: '📝', text: t('home.hero.steps.step1.title'), subtext: t('home.hero.steps.step1.badge') },
+                  { emoji: '🎯', text: t('home.hero.steps.step2.title'), subtext: t('home.hero.steps.step2.badge') },
+                  { emoji: '📈', text: t('home.hero.steps.step3.title'), subtext: t('home.hero.steps.step3.badge') },
+                  { emoji: '✨', text: t('home.hero.steps.step4.title'), subtext: t('home.hero.steps.step4.badge') }
                 ].map((step, index) => (
                   <motion.div
                     key={index}
@@ -146,7 +148,7 @@ export function HeroSection() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.6 + index * 0.1 }}
                     className="flex items-center gap-4 cursor-pointer hover:bg-gray-100 p-2 rounded-lg transition-colors"
-                    onClick={() => setModalContent(stepDescriptions[step.text as keyof typeof stepDescriptions])}
+                    onClick={() => setModalContent(stepDescriptions[(index === 0 ? 'Gör hud-QUIZ' : index === 1 ? 'Få rekommendation' : index === 2 ? 'Följ upp' : 'Perfekt hud!') as keyof typeof stepDescriptions])}
                   >
                     <div className="flex-shrink-0 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-md text-2xl">
                       {step.emoji}
@@ -199,7 +201,7 @@ export function HeroSection() {
               onClick={() => setModalContent(null)}
               className="mt-6 w-full px-6 py-3 bg-[#4A3428] text-white rounded-full hover:bg-[#3A2A1E] transition-colors font-medium"
             >
-              Stäng
+              {t('common.close')}
             </button>
           </motion.div>
         </div>

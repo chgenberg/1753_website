@@ -196,5 +196,42 @@
     "backToBlog": "Retour au blog",
     "noArticles": "Aucun article publié pour le moment",
     "loading": "Chargement des articles..."
+  },
+  "home": {
+    "hero": {
+      "coverAlt": "Image de couverture 1753 Skincare 2025",
+      "headingLine1": "Soin naturel pour",
+      "headingLine2": "l’écosystème de la peau",
+      "subtitle": "Soin développé scientifiquement qui agit en harmonie avec les cellules, le microbiome et le système endocannabinoïde",
+      "authorAlt": "Portrait de Christopher Genberg",
+      "authorTagline": "Fondateur • 12+ ans d’expérience • Rebelle du skincare",
+      "ctaQuiz": "Faire le quiz peau",
+      "ctaProducts": "Voir les produits",
+      "timelineTitle": "Votre chemin vers une peau parfaite",
+      "steps": {
+        "step1": { "title": "Faire le quiz peau", "badge": "2 minutes" },
+        "step2": { "title": "Obtenir des recommandations", "badge": "Plan personnalisé" },
+        "step3": { "title": "Suivi", "badge": "Amélioration hebdomadaire" },
+        "step4": { "title": "Peau parfaite !", "badge": "En 3 mois" }
+      },
+      "modal": {
+        "step1": {
+          "title": "📝 Faire le quiz peau",
+          "description": "Notre quiz prend 2 minutes et nous aide à comprendre votre type de peau et vos besoins.\n\nAvec quelques questions sur votre peau, votre mode de vie et vos préférences, nous créons une routine sur mesure.\n\nLe quiz analyse type de peau, préoccupations, âge et environnement pour des recommandations pertinentes." 
+        },
+        "step2": {
+          "title": "🎯 Obtenir des recommandations",
+          "description": "Selon vos réponses, vous recevez un plan de soin personnel avec des produits adaptés à votre peau.\n\nNous combinons savoir traditionnel et science moderne pour une routine complète.\n\nVous recevrez aussi des conseils d’utilisation pour de meilleurs résultats." 
+        },
+        "step3": {
+          "title": "📈 Suivi",
+          "description": "Nous vous accompagnons chaque semaine pour garantir des améliorations continues.\n\nAvec des suivis réguliers, nous ajustons votre routine et donnons des conseils personnalisés.\n\nVous recevez des rappels et pouvez documenter vos progrès." 
+        },
+        "step4": {
+          "title": "✨ Peau parfaite !",
+          "description": "En 3 mois, vous verrez une nette amélioration de la qualité et de l’aspect de votre peau.\n\nAvec nos produits naturels au CBD et CBG et une routine personnalisée, votre peau devient équilibrée, plus nette et rayonnante." 
+        }
+      }
+    }
   }
 }

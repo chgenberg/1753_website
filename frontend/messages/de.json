@@ -196,5 +196,42 @@
     "backToBlog": "Zurück zum Blog",
     "noArticles": "Noch keine Artikel veröffentlicht",
     "loading": "Artikel werden geladen..."
+  },
+  "home": {
+    "hero": {
+      "coverAlt": "Titelbild für 1753 Skincare 2025",
+      "headingLine1": "Natürliche Hautpflege für",
+      "headingLine2": "das Ökosystem der Haut",
+      "subtitle": "Wissenschaftlich entwickelte Hautpflege, die im Einklang mit Hautzellen, Mikrobiom und Endocannabinoid-System wirkt",
+      "authorAlt": "Porträt von Christopher Genberg",
+      "authorTagline": "Gründer • 12+ Jahre Erfahrung • Skincare-Rebell",
+      "ctaQuiz": "Haut-Quiz starten",
+      "ctaProducts": "Produkte ansehen",
+      "timelineTitle": "Dein Weg zur perfekten Haut",
+      "steps": {
+        "step1": { "title": "Haut-Quiz starten", "badge": "2 Minuten" },
+        "step2": { "title": "Empfehlungen erhalten", "badge": "Persönlicher Plan" },
+        "step3": { "title": "Nachverfolgen", "badge": "Wöchentliche Verbesserung" },
+        "step4": { "title": "Perfekte Haut!", "badge": "In 3 Monaten" }
+      },
+      "modal": {
+        "step1": {
+          "title": "📝 Haut-Quiz starten",
+          "description": "Unser Quiz dauert nur 2 Minuten und hilft uns, deinen Hauttyp und deine Bedürfnisse zu verstehen.\n\nMit ein paar Fragen zu Haut, Lebensstil und Vorlieben erstellen wir eine maßgeschneiderte Routine.\n\nDas Quiz analysiert Hauttyp, Probleme, Alter und Umfeld für relevante Empfehlungen." 
+        },
+        "step2": {
+          "title": "🎯 Empfehlungen erhalten",
+          "description": "Auf Basis deiner Antworten erhältst du einen persönlichen Pflegeplan mit Produkten, die zu deinem Hauttyp passen.\n\nWir kombinieren traditionelles Wissen mit moderner Wissenschaft für eine vollständige Routine.\n\nDu erhältst zudem Tipps zur optimalen Anwendung." 
+        },
+        "step3": {
+          "title": "📈 Nachverfolgen",
+          "description": "Wir begleiten dich wöchentlich, um kontinuierliche Verbesserungen sicherzustellen.\n\nMit regelmäßigen Check-ins passen wir deine Routine an und geben persönliche Tipps.\n\nDu erhältst Erinnerungen und kannst deinen Fortschritt dokumentieren." 
+        },
+        "step4": {
+          "title": "✨ Perfekte Haut!",
+          "description": "Innerhalb von 3 Monaten wirst du eine deutliche Verbesserung der Hautqualität sehen.\n\nMit unseren natürlichen CBD- und CBG-Produkten und einer persönlichen Routine wird deine Haut ausgeglichener, klarer und strahlender." 
+        }
+      }
+    }
   }
 }

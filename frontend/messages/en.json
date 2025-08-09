@@ -196,5 +196,42 @@
     "backToBlog": "Back to blog",
     "noArticles": "No articles published yet",
     "loading": "Loading articles..."
+  },
+  "home": {
+    "hero": {
+      "coverAlt": "Cover image for 1753 Skincare 2025",
+      "headingLine1": "Natural skincare for",
+      "headingLine2": "the skin’s ecosystem",
+      "subtitle": "Scientifically developed skincare that works in harmony with your skin cells, microbiome and endocannabinoid system",
+      "authorAlt": "Portrait of Christopher Genberg",
+      "authorTagline": "Founder • 12+ years experience • Skincare rebel",
+      "ctaQuiz": "Take the skin quiz",
+      "ctaProducts": "See products",
+      "timelineTitle": "Your path to perfect skin",
+      "steps": {
+        "step1": { "title": "Take the skin quiz", "badge": "2 minutes" },
+        "step2": { "title": "Get recommendations", "badge": "Personal plan" },
+        "step3": { "title": "Follow up", "badge": "Weekly improvement" },
+        "step4": { "title": "Perfect skin!", "badge": "Within 3 months" }
+      },
+      "modal": {
+        "step1": {
+          "title": "📝 Take the skin quiz",
+          "description": "Our skincare quiz takes just 2 minutes and helps us understand your unique skin type and specific needs.\n\nBy answering a few simple questions about your skin, lifestyle and preferences, we can create a tailored routine just for you.\n\nThe quiz analyzes factors like skin type, concerns, age and environment to give the most relevant recommendations." 
+        },
+        "step2": {
+          "title": "🎯 Get recommendations",
+          "description": "Based on your answers, you receive a personal skincare plan with product recommendations specifically selected for your skin type and needs.\n\nOur approach combines traditional skincare knowledge with modern science to create a complete routine.\n\nYou’ll also get tips on how to use the products for optimal results." 
+        },
+        "step3": {
+          "title": "📈 Follow up",
+          "description": "We support your journey every week to ensure continuous improvements.\n\nWith regular check-ins we can adjust your routine and give you personalised tips.\n\nYou’ll get reminders and can document your progress to clearly see improvements over time." 
+        },
+        "step4": {
+          "title": "✨ Perfect skin!",
+          "description": "Within 3 months you will see a noticeable improvement in your skin’s quality and appearance.\n\nWith our natural CBD and CBG products and a personalised routine, your skin becomes balanced, clearer and radiant." 
+        }
+      }
+    }
   }
 } 
