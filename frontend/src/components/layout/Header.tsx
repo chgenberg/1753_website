@@ -36,6 +36,8 @@ export function Header() {
   const { user, logout } = useAuth()
   const langRef = useRef<HTMLDivElement | null>(null)
   const menuRef = useRef<HTMLDivElement | null>(null)
+  const headerRef = useRef<HTMLElement | null>(null)
+  const [headerHeight, setHeaderHeight] = useState<number>(0)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -53,6 +55,19 @@ export function Header() {
       setCurrentMessageIndex((prev) => (prev + 1) % TopBarMessages({ t }).length)
     }, 4000)
     return () => clearInterval(interval)
+  }, [])
+
+  // Measure header height to offset the drawer below it
+  useEffect(() => {
+    const measure = () => setHeaderHeight(headerRef.current?.offsetHeight || 0)
+    measure()
+    const ro = new ResizeObserver(measure)
+    if (headerRef.current) ro.observe(headerRef.current)
+    window.addEventListener('resize', measure)
+    return () => {
+      window.removeEventListener('resize', measure)
+      ro.disconnect()
+    }
   }, [])
 
   // Close language dropdown on outside click / ESC / route change
@@ -116,7 +131,7 @@ export function Header() {
       {/* Top bar removed per request */}
       
       {/* Main Header - full white background */}
-      <header className={`fixed top-0 left-0 right-0 z-40 bg-white transition-all duration-300 ${
+      <header ref={headerRef} className={`fixed top-0 left-0 right-0 z-40 bg-white transition-all duration-300 ${
         isScrolled ? 'shadow-lg' : 'shadow-md'
       }`}>
         <div className="container mx-auto px-4">
@@ -261,7 +276,7 @@ export function Header() {
           {/* Left Drawer Menu (all breakpoints) */}
           <AnimatePresence>
             {isMobileMenuOpen && (
-              <div className="fixed inset-0 z-[60]">
+              <div className="fixed left-0 right-0 bottom-0 z-[60]" style={{ top: headerHeight }}>
                 {/* Backdrop */}
                 <motion.div
                   initial={{ opacity: 0 }}
