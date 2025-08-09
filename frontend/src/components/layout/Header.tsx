@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
@@ -34,10 +34,14 @@ export function Header() {
   const pathname = usePathname()
   const { cartCount, openCart } = useCart()
   const { user, logout } = useAuth()
+  const langRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10)
+      // Close dropdowns on scroll for safety
+      setIsLangOpen(false)
+      setActiveDropdown(null)
     }
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
@@ -49,6 +53,25 @@ export function Header() {
     }, 4000)
     return () => clearInterval(interval)
   }, [])
+
+  // Close language dropdown on outside click / ESC / route change
+  useEffect(() => {
+    const onDocClick = (e: MouseEvent) => {
+      if (langRef.current && !langRef.current.contains(e.target as Node)) {
+        setIsLangOpen(false)
+      }
+    }
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setIsLangOpen(false) }
+    document.addEventListener('mousedown', onDocClick)
+    window.addEventListener('keydown', onKey)
+    return () => { document.removeEventListener('mousedown', onDocClick); window.removeEventListener('keydown', onKey) }
+  }, [])
+
+  useEffect(() => {
+    // When route changes, make sure all menus close
+    setIsLangOpen(false)
+    setActiveDropdown(null)
+  }, [pathname])
 
   const handleLogout = async () => {
     await logout()
@@ -356,7 +379,7 @@ export function Header() {
             {/* User & Cart - Far right */}
             <div className="flex items-center gap-2">
               {/* Locale Switcher */}
-              <div className="relative" onMouseLeave={() => setIsLangOpen(false)}>
+              <div ref={langRef} className="relative">
                 <button
                   className="px-3 py-2 text-sm rounded-lg hover:bg-gray-100 border border-gray-200"
                   aria-haspopup="listbox"
@@ -616,6 +639,14 @@ export function Header() {
           onClick={() => {
             setShowUserDropdown(false)
           }}
+        />
+      )}
+      {/* Optional overlay when language dropdown is open on mobile to ensure outside click closes it */}
+      {isLangOpen && (
+        <div
+          className="fixed inset-0 z-20 md:hidden"
+          onClick={() => setIsLangOpen(false)}
+          aria-hidden
         />
       )}
     </>
