@@ -1,12 +1,9 @@
 import type { Metadata } from 'next'
 import { Inter, Playfair_Display } from 'next/font/google'
-import { NextIntlClientProvider } from 'next-intl'
-import { getMessages } from 'next-intl/server'
 import { Toaster } from 'react-hot-toast'
 import { CartProvider } from '@/contexts/CartContext'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { CartDrawer } from '@/components/cart/CartDrawer'
-import CookieBanner from '@/components/cookies/CookieBanner'
 import './globals.css'
 
 const inter = Inter({ 
@@ -41,6 +38,9 @@ export const metadata: Metadata = {
     languages: {
       'sv': '/sv',
       'en': '/en',
+      'es': '/es',
+      'de': '/de',
+      'fr': '/fr',
     },
   },
   openGraph: {
@@ -83,35 +83,27 @@ interface Props {
   params?: { locale?: string }
 }
 
-export default async function RootLayout({
-  children,
-  params
-}: Props) {
+export default function RootLayout({ children, params }: Props) {
   const locale = params?.locale || 'sv'
-  const messages = await getMessages()
-
   return (
     <html lang={locale} data-scroll-behavior="smooth" className={`${inter.variable} ${playfair.variable}`}>
       <body className="font-sans">
-        <NextIntlClientProvider messages={messages}>
-          <AuthProvider>
-            <CartProvider>
-              {children}
-              <CartDrawer />
-              <CookieBanner />
-              <Toaster 
-                position="top-right"
-                toastOptions={{
-                  duration: 4000,
-                  style: {
-                    background: '#363636',
-                    color: '#fff',
-                  },
-                }}
-              />
-            </CartProvider>
-          </AuthProvider>
-        </NextIntlClientProvider>
+        <AuthProvider>
+          <CartProvider>
+            {children}
+            <CartDrawer />
+            <Toaster 
+              position="top-right"
+              toastOptions={{
+                duration: 4000,
+                style: {
+                  background: '#363636',
+                  color: '#fff',
+                },
+              }}
+            />
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   )
