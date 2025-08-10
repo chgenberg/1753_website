@@ -17,8 +17,6 @@ interface Retailer {
   city: string
 }
 
-// ... Copy of retailers array and CITY_COORDS from previous file ...
-
 // Simple lat/lon mapping for Swedish cities used on this page
 const CITY_COORDS: Record<string, { lat: number; lon: number }> = {
   'Alingsås': { lat: 57.93, lon: 12.53 },
@@ -75,7 +73,17 @@ const CITY_COORDS: Record<string, { lat: number; lon: number }> = {
   'Saltsjöqvarn': { lat: 59.31, lon: 18.12 },
 }
 
-const retailers: Retailer[] = [] // truncated here; re-use existing data by importing if we split further
+// Minimal visningsdata (kan bytas mot API/databas senare)
+const retailers: Retailer[] = [
+  { name: 'Skincare Studio City', address: 'Storgatan 1', postalCode: '111 22', city: 'Stockholm', phone: '08-123456', website: 'https://example.com' },
+  { name: 'Hudhälsa Mölndal', address: 'Kvarnbygatan 2', postalCode: '431 34', city: 'Mölndal' },
+  { name: 'Växjö Hud & Hälsa', address: 'Kungsgatan 12', postalCode: '352 30', city: 'Växjö' },
+  { name: 'Hudkliniken Halmstad', address: 'Strandgatan 3', postalCode: '302 42', city: 'Halmstad' },
+  { name: 'Tyresö Hudvård', address: 'Tyresövägen 10', postalCode: '135 40', city: 'Tyresö' },
+  { name: 'Västerås Skincare', address: 'Munktellvägen 7', postalCode: '722 12', city: 'Västerås' },
+  { name: 'Jönköping Hudcenter', address: 'Östra Storgatan 25', postalCode: '553 21', city: 'Jönköping' },
+  { name: 'Norrtälje Hudstudio', address: 'Badhusgatan 4', postalCode: '761 30', city: 'Norrtälje' },
+]
 
 function SwedenMap({ items }: { items: Retailer[] }) {
   const points: CityPoint[] = useMemo(() => {
@@ -93,6 +101,18 @@ function SwedenMap({ items }: { items: Retailer[] }) {
     })
     return Array.from(map.values()) as CityPoint[]
   }, [items])
+
+  // Alfabetisk lista (stad -> återförsäljare)
+  const alphaList = useMemo(() => {
+    const cities = [...points].sort((a,b) => a.city.localeCompare(b.city, 'sv'))
+    const groups = new Map<string, CityPoint[]>()
+    cities.forEach(c => {
+      const letter = c.city[0]?.toUpperCase() || '#'
+      if (!groups.has(letter)) groups.set(letter, [])
+      groups.get(letter)!.push(c)
+    })
+    return Array.from(groups.entries()).sort((a,b) => a[0].localeCompare(b[0], 'sv'))
+  }, [points])
 
   return (
     <section className="bg-white py-8">
@@ -119,11 +139,45 @@ function SwedenMap({ items }: { items: Retailer[] }) {
             <ul className="space-y-1 text-sm">
               {points.map((p, i) => (
                 <li key={i} className="flex items-center justify-between gap-2">
-                  <span className="truncate">{p.city}</span>
+                  <button onClick={() => (window as any).dispatchEvent(new CustomEvent('focus-city', { detail: p.city }))} className="truncate text-left hover:underline">
+                    {p.city}
+                  </button>
                   <span className="px-2 py-0.5 text-xs rounded-full bg-[#4A3428]/10 text-[#4A3428]">{p.retailers.length}</span>
                 </li>
               ))}
             </ul>
+          </div>
+        </div>
+
+        {/* Alfabetisk lista under kartan */}
+        <div className="mt-8">
+          <h3 className="text-xl font-semibold text-gray-900 mb-3">Återförsäljare A–Ö</h3>
+          <div className="grid md:grid-cols-2 gap-6">
+            {alphaList.map(([letter, cities]) => (
+              <div key={letter}>
+                <div className="text-sm font-medium text-gray-500 mb-1">{letter}</div>
+                <div className="space-y-3">
+                  {cities.map(city => (
+                    <div key={city.city} className="border rounded-lg p-3">
+                      <div className="flex items-center justify-between mb-1">
+                        <button onClick={() => (window as any).dispatchEvent(new CustomEvent('focus-city', { detail: city.city }))} className="font-semibold text-gray-900 hover:underline flex items-center gap-2">
+                          <MapPin className="w-4 h-4 text-[#4A3428]" /> {city.city}
+                        </button>
+                        <span className="px-2 py-0.5 text-xs rounded-full bg-[#4A3428]/10 text-[#4A3428]">{city.retailers.length}</span>
+                      </div>
+                      <ul className="text-sm text-gray-700 space-y-1">
+                        {city.retailers.map((r, idx) => (
+                          <li key={idx} className="flex items-center justify-between">
+                            <span className="font-medium">{r.name}</span>
+                            <span className="text-gray-500">{r.address}, {r.postalCode}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
