@@ -10,6 +10,7 @@ import { useTranslations } from 'next-intl'
 export function HeroSection() {
   const t = useTranslations()
   const [isMobile, setIsMobile] = useState(false)
+  const [rating, setRating] = useState<{ avg: number; total: number } | null>(null)
   const [modalContent, setModalContent] = useState<{
     title: string;
     description: string;
@@ -22,6 +23,23 @@ export function HeroSection() {
     checkMobile()
     window.addEventListener('resize', checkMobile)
     return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
+  useEffect(() => {
+    // Fetch aggregated rating from reviews stats endpoint (proxy)
+    const fetchStats = async () => {
+      try {
+        // Use a representative product stats endpoint or a dedicated summary endpoint if available.
+        const res = await fetch('/api/reviews/stats')
+        if (res.ok) {
+          const json = await res.json()
+          const avg = json?.averageRating || json?.data?.averageRating || 4.9
+          const total = json?.totalReviews || json?.data?.totalReviews || 1245
+          setRating({ avg, total })
+        }
+      } catch {}
+    }
+    fetchStats()
   }, [])
 
   // Step descriptions for the modal
@@ -226,7 +244,9 @@ export function HeroSection() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div className="flex items-center gap-2 text-amber-600">
             {[...Array(5)].map((_,i) => <Star key={i} className="w-4 h-4 fill-amber-500 text-amber-500" />)}
-            <span className="text-sm text-gray-700">4.9/5 • 1 245 omdömen</span>
+            <span className="text-sm text-gray-700">
+              {(rating?.avg ?? 4.9).toFixed(1)}/5 • {rating?.total ?? 1245} omdömen
+            </span>
           </div>
           <div
             role="region"
