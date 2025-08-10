@@ -26,6 +26,7 @@ import rawMaterialsRoutes from './routes/rawMaterials'
 import contactRoutes from './routes/contact'
 import orderRoutes from './routes/orders'
 import discountRoutes from './routes/discounts'
+import retailersRoutes from './routes/retailers'
 
 // Validate environment variables
 const envConfig = validateEnv()
@@ -138,6 +139,7 @@ app.use('/api/blog', blogRoutes)
 app.use('/api/raw-materials', rawMaterialsRoutes)
 app.use('/api/contact', contactRoutes)
 app.use('/api/discounts', discountRoutes)
+app.use('/api/retailers', retailersRoutes)
 
 // Debug: Log all requests to /api/orders
 app.use('/api/orders', (req, res, next) => {

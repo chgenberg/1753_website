@@ -1,0 +1,10 @@
+[
+  { "name": "Skincare Studio City", "address": "Storgatan 1", "postalCode": "111 22", "city": "Stockholm", "phone": "08-123456", "website": "https://example.com" },
+  { "name": "Hudhälsa Mölndal", "address": "Kvarnbygatan 2", "postalCode": "431 34", "city": "Mölndal" },
+  { "name": "Växjö Hud & Hälsa", "address": "Kungsgatan 12", "postalCode": "352 30", "city": "Växjö" },
+  { "name": "Hudkliniken Halmstad", "address": "Strandgatan 3", "postalCode": "302 42", "city": "Halmstad" },
+  { "name": "Tyresö Hudvård", "address": "Tyresövägen 10", "postalCode": "135 40", "city": "Tyresö" },
+  { "name": "Västerås Skincare", "address": "Munktellvägen 7", "postalCode": "722 12", "city": "Västerås" },
+  { "name": "Jönköping Hudcenter", "address": "Östra Storgatan 25", "postalCode": "553 21", "city": "Jönköping" },
+  { "name": "Norrtälje Hudstudio", "address": "Badhusgatan 4", "postalCode": "761 30", "city": "Norrtälje" }
+] 
