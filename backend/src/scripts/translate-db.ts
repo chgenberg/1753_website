@@ -17,7 +17,7 @@ async function translateText(client: OpenAI, text: string, target: Locale): Prom
   if (!text) return text
   const prompt = `Translate to ${target}. Keep placeholders, markdown and HTML tags intact. Keep product/INCI names unchanged. If already in target language, return as-is.\n\nText:\n${text}`
   const completion = await client.chat.completions.create({
-    model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
+    model: process.env.OPENAI_MODEL || 'gpt-5-mini',
     messages: [{ role: 'user', content: prompt }],
     temperature: 0.2,
     max_tokens: 1200

@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
     console.log('Quiz API called with userInfo:', userInfo)
     console.log('OpenAI API Key available:', !!process.env.OPENAI_API_KEY)
 
-    const model = process.env.OPENAI_MODEL || 'gpt-4o-mini' // Set to 'gpt-5' when available
+    const model = process.env.OPENAI_MODEL || 'gpt-5-mini' // Set to 'gpt-5' when available
 
     // Always generate comprehensive plan with OpenAI
     if (process.env.OPENAI_API_KEY) {

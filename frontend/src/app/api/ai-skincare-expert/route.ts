@@ -53,7 +53,7 @@ OM FRÅGAN INTE ÄR HUDRELATERAD:
 Svara vänligt: "Jag kan tyvärr inte svara på den frågan men fråga mig gärna något annat om hud, hudvård eller hudhälsa. 😊"`
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4-turbo-preview",
+      model: process.env.OPENAI_MODEL || "gpt-5-mini",
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: message }

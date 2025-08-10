@@ -49,7 +49,7 @@ async function translateWithOpenAI(text, targetLocale) {
   const client = new OpenAI({ apiKey })
   const prompt = `Translate to ${targetLocale}. Keep placeholders and HTML tags intact. If untranslatable, return original.\n\nText: ${text}`
   const completion = await client.chat.completions.create({
-    model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
+    model: process.env.OPENAI_MODEL || 'gpt-5-mini',
     messages: [{ role: 'user', content: prompt }],
     temperature: 0.2,
     max_tokens: 300

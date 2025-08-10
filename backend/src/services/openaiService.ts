@@ -75,7 +75,7 @@ Ge svar på svenska i JSON-format:
       `
 
       const completion = await openai.chat.completions.create({
-        model: "gpt-4",
+        model: process.env.OPENAI_MODEL || "gpt-5-mini",
         messages: [
           {
             role: "system",
@@ -137,7 +137,7 @@ Skriv på svenska, max 150 ord.
       `
 
       const completion = await openai.chat.completions.create({
-        model: "gpt-4",
+        model: process.env.OPENAI_MODEL || "gpt-5-mini",
         messages: [
           {
             role: "system",
