@@ -11,6 +11,7 @@ export function HeroSection() {
   const t = useTranslations()
   const [isMobile, setIsMobile] = useState(false)
   const [rating, setRating] = useState<{ avg: number; total: number } | null>(null)
+  const [featuredQuotes, setFeaturedQuotes] = useState<string[]>([])
   const [modalContent, setModalContent] = useState<{
     title: string;
     description: string;
@@ -42,6 +43,23 @@ export function HeroSection() {
     fetchStats()
   }, [])
 
+  useEffect(() => {
+    // Fetch a few featured reviews to display as cycling quotes
+    const fetchFeatured = async () => {
+      try {
+        const res = await fetch('/api/reviews/featured?limit=6', { next: { revalidate: 300 } })
+        if (!res.ok) return
+        const json = await res.json()
+        const list = json?.data || json?.reviews || []
+        const texts: string[] = list
+          .map((r: any) => (r.title || r.body || '').toString().trim())
+          .filter((s: string) => s.length > 10)
+        if (texts.length >= 2) setFeaturedQuotes(texts.slice(0, 6))
+      } catch {}
+    }
+    fetchFeatured()
+  }, [])
+
   // Step descriptions for the modal
   const stepDescriptions = {
     'Gör hud-QUIZ': {
@@ -62,7 +80,7 @@ export function HeroSection() {
     }
   } as const
 
-  const quotes = [
+  const fallbackQuotes = [
     'Fantastiska produkter – min hud har aldrig mått bättre.',
     'Snabbt quiz och klockrena rekommendationer.',
     'Naturligt och skonsamt – stor skillnad på två veckor.'
@@ -71,10 +89,11 @@ export function HeroSection() {
   const pauseRef = useRef(false)
   useEffect(() => {
     const id = setInterval(() => {
-      if (!pauseRef.current) setQIdx(i => (i + 1) % quotes.length)
+      const total = (featuredQuotes.length || fallbackQuotes.length)
+      if (!pauseRef.current && total > 0) setQIdx(i => (i + 1) % total)
     }, 3500)
     return () => clearInterval(id)
-  }, [])
+  }, [featuredQuotes])
 
   return (
     <section className="relative min-h-screen overflow-hidden">
@@ -256,7 +275,7 @@ export function HeroSection() {
             onMouseLeave={() => { pauseRef.current = false }}
             className="text-sm text-gray-700 italic"
           >
-            “{quotes[qIdx]}”
+            “{(featuredQuotes.length ? featuredQuotes : fallbackQuotes)[qIdx] ?? ''}”
           </div>
         </div>
       </div>
