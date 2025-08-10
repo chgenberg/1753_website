@@ -12,7 +12,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { 
   ShoppingBag, User, ChevronDown, LogOut,
   Sparkles, Leaf, ShieldCheck, Package,
-  BookOpen, Phone, Info, Home, Menu, X, PenTool, MapPin
+  BookOpen, Phone, Info, Home, Menu, X, PenTool, MapPin, Globe
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -195,28 +195,36 @@ export function Header() {
               {/* Locale Switcher */}
               <div ref={langRef} className="relative">
                 <button
-                  className="px-3 py-2 text-sm rounded-lg hover:bg-gray-100 border border-gray-200"
+                  className="px-3 py-2 text-sm rounded-lg hover:bg-gray-100 border border-gray-200 flex items-center gap-2"
                   aria-haspopup="listbox"
                   aria-label="Byt språk"
                   aria-expanded={isLangOpen}
                   onClick={() => setIsLangOpen((o) => !o)}
                 >
-                  {pathname.split('/')[1] || 'sv'}
+                  <Globe className="w-4 h-4 text-gray-600" />
+                  <span className="uppercase">{pathname.split('/')[1] || 'sv'}</span>
+                  <ChevronDown className="w-3 h-3 text-gray-500" />
                 </button>
                 {isLangOpen && (
-                  <div className="absolute right-0 mt-2 w-32 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
-                    {['sv', 'en', 'es', 'de', 'fr'].map((loc) => {
-                      const href = buildLocaleHref(loc)
-                      const isActiveLoc = pathname.startsWith(`/${loc}`)
+                  <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                    {[
+                      { code: 'sv', label: 'Svenska' },
+                      { code: 'en', label: 'English' },
+                      { code: 'es', label: 'Español' },
+                      { code: 'de', label: 'Deutsch' },
+                      { code: 'fr', label: 'Français' }
+                    ].map(({code, label}) => {
+                      const href = buildLocaleHref(code)
+                      const isActiveLoc = pathname.startsWith(`/${code}`)
                       return (
                         <button
-                          key={loc}
-                          onClick={() => { setIsLangOpen(false); router.push(href) }}
+                          key={code}
+                          onClick={() => { setIsLangOpen(false); router.push(buildLocaleHref(code)) }}
                           className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-50 ${isActiveLoc ? 'text-[#4A3428] font-medium' : 'text-gray-700'}`}
                           role="option"
                           aria-selected={isActiveLoc}
                         >
-                          {loc.toUpperCase()}
+                          {label}
                         </button>
                       )
                     })}

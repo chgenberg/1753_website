@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ChevronRight, Sparkles, Target, TrendingUp, Star, ArrowRight, X } from 'lucide-react'
@@ -43,6 +43,20 @@ export function HeroSection() {
       description: t('home.hero.modal.step4.description')
     }
   } as const
+
+  const quotes = [
+    'Fantastiska produkter – min hud har aldrig mått bättre.',
+    'Snabbt quiz och klockrena rekommendationer.',
+    'Naturligt och skonsamt – stor skillnad på två veckor.'
+  ]
+  const [qIdx, setQIdx] = useState(0)
+  const pauseRef = useRef(false)
+  useEffect(() => {
+    const id = setInterval(() => {
+      if (!pauseRef.current) setQIdx(i => (i + 1) % quotes.length)
+    }, 3500)
+    return () => clearInterval(id)
+  }, [])
 
   return (
     <section className="relative min-h-screen overflow-hidden">
@@ -206,6 +220,26 @@ export function HeroSection() {
           </motion.div>
         </div>
       )}
+
+      {/* Trust strip just under hero */}
+      <div className="bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 border-t border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <div className="flex items-center gap-2 text-amber-600">
+            {[...Array(5)].map((_,i) => <Star key={i} className="w-4 h-4 fill-amber-500 text-amber-500" />)}
+            <span className="text-sm text-gray-700">4.9/5 • 1 245 omdömen</span>
+          </div>
+          <div
+            role="region"
+            aria-label="Kundcitat"
+            aria-live="off"
+            onMouseEnter={() => { pauseRef.current = true }}
+            onMouseLeave={() => { pauseRef.current = false }}
+            className="text-sm text-gray-700 italic"
+          >
+            “{quotes[qIdx]}”
+          </div>
+        </div>
+      </div>
     </section>
   )
 } 
