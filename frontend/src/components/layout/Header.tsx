@@ -46,29 +46,9 @@ const menuStructure: MenuItem[] = [
   {
     id: 'products',
     label: 'navigation.products',
-    href: '/products',
+    href: '/products?category=skincare',
     icon: Package,
-    featured: true,
-    children: [
-      {
-        label: 'menu.products.skincare',
-        href: '/products?category=skincare',
-        icon: Heart,
-        description: 'menu.products.skincareDesc'
-      },
-      {
-        label: 'menu.products.duo',
-        href: '/products?category=duo',
-        icon: Star,
-        description: 'menu.products.duoDesc'
-      },
-      {
-        label: 'navigation.allProducts',
-        href: '/products',
-        icon: Package,
-        description: 'menu.products.allDesc'
-      }
-    ]
+    simple: true
   },
   {
     id: 'about',
