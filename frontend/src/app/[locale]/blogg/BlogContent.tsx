@@ -82,15 +82,38 @@ export default function BlogContent({ posts }: BlogContentProps) {
 
   // Assign images sequentially from Kapitel 1..64 based on visible index to avoid near-duplicates
   const assignedImages = useMemo(() => {
-    // Use a stride to spread images better across the grid
     const N = portraitImages.length
-    const stride = 5 // relatively prime w.r.t common column counts (3,4)
-    return filteredPosts.map((post, index) => {
-      const explicit = (post as BlogPostWithImages).image
-      if (explicit) return explicit
-      const imgIdx = (index * stride) % N
+    const stride = 5 // relatively prime vs common column counts
+    const windowSize = 8 // ensure no repeats within ~two grid rows
+
+    const result: string[] = []
+    const recent: string[] = []
+
+    const makeFallback = (visibleIndex: number, altOffset: number = 0) => {
+      const imgIdx = ((visibleIndex * stride) + altOffset) % N
       return `/Bilder_kvinnor%20boken_2025/${portraitImages[imgIdx]}`
+    }
+
+    filteredPosts.forEach((post, index) => {
+      // Prefer explicit image when available
+      let img = (post as BlogPostWithImages).image || makeFallback(index)
+
+      // If explicit or fallback collides with a recent image, pick a nearby alternative deterministically
+      if (recent.includes(img)) {
+        let alt = 1
+        while (recent.includes(makeFallback(index, alt))) {
+          alt += 1
+          if (alt > N) break
+        }
+        img = makeFallback(index, alt)
+      }
+
+      result.push(img)
+      recent.push(img)
+      if (recent.length > windowSize) recent.shift()
     })
+
+    return result
   }, [filteredPosts])
 
   // Function to get fallback image for a post when no explicit image found
