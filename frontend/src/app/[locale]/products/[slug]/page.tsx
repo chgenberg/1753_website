@@ -378,7 +378,10 @@ export default function ProductPage() {
                 <div className="flex flex-wrap gap-2">
                   {product.skinTypes.map((type) => (
                     <span key={type} className="bg-[#F3FAF9] text-[#2C6F66] px-3 py-1 rounded-full text-sm">
-                      {t(`skinTypes.${type}`)}
+                      {(() => {
+                        const known = new Set(['dry','oily','combination','sensitive','normal','acne','mature'])
+                        return known.has(type) ? t(`skinTypes.${type}`) : String(type)
+                      })()}
                     </span>
                   ))}
                 </div>
