@@ -48,7 +48,7 @@ export function Footer() {
     return `/${currentLocale}${href}`
   }
   return (
-    <footer className="bg-[#4A3428] text-white">
+    <footer className="bg-[#FCB237] text-white">
       {/* Main Footer */}
       <div className="container mx-auto px-4 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
@@ -73,7 +73,7 @@ export function Footer() {
                 href="https://facebook.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-[#00937c] transition-colors duration-300"
+                className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors duration-300"
               >
                 <Facebook className="w-5 h-5" />
               </a>
@@ -81,7 +81,7 @@ export function Footer() {
                 href="https://instagram.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-[#00937c] transition-colors duration-300"
+                className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors duration-300"
               >
                 <Instagram className="w-5 h-5" />
               </a>
@@ -89,7 +89,7 @@ export function Footer() {
                 href="https://youtube.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-[#00937c] transition-colors duration-300"
+                className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors duration-300"
               >
                 <Youtube className="w-5 h-5" />
               </a>
@@ -189,7 +189,7 @@ export function Footer() {
       </div>
 
       {/* Bottom Bar */}
-      <div className="bg-[#4A3428]">
+      <div className="bg-[#E79C1A]">
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-white/60 text-sm">

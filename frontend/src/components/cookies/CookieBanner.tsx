@@ -119,8 +119,8 @@ export default function CookieBanner() {
                   <div className="p-6 md:p-8">
                     <div className="flex items-start gap-4">
                       <div className="flex-shrink-0">
-                        <div className="w-12 h-12 bg-[#4A3428] bg-opacity-10 rounded-full flex items-center justify-center">
-                          <Cookie className="w-6 h-6 text-[#4A3428]" />
+                        <div className="w-12 h-12 bg-[#FCB237] bg-opacity-10 rounded-full flex items-center justify-center">
+                          <Cookie className="w-6 h-6 text-[#FCB237]" />
                         </div>
                       </div>
                       
@@ -133,7 +133,7 @@ export default function CookieBanner() {
                         </p>
                         
                         <div className="flex flex-col sm:flex-row gap-3">
-                          <button onClick={acceptAll} className="px-6 py-3 bg-[#4A3428] text-white rounded-full font-medium hover:bg-[#3A2418] transition-colors">
+                          <button onClick={acceptAll} className="px-6 py-3 bg-[#FCB237] text-white rounded-full font-medium hover:bg-[#E79C1A] transition-colors">
                             {t('cookieBanner.acceptAll')}
                           </button>
                           
@@ -141,7 +141,7 @@ export default function CookieBanner() {
                             {t('cookieBanner.onlyNecessary')}
                           </button>
                           
-                          <button onClick={() => setShowSettings(!showSettings)} className="px-6 py-3 border-2 border-[#4A3428] text-[#4A3428] rounded-full font-medium hover:bg-[#4A3428] hover:text-white transition-colors flex items-center justify-center gap-2">
+                          <button onClick={() => setShowSettings(!showSettings)} className="px-6 py-3 border-2 border-[#FCB237] text-[#FCB237] rounded-full font-medium hover:bg-[#FCB237] hover:text-white transition-colors flex items-center justify-center gap-2">
                             <Settings className="w-4 h-4" />
                             {t('cookieBanner.customize')}
                           </button>
@@ -149,11 +149,11 @@ export default function CookieBanner() {
                         
                         <p className="text-sm text-gray-500 mt-4">
                           {t('cookieBanner.learnMore')}{' '}
-                          <a href="/integritetspolicy" className="text-[#4A3428] hover:underline">
+                          <a href="/integritetspolicy" className="text-[#FCB237] hover:underline">
                             {t('navigation.privacyPolicy')}
                           </a>
                           {' '}{t('cookieBanner.and')}{' '}
-                          <a href="/cookies" className="text-[#4A3428] hover:underline">
+                          <a href="/cookies" className="text-[#FCB237] hover:underline">
                             {t('navigation.cookies')}
                           </a>
                         </p>

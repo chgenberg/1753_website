@@ -271,7 +271,7 @@ export function Header() {
   return (
     <>
       {/* Restored Top Bar */}
-      <div ref={topBarRef} className="fixed top-0 left-0 right-0 bg-[#00937C] text-white text-xs sm:text-sm py-2 z-50">
+      <div ref={topBarRef} className="fixed top-0 left-0 right-0 bg-[#FCB237] text-white text-xs sm:text-sm py-2 z-50">
         <div className="container mx-auto px-4">
           <AnimatePresence mode="wait">
             <motion.div
@@ -380,7 +380,7 @@ export function Header() {
                         <Link
                           href={localize(item.href!)}
                           className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-all rounded-lg hover:bg-gray-50 ${
-                            isItemActive ? 'text-[#00937C]' : 'text-gray-700 hover:text-[#00937C]'
+                            isItemActive ? 'text-[#FCB237]' : 'text-gray-700 hover:text-[#FCB237]'
                           }`}
                         >
                           <Icon className="w-4 h-4" />
@@ -390,7 +390,7 @@ export function Header() {
                         <>
                           <button
                             className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-all rounded-lg hover:bg-gray-50 ${
-                              isItemActive ? 'text-[#00937C]' : 'text-gray-700 hover:text-[#00937C]'
+                              isItemActive ? 'text-[#FCB237]' : 'text-gray-700 hover:text-[#FCB237]'
                             } ${item.featured ? 'bg-[#FCB237]/10 hover:bg-[#FCB237]/20' : ''}`}
                           >
                             <Icon className="w-4 h-4" />
@@ -424,14 +424,14 @@ export function Header() {
                                         }`}
                                       >
                                         <div className={`p-2 rounded-lg ${
-                                          child.featured ? 'bg-[#FCB237]/20' : 'bg-gray-100 group-hover:bg-[#00937C]/10'
+                                          child.featured ? 'bg-[#FCB237]/20' : 'bg-gray-100 group-hover:bg-[#FCB237]/10'
                                         }`}>
                                           <ChildIcon className={`w-4 h-4 ${
-                                            child.featured ? 'text-[#FCB237]' : 'text-gray-600 group-hover:text-[#00937C]'
+                                            child.featured ? 'text-[#FCB237]' : 'text-gray-600 group-hover:text-[#FCB237]'
                                           }`} />
                                         </div>
                                         <div className="flex-1">
-                                          <h4 className="text-sm font-medium text-gray-900 group-hover:text-[#00937C] flex items-center gap-2">
+                                          <h4 className="text-sm font-medium text-gray-900 group-hover:text-[#FCB237] flex items-center gap-2">
                                             {child.label.includes('.') ? t(child.label) : child.label}
                                             {child.featured && (
                                               <span className="text-xs bg-[#FCB237] text-white px-2 py-0.5 rounded-full">Ny!</span>
@@ -441,7 +441,7 @@ export function Header() {
                                             <p className="text-xs text-gray-500 mt-0.5">{child.description}</p>
                                           )}
                                         </div>
-                                        <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-[#00937C] transition-transform group-hover:translate-x-1" />
+                                        <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-[#FCB237] transition-transform group-hover:translate-x-1" />
                                       </Link>
                                     )
                                   })}
@@ -487,7 +487,7 @@ export function Header() {
                         <button
                           key={code}
                           onClick={() => { setIsLangOpen(false); router.push(buildLocaleHref(code)) }}
-                          className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-50 ${isActiveLoc ? 'text-[#00937C] font-medium' : 'text-gray-700'}`}
+                          className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-50 ${isActiveLoc ? 'text-[#FCB237] font-medium' : 'text-gray-700'}`}
                           role="option"
                           aria-selected={isActiveLoc}
                         >
