@@ -67,7 +67,7 @@ const nextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://1753skincare.com https://1753websitebackend-production.up.railway.app; font-src 'self' https: data:; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.judge.me; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://1753skincare.com https://1753websitebackend-production.up.railway.app; font-src 'self' https: data:; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
           },
         ],
       },

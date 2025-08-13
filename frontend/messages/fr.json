@@ -164,11 +164,14 @@
     "sortHighest": "Meilleure note d’abord",
     "sortLowest": "Plus faible note d’abord",
     "resetFilters": "Réinitialiser les filtres",
-    "verifiedPurchase": "Achat vérifié",
-    "loading": "Chargement...",
-    "loadMore": "Voir plus",
-    "noReviews": "Aucun avis trouvé",
-    "readAllReviews": "LIRE TOUS LES AVIS"
+          "verifiedPurchase": "Achat vérifié",
+      "prevAria": "Aller à l’avis précédent",
+      "nextAria": "Aller à l’avis suivant",
+      "gotoAria": "Aller à l’avis {index}",
+      "loading": "Chargement...",
+      "loadMore": "Voir plus",
+      "noReviews": "Aucun avis trouvé",
+      "readAllReviews": "LIRE TOUS LES AVIS"
   },
   "Quiz": {
     "title": "Quiz d’analyse de la peau",

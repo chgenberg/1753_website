@@ -164,11 +164,14 @@
     "sortHighest": "Mejor calificación primero",
     "sortLowest": "Peor calificación primero",
     "resetFilters": "Restablecer filtros",
-    "verifiedPurchase": "Compra verificada",
-    "loading": "Cargando...",
-    "loadMore": "Ver más",
-    "noReviews": "No se encontraron reseñas",
-    "readAllReviews": "LEER TODAS LAS RESEÑAS"
+          "verifiedPurchase": "Compra verificada",
+      "prevAria": "Ir a la reseña anterior",
+      "nextAria": "Ir a la siguiente reseña",
+      "gotoAria": "Ir a la reseña {index}",
+      "loading": "Cargando...",
+      "loadMore": "Ver más",
+      "noReviews": "No se encontraron reseñas",
+      "readAllReviews": "LEER TODAS LAS RESEÑAS"
   },
   "Quiz": {
     "title": "Cuestionario de análisis de la piel",

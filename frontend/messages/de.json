@@ -164,11 +164,14 @@
     "sortHighest": "Höchste Bewertung zuerst",
     "sortLowest": "Niedrigste Bewertung zuerst",
     "resetFilters": "Filter zurücksetzen",
-    "verifiedPurchase": "Verifizierter Kauf",
-    "loading": "Wird geladen...",
-    "loadMore": "Mehr anzeigen",
-    "noReviews": "Keine Bewertungen gefunden",
-    "readAllReviews": "ALLE BEWERTUNGEN LESEN"
+          "verifiedPurchase": "Verifizierter Kauf",
+      "prevAria": "Zum vorherigen Erfahrungsbericht",
+      "nextAria": "Zum nächsten Erfahrungsbericht",
+      "gotoAria": "Gehe zu Erfahrungsbericht {index}",
+      "loading": "Wird geladen...",
+      "loadMore": "Mehr anzeigen",
+      "noReviews": "Keine Bewertungen gefunden",
+      "readAllReviews": "ALLE BEWERTUNGEN LESEN"
   },
   "Quiz": {
     "title": "Hautanalyse‑Quiz",

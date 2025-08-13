@@ -101,8 +101,8 @@ export function HeroSection() {
       <div className="absolute inset-0 z-0">
         <Image
           src={isMobile 
-            ? "/portrait_home/Omslag_2025_mobile.png"
-            : "/portrait_home/Omslag_2025_desktop.png"
+            ? "/Cannabis/cannabis_mobile.png"
+            : "/Cannabis/cannabis.png"
           }
           alt={t('home.hero.coverAlt')}
           fill
@@ -157,7 +157,7 @@ export function HeroSection() {
             <div className="flex flex-col sm:flex-row gap-4">
               <Link
                 href="/quiz"
-                className="inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-white bg-[#4A3428] hover:bg-[#3A2A1E] rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg"
+                className="inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-white bg-[#FCB237] hover:bg-[#E79C1A] rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg"
               >
                 <Sparkles className="w-5 h-5 mr-2" />
                 {t('home.hero.ctaQuiz')}
@@ -209,7 +209,7 @@ export function HeroSection() {
                       <p className="text-sm text-gray-600">{step.subtext}</p>
                     </div>
                     {index < 3 && (
-                      <div className="hidden sm:block w-8 h-0.5 bg-gradient-to-r from-[#8B6B47] to-transparent" />
+                      <div className="hidden sm:block w-8 h-0.5 bg-gradient-to-r from-[#00937C] to-transparent" />
                     )}
                   </motion.div>
                 ))}
@@ -250,7 +250,7 @@ export function HeroSection() {
             </div>
             <button
               onClick={() => setModalContent(null)}
-              className="mt-6 w-full px-6 py-3 bg-[#4A3428] text-white rounded-full hover:bg-[#3A2A1E] transition-colors font-medium"
+              className="mt-6 w-full px-6 py-3 bg-[#00937C] text-white rounded-full hover:bg-[#007363] transition-colors font-medium"
             >
               {t('common.close')}
             </button>
@@ -261,8 +261,8 @@ export function HeroSection() {
       {/* Trust strip just under hero */}
       <div className="bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 border-t border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-          <div className="flex items-center gap-2 text-amber-600">
-            {[...Array(5)].map((_,i) => <Star key={i} className="w-4 h-4 fill-amber-500 text-amber-500" />)}
+          <div className="flex items-center gap-2 text-[#FCB237]">
+            {[...Array(5)].map((_,i) => <Star key={i} className="w-4 h-4 fill-[#FCB237] text-[#FCB237]" />)}
             <span className="text-sm text-gray-700">
               {(rating?.avg ?? 4.9).toFixed(1)}/5 • {rating?.total ?? 1245} omdömen
             </span>

@@ -368,8 +368,21 @@ export default function DashboardPage() {
                           <div className="text-sm text-gray-600">{step.product?.name || 'Produkt'}</div>
                         </div>
                         {step.product?.images?.[0] && (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={step.product.images[0]} alt={step.product.name} className="w-10 h-10 object-cover rounded" />
+                          <div className="relative w-10 h-10">
+                            {/* Use next/image for optimization; sizes are fixed */}
+                            {(() => {
+                              const Img = require('next/image').default
+                              return (
+                                <Img
+                                  src={step.product!.images![0]}
+                                  alt={step.product!.name}
+                                  fill
+                                  sizes="40px"
+                                  className="object-cover rounded"
+                                />
+                              )
+                            })()}
+                          </div>
                         )}
                       </label>
                     ))}

@@ -38,6 +38,12 @@ export default function CookieBanner() {
     }
   }, [])
 
+  const emitConsentChanged = (prefs: CookiePreferences) => {
+    try {
+      window.dispatchEvent(new CustomEvent('consent-changed', { detail: prefs }))
+    } catch {}
+  }
+
   const applyPreferences = (prefs: CookiePreferences) => {
     if (prefs.analytics) {
       if (typeof window !== 'undefined' && window.gtag) {
@@ -58,6 +64,8 @@ export default function CookieBanner() {
         window._drip_allowed = false
       }
     }
+
+    emitConsentChanged(prefs)
   }
 
   const acceptAll = () => {

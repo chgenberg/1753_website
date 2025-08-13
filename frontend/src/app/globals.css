@@ -306,11 +306,11 @@ textarea:focus-visible {
 }
 
 .product-description blockquote {
-  @apply border-l-4 border-[#4A3428] pl-4 my-4 italic text-gray-600;
+  @apply border-l-4 border-[#00937C] pl-4 my-4 italic text-gray-600;
 }
 
 .product-description .tip-box {
-  @apply bg-[#F5F3F0] border-l-4 border-[#4A3428] p-4 my-6 rounded-r-lg;
+  @apply bg-[#F3FAF9] border-l-4 border-[#00937C] p-4 my-6 rounded-r-lg;
 }
 
 .product-description .guarantee-box {

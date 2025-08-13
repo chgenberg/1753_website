@@ -12,7 +12,8 @@ import { useAuth } from '@/contexts/AuthContext'
 import { 
   ShoppingBag, User, ChevronDown, LogOut,
   Sparkles, Leaf, ShieldCheck, Package,
-  BookOpen, Phone, Info, Home, Menu, X, PenTool, MapPin, Globe
+  BookOpen, Phone, Info, Home, Menu, X, PenTool, MapPin, Globe,
+  Heart, Star, ArrowRight, Brain, FlaskConical
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -21,6 +22,126 @@ const TopBarMessages = ({ t }: { t: (k: string) => string }) => ([
   { icon: <Leaf className="w-4 h-4" />, text: t('headerTopBar.naturalIngredients') },
   { icon: <ShieldCheck className="w-4 h-4" />, text: t('headerTopBar.openPurchase') },
 ])
+
+// Define types for menu structure
+type MenuItem = {
+  id: string
+  label: string
+  href?: string
+  icon: any
+  simple?: boolean
+  featured?: boolean
+  children?: {
+    label: string
+    href: string
+    icon: any
+    description: string
+    featured?: boolean
+    svOnly?: boolean
+  }[]
+}
+
+// Define menu structure with mother/child relationships
+const menuStructure: MenuItem[] = [
+  {
+    id: 'products',
+    label: 'navigation.products',
+    href: '/products',
+    icon: Package,
+    featured: true,
+    children: [
+      {
+        label: 'productsPage.categories.skincare',
+        href: '/products?category=skincare',
+        icon: Heart,
+        description: 'Naturlig hudvård med CBD & adaptogener'
+      },
+      {
+        label: 'productsPage.categories.duo',
+        href: '/products?category=duo',
+        icon: Star,
+        description: 'Perfekta kombinationer för din hud'
+      },
+      {
+        label: 'navigation.allProducts',
+        href: '/products',
+        icon: Package,
+        description: 'Se hela vårt sortiment'
+      }
+    ]
+  },
+  {
+    id: 'about',
+    label: 'navigation.about',
+    icon: Info,
+    children: [
+      {
+        label: 'navigation.aboutUs',
+        href: '/om-oss',
+        icon: Info,
+        description: 'Vår historia och värderingar'
+      },
+      {
+        label: 'Återförsäljare',
+        href: '/om-oss/aterforsaljare',
+        icon: MapPin,
+        description: 'Hitta 1753 nära dig',
+        svOnly: true
+      },
+      {
+        label: 'Q&A',
+        href: '/om-oss/faq',
+        icon: Brain,
+        description: 'Vanliga frågor och svar'
+      },
+      {
+        label: 'Våra ingredienser',
+        href: '/om-oss/ingredienser',
+        icon: FlaskConical,
+        description: 'Naturens kraftfulla råvaror'
+      }
+    ]
+  },
+  {
+    id: 'knowledge',
+    label: 'navigation.knowledge',
+    icon: BookOpen,
+    children: [
+      {
+        label: 'navigation.blog',
+        href: '/blogg',
+        icon: BookOpen,
+        description: 'Artiklar om hudvård & välmående'
+      },
+      {
+        label: 'E-bok: Weed Your Skin',
+        href: '/kunskap/e-bok',
+        icon: Star,
+        description: 'Din guide till naturlig hudvård',
+        featured: true
+      },
+      {
+        label: 'Quiz.title',
+        href: '/quiz',
+        icon: Brain,
+        description: 'Hitta din perfekta rutin'
+      },
+      {
+        label: 'Funktionella råvaror',
+        href: '/kunskap/funktionella-ravaror',
+        icon: Leaf,
+        description: 'Lär dig om våra ingredienser'
+      }
+    ]
+  },
+  {
+    id: 'contact',
+    label: 'navigation.contact',
+    href: '/kontakt',
+    icon: Phone,
+    simple: true
+  }
+]
 
 export function Header() {
   const t = useTranslations()
@@ -40,6 +161,7 @@ export function Header() {
   const [headerHeight, setHeaderHeight] = useState<number>(0)
   const topBarRef = useRef<HTMLDivElement | null>(null)
   const [topBarHeight, setTopBarHeight] = useState<number>(0)
+  const dropdownTimeoutRef = useRef<NodeJS.Timeout | null>(null)
  
   useEffect(() => {
     const handleScroll = () => {
@@ -132,10 +254,24 @@ export function Header() {
 
   const isSv = (pathname.split('/')[1] || 'sv') === 'sv'
 
+  // Handle dropdown hover with delay
+  const handleMouseEnter = (id: string) => {
+    if (dropdownTimeoutRef.current) {
+      clearTimeout(dropdownTimeoutRef.current)
+    }
+    setActiveDropdown(id)
+  }
+
+  const handleMouseLeave = () => {
+    dropdownTimeoutRef.current = setTimeout(() => {
+      setActiveDropdown(null)
+    }, 300)
+  }
+
   return (
     <>
       {/* Restored Top Bar */}
-      <div ref={topBarRef} className="fixed top-0 left-0 right-0 bg-[#4A3428] text-white text-xs sm:text-sm py-2 z-50">
+      <div ref={topBarRef} className="fixed top-0 left-0 right-0 bg-[#00937C] text-white text-xs sm:text-sm py-2 z-50">
         <div className="container mx-auto px-4">
           <AnimatePresence mode="wait">
             <motion.div
@@ -160,8 +296,8 @@ export function Header() {
         isScrolled ? 'shadow-lg' : 'shadow-md'
       }`} style={{ top: topBarHeight + 4 }}>
         <div className="container mx-auto px-4">
-          {/* Centered logo, hamburger left, actions right */}
-          <div className="relative flex items-center justify-between py-6 md:py-7">
+          {/* Mobile: Logo centered, hamburger left, actions right */}
+          <div className="flex lg:hidden items-center justify-between py-6">
             {/* Hamburger */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -175,9 +311,6 @@ export function Header() {
               )}
             </button>
 
-            {/* filler */}
-            <div className="w-10" />
-
             {/* Logo */}
             <Link href={localize('/')} className="absolute left-1/2 -translate-x-1/2">
               <Image
@@ -185,13 +318,147 @@ export function Header() {
                 alt="1753 Skincare"
                 width={200}
                 height={70}
-                className="h-16 w-auto md:h-20"
+                className="h-16 w-auto"
                 priority
               />
             </Link>
 
-            {/* User & Cart */}
+            {/* Mobile actions */}
             <div className="flex items-center gap-2">
+              {/* Cart */}
+              <button
+                onClick={openCart}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors relative"
+                aria-label="Varukorg"
+              >
+                <ShoppingBag className="w-5 h-5" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-[#FCB237] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
+                    {cartCount}
+                  </span>
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex items-center justify-between py-4">
+            {/* Logo */}
+            <Link href={localize('/')} className="mr-12">
+              <Image
+                src="/1753.png"
+                alt="1753 Skincare"
+                width={180}
+                height={63}
+                className="h-14 w-auto"
+                priority
+              />
+            </Link>
+
+            {/* Desktop Menu */}
+            <nav className="flex-1">
+              <ul className="flex items-center gap-8">
+                {menuStructure.map((item) => {
+                  const Icon = item.icon
+                  const isSimple = item.simple
+                  const hasChildren = item.children && item.children.length > 0
+                  const isItemActive = item.href ? isActive(item.href) : item.children?.some(child => isActive(child.href))
+                  
+                  // Filter out svOnly items if not Swedish
+                  const filteredChildren = item.children?.filter(child => 
+                    !child.svOnly || (child.svOnly && isSv)
+                  )
+
+                  return (
+                    <li 
+                      key={item.id}
+                      className="relative"
+                      onMouseEnter={() => hasChildren ? handleMouseEnter(item.id) : undefined}
+                      onMouseLeave={handleMouseLeave}
+                    >
+                      {isSimple ? (
+                        <Link
+                          href={localize(item.href!)}
+                          className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-all rounded-lg hover:bg-gray-50 ${
+                            isItemActive ? 'text-[#00937C]' : 'text-gray-700 hover:text-[#00937C]'
+                          }`}
+                        >
+                          <Icon className="w-4 h-4" />
+                          {t(item.label)}
+                        </Link>
+                      ) : (
+                        <>
+                          <button
+                            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-all rounded-lg hover:bg-gray-50 ${
+                              isItemActive ? 'text-[#00937C]' : 'text-gray-700 hover:text-[#00937C]'
+                            } ${item.featured ? 'bg-[#FCB237]/10 hover:bg-[#FCB237]/20' : ''}`}
+                          >
+                            <Icon className="w-4 h-4" />
+                            {t(item.label)}
+                            {hasChildren && (
+                              <ChevronDown className={`w-3 h-3 transition-transform ${
+                                activeDropdown === item.id ? 'rotate-180' : ''
+                              }`} />
+                            )}
+                          </button>
+
+                          {/* Dropdown Menu */}
+                          <AnimatePresence>
+                            {activeDropdown === item.id && filteredChildren && (
+                              <motion.div
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                transition={{ duration: 0.2 }}
+                                className="absolute top-full left-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden"
+                              >
+                                <div className="p-2">
+                                  {filteredChildren.map((child, index) => {
+                                    const ChildIcon = child.icon
+                                    return (
+                                      <Link
+                                        key={index}
+                                        href={localize(child.href)}
+                                        className={`flex items-start gap-3 px-4 py-3 rounded-lg transition-all hover:bg-gray-50 group ${
+                                          child.featured ? 'bg-gradient-to-r from-[#FCB237]/5 to-[#FCB237]/10 hover:from-[#FCB237]/10 hover:to-[#FCB237]/15' : ''
+                                        }`}
+                                      >
+                                        <div className={`p-2 rounded-lg ${
+                                          child.featured ? 'bg-[#FCB237]/20' : 'bg-gray-100 group-hover:bg-[#00937C]/10'
+                                        }`}>
+                                          <ChildIcon className={`w-4 h-4 ${
+                                            child.featured ? 'text-[#FCB237]' : 'text-gray-600 group-hover:text-[#00937C]'
+                                          }`} />
+                                        </div>
+                                        <div className="flex-1">
+                                          <h4 className="text-sm font-medium text-gray-900 group-hover:text-[#00937C] flex items-center gap-2">
+                                            {child.label.includes('.') ? t(child.label) : child.label}
+                                            {child.featured && (
+                                              <span className="text-xs bg-[#FCB237] text-white px-2 py-0.5 rounded-full">Ny!</span>
+                                            )}
+                                          </h4>
+                                          {child.description && (
+                                            <p className="text-xs text-gray-500 mt-0.5">{child.description}</p>
+                                          )}
+                                        </div>
+                                        <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-[#00937C] transition-transform group-hover:translate-x-1" />
+                                      </Link>
+                                    )
+                                  })}
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </>
+                      )}
+                    </li>
+                  )
+                })}
+              </ul>
+            </nav>
+
+            {/* Desktop Actions */}
+            <div className="flex items-center gap-4 ml-8">
               {/* Locale Switcher */}
               <div ref={langRef} className="relative">
                 <button
@@ -220,7 +487,7 @@ export function Header() {
                         <button
                           key={code}
                           onClick={() => { setIsLangOpen(false); router.push(buildLocaleHref(code)) }}
-                          className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-50 ${isActiveLoc ? 'text-[#4A3428] font-medium' : 'text-gray-700'}`}
+                          className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-50 ${isActiveLoc ? 'text-[#00937C] font-medium' : 'text-gray-700'}`}
                           role="option"
                           aria-selected={isActiveLoc}
                         >
@@ -231,6 +498,7 @@ export function Header() {
                   </div>
                 )}
               </div>
+
               {/* User Account */}
               <div className="relative">
                 {user ? (
@@ -239,7 +507,7 @@ export function Header() {
                     className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-2"
                   >
                     <User className="w-5 h-5" />
-                    <span className="hidden lg:inline text-sm">
+                    <span className="text-sm">
                       {user.firstName || t('navigation.account')}
                     </span>
                   </button>
@@ -248,9 +516,9 @@ export function Header() {
                     href={localize('/auth/login')}
                     className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-2"
                   >
-                    <Sparkles className="w-5 h-5 text-amber-600" />
+                    <Sparkles className="w-5 h-5 text-[#FCB237]" />
                     <User className="w-5 h-5" />
-                    <span className="hidden lg:inline text-sm">{t('navigation.login')}</span>
+                    <span className="text-sm">{t('navigation.login')}</span>
                   </Link>
                 )}
 
@@ -298,7 +566,7 @@ export function Header() {
               >
                 <ShoppingBag className="w-5 h-5" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-[#4A3428] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
+                  <span className="absolute -top-1 -right-1 bg-[#FCB237] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
                     {cartCount}
                   </span>
                 )}
@@ -306,10 +574,10 @@ export function Header() {
             </div>
           </div>
 
-          {/* Left Drawer Menu (all breakpoints) */}
+          {/* Left Drawer Menu (mobile only) */}
           <AnimatePresence>
             {isMobileMenuOpen && (
-              <div className="fixed left-0 right-0 bottom-0 z-[60]" style={{ top: topBarHeight + headerHeight + 4 }}>
+              <div className="lg:hidden fixed left-0 right-0 bottom-0 z-[60]" style={{ top: topBarHeight + headerHeight + 4 }}>
                 {/* Backdrop */}
                 <motion.div
                   initial={{ opacity: 0 }}
@@ -337,11 +605,11 @@ export function Header() {
                       </button>
                     </div>
                     <div className="mt-6 grid gap-3 w-full">
-                      <Link href={localize('/')} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-5 py-4 rounded-xl border hover:border-[#4A3428] hover:bg-[#4A3428]/5 transition-colors">
+                      <Link href={localize('/')} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-5 py-4 rounded-xl border hover:border-[#00937C] hover:bg-[#00937C]/5 transition-colors">
                         <span className="flex items-center gap-3 text-lg"><Home className="w-5 h-5" />{t('navigation.home')}</span>
                         <ChevronDown className="w-4 h-4 rotate-[-90deg]" />
                       </Link>
-                      <Link href={localize('/products')} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-5 py-4 rounded-xl border hover:border-[#4A3428] hover:bg-[#4A3428]/5 transition-colors">
+                      <Link href={localize('/products')} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-5 py-4 rounded-xl border hover:border-[#00937C] hover:bg-[#00937C]/5 transition-colors">
                         <span className="flex items-center gap-3 text-lg"><Package className="w-5 h-5" />{t('navigation.products')}</span>
                         <ChevronDown className="w-4 h-4 rotate-[-90deg]" />
                       </Link>
@@ -350,11 +618,11 @@ export function Header() {
                           <span className="flex items-center gap-3 text-lg"><Info className="w-5 h-5" />{t('navigation.about')}</span>
                         </div>
                         <div className="mt-3 grid gap-2 pl-8 text-gray-700">
-                          <Link href={localize('/om-oss')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#4A3428]">{t('navigation.about')}</Link>
+                          <Link href={localize('/om-oss')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#00937C]">{t('navigation.about')}</Link>
                           {isSv && (
-                            <Link href={localize('/om-oss/aterforsaljare')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#4A3428]">Återförsäljare</Link>
+                            <Link href={localize('/om-oss/aterforsaljare')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#00937C]">Återförsäljare</Link>
                           )}
-                          <Link href={localize('/om-oss/faq')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#4A3428]">Q&A</Link>
+                          <Link href={localize('/om-oss/faq')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#00937C]">Q&A</Link>
                         </div>
                       </div>
                       <div className="px-5 py-4 rounded-xl border">
@@ -362,14 +630,14 @@ export function Header() {
                           <span className="flex items-center gap-3 text-lg"><BookOpen className="w-5 h-5" />{t('navigation.knowledge')}</span>
                         </div>
                         <div className="mt-3 grid gap-2 pl-8 text-gray-700">
-                          <Link href={localize('/blogg')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#4A3428]">{t('navigation.blog')}</Link>
-                          <Link href={localize('/kunskap/e-bok')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#4A3428]">E-bok: Weed Your Skin</Link>
-                          <Link href={localize('/quiz')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#4A3428]">{t('Quiz.title')}</Link>
-                          <Link href={localize('/om-oss/ingredienser')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#4A3428]">Våra ingredienser</Link>
-                          <Link href={localize('/kunskap/funktionella-ravaror')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#4A3428]">Funktionella råvaror</Link>
+                          <Link href={localize('/blogg')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#00937C]">{t('navigation.blog')}</Link>
+                          <Link href={localize('/kunskap/e-bok')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#00937C]">E-bok: Weed Your Skin</Link>
+                          <Link href={localize('/quiz')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#00937C]">{t('Quiz.title')}</Link>
+                          <Link href={localize('/om-oss/ingredienser')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#00937C]">Våra ingredienser</Link>
+                          <Link href={localize('/kunskap/funktionella-ravaror')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#00937C]">Funktionella råvaror</Link>
                         </div>
                       </div>
-                      <Link href={localize('/kontakt')} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-5 py-4 rounded-xl border hover:border-[#4A3428] hover:bg-[#4A3428]/5 transition-colors">
+                      <Link href={localize('/kontakt')} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-5 py-4 rounded-xl border hover:border-[#00937C] hover:bg-[#00937C]/5 transition-colors">
                         <span className="flex items-center gap-3 text-lg"><Phone className="w-5 h-5" />{t('navigation.contact')}</span>
                         <ChevronDown className="w-4 h-4 rotate-[-90deg]" />
                       </Link>

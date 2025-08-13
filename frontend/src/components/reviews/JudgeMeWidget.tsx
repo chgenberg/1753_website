@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 interface JudgeMeWidgetProps {
   shopDomain: string
@@ -15,8 +15,27 @@ export const JudgeMeWidget: React.FC<JudgeMeWidgetProps> = ({
   widgetType,
   className = ''
 }) => {
+  const [allowed, setAllowed] = useState<boolean>(() => {
+    try {
+      const raw = localStorage.getItem('cookieConsent')
+      const prefs = raw ? JSON.parse(raw) : null
+      return !!prefs?.marketing
+    } catch {
+      return false
+    }
+  })
+
   useEffect(() => {
-    // Load Judge.me script if not already loaded
+    const onConsent = (e: Event) => {
+      const detail = (e as CustomEvent).detail as { marketing?: boolean }
+      if (typeof detail?.marketing === 'boolean') setAllowed(!!detail.marketing)
+    }
+    window.addEventListener('consent-changed', onConsent as EventListener)
+    return () => window.removeEventListener('consent-changed', onConsent as EventListener)
+  }, [])
+
+  useEffect(() => {
+    if (!allowed) return
     if (!window.jdgm) {
       const script = document.createElement('script')
       script.src = 'https://cdn.judge.me/js/widget.js'
@@ -28,10 +47,9 @@ export const JudgeMeWidget: React.FC<JudgeMeWidgetProps> = ({
       }
       document.head.appendChild(script)
     } else {
-      // If script is already loaded, just initialize
       window.jdgm.init()
     }
-  }, [])
+  }, [allowed])
 
   const getWidgetAttributes = () => {
     const baseAttrs: { [key: string]: string } = {
@@ -48,6 +66,14 @@ export const JudgeMeWidget: React.FC<JudgeMeWidgetProps> = ({
 
   const renderWidget = () => {
     const attrs = getWidgetAttributes()
+
+    if (!allowed) {
+      return (
+        <div className={className}>
+          <div className="text-sm text-gray-500">Aktivera marknadsföringskakor för att se recensioner.</div>
+        </div>
+      )
+    }
 
     switch (widgetType) {
       case 'reviews':

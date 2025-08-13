@@ -8,7 +8,7 @@ interface SitemapEntry {
 }
 
 const BASE_URL = 'https://1753skincare.com'
-const LOCALES = ['sv', 'en'] as const
+const LOCALES = ['sv', 'en', 'es', 'de', 'fr'] as const
 
 // Static pages with their priorities and update frequencies
 const STATIC_PAGES = [

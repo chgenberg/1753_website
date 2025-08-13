@@ -78,6 +78,8 @@ export default function FacePhotoAnalyzer({ onAnalyze }: { onAnalyze: (metrics: 
       <p className="text-sm text-gray-600 mb-3">Stå i dagsljus, neutral bakgrund. Justera ansiktet i ramen och ladda upp ett foto (frivilligt). Vi beräknar enkla zon‑mått lokalt på din enhet.</p>
       {previewUrl && (
         <div className="relative aspect-[4/5] w-full max-w-xs overflow-hidden rounded-lg border">
+          {/* Using plain img intentionally for local preview; disable Next.js lint rule */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={previewUrl} alt="Förhandsvisning" className="w-full h-full object-cover" />
           {/* Simple overlay guidance */}
           <div className="absolute inset-0 pointer-events-none">

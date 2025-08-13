@@ -19,7 +19,7 @@ export default async function LocaleLayout({
   const locale = params?.locale ?? 'sv'
   setRequestLocale(locale)
   const messages = await getMessages()
-  const siteUrl = 'https://1753website-production.up.railway.app'
+  const siteUrl = 'https://1753skincare.com'
   const orgLogo = `${siteUrl}/1753.png`
   const jsonLdWebsite = {
     '@context': 'https://schema.org',
@@ -28,7 +28,7 @@ export default async function LocaleLayout({
     name: '1753 Skincare',
     potentialAction: {
       '@type': 'SearchAction',
-      target: `${siteUrl}/sv/blogg?query={search_term_string}`,
+      target: `${siteUrl}/${locale}/blogg?query={search_term_string}`,
       'query-input': 'required name=search_term_string'
     }
   }

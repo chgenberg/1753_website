@@ -106,7 +106,7 @@ export default function EBookPage() {
                 <a
                   href="/e-book_weedyourskin_backup.pdf"
                   download="Weed_Your_Skin_1753.pdf"
-                  className="inline-flex items-center px-8 py-4 bg-[#4A3428] text-white rounded-full font-medium hover:bg-[#3A2418] transition-colors duration-300 shadow-lg"
+                  className="inline-flex items-center px-8 py-4 bg-[#FCB237] text-white rounded-full font-medium hover:bg-[#E79C1A] transition-colors duration-300 shadow-lg"
                 >
                   <Download className="w-5 h-5 mr-2" />
                   Ladda ner e-boken igen
@@ -153,17 +153,17 @@ export default function EBookPage() {
                   {/* Features */}
                   <div className="grid grid-cols-3 gap-4 mb-8">
                     <div className="text-center">
-                      <FileText className="w-10 h-10 text-[#4A3428] mx-auto mb-2" />
+                      <FileText className="w-10 h-10 text-[#00937C] mx-auto mb-2" />
                       <p className="text-sm font-medium text-gray-900">300+ Sidor</p>
                     </div>
                     <div className="text-center">
-                      <svg className="w-10 h-10 text-[#4A3428] mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-10 h-10 text-[#00937C] mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                       <p className="text-sm font-medium text-gray-900">Vetenskapligt</p>
                     </div>
                     <div className="text-center">
-                      <Download className="w-10 h-10 text-[#4A3428] mx-auto mb-2" />
+                      <Download className="w-10 h-10 text-[#00937C] mx-auto mb-2" />
                       <p className="text-sm font-medium text-gray-900">Direkt Nedladdning</p>
                     </div>
                   </div>
@@ -208,7 +208,7 @@ export default function EBookPage() {
                       className="w-full h-auto rounded-lg shadow-2xl"
                       priority
                     />
-                    <div className="absolute -top-4 -right-4 bg-[#4A3428] text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg">
+                    <div className="absolute -top-4 -right-4 bg-[#00937C] text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg">
                       300+ sidor
                     </div>
                   </div>
@@ -223,7 +223,7 @@ export default function EBookPage() {
                 className="lg:sticky lg:top-24"
               >
                 <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-                  <div className="bg-gradient-to-r from-[#4A3428] to-[#6B4C3A] p-6 text-white text-center">
+                  <div className="bg-gradient-to-r from-[#00937C] to-[#007363] p-6 text-white text-center">
                     <Sparkles className="w-12 h-12 mx-auto mb-3" />
                     <h2 className="text-2xl font-bold mb-2">
                       LADDA NER DIN KOSTNADSFRIA E-BOK
@@ -238,7 +238,7 @@ export default function EBookPage() {
                       {/* Email Input */}
                       <div>
                         <label className="flex items-center text-gray-700 text-sm font-medium mb-2">
-                          <Mail className="w-4 h-4 mr-2 text-[#4A3428]" />
+                          <Mail className="w-4 h-4 mr-2 text-[#00937C]" />
                           Din e-postadress
                         </label>
                         <input
@@ -246,7 +246,7 @@ export default function EBookPage() {
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="din@email.com"
-                          className={`w-full px-4 py-3 bg-gray-50 border ${errors.email ? 'border-red-400' : 'border-gray-200'} rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#4A3428] focus:bg-white transition-colors`}
+                          className={`w-full px-4 py-3 bg-gray-50 border ${errors.email ? 'border-red-400' : 'border-gray-200'} rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#00937C] focus:bg-white transition-colors`}
                           disabled={isSubmitting}
                         />
                         {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
@@ -259,14 +259,14 @@ export default function EBookPage() {
                             type="checkbox"
                             checked={privacyAccepted}
                             onChange={(e) => setPrivacyAccepted(e.target.checked)}
-                            className="mt-1 h-4 w-4 text-[#4A3428] focus:ring-[#4A3428] border-gray-300 rounded"
+                            className="mt-1 h-4 w-4 text-[#00937C] focus:ring-[#00937C] border-gray-300 rounded"
                             disabled={isSubmitting}
                           />
                           <div className="flex-1">
                             <div className="text-gray-600 text-sm">
                               <Shield className="w-4 h-4 inline mr-1" />
                               Jag godkänner{' '}
-                              <a href="/integritetspolicy" target="_blank" className="text-[#4A3428] hover:text-[#3A2418] underline">
+                              <a href="/integritetspolicy" target="_blank" className="text-[#00937C] hover:text-[#007363] underline">
                                 integritetspolicyn
                               </a>{' '}
                               och samtycker till att få värdefulla hudvårdstips och erbjudanden via e-post
@@ -280,7 +280,7 @@ export default function EBookPage() {
                       <button
                         type="submit"
                         disabled={isSubmitting}
-                        className="w-full bg-gradient-to-r from-[#4A3428] to-[#6B4C3A] text-white px-8 py-4 rounded-full font-medium hover:shadow-lg transform hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                        className="w-full bg-gradient-to-r from-[#FCB237] to-[#E79C1A] text-white px-8 py-4 rounded-full font-medium hover:shadow-lg transform hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                       >
                         {isSubmitting ? (
                           <>

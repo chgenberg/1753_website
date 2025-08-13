@@ -18,8 +18,8 @@ export default function CookiePolicyPage() {
             transition={{ duration: 0.6 }}
           >
             <div className="text-center mb-12">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-[#4A3428] bg-opacity-10 rounded-full mb-6">
-                <Cookie className="w-8 h-8 text-[#4A3428]" />
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-[#00937C] bg-opacity-10 rounded-full mb-6">
+                <Cookie className="w-8 h-8 text-[#00937C]" />
               </div>
               <h1 className="text-4xl font-bold text-gray-900 mb-4">Cookie-policy</h1>
               <p className="text-lg text-gray-600">
@@ -156,7 +156,7 @@ export default function CookiePolicyPage() {
                             localStorage.removeItem('cookieConsent')
                             window.location.reload()
                           }}
-                          className="w-full sm:w-auto px-6 py-3 bg-[#4A3428] text-white rounded-full font-medium hover:bg-[#3A2418] transition-colors"
+                          className="w-full sm:w-auto px-6 py-3 bg-[#FCB237] text-white rounded-full font-medium hover:bg-[#E79C1A] transition-colors"
                         >
                           Ändra cookie-inställningar
                         </button>
@@ -174,7 +174,7 @@ export default function CookiePolicyPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.5 }}
-                  className="bg-[#4A3428] text-white rounded-2xl shadow-lg p-8"
+                  className="bg-[#00937C] text-white rounded-2xl shadow-lg p-8"
                 >
                   <h3 className="text-xl font-bold mb-4">Har du frågor?</h3>
                   <p className="mb-4">

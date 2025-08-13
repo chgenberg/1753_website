@@ -278,7 +278,7 @@ export default function CheckoutPage() {
           <h1 className="text-2xl font-bold mb-4">Din varukorg är tom</h1>
           <button
             onClick={() => router.push('/products')}
-            className="bg-[#4A3428] text-white px-6 py-3 rounded-full hover:bg-[#3A2418] transition-colors"
+            className="bg-[#FCB237] text-white px-6 py-3 rounded-full hover:bg-[#E79C1A] transition-colors"
           >
             Fortsätt handla
           </button>
@@ -307,13 +307,13 @@ export default function CheckoutPage() {
           <div className="flex items-center justify-center mb-8">
             <div className="flex items-center">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                currentStep >= 1 ? 'bg-[#4A3428] text-white' : 'bg-gray-200'
+                currentStep >= 1 ? 'bg-[#00937C] text-white' : 'bg-gray-200'
               }`}>
                 {currentStep > 1 ? <Check className="w-4 h-4" /> : '1'}
               </div>
-              <div className={`w-16 h-1 ${currentStep >= 2 ? 'bg-[#4A3428]' : 'bg-gray-200'}`} />
+              <div className={`w-16 h-1 ${currentStep >= 2 ? 'bg-[#00937C]' : 'bg-gray-200'}`} />
               <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                currentStep >= 2 ? 'bg-[#4A3428] text-white' : 'bg-gray-200'
+                currentStep >= 2 ? 'bg-[#00937C] text-white' : 'bg-gray-200'
               }`}>
                 2
               </div>
@@ -347,7 +347,7 @@ export default function CheckoutPage() {
                         type="email"
                         value={form.email}
                         onChange={(e) => handleInputChange('email', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4A3428]"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00937C]"
                         required
                         aria-invalid={formErrors?.includes('E-post krävs')}
                         aria-describedby={formErrors?.includes('E-post krävs') ? 'email-error' : undefined}
@@ -367,7 +367,7 @@ export default function CheckoutPage() {
                           type="text"
                           value={form.firstName}
                           onChange={(e) => handleInputChange('firstName', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4A3428]"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00937C]"
                           required
                           aria-invalid={formErrors?.includes('Förnamn krävs')}
                           aria-describedby={formErrors?.includes('Förnamn krävs') ? 'firstName-error' : undefined}
@@ -385,7 +385,7 @@ export default function CheckoutPage() {
                           type="text"
                           value={form.lastName}
                           onChange={(e) => handleInputChange('lastName', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4A3428]"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00937C]"
                           required
                           aria-invalid={formErrors?.includes('Efternamn krävs')}
                           aria-describedby={formErrors?.includes('Efternamn krävs') ? 'lastName-error' : undefined}
@@ -407,7 +407,7 @@ export default function CheckoutPage() {
                         pattern="[0-9 +()-]{6,}"
                         value={form.phone}
                         onChange={(e) => handleInputChange('phone', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4A3428]"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00937C]"
                         required
                         aria-invalid={formErrors?.includes('Telefon krävs')}
                         aria-describedby={formErrors?.includes('Telefon krävs') ? 'phone-error' : undefined}
@@ -433,7 +433,7 @@ export default function CheckoutPage() {
                         value={form.address}
                         onChange={(e) => handleAddressChange(e.target.value)}
                         onFocus={() => setShowAddressSuggestions(true)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4A3428]"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00937C]"
                         placeholder="Börja skriv din adress..."
                         required
                         aria-invalid={formErrors?.includes('Adress krävs')}
@@ -475,7 +475,7 @@ export default function CheckoutPage() {
                         type="text"
                         value={form.apartment}
                         onChange={(e) => handleInputChange('apartment', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4A3428]"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00937C]"
                       />
                     </div>
                     
@@ -489,7 +489,7 @@ export default function CheckoutPage() {
                           type="text"
                           value={form.city}
                           onChange={(e) => handleInputChange('city', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4A3428]"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00937C]"
                           required
                           aria-invalid={formErrors?.includes('Stad krävs')}
                           aria-describedby={formErrors?.includes('Stad krävs') ? 'city-error' : undefined}
@@ -509,7 +509,7 @@ export default function CheckoutPage() {
                           pattern="[0-9]{3}[ ]?[0-9]{2}"
                           value={form.postalCode}
                           onChange={(e) => handleInputChange('postalCode', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4A3428]"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00937C]"
                           required
                           aria-invalid={formErrors?.includes('Postnummer krävs')}
                           aria-describedby={formErrors?.includes('Postnummer krävs') ? 'postalCode-error' : undefined}
@@ -528,7 +528,7 @@ export default function CheckoutPage() {
                         type="checkbox"
                         checked={form.newsletter}
                         onChange={(e) => handleInputChange('newsletter', e.target.checked)}
-                        className="mt-1 h-4 w-4 text-[#4A3428] focus:ring-[#4A3428] border-gray-300 rounded"
+                        className="mt-1 h-4 w-4 text-[#00937C] focus:ring-[#00937C] border-gray-300 rounded"
                       />
                       <span className="text-sm text-gray-700">
                         Ja, jag vill gärna ta utbildande information och erbjudanden via e-post
@@ -543,7 +543,7 @@ export default function CheckoutPage() {
                         type="checkbox"
                         checked={rememberInfo}
                         onChange={(e) => setRememberInfo(e.target.checked)}
-                        className="mt-1 h-4 w-4 text-[#4A3428] focus:ring-[#4A3428] border-gray-300 rounded"
+                        className="mt-1 h-4 w-4 text-[#00937C] focus:ring-[#00937C] border-gray-300 rounded"
                       />
                       <span className="text-sm text-gray-700">
                         Spara mina uppgifter på den här enheten
@@ -553,7 +553,7 @@ export default function CheckoutPage() {
 
                   <button
                     onClick={handleContinueToPayment}
-                    className="w-full bg-[#4A3428] text-white py-3 rounded-full font-medium hover:bg-[#3A2418] transition-colors"
+                    className="w-full bg-[#FCB237] text-white py-3 rounded-full font-medium hover:bg-[#E79C1A] transition-colors"
                   >
                     Fortsätt till betalning
                   </button>
@@ -610,7 +610,7 @@ export default function CheckoutPage() {
                     <button
                       onClick={handleSubmitOrder}
                       disabled={isProcessing}
-                      className="flex-1 bg-[#4A3428] text-white py-3 rounded-full font-medium hover:bg-[#3A2418] transition-colors disabled:opacity-50 flex items-center justify-center"
+                      className="flex-1 bg-[#FCB237] text-white py-3 rounded-full font-medium hover:bg-[#E79C1A] transition-colors disabled:opacity-50 flex items-center justify-center"
                     >
                       {isProcessing ? (
                         <>
@@ -693,13 +693,13 @@ export default function CheckoutPage() {
                         value={discountCode}
                         onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
                         placeholder="Ange rabattkod"
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#4A3428]"
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#00937C]"
                         aria-invalid={Boolean(discountError)}
                         aria-describedby={discountError ? 'discount-error' : undefined}
                       />
                       <button
                         onClick={handleApplyDiscount}
-                        className="px-4 py-2 bg-[#4A3428] text-white rounded-md text-sm hover:bg-[#3A2418] disabled:opacity-50"
+                        className="px-4 py-2 bg-[#00937C] text-white rounded-md text-sm hover:bg-[#007363] disabled:opacity-50"
                         disabled={isValidatingDiscount}
                         aria-busy={isValidatingDiscount}
                       >
