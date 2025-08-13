@@ -24,8 +24,8 @@ export async function POST(request: NextRequest) {
         const completion = await openai.chat.completions.create({
           model,
           messages: [{ role: "user", content: holisticPrompt }],
-          temperature: 0.8,
-          max_tokens: 4000,
+          temperature: 0.6,
+          max_tokens: 8000,
           response_format: { type: 'json_object' }
         })
 
@@ -158,29 +158,38 @@ function normalizeResults(input: any) {
 function generateHolisticPrompt(answers: Record<string, any>, userInfo: any, imageMetrics?: any): string {
   const imageSection = imageMetrics ? `\n\nBildbaserade zonmått (skala 0-100 där relevant):\n${JSON.stringify(imageMetrics, null, 2)}\n\nTolka värdena så här kortfattat:\n- meanLuminance (0-255): låg = mörk/exponeringsbrist, hög = överexponerad.\n- rednessIndex (0-100): högre = mer rodnad/erytem.\n- highlightRatio (%): högre = mer glans/oljighet.\n- textureVariance: högre = mer ojämn textur/porighet.\nAnvänd värdena som stöd för zon-specifika råd (t.ex. mer glans på näsa → mattande tips).` : '\n\n(Inga bildmått angivna – basera råden på quizsvar)'
 
-  return `Du är en holistisk hudvårdsexpert som kombinerar evolutionär hälsa, naturlig hudvård och cannabinoid-vetenskap. 
+  return `Du är en holistisk hudvårdsexpert som kombinerar evolutionär hälsa, naturlig hudvård och cannabinoid‑vetenskap. Svara ALLTID på SVENSKA. Svara enbart med giltig JSON enligt strukturen nedan – inga extra kommentarer.
   
-Analysera följande information och skapa en extremt detaljerad, personlig plan:
-
+Analysera informationen och skapa en extremt detaljerad, personlig plan med hög verkshöjd och konkreta åtgärder. Fyll ALLA fält i strukturen. Var specifik, mätbar och praktisk. I varje del ge 3–7 punkter (hellre fler än färre) och individualisera råden efter svaren.
+ 
 Kundinformation:
-- Namn: ${userInfo.name}
-- E-post: ${userInfo.email}
-- Kön: ${userInfo.gender}
-- Ålder: ${userInfo.age}
+ - Namn: ${userInfo.name}
+ - E-post: ${userInfo.email}
+ - Kön: ${userInfo.gender}
+ - Ålder: ${userInfo.age}
+ 
+ Quiz-svar:
+ ${JSON.stringify(answers, null, 2)}
+ ${imageSection}
+ 
+ VIKTIGA PRINCIPER att följa:
+ 1. Vi tror på hudens naturliga förmåga och evolutionära anpassning
+ 2. Vi rekommenderar INTE solskydd om personen inte befinner sig i onaturliga miljöer (t.ex. höghöjd, reflektion från vatten/snö)
+ 3. Vi fokuserar på holistisk hälsa: sömn, stress, kost, rörelse, mindfulness
+ 4. Våra produkter innehåller CBD och CBG som arbetar med kroppens endocannabinoidsystem
+ 5. Vi tror på "mindre är mer" - kvalitet över kvantitet
+ 
+KRAV PER SEKTION:
+- summary: skriv en unik hälsning med namn, en tydlig hudanalys (inkludera hudtyp och 1–3 fokusområden), sätt holisticScore (0–100) och scoreBreakdown (varje 0–25) utifrån svaren och ev. bildmått.
+- quickTips: 5 korta åtgärder (title, tip, why) som går att göra idag (morgon, kväll, livsstil, nutrition, stress).
+- products: skapa morgon/kvällsrutin (3–5 steg vardera). Använd endast dessa produktnamn: "Au Naturel Makeup Remover", "The ONE Facial Oil", "I LOVE Facial Oil", "TA-DA Serum", samt paket "DUO-KIT + TA-DA Serum". Lägg dessutom 3 rekommendationer (med price i SEK och motivering). Undvik påhittade produkter.
+- lifestyle: inkludera sleep, movement, sunExposure, stress och nutrition. Ge riktlinjer, frekvens, och veckoschema där relevant.
+- holisticProtocol: gör en 4-veckors plan (initiation, consolidation, optimization, maintenance) med fokus, dagliga vanor och checkpoints.
+- education: 3–6 korta förklaringar (vetenskap) + 3 boktips i bookRecommendations.
+- nextSteps: immediate (3 saker idag), thisWeek (3–5 saker), support (kort text hur vi kan hjälpa).
 
-Quiz-svar:
-${JSON.stringify(answers, null, 2)}
-${imageSection}
-
-VIKTIGA PRINCIPER att följa:
-1. Vi tror på hudens naturliga förmåga och evolutionära anpassning
-2. Vi rekommenderar INTE solskydd om personen inte befinner sig i onaturliga miljöer (t.ex. höghöjd, reflektion från vatten/snö)
-3. Vi fokuserar på holistisk hälsa: sömn, stress, kost, rörelse, mindfulness
-4. Våra produkter innehåller CBD och CBG som arbetar med kroppens endocannabinoidsystem
-5. Vi tror på "mindre är mer" - kvalitet över kvantitet
-
-Skapa en omfattande JSON-respons med denna EXAKTA struktur:
-${JSON.stringify(exampleStructure, null, 2)}`
+Svara med en omfattande JSON som följer denna EXAKTA struktur (alla fält obligatoriska):
+ ${JSON.stringify(exampleStructure, null, 2)}`
 }
 
 // Example structure used in prompt (kept short by reference)
