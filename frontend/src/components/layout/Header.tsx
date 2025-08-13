@@ -605,11 +605,11 @@ export function Header() {
                       </button>
                     </div>
                     <div className="mt-6 grid gap-3 w-full">
-                      <Link href={localize('/')} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-5 py-4 rounded-xl border hover:border-[#00937C] hover:bg-[#00937C]/5 transition-colors">
+                      <Link href={localize('/')} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-5 py-4 rounded-xl border hover:border-[#FCB237] hover:bg-[#FCB237]/5 transition-colors">
                         <span className="flex items-center gap-3 text-lg"><Home className="w-5 h-5" />{t('navigation.home')}</span>
                         <ChevronDown className="w-4 h-4 rotate-[-90deg]" />
                       </Link>
-                      <Link href={localize('/products')} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-5 py-4 rounded-xl border hover:border-[#00937C] hover:bg-[#00937C]/5 transition-colors">
+                      <Link href={localize('/products')} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-5 py-4 rounded-xl border hover:border-[#FCB237] hover:bg-[#FCB237]/5 transition-colors">
                         <span className="flex items-center gap-3 text-lg"><Package className="w-5 h-5" />{t('navigation.products')}</span>
                         <ChevronDown className="w-4 h-4 rotate-[-90deg]" />
                       </Link>
@@ -618,11 +618,11 @@ export function Header() {
                           <span className="flex items-center gap-3 text-lg"><Info className="w-5 h-5" />{t('navigation.about')}</span>
                         </div>
                         <div className="mt-3 grid gap-2 pl-8 text-gray-700">
-                          <Link href={localize('/om-oss')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#00937C]">{t('navigation.about')}</Link>
+                          <Link href={localize('/om-oss')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#FCB237]">{t('navigation.about')}</Link>
                           {isSv && (
-                            <Link href={localize('/om-oss/aterforsaljare')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#00937C]">Återförsäljare</Link>
+                            <Link href={localize('/om-oss/aterforsaljare')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#FCB237]">Återförsäljare</Link>
                           )}
-                          <Link href={localize('/om-oss/faq')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#00937C]">Q&A</Link>
+                          <Link href={localize('/om-oss/faq')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#FCB237]">Q&A</Link>
                         </div>
                       </div>
                       <div className="px-5 py-4 rounded-xl border">
@@ -630,14 +630,14 @@ export function Header() {
                           <span className="flex items-center gap-3 text-lg"><BookOpen className="w-5 h-5" />{t('navigation.knowledge')}</span>
                         </div>
                         <div className="mt-3 grid gap-2 pl-8 text-gray-700">
-                          <Link href={localize('/blogg')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#00937C]">{t('navigation.blog')}</Link>
-                          <Link href={localize('/kunskap/e-bok')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#00937C]">E-bok: Weed Your Skin</Link>
-                          <Link href={localize('/quiz')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#00937C]">{t('Quiz.title')}</Link>
-                          <Link href={localize('/om-oss/ingredienser')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#00937C]">Våra ingredienser</Link>
-                          <Link href={localize('/kunskap/funktionella-ravaror')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#00937C]">Funktionella råvaror</Link>
+                          <Link href={localize('/blogg')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#FCB237]">{t('navigation.blog')}</Link>
+                          <Link href={localize('/kunskap/e-bok')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#FCB237]">E-bok: Weed Your Skin</Link>
+                          <Link href={localize('/quiz')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#FCB237]">{t('Quiz.title')}</Link>
+                          <Link href={localize('/om-oss/ingredienser')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#FCB237]">Våra ingredienser</Link>
+                          <Link href={localize('/kunskap/funktionella-ravaror')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#FCB237]">Funktionella råvaror</Link>
                         </div>
                       </div>
-                      <Link href={localize('/kontakt')} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-5 py-4 rounded-xl border hover:border-[#00937C] hover:bg-[#00937C]/5 transition-colors">
+                      <Link href={localize('/kontakt')} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-5 py-4 rounded-xl border hover:border-[#FCB237] hover:bg-[#FCB237]/5 transition-colors">
                         <span className="flex items-center gap-3 text-lg"><Phone className="w-5 h-5" />{t('navigation.contact')}</span>
                         <ChevronDown className="w-4 h-4 rotate-[-90deg]" />
                       </Link>

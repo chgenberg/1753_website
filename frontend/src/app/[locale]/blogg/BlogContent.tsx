@@ -230,7 +230,7 @@ export default function BlogContent({ posts }: BlogContentProps) {
                 </p>
                 <Link 
                   href="/products" 
-                  className="inline-flex items-center px-6 py-3 bg-[#4A3428] text-white rounded-lg hover:bg-[#3A2A1E] transition-colors"
+                  className="inline-flex items-center px-6 py-3 bg-[#FCB237] text-white rounded-lg hover:bg-[#3A2A1E] transition-colors"
                 >
                   Utforska våra produkter istället
                 </Link>

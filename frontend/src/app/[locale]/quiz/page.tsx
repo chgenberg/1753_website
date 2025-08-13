@@ -43,7 +43,7 @@ const AnimatedOrbs = () => (
       transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut' }}
     />
     <motion.div
-      className="absolute -bottom-24 -right-24 w-[28rem] h-[28rem] rounded-full bg-[#4A3428]/10 blur-3xl"
+      className="absolute -bottom-24 -right-24 w-[28rem] h-[28rem] rounded-full bg-[#FCB237]/10 blur-3xl"
       animate={{ x: [0, -30, 10, 0], y: [0, -15, 25, 0], opacity: [0.5, 0.65, 0.55, 0.5] }}
       transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
     />
@@ -601,7 +601,7 @@ export default function QuizPage() {
       <div className="fixed inset-0 opacity-5">
         <div className="absolute inset-0" style={{
           backgroundImage: `radial-gradient(circle at 20% 80%, #8B6B47 0%, transparent 50%),
-                           radial-gradient(circle at 80% 20%, #4A3428 0%, transparent 50%),
+                           radial-gradient(circle at 80% 20%, #FCB237 0%, transparent 50%),
                            radial-gradient(circle at 40% 40%, #6B5337 0%, transparent 50%)`
         }} />
       </div>
@@ -670,7 +670,7 @@ export default function QuizPage() {
                   onClick={() => setCurrentStep('userInfo')}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="inline-flex items-center gap-3 px-8 py-4 bg-[#4A3428] text-white rounded-full text-lg font-medium hover:bg-[#3A2418] transition-colors shadow-lg"
+                  className="inline-flex items-center gap-3 px-8 py-4 bg-[#FCB237] text-white rounded-full text-lg font-medium hover:bg-[#E79C1A] transition-colors shadow-lg"
                 >
                   Börja min hudanalys
                   <ChevronRight className="w-5 h-5" />
@@ -832,7 +832,7 @@ export default function QuizPage() {
                     onClick={handleUserInfoSubmit}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="w-full py-4 bg-[#4A3428] text-white rounded-xl font-medium hover:bg-[#3A2418] transition-colors"
+                    className="w-full py-4 bg-[#FCB237] text-white rounded-xl font-medium hover:bg-[#E79C1A] transition-colors"
                   >
                     Fortsätt till frågorna
                   </motion.button>
@@ -852,7 +852,7 @@ export default function QuizPage() {
                   <button onClick={() => setCurrentStep('userInfo')} className="text-gray-600 hover:text-[#8B6B47]">Tillbaka</button>
                   <div className="flex items-center gap-2">
                     <button onClick={() => setCurrentStep('questions')} className="px-5 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-50">Hoppa över</button>
-                    <button onClick={() => setCurrentStep('questions')} className="px-6 py-2 bg-[#4A3428] text-white rounded-full hover:bg-[#3A2418]">Fortsätt</button>
+                    <button onClick={() => setCurrentStep('questions')} className="px-6 py-2 bg-[#FCB237] text-white rounded-full hover:bg-[#E79C1A]">Fortsätt</button>
                   </div>
                 </div>
               </CloudShape>
@@ -866,7 +866,7 @@ export default function QuizPage() {
               <div className="mb-4">
                 <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                   <motion.div
-                    className="h-full bg-gradient-to-r from-[#8B6B47] to-[#4A3428]"
+                    className="h-full bg-gradient-to-r from-[#8B6B47] to-[#FCB237]"
                     initial={{ width: 0 }}
                     animate={{ width: `${progress}%` }}
                     transition={{ duration: 0.3 }}
@@ -974,7 +974,7 @@ export default function QuizPage() {
                         <button
                           onClick={handleNextFromMultiple}
                           disabled={!answers[questions[currentQuestion].id] || answers[questions[currentQuestion].id].length === 0}
-                          className="flex items-center gap-2 px-6 py-2 bg-[#4A3428] text-white rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="flex items-center gap-2 px-6 py-2 bg-[#FCB237] text-white rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           {currentQuestion === questions.length - 1 ? 'Granska svar' : 'Nästa'}
                           <ChevronRight className="w-4 h-4" />
@@ -985,7 +985,7 @@ export default function QuizPage() {
                             if (currentQuestion < questions.length - 1) setCurrentQuestion(currentQuestion + 1)
                             else setCurrentStep('review')
                           }}
-                          className="hidden md:inline-flex items-center gap-2 px-6 py-2 bg-[#4A3428] text-white rounded-full"
+                          className="hidden md:inline-flex items-center gap-2 px-6 py-2 bg-[#FCB237] text-white rounded-full"
                         >
                           {currentQuestion === questions.length - 1 ? 'Granska svar' : 'Nästa'}
                           <ChevronRight className="w-4 h-4" />
@@ -1045,7 +1045,7 @@ export default function QuizPage() {
                     <ChevronLeft className="w-4 h-4" />
                     Tillbaka
                   </button>
-                  <button onClick={handleQuizComplete} className="px-6 py-2 bg-[#4A3428] text-white rounded-full hover:bg-[#3A2418]">
+                  <button onClick={handleQuizComplete} className="px-6 py-2 bg-[#FCB237] text-white rounded-full hover:bg-[#E79C1A]">
                     Bekräfta och visa resultat
                   </button>
                 </div>

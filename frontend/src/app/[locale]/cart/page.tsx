@@ -110,7 +110,7 @@ export default function CartPage() {
                         <div>
                           <Link
                             href={`/products/${item.product.slug}`}
-                            className="text-lg font-semibold text-gray-900 hover:text-[#00937C] transition-colors"
+                            className="text-lg font-semibold text-gray-900 hover:text-[#FCB237] transition-colors"
                           >
                             {item.product.name}
                           </Link>
@@ -185,7 +185,7 @@ export default function CartPage() {
                       value={discountCode}
                       onChange={(e) => setDiscountCode(e.target.value)}
                       placeholder="Ange kod"
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00937C]"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FCB237]"
                     />
                     <button
                       onClick={applyDiscountCode}
@@ -204,7 +204,7 @@ export default function CartPage() {
                   </div>
                   
                   {appliedDiscount > 0 && (
-                    <div className="flex justify-between text-[#00937C]">
+                    <div className="flex justify-between text-[#FCB237]">
                       <span className="flex items-center gap-1">
                         <Tag className="h-4 w-4" />
                         Rabatt
@@ -239,15 +239,15 @@ export default function CartPage() {
                 {/* Trust Badges */}
                 <div className="mt-6 pt-6 border-t space-y-3">
                   <div className="flex items-center gap-3 text-sm text-gray-600">
-                    <Shield className="h-5 w-5 text-[#00937C]" />
+                    <Shield className="h-5 w-5 text-[#FCB237]" />
                     <span>Säker betalning med Viva Wallet</span>
                   </div>
                   <div className="flex items-center gap-3 text-sm text-gray-600">
-                    <Truck className="h-5 w-5 text-[#00937C]" />
+                    <Truck className="h-5 w-5 text-[#FCB237]" />
                     <span>Fri frakt över 500 kr</span>
                   </div>
                   <div className="flex items-center gap-3 text-sm text-gray-600">
-                    <CreditCard className="h-5 w-5 text-[#00937C]" />
+                    <CreditCard className="h-5 w-5 text-[#FCB237]" />
                     <span>Betala med kort eller Swish</span>
                   </div>
                 </div>
@@ -256,7 +256,7 @@ export default function CartPage() {
                 <div className="mt-6 pt-6 border-t">
                   <Link
                     href="/products"
-                    className="text-[#00937C] hover:text-[#007363] font-medium flex items-center gap-2"
+                    className="text-[#FCB237] hover:text-[#E79C1A] font-medium flex items-center gap-2"
                   >
                     <ArrowLeft className="h-4 w-4" />
                     Fortsätt handla

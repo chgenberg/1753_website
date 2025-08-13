@@ -185,7 +185,7 @@ export default function ProductPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#00937C]"></div>
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#FCB237]"></div>
       </div>
     )
   }
@@ -209,9 +209,9 @@ export default function ProductPage() {
       {/* Breadcrumbs */}
       <div className="container mx-auto px-4 py-4">
         <nav className="flex items-center gap-2 text-sm text-gray-600">
-          <Link href="/" className="hover:text-[#00937C] transition-colors">{t('navigation.home')}</Link>
+          <Link href="/" className="hover:text-[#FCB237] transition-colors">{t('navigation.home')}</Link>
           <ChevronRight className="w-4 h-4" />
-          <Link href="/products" className="hover:text-[#00937C] transition-colors">{t('navigation.products')}</Link>
+          <Link href="/products" className="hover:text-[#FCB237] transition-colors">{t('navigation.products')}</Link>
           <ChevronRight className="w-4 h-4" />
           <span className="text-gray-900">{product.name}</span>
         </nav>
@@ -298,7 +298,7 @@ export default function ProductPage() {
                     onClick={() => setSelectedImage(index)}
                     className={`relative flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden transition-all ${
                       selectedImage === index 
-                        ? 'ring-2 ring-[#00937C] ring-offset-2' 
+                        ? 'ring-2 ring-[#FCB237] ring-offset-2' 
                         : 'opacity-70 hover:opacity-100'
                     }`}
                   >
@@ -352,7 +352,7 @@ export default function ProductPage() {
               transition={{ delay: 0.3 }}
               className="flex items-center gap-4"
             >
-              <span className="text-3xl font-bold text-[#00937C]">
+              <span className="text-3xl font-bold text-[#FCB237]">
                 {product.price} kr
               </span>
               {product.compareAtPrice && (
@@ -472,15 +472,15 @@ export default function ProductPage() {
               className="grid grid-cols-3 gap-4 text-center"
             >
               <div className="space-y-2">
-                <Truck className="w-6 h-6 mx-auto text-[#00937C]" />
+                <Truck className="w-6 h-6 mx-auto text-[#FCB237]" />
                 <p className="text-xs text-gray-600">{t('productDetail.trust.freeShipping')}</p>
               </div>
               <div className="space-y-2">
-                <Shield className="w-6 h-6 mx-auto text-[#00937C]" />
+                <Shield className="w-6 h-6 mx-auto text-[#FCB237]" />
                 <p className="text-xs text-gray-600">{t('productDetail.trust.securePayment')}</p>
               </div>
               <div className="space-y-2">
-                <Leaf className="w-6 h-6 mx-auto text-[#00937C]" />
+                <Leaf className="w-6 h-6 mx-auto text-[#FCB237]" />
                 <p className="text-xs text-gray-600">{t('productDetail.trust.natural')}</p>
               </div>
             </motion.div>
@@ -496,7 +496,7 @@ export default function ProductPage() {
             onClick={() => setActiveTab('description')}
             className={`px-6 py-3 font-semibold transition-all relative ${
               activeTab === 'description'
-                ? 'text-[#00937C]'
+                ? 'text-[#FCB237]'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
@@ -504,7 +504,7 @@ export default function ProductPage() {
             {activeTab === 'description' && (
               <motion.div
                 layoutId="activeTab"
-                className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#00937C]"
+                className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#FCB237]"
               />
             )}
           </button>
@@ -512,7 +512,7 @@ export default function ProductPage() {
             onClick={() => setActiveTab('ingredients')}
             className={`px-6 py-3 font-semibold transition-all relative ${
               activeTab === 'ingredients'
-                ? 'text-[#00937C]'
+                ? 'text-[#FCB237]'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
@@ -520,7 +520,7 @@ export default function ProductPage() {
             {activeTab === 'ingredients' && (
               <motion.div
                 layoutId="activeTab"
-                className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#00937C]"
+                className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#FCB237]"
               />
             )}
           </button>
@@ -528,7 +528,7 @@ export default function ProductPage() {
             onClick={() => setActiveTab('usage')}
             className={`px-6 py-3 font-semibold transition-all relative ${
               activeTab === 'usage'
-                ? 'text-[#00937C]'
+                ? 'text-[#FCB237]'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
@@ -536,7 +536,7 @@ export default function ProductPage() {
             {activeTab === 'usage' && (
               <motion.div
                 layoutId="activeTab"
-                className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#00937C]"
+                className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#FCB237]"
               />
             )}
           </button>
@@ -544,7 +544,7 @@ export default function ProductPage() {
             onClick={() => setActiveTab('reviews')}
             className={`px-6 py-3 font-semibold transition-all relative ${
               activeTab === 'reviews'
-                ? 'text-[#00937C]'
+                ? 'text-[#FCB237]'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
@@ -552,7 +552,7 @@ export default function ProductPage() {
             {activeTab === 'reviews' && (
               <motion.div
                 layoutId="activeTab"
-                className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#00937C]"
+                className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#FCB237]"
               />
             )}
           </button>
@@ -588,7 +588,7 @@ export default function ProductPage() {
                   <ul className="space-y-2">
                     {product.benefits.map((benefit, index) => (
                       <li key={index} className="flex items-start gap-3">
-                        <Check className="w-5 h-5 text-[#00937C] flex-shrink-0 mt-0.5" />
+                        <Check className="w-5 h-5 text-[#FCB237] flex-shrink-0 mt-0.5" />
                         <span className="text-gray-700">{benefit}</span>
                       </li>
                     ))}
@@ -619,7 +619,7 @@ export default function ProductPage() {
                         />
                       </div>
                     ) : (
-                      <div className="bg-[#00937C] text-white p-3 rounded-lg">
+                      <div className="bg-[#FCB237] text-white p-3 rounded-lg">
                         <Info className="w-6 h-6" />
                       </div>
                     )}
@@ -627,7 +627,7 @@ export default function ProductPage() {
                       <h4 className="text-lg font-semibold mb-2">
                         {ingredient.name}
                         {ingredient.concentration && (
-                          <span className="ml-2 text-sm font-normal text-[#00937C]">
+                          <span className="ml-2 text-sm font-normal text-[#FCB237]">
                             ({ingredient.concentration})
                           </span>
                         )}
@@ -639,7 +639,7 @@ export default function ProductPage() {
                           <ul className="text-sm text-gray-600 space-y-1">
                             {ingredient.benefits.map((benefit, i) => (
                               <li key={i} className="flex items-center gap-2">
-                                <span className="w-1.5 h-1.5 bg-[#00937C] rounded-full"></span>
+                                <span className="w-1.5 h-1.5 bg-[#FCB237] rounded-full"></span>
                                 {benefit}
                               </li>
                             ))}

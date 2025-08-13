@@ -112,10 +112,10 @@ export default function ProductReviews({ productId, productSlug }: ProductReview
     const hasHalfStar = rating % 1 !== 0
 
     for (let i = 0; i < fullStars; i++) {
-      stars.push(<Star key={i} className={`${sizes} fill-[#4A3428] text-[#4A3428]`} />)
+      stars.push(<Star key={i} className={`${sizes} fill-[#FCB237] text-[#FCB237]`} />)
     }
     if (hasHalfStar) {
-      stars.push(<StarHalf key="half" className={`${sizes} fill-[#4A3428] text-[#4A3428]`} />)
+      stars.push(<StarHalf key="half" className={`${sizes} fill-[#FCB237] text-[#FCB237]`} />)
     }
     const emptyStars = 5 - Math.ceil(rating)
     for (let i = 0; i < emptyStars; i++) {
@@ -132,7 +132,7 @@ export default function ProductReviews({ productId, productSlug }: ProductReview
     return (
       <div className="py-12 text-center">
         <p className="text-gray-500 mb-4">Inga recensioner än. Bli den första att recensera denna produkt!</p>
-        <button className="px-6 py-2 bg-[#4A3428] text-white rounded-full hover:bg-[#6B5D54] transition-colors">
+        <button className="px-6 py-2 bg-[#FCB237] text-white rounded-full hover:bg-[#6B5D54] transition-colors">
           Skriv en recension
         </button>
       </div>
@@ -143,7 +143,7 @@ export default function ProductReviews({ productId, productSlug }: ProductReview
     return (
       <div className="py-8">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4A3428] mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FCB237] mx-auto mb-4"></div>
           <p className="text-gray-500">Laddar recensioner...</p>
         </div>
       </div>
@@ -155,7 +155,7 @@ export default function ProductReviews({ productId, productSlug }: ProductReview
       <div className="py-8">
         <div className="text-center">
           <p className="text-gray-500 mb-4">Inga recensioner än. Bli den första att recensera denna produkt!</p>
-          <button className="px-6 py-2 bg-[#4A3428] text-white rounded-full hover:bg-[#3A2418] transition-colors">
+          <button className="px-6 py-2 bg-[#FCB237] text-white rounded-full hover:bg-[#E79C1A] transition-colors">
             Skriv en recension
           </button>
         </div>
@@ -170,7 +170,7 @@ export default function ProductReviews({ productId, productSlug }: ProductReview
         <div className="mb-8 pb-8 border-b border-gray-200">
           <div className="flex items-center gap-6 flex-wrap">
             <div className="flex items-center gap-3">
-              <span className="text-4xl font-light text-[#4A3428]">{stats.averageRating.toFixed(1)}</span>
+              <span className="text-4xl font-light text-[#FCB237]">{stats.averageRating.toFixed(1)}</span>
               {renderStars(stats.averageRating, 'md')}
               <span className="text-gray-600">({stats.totalReviews} recensioner)</span>
             </div>
@@ -180,13 +180,13 @@ export default function ProductReviews({ productId, productSlug }: ProductReview
               {[5, 4, 3, 2, 1].map((rating) => (
                 <div key={rating} className="flex items-center gap-2 mb-1">
                   <span className="text-sm w-2">{rating}</span>
-                  <Star className="w-3 h-3 fill-[#4A3428] text-[#4A3428]" />
+                  <Star className="w-3 h-3 fill-[#FCB237] text-[#FCB237]" />
                   <div className="flex-1 bg-gray-200 rounded-full h-2 overflow-hidden">
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${(stats.ratingDistribution[rating] / stats.totalReviews) * 100}%` }}
                       transition={{ duration: 0.5, delay: rating * 0.1 }}
-                      className="h-full bg-[#4A3428]"
+                      className="h-full bg-[#FCB237]"
                     />
                   </div>
                   <span className="text-sm text-gray-500 w-8 text-right">
@@ -212,7 +212,7 @@ export default function ProductReviews({ productId, productSlug }: ProductReview
             <div className="flex items-start justify-between mb-2">
               <div>
                 {renderStars(review.rating)}
-                <h4 className="text-base font-medium text-[#4A3428] mt-2 mb-1">
+                <h4 className="text-base font-medium text-[#FCB237] mt-2 mb-1">
                   {review.title}
                 </h4>
               </div>
@@ -241,7 +241,7 @@ export default function ProductReviews({ productId, productSlug }: ProductReview
         <div className="text-center mt-8">
           <button
             onClick={() => setDisplayCount(prev => prev + 3)}
-            className="px-6 py-2 border border-[#4A3428] text-[#4A3428] rounded-full hover:bg-[#4A3428] hover:text-white transition-colors"
+            className="px-6 py-2 border border-[#FCB237] text-[#FCB237] rounded-full hover:bg-[#FCB237] hover:text-white transition-colors"
           >
             Visa fler recensioner
           </button>

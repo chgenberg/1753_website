@@ -152,7 +152,7 @@ export default function ContactPage() {
               transition={{ duration: 0.8 }}
               className="text-center"
             >
-              <Heart className="w-16 h-16 text-[#4A3428] mx-auto mb-4" />
+              <Heart className="w-16 h-16 text-[#FCB237] mx-auto mb-4" />
               <h1 className="text-5xl md:text-6xl font-bold mt-4 mb-6">
                 Vi älskar när du hör av dig
               </h1>
@@ -188,7 +188,7 @@ export default function ContactPage() {
                   transition={{ duration: 0.6, delay: index * 0.1 }}
                   className="text-center group"
                 >
-                  <div className="w-16 h-16 mx-auto mb-4 bg-[#4A3428] text-white rounded-2xl flex items-center justify-center group-hover:bg-[#3A2418] transition-colors duration-300">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-[#FCB237] text-white rounded-2xl flex items-center justify-center group-hover:bg-[#E79C1A] transition-colors duration-300">
                     {info.icon}
                   </div>
                   <h3 className="font-semibold text-lg mb-2">{info.title}</h3>

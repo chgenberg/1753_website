@@ -155,7 +155,7 @@ export default function JojobaOljaPage() {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="px-8 py-4 bg-[#00937c] text-white rounded-full font-semibold hover:bg-[#007363] transition-colors duration-300 flex items-center"
+                    className="px-8 py-4 bg-[#00937c] text-white rounded-full font-semibold hover:bg-[#E79C1A] transition-colors duration-300 flex items-center"
                   >
                     Upptäck Jojoba-produkter
                     <ArrowRight className="w-5 h-5 ml-2" />
@@ -214,7 +214,7 @@ export default function JojobaOljaPage() {
                   transition={{ duration: 0.6, delay: index * 0.2 }}
                   className="text-center group"
                 >
-                  <div className="w-20 h-20 mx-auto mb-6 bg-[#00937c] text-white rounded-2xl flex items-center justify-center group-hover:bg-[#007363] transition-colors duration-300">
+                  <div className="w-20 h-20 mx-auto mb-6 bg-[#00937c] text-white rounded-2xl flex items-center justify-center group-hover:bg-[#E79C1A] transition-colors duration-300">
                     {benefit.icon}
                   </div>
                   <h3 className="font-bold text-xl mb-4">{benefit.title}</h3>
@@ -521,7 +521,7 @@ export default function JojobaOljaPage() {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="px-8 py-4 bg-[#00937c] text-white rounded-full font-semibold hover:bg-[#007363] transition-colors duration-300"
+                    className="px-8 py-4 bg-[#00937c] text-white rounded-full font-semibold hover:bg-[#E79C1A] transition-colors duration-300"
                   >
                     Köp Jojoba-produkter
                   </motion.button>

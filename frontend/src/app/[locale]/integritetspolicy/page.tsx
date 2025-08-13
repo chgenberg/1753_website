@@ -11,7 +11,7 @@ export default function IntegritetspolicyPage() {
         {/* Breadcrumb */}
         <div className="bg-gray-50 py-4">
           <div className="container mx-auto px-4">
-            <Link href="/" className="inline-flex items-center text-gray-600 hover:text-[#4A3428] transition-colors">
+            <Link href="/" className="inline-flex items-center text-gray-600 hover:text-[#FCB237] transition-colors">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Tillbaka till startsidan
             </Link>
@@ -21,7 +21,7 @@ export default function IntegritetspolicyPage() {
         <div className="container mx-auto px-4 py-16">
           <div className="max-w-4xl mx-auto">
             <div className="flex items-center mb-8">
-              <Shield className="w-8 h-8 text-[#4A3428] mr-3" />
+              <Shield className="w-8 h-8 text-[#FCB237] mr-3" />
               <h1 className="text-4xl font-bold text-gray-900">Integritetspolicy</h1>
             </div>
 
@@ -58,7 +58,7 @@ export default function IntegritetspolicyPage() {
             {/* Vilka uppgifter */}
             <section className="mb-8">
               <div className="flex items-center mb-6">
-                <Database className="w-8 h-8 text-[#4A3428] mr-3" />
+                <Database className="w-8 h-8 text-[#FCB237] mr-3" />
                 <h2 className="text-2xl font-semibold text-gray-900">2. Vilka Personuppgifter Samlar Vi In?</h2>
               </div>
               
@@ -98,7 +98,7 @@ export default function IntegritetspolicyPage() {
             {/* Varför */}
             <section className="mb-8">
               <div className="flex items-center mb-6">
-                <Eye className="w-8 h-8 text-[#4A3428] mr-3" />
+                <Eye className="w-8 h-8 text-[#FCB237] mr-3" />
                 <h2 className="text-2xl font-semibold text-gray-900">3. Varför Behandlar Vi Dina Uppgifter?</h2>
               </div>
 
@@ -107,7 +107,7 @@ export default function IntegritetspolicyPage() {
                   <h3 className="text-lg font-semibold mb-4">Rättslig grund och ändamål:</h3>
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
-                      <h4 className="font-semibold mb-2 text-[#4A3428]">Avtalsuppfyllelse:</h4>
+                      <h4 className="font-semibold mb-2 text-[#FCB237]">Avtalsuppfyllelse:</h4>
                       <ul className="text-gray-700 text-sm space-y-1">
                         <li>• Behandla och leverera beställningar</li>
                         <li>• Kundservice och support</li>
@@ -115,7 +115,7 @@ export default function IntegritetspolicyPage() {
                       </ul>
                     </div>
                     <div>
-                      <h4 className="font-semibold mb-2 text-[#4A3428]">Berättigat intresse:</h4>
+                      <h4 className="font-semibold mb-2 text-[#FCB237]">Berättigat intresse:</h4>
                       <ul className="text-gray-700 text-sm space-y-1">
                         <li>• Marknadsföring till befintliga kunder</li>
                         <li>• Förbättra vår webbshop och tjänster</li>
@@ -173,13 +173,13 @@ export default function IntegritetspolicyPage() {
             {/* Säkerhet */}
             <section className="mb-8">
               <div className="flex items-center mb-6">
-                <Lock className="w-8 h-8 text-[#4A3428] mr-3" />
+                <Lock className="w-8 h-8 text-[#FCB237] mr-3" />
                 <h2 className="text-2xl font-semibold text-gray-900">5. Hur Skyddar Vi Dina Uppgifter?</h2>
               </div>
 
               <div className="grid md:grid-cols-3 gap-6">
                 <div className="text-center p-6 bg-[#F5F3F0] rounded-xl">
-                  <Lock className="w-12 h-12 text-[#4A3428] mx-auto mb-4" />
+                  <Lock className="w-12 h-12 text-[#FCB237] mx-auto mb-4" />
                   <h3 className="font-semibold mb-2">Kryptering</h3>
                   <p className="text-gray-700 text-sm">
                     All dataöverföring sker via SSL-kryptering (HTTPS).
@@ -187,7 +187,7 @@ export default function IntegritetspolicyPage() {
                 </div>
 
                 <div className="text-center p-6 bg-[#F5F3F0] rounded-xl">
-                  <Shield className="w-12 h-12 text-[#4A3428] mx-auto mb-4" />
+                  <Shield className="w-12 h-12 text-[#FCB237] mx-auto mb-4" />
                   <h3 className="font-semibold mb-2">Säker lagring</h3>
                   <p className="text-gray-700 text-sm">
                     Data lagras säkert hos certifierade molntjänstleverantörer.
@@ -195,7 +195,7 @@ export default function IntegritetspolicyPage() {
                 </div>
 
                 <div className="text-center p-6 bg-[#F5F3F0] rounded-xl">
-                  <UserCheck className="w-12 h-12 text-[#4A3428] mx-auto mb-4" />
+                  <UserCheck className="w-12 h-12 text-[#FCB237] mx-auto mb-4" />
                   <h3 className="font-semibold mb-2">Begränsad åtkomst</h3>
                   <p className="text-gray-700 text-sm">
                     Endast auktoriserad personal har åtkomst till personuppgifter.
@@ -287,7 +287,7 @@ export default function IntegritetspolicyPage() {
               <div className="bg-[#F5F3F0] rounded-xl p-6">
                 <p className="text-gray-700 mb-4">
                   Vi använder cookies för att förbättra din upplevelse på vår webbshop. 
-                  Läs mer om våra cookies i vår <Link href="/cookies" className="text-[#4A3428] hover:underline">cookiepolicy</Link>.
+                  Läs mer om våra cookies i vår <Link href="/cookies" className="text-[#FCB237] hover:underline">cookiepolicy</Link>.
                 </p>
                 <div className="grid md:grid-cols-3 gap-4 text-sm">
                   <div>
@@ -324,7 +324,7 @@ export default function IntegritetspolicyPage() {
                     Om du är missnöjd med hur vi behandlar dina personuppgifter kan du klaga 
                     till Integritetsskyddsmyndigheten (IMY).
                   </p>
-                  <p className="text-[#4A3428] text-sm mt-2">
+                  <p className="text-[#FCB237] text-sm mt-2">
                     imy.se | 08-657 61 00
                   </p>
                 </div>

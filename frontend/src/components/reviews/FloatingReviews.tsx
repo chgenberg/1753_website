@@ -114,7 +114,7 @@ export default function FloatingReviews({ productSlug, productName }: FloatingRe
                 />
               ))}
             </div>
-            <span className="text-sm font-medium text-[#4A3428]">
+            <span className="text-sm font-medium text-[#FCB237]">
               {currentReview.rating}.0
             </span>
           </div>
@@ -126,14 +126,14 @@ export default function FloatingReviews({ productSlug, productName }: FloatingRe
               className="p-1 hover:bg-white/20 rounded-full transition-colors"
               aria-label="Föregående recension"
             >
-              <ChevronLeft className="w-4 h-4 text-[#4A3428]" />
+              <ChevronLeft className="w-4 h-4 text-[#FCB237]" />
             </button>
             <button
               onClick={goToNext}
               className="p-1 hover:bg-white/20 rounded-full transition-colors"
               aria-label="Nästa recension"
             >
-              <ChevronRight className="w-4 h-4 text-[#4A3428]" />
+              <ChevronRight className="w-4 h-4 text-[#FCB237]" />
             </button>
           </div>
         </div>
@@ -147,7 +147,7 @@ export default function FloatingReviews({ productSlug, productName }: FloatingRe
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3 }}
           >
-            <p className="text-sm text-[#4A3428] leading-relaxed mb-2 line-clamp-2">
+            <p className="text-sm text-[#FCB237] leading-relaxed mb-2 line-clamp-2">
               "{currentReview.text}"
             </p>
             <div className="flex items-center justify-between">
@@ -174,8 +174,8 @@ export default function FloatingReviews({ productSlug, productName }: FloatingRe
               onClick={() => setCurrentIndex(index)}
               className={`w-1.5 h-1.5 rounded-full transition-all ${
                 index === currentIndex 
-                  ? 'bg-[#4A3428] w-4' 
-                  : 'bg-[#4A3428]/30 hover:bg-[#4A3428]/50'
+                  ? 'bg-[#FCB237] w-4' 
+                  : 'bg-[#FCB237]/30 hover:bg-[#FCB237]/50'
               }`}
               aria-label={`Gå till recension ${index + 1}`}
             />

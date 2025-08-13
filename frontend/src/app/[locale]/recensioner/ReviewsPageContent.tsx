@@ -151,13 +151,13 @@ export default function ReviewsPageContent() {
 
     for (let i = 0; i < fullStars; i++) {
       stars.push(
-        <Star key={i} className={`${sizes[size]} fill-[#4A3428] text-[#4A3428]`} />
+        <Star key={i} className={`${sizes[size]} fill-[#FCB237] text-[#FCB237]`} />
       )
     }
 
     if (hasHalfStar) {
       stars.push(
-        <StarHalf key="half" className={`${sizes[size]} fill-[#4A3428] text-[#4A3428]`} />
+        <StarHalf key="half" className={`${sizes[size]} fill-[#FCB237] text-[#FCB237]`} />
       )
     }
 
@@ -186,7 +186,7 @@ export default function ReviewsPageContent() {
   if (loading && page === 1) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#FAF8F5]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A3428]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FCB237]"></div>
       </div>
     )
   }
@@ -201,7 +201,7 @@ export default function ReviewsPageContent() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center max-w-3xl mx-auto"
           >
-            <h1 className="text-4xl md:text-5xl font-light text-[#4A3428] mb-4">
+            <h1 className="text-4xl md:text-5xl font-light text-[#FCB237] mb-4">
               {t('title')}
             </h1>
             <p className="text-lg text-[#6B5D54] mb-8">
@@ -217,7 +217,7 @@ export default function ReviewsPageContent() {
                   transition={{ delay: 0.1 }}
                   className="bg-white/80 backdrop-blur rounded-2xl p-6 shadow-sm"
                 >
-                  <div className="text-3xl font-light text-[#4A3428] mb-2">
+                  <div className="text-3xl font-light text-[#FCB237] mb-2">
                     {stats.totalReviews}+
                   </div>
                   <div className="text-sm text-[#6B5D54]">{t('totalReviews')}</div>
@@ -230,7 +230,7 @@ export default function ReviewsPageContent() {
                   className="bg-white/80 backdrop-blur rounded-2xl p-6 shadow-sm"
                 >
                   <div className="flex items-center justify-center gap-2 mb-2">
-                    <span className="text-3xl font-light text-[#4A3428]">
+                    <span className="text-3xl font-light text-[#FCB237]">
                       {stats.averageRating.toFixed(1)}
                     </span>
                     {renderStars(stats.averageRating, 'lg')}
@@ -244,7 +244,7 @@ export default function ReviewsPageContent() {
                   transition={{ delay: 0.3 }}
                   className="bg-white/80 backdrop-blur rounded-2xl p-6 shadow-sm"
                 >
-                  <div className="text-3xl font-light text-[#4A3428] mb-2">
+                  <div className="text-3xl font-light text-[#FCB237] mb-2">
                     {Math.round((stats.ratingDistribution[5] / stats.totalReviews) * 100)}%
                   </div>
                   <div className="text-sm text-[#6B5D54]">{t('fiveStarPercentage')}</div>
@@ -264,7 +264,7 @@ export default function ReviewsPageContent() {
                 onClick={() => setSelectedRating(null)}
                 className={`px-3 py-1.5 rounded-full text-sm transition-all ${
                   selectedRating === null 
-                    ? 'bg-[#4A3428] text-white' 
+                    ? 'bg-[#FCB237] text-white' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -276,7 +276,7 @@ export default function ReviewsPageContent() {
                   onClick={() => setSelectedRating(rating)}
                   className={`px-3 py-1.5 rounded-full text-sm transition-all flex items-center gap-1 ${
                     selectedRating === rating
-                      ? 'bg-[#4A3428] text-white'
+                      ? 'bg-[#FCB237] text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
@@ -289,7 +289,7 @@ export default function ReviewsPageContent() {
               <select
                 value={selectedProduct}
                 onChange={(e) => setSelectedProduct(e.target.value)}
-                className="px-3 py-1.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#4A3428] focus:ring-opacity-20"
+                className="px-3 py-1.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#FCB237] focus:ring-opacity-20"
               >
                 <option value="">{t('allProducts')}</option>
                 {products.map((product) => (
@@ -302,7 +302,7 @@ export default function ReviewsPageContent() {
               <select
                 value={`${sortBy}-${sortOrder}`}
                 onChange={(e) => handleSortChange(e.target.value)}
-                className="px-3 py-1.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#4A3428] focus:ring-opacity-20"
+                className="px-3 py-1.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#FCB237] focus:ring-opacity-20"
               >
                 <option value="createdAt-desc">{t('sortNewest')}</option>
                 <option value="createdAt-asc">{t('sortOldest')}</option>
@@ -342,7 +342,7 @@ export default function ReviewsPageContent() {
                         fill
                         className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
                       />
-                      <div className="absolute top-3 right-3 bg-white/90 backdrop-blur rounded-full px-3 py-1 text-sm font-medium text-[#4A3428]">
+                      <div className="absolute top-3 right-3 bg-white/90 backdrop-blur rounded-full px-3 py-1 text-sm font-medium text-[#FCB237]">
                         {review.product.price} kr
                       </div>
                     </div>
@@ -360,7 +360,7 @@ export default function ReviewsPageContent() {
 
                   {/* Title - mindre och normal kapitalisering */}
                   {review.title && (
-                    <h3 className="text-base font-medium text-[#4A3428] mb-2 line-clamp-1">
+                    <h3 className="text-base font-medium text-[#FCB237] mb-2 line-clamp-1">
                       {capitalize(review.title)}
                     </h3>
                   )}
@@ -389,10 +389,10 @@ export default function ReviewsPageContent() {
                       href={`/sv/products/${review.product.slug}`}
                       className="mt-3 flex items-center justify-between w-full px-3 py-2 bg-[#F5F0E8] rounded-lg hover:bg-[#E5DDD5] transition-colors group/link"
                     >
-                      <span className="text-sm font-medium text-[#4A3428]">
+                      <span className="text-sm font-medium text-[#FCB237]">
                         {review.product.name}
                       </span>
-                      <ShoppingBag className="w-4 h-4 text-[#4A3428] group-hover/link:translate-x-1 transition-transform" />
+                      <ShoppingBag className="w-4 h-4 text-[#FCB237] group-hover/link:translate-x-1 transition-transform" />
                     </Link>
                   )}
                 </div>
@@ -414,7 +414,7 @@ export default function ReviewsPageContent() {
                 fetchReviews(page + 1)
               }}
               disabled={loading}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-[#4A3428] text-white rounded-full hover:bg-[#6B5D54] transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-[#FCB237] text-white rounded-full hover:bg-[#6B5D54] transition-colors disabled:opacity-50"
             >
               {loading ? (
                 <>

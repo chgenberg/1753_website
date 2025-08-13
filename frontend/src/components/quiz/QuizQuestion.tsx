@@ -29,7 +29,7 @@ export const QuizQuestion: React.FC<QuizQuestionProps> = ({
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: "spring", stiffness: 200, damping: 20 }}
-          className="w-16 h-16 md:w-20 md:h-20 bg-[#4A3428] rounded-full flex items-center justify-center text-3xl md:text-4xl mx-auto mb-4"
+          className="w-16 h-16 md:w-20 md:h-20 bg-[#FCB237] rounded-full flex items-center justify-center text-3xl md:text-4xl mx-auto mb-4"
         >
           <span className="filter grayscale-0">{question.icon || '🎯'}</span>
         </motion.div>
@@ -57,8 +57,8 @@ export const QuizQuestion: React.FC<QuizQuestionProps> = ({
             onClick={() => onAnswer(question.id, option.value)}
             className={`relative p-4 md:p-6 rounded-xl border-2 transition-all duration-300 group ${
               selectedValue === option.value
-                ? 'border-[#4A3428] bg-[#4A3428] text-white shadow-xl'
-                : 'border-gray-200 hover:border-[#4A3428]/50 hover:shadow-lg bg-white'
+                ? 'border-[#FCB237] bg-[#FCB237] text-white shadow-xl'
+                : 'border-gray-200 hover:border-[#FCB237]/50 hover:shadow-lg bg-white'
             }`}
           >
             <div className="flex items-center md:items-start gap-4">
@@ -66,7 +66,7 @@ export const QuizQuestion: React.FC<QuizQuestionProps> = ({
               <div className={`w-14 h-14 md:w-12 md:h-12 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
                 selectedValue === option.value
                   ? 'bg-white/20'
-                  : 'bg-[#4A3428]/10 group-hover:bg-[#4A3428]/20'
+                  : 'bg-[#FCB237]/10 group-hover:bg-[#FCB237]/20'
               }`}>
                 <span className="text-xl md:text-lg">{option.icon || option.emoji}</span>
               </div>
@@ -99,7 +99,7 @@ export const QuizQuestion: React.FC<QuizQuestionProps> = ({
                   transition={{ type: "spring", stiffness: 300, damping: 20 }}
                   className="w-6 h-6 bg-white rounded-full flex items-center justify-center flex-shrink-0"
                 >
-                  <Check className="w-4 h-4 text-[#4A3428]" strokeWidth={3} />
+                  <Check className="w-4 h-4 text-[#FCB237]" strokeWidth={3} />
                 </motion.div>
               )}
             </div>

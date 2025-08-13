@@ -26,7 +26,7 @@ const TabButton = ({ active, onClick, icon: Icon, label, notification = false }:
     whileTap={{ scale: 0.95 }}
     className={`relative flex items-center gap-2 px-4 py-3 rounded-full transition-all ${
       active 
-        ? 'bg-[#4A3428] text-white shadow-lg' 
+        ? 'bg-[#FCB237] text-white shadow-lg' 
         : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
     }`}
   >
@@ -113,9 +113,9 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
       <div className="mt-4">
         <div className="flex items-center gap-2 mb-2">
           <span className="text-sm text-gray-600">Välj metrisk:</span>
-          <button onClick={() => setMetric('rednessIndex')} className={`px-2 py-1 text-xs rounded-full ${metric==='rednessIndex'?'bg-[#4A3428] text-white':'bg-gray-100'}`}>Rodnad</button>
-          <button onClick={() => setMetric('highlightRatio')} className={`px-2 py-1 text-xs rounded-full ${metric==='highlightRatio'?'bg-[#4A3428] text-white':'bg-gray-100'}`}>Glans</button>
-          <button onClick={() => setMetric('textureVariance')} className={`px-2 py-1 text-xs rounded-full ${metric==='textureVariance'?'bg-[#4A3428] text-white':'bg-gray-100'}`}>Textur</button>
+          <button onClick={() => setMetric('rednessIndex')} className={`px-2 py-1 text-xs rounded-full ${metric==='rednessIndex'?'bg-[#FCB237] text-white':'bg-gray-100'}`}>Rodnad</button>
+          <button onClick={() => setMetric('highlightRatio')} className={`px-2 py-1 text-xs rounded-full ${metric==='highlightRatio'?'bg-[#FCB237] text-white':'bg-gray-100'}`}>Glans</button>
+          <button onClick={() => setMetric('textureVariance')} className={`px-2 py-1 text-xs rounded-full ${metric==='textureVariance'?'bg-[#FCB237] text-white':'bg-gray-100'}`}>Textur</button>
         </div>
         <div className="grid grid-cols-3 gap-2 max-w-sm">
           <div className="col-span-3 h-12 rounded" style={{ background: heatColor(getZone(z.forehead, metric), max) }} />
@@ -169,7 +169,7 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
               </button>
               <Link 
                 href="/"
-                className="px-4 py-2 bg-[#4A3428] text-white rounded-full text-sm hover:bg-[#3A2418] transition-colors"
+                className="px-4 py-2 bg-[#FCB237] text-white rounded-full text-sm hover:bg-[#E79C1A] transition-colors"
               >
                 Till startsidan
               </Link>
@@ -331,9 +331,9 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                     <p className="text-gray-600">Baserat på din hudanalys har vi valt ut de perfekta produkterna för dig.</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <button onClick={() => setTier('budget')} className={`px-3 py-1 rounded-full text-sm ${tier==='budget'?'bg-[#4A3428] text-white':'bg-gray-100'}`}>Budget</button>
-                    <button onClick={() => setTier('standard')} className={`px-3 py-1 rounded-full text-sm ${tier==='standard'?'bg-[#4A3428] text-white':'bg-gray-100'}`}>Standard</button>
-                    <button onClick={() => setTier('premium')} className={`px-3 py-1 rounded-full text-sm ${tier==='premium'?'bg-[#4A3428] text-white':'bg-gray-100'}`}>Premium</button>
+                    <button onClick={() => setTier('budget')} className={`px-3 py-1 rounded-full text-sm ${tier==='budget'?'bg-[#FCB237] text-white':'bg-gray-100'}`}>Budget</button>
+                    <button onClick={() => setTier('standard')} className={`px-3 py-1 rounded-full text-sm ${tier==='standard'?'bg-[#FCB237] text-white':'bg-gray-100'}`}>Standard</button>
+                    <button onClick={() => setTier('premium')} className={`px-3 py-1 rounded-full text-sm ${tier==='premium'?'bg-[#FCB237] text-white':'bg-gray-100'}`}>Premium</button>
                   </div>
                 </div>
 
@@ -343,7 +343,7 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                     <div className="font-medium text-gray-900">Lägg hela rutinen i varukorgen</div>
                     <div className="text-sm text-gray-600">Välj nivå ovan. Du kan justera i varukorgen.</div>
                   </div>
-                  <button onClick={addRoutineToCart} className="inline-flex items-center gap-2 px-4 py-2 bg-[#4A3428] text-white rounded-full">
+                  <button onClick={addRoutineToCart} className="inline-flex items-center gap-2 px-4 py-2 bg-[#FCB237] text-white rounded-full">
                     <ShoppingBag className="w-4 h-4" /> Lägg till allt
                   </button>
                 </div>
@@ -442,7 +442,7 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                             </div>
                             <Link
                               href="/products"
-                              className="px-4 py-2 bg-[#4A3428] text-white rounded-full text-sm hover:bg-[#3A2418] transition-colors"
+                              className="px-4 py-2 bg-[#FCB237] text-white rounded-full text-sm hover:bg-[#E79C1A] transition-colors"
                             >
                               Se produkt
                             </Link>
@@ -479,7 +479,7 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                     <div className="mt-6 text-center">
                       <Link
                         href="/products"
-                        className="inline-flex items-center gap-2 px-6 py-3 bg-[#4A3428] text-white rounded-full hover:bg-[#3A2418] transition-colors"
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-[#FCB237] text-white rounded-full hover:bg-[#E79C1A] transition-colors"
                       >
                         <ShoppingBag className="w-5 h-5" />
                         Se alla produkter

@@ -185,7 +185,7 @@ export function BlogPost({
                         href={parts[1].trim()} 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="block text-[#00937c] hover:text-[#007363] transition-colors duration-300"
+                        className="block text-[#00937c] hover:text-[#E79C1A] transition-colors duration-300"
                       >
                         {parts[0].trim()}
                       </a>
@@ -197,7 +197,7 @@ export function BlogPost({
                       href={sourceLine} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="block text-[#00937c] hover:text-[#007363] transition-colors duration-300"
+                      className="block text-[#00937c] hover:text-[#E79C1A] transition-colors duration-300"
                     >
                       {sourceLine}
                     </a>
@@ -230,7 +230,7 @@ export function BlogPost({
         transition={{ duration: 0.6 }}
         className="mb-8"
       >
-        <Link href="/blogg" className="inline-flex items-center text-[#00937c] hover:text-[#007363] transition-colors duration-300">
+        <Link href="/blogg" className="inline-flex items-center text-[#00937c] hover:text-[#E79C1A] transition-colors duration-300">
           <ArrowLeft className="w-5 h-5 mr-2" />
           <span className="font-medium">Tillbaka till bloggen</span>
         </Link>
@@ -376,7 +376,7 @@ export function BlogPost({
             </p>
             <Link 
               href="/om-oss" 
-              className="text-[#00937c] hover:text-[#007363] font-medium transition-colors duration-300"
+              className="text-[#00937c] hover:text-[#E79C1A] font-medium transition-colors duration-300"
             >
               Läs mer om oss →
             </Link>

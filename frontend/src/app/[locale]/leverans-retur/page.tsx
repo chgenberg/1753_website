@@ -11,7 +11,7 @@ export default function LeveransReturPage() {
         {/* Breadcrumb */}
         <div className="bg-gray-50 py-4">
           <div className="container mx-auto px-4">
-            <Link href="/" className="inline-flex items-center text-gray-600 hover:text-[#4A3428] transition-colors">
+            <Link href="/" className="inline-flex items-center text-gray-600 hover:text-[#FCB237] transition-colors">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Tillbaka till startsidan
             </Link>
@@ -25,7 +25,7 @@ export default function LeveransReturPage() {
             {/* Leverans */}
             <section className="mb-12">
               <div className="flex items-center mb-6">
-                <Truck className="w-8 h-8 text-[#4A3428] mr-3" />
+                <Truck className="w-8 h-8 text-[#FCB237] mr-3" />
                 <h2 className="text-2xl font-semibold text-gray-900">Leverans</h2>
               </div>
 
@@ -77,7 +77,7 @@ export default function LeveransReturPage() {
             {/* Retur */}
             <section className="mb-12">
               <div className="flex items-center mb-6">
-                <Package className="w-8 h-8 text-[#4A3428] mr-3" />
+                <Package className="w-8 h-8 text-[#FCB237] mr-3" />
                 <h2 className="text-2xl font-semibold text-gray-900">Retur & Återbetalning</h2>
               </div>
 

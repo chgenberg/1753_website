@@ -164,7 +164,7 @@ export function HeroSection() {
               </Link>
               <Link
                 href="/products"
-                className="inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-[#4A3428] bg-white hover:bg-gray-50 rounded-full transition-all duration-300 border-2 border-[#4A3428]"
+                className="inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-[#FCB237] bg-white hover:bg-gray-50 rounded-full transition-all duration-300 border-2 border-[#FCB237]"
               >
                 {t('home.hero.ctaProducts')}
                 <ArrowRight className="w-5 h-5 ml-2" />
@@ -209,7 +209,7 @@ export function HeroSection() {
                       <p className="text-sm text-gray-600">{step.subtext}</p>
                     </div>
                     {index < 3 && (
-                      <div className="hidden sm:block w-8 h-0.5 bg-gradient-to-r from-[#00937C] to-transparent" />
+                      <div className="hidden sm:block w-8 h-0.5 bg-gradient-to-r from-[#FCB237] to-transparent" />
                     )}
                   </motion.div>
                 ))}
@@ -250,7 +250,7 @@ export function HeroSection() {
             </div>
             <button
               onClick={() => setModalContent(null)}
-              className="mt-6 w-full px-6 py-3 bg-[#00937C] text-white rounded-full hover:bg-[#007363] transition-colors font-medium"
+              className="mt-6 w-full px-6 py-3 bg-[#FCB237] text-white rounded-full hover:bg-[#E79C1A] transition-colors font-medium"
             >
               {t('common.close')}
             </button>

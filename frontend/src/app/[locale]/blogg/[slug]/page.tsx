@@ -102,13 +102,13 @@ export default async function BlogPostPage({ params }: Props) {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link 
                   href="/blogg" 
-                  className="inline-flex items-center px-6 py-3 bg-[#4A3428] text-white rounded-lg hover:bg-[#3A2A1E] transition-colors"
+                  className="inline-flex items-center px-6 py-3 bg-[#FCB237] text-white rounded-lg hover:bg-[#3A2A1E] transition-colors"
                 >
                   Tillbaka till bloggen
                 </Link>
                 <Link 
                   href="/products" 
-                  className="inline-flex items-center px-6 py-3 border border-[#4A3428] text-[#4A3428] rounded-lg hover:bg-[#4A3428] hover:text-white transition-colors"
+                  className="inline-flex items-center px-6 py-3 border border-[#FCB237] text-[#FCB237] rounded-lg hover:bg-[#FCB237] hover:text-white transition-colors"
                 >
                   Utforska produkter
                 </Link>
@@ -132,9 +132,9 @@ export default async function BlogPostPage({ params }: Props) {
           <article className="max-w-4xl mx-auto">
             {/* Breadcrumbs */}
             <nav className="flex items-center gap-2 text-sm text-gray-600 mb-8">
-              <Link href="/" className="hover:text-[#4A3428] transition-colors">Hem</Link>
+              <Link href="/" className="hover:text-[#FCB237] transition-colors">Hem</Link>
               <span>/</span>
-              <Link href="/blogg" className="hover:text-[#4A3428] transition-colors">Blogg</Link>
+              <Link href="/blogg" className="hover:text-[#FCB237] transition-colors">Blogg</Link>
               <span>/</span>
               <span className="text-gray-900">{post.title}</span>
             </nav>
@@ -176,10 +176,10 @@ export default async function BlogPostPage({ params }: Props) {
                           prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6
                           prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4
                           prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-6
-                          prose-a:text-[#4A3428] prose-a:underline hover:prose-a:no-underline prose-a:break-all
+                          prose-a:text-[#FCB237] prose-a:underline hover:prose-a:no-underline prose-a:break-all
                           prose-ul:my-6 prose-li:my-2
                           prose-strong:text-gray-900 prose-strong:font-semibold
-                          prose-blockquote:border-l-4 prose-blockquote:border-[#4A3428] prose-blockquote:pl-6 prose-blockquote:italic
+                          prose-blockquote:border-l-4 prose-blockquote:border-[#FCB237] prose-blockquote:pl-6 prose-blockquote:italic
                           [&_*]:break-words [&_a]:overflow-wrap-anywhere [&_span]:break-all">
               {/* Featured Image floating to the left */}
               {(post as any).image && (
@@ -223,7 +223,7 @@ export default async function BlogPostPage({ params }: Props) {
               </p>
               <Link 
                 href="/products"
-                className="inline-flex items-center px-8 py-4 bg-[#4A3428] text-white rounded-lg hover:bg-[#3A2A1E] transition-all transform hover:scale-105 shadow-lg"
+                className="inline-flex items-center px-8 py-4 bg-[#FCB237] text-white rounded-lg hover:bg-[#3A2A1E] transition-all transform hover:scale-105 shadow-lg"
               >
                 Se våra produkter
                 <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -236,7 +236,7 @@ export default async function BlogPostPage({ params }: Props) {
             <div className="mt-12 pt-8 border-t border-gray-200">
               <Link 
                 href="/blogg"
-                className="inline-flex items-center text-[#4A3428] hover:text-[#3A2A1E] transition-colors group"
+                className="inline-flex items-center text-[#FCB237] hover:text-[#3A2A1E] transition-colors group"
               >
                 <svg className="w-5 h-5 mr-2 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />

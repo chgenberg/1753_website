@@ -333,8 +333,8 @@ export function GallerySection() {
                   {/* Content header */}
                   <div className="border-b border-gray-200 pb-4 mb-6">
                     <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-[#4A3428] rounded-full"></div>
-                      <span className="text-sm font-medium text-[#4A3428] uppercase tracking-wide">
+                      <div className="w-2 h-2 bg-[#FCB237] rounded-full"></div>
+                      <span className="text-sm font-medium text-[#FCB237] uppercase tracking-wide">
                         Naturens kraft
                       </span>
                     </div>
@@ -347,7 +347,7 @@ export function GallerySection() {
                              prose-p:text-gray-700 prose-p:leading-relaxed
                              prose-strong:text-gray-900 prose-strong:font-semibold
                              prose-ul:my-4 prose-li:my-1
-                             prose-a:text-[#4A3428] prose-a:no-underline hover:prose-a:underline"
+                             prose-a:text-[#FCB237] prose-a:no-underline hover:prose-a:underline"
                     dangerouslySetInnerHTML={{ __html: selectedImage.detailedDescription }}
                   />
                   
@@ -366,7 +366,7 @@ export function GallerySection() {
                           // Scroll to products section
                           document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })
                         }}
-                        className="flex-1 px-4 py-2 bg-[#4A3428] text-white rounded-lg hover:bg-[#3A2418] transition-colors font-medium"
+                        className="flex-1 px-4 py-2 bg-[#FCB237] text-white rounded-lg hover:bg-[#E79C1A] transition-colors font-medium"
                       >
                         Se våra produkter
                       </button>

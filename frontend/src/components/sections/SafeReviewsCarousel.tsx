@@ -207,17 +207,17 @@ export function SafeReviewsCarousel() {
 
           {/* Navigation */}
           <button onClick={goToPrevious} className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all" aria-label={t('Reviews.prevAria')}>
-            <ChevronLeft className="w-6 h-6 text-[#4A3428]" />
+            <ChevronLeft className="w-6 h-6 text-[#FCB237]" />
           </button>
           
           <button onClick={goToNext} className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all" aria-label={t('Reviews.nextAria')}>
-            <ChevronRight className="w-6 h-6 text-[#4A3428]" />
+            <ChevronRight className="w-6 h-6 text-[#FCB237]" />
           </button>
 
           {/* Dots */}
           <div className="flex items-center justify-center gap-2 mt-8">
             {reviews.map((_, index) => (
-              <button key={index} onClick={() => goToSlide(index)} className={`w-2 h-2 rounded-full transition-all ${index === currentIndex ? 'w-8 bg-[#4A3428]' : 'bg-gray-300 hover:bg-gray-400'}`} aria-label={t('Reviews.gotoAria', { index: index + 1 })} />
+              <button key={index} onClick={() => goToSlide(index)} className={`w-2 h-2 rounded-full transition-all ${index === currentIndex ? 'w-8 bg-[#FCB237]' : 'bg-gray-300 hover:bg-gray-400'}`} aria-label={t('Reviews.gotoAria', { index: index + 1 })} />
             ))}
           </div>
         </div>

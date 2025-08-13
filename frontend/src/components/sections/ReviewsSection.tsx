@@ -353,7 +353,7 @@ export function ReviewsSection() {
           >
             <Link
               href="/recensioner"
-              className="inline-flex items-center px-6 py-3 bg-[#4A3428] text-white rounded-full text-sm font-medium hover:bg-[#6B5D54] transition-colors"
+              className="inline-flex items-center px-6 py-3 bg-[#FCB237] text-white rounded-full text-sm font-medium hover:bg-[#6B5D54] transition-colors"
             >
               LÄS ALLA RECENSIONER
             </Link>

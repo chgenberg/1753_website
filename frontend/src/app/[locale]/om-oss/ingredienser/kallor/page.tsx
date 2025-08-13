@@ -439,7 +439,7 @@ export default function KallorPage() {
                           rel="noopener noreferrer"
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
-                          className="inline-flex items-center px-4 py-2 bg-[#00937c] text-white rounded-lg font-medium hover:bg-[#007363] transition-colors duration-300 text-sm"
+                          className="inline-flex items-center px-4 py-2 bg-[#00937c] text-white rounded-lg font-medium hover:bg-[#E79C1A] transition-colors duration-300 text-sm"
                         >
                           <ExternalLink className="w-4 h-4 mr-2" />
                           Läs studien
@@ -490,7 +490,7 @@ export default function KallorPage() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="px-8 py-4 bg-[#00937c] text-white rounded-full font-semibold hover:bg-[#007363] transition-colors duration-300 flex items-center mx-auto"
+                  className="px-8 py-4 bg-[#00937c] text-white rounded-full font-semibold hover:bg-[#E79C1A] transition-colors duration-300 flex items-center mx-auto"
                 >
                   <Leaf className="w-5 h-5 mr-2" />
                   Tillbaka till Ingredienser

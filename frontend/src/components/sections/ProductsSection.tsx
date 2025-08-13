@@ -135,10 +135,10 @@ export function ProductsSection() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-2 bg-[#4A3428]/10 px-4 py-2 rounded-full mb-4"
+            className="inline-flex items-center gap-2 bg-[#FCB237]/10 px-4 py-2 rounded-full mb-4"
           >
-            <Package className="w-4 h-4 text-[#4A3428]" />
-            <span className="text-sm font-medium text-[#4A3428]">Handplockat för dig</span>
+            <Package className="w-4 h-4 text-[#FCB237]" />
+            <span className="text-sm font-medium text-[#FCB237]">Handplockat för dig</span>
           </motion.div>
           
           <motion.h2
@@ -196,7 +196,7 @@ export function ProductsSection() {
                       
                       {/* Discount Badge */}
                       {product.compareAtPrice && product.compareAtPrice > product.price && (
-                        <div className="absolute top-4 left-4 bg-[#8B4513] text-white px-3 py-1 rounded-full text-sm font-semibold">
+                        <div className="absolute top-4 left-4 bg-[#FCB237] text-white px-3 py-1 rounded-full text-sm font-semibold">
                           -{Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100)}%
                         </div>
                       )}
@@ -244,7 +244,7 @@ export function ProductsSection() {
                     <div className="flex items-center justify-between mt-auto">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-2xl font-bold text-[#4A3428]">
+                          <span className="text-2xl font-bold text-[#FCB237]">
                             {product.price} kr
                           </span>
                           {product.compareAtPrice && product.compareAtPrice > product.price && (
@@ -260,7 +260,7 @@ export function ProductsSection() {
                         className={`p-3 rounded-full transition-all duration-300 ${
                           addedToCart.includes(product.id)
                             ? 'bg-green-500 text-white'
-                            : 'bg-[#4A3428] text-white hover:bg-[#3A2A1E]'
+                            : 'bg-[#FCB237] text-white hover:bg-[#3A2A1E]'
                         }`}
                       >
                         {addedToCart.includes(product.id) ? (
@@ -296,7 +296,7 @@ export function ProductsSection() {
         >
           <Link
             href="/products"
-            className="inline-flex items-center gap-2 bg-[#4A3428] hover:bg-[#3A2A1E] text-white px-8 py-4 rounded-full font-semibold text-lg transition-all transform hover:scale-105 shadow-xl"
+            className="inline-flex items-center gap-2 bg-[#FCB237] hover:bg-[#3A2A1E] text-white px-8 py-4 rounded-full font-semibold text-lg transition-all transform hover:scale-105 shadow-xl"
           >
             <ShoppingBag className="w-5 h-5" />
             Se alla produkter

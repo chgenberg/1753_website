@@ -92,7 +92,7 @@ export function QuizResultsMockup({ answers }: QuizResultsMockupProps) {
         >
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div>
-              <h2 className="text-2xl font-serif text-[#4A3428] mb-2">Din Hudpoäng</h2>
+              <h2 className="text-2xl font-serif text-[#FCB237] mb-2">Din Hudpoäng</h2>
               <p className="text-[#6B5D54]">{mockResults.skinType}</p>
             </div>
             <div className="mt-6 md:mt-0">
@@ -120,7 +120,7 @@ export function QuizResultsMockup({ answers }: QuizResultsMockupProps) {
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center">
-                    <span className="text-3xl font-bold text-[#4A3428]">{mockResults.skinScore}</span>
+                    <span className="text-3xl font-bold text-[#FCB237]">{mockResults.skinScore}</span>
                     <span className="text-sm text-[#6B5D54] block">av 100</span>
                   </div>
                 </div>
@@ -140,7 +140,7 @@ export function QuizResultsMockup({ answers }: QuizResultsMockupProps) {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex-1 min-w-[120px] px-4 py-4 flex items-center justify-center space-x-2 transition-all ${
                     activeTab === tab.id 
-                      ? 'bg-[#4A3428] text-white' 
+                      ? 'bg-[#FCB237] text-white' 
                       : 'bg-white text-[#6B5D54] hover:bg-[#F5F3F0]'
                   }`}
                 >
@@ -175,7 +175,7 @@ export function QuizResultsMockup({ answers }: QuizResultsMockupProps) {
           </p>
           <Link 
             href="/sv/kontakt"
-            className="inline-flex items-center text-[#8B7355] hover:text-[#4A3428] font-medium"
+            className="inline-flex items-center text-[#8B7355] hover:text-[#FCB237] font-medium"
           >
             Boka en kostnadsfri hudkonsultation
             <ArrowRight className="ml-2 w-4 h-4" />

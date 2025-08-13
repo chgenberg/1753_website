@@ -11,7 +11,7 @@ export default function BetalningPage() {
         {/* Breadcrumb */}
         <div className="bg-gray-50 py-4">
           <div className="container mx-auto px-4">
-            <Link href="/" className="inline-flex items-center text-gray-600 hover:text-[#4A3428] transition-colors">
+            <Link href="/" className="inline-flex items-center text-gray-600 hover:text-[#FCB237] transition-colors">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Tillbaka till startsidan
             </Link>
@@ -25,7 +25,7 @@ export default function BetalningPage() {
             {/* Betalningsalternativ */}
             <section className="mb-12">
               <div className="flex items-center mb-6">
-                <CreditCard className="w-8 h-8 text-[#4A3428] mr-3" />
+                <CreditCard className="w-8 h-8 text-[#FCB237] mr-3" />
                 <h2 className="text-2xl font-semibold text-gray-900">Betalningsalternativ</h2>
               </div>
 
@@ -34,11 +34,11 @@ export default function BetalningPage() {
                   <h3 className="text-lg font-semibold mb-4">Betalningskort</h3>
                   <ul className="space-y-3">
                     <li className="flex items-center">
-                      <CheckCircle className="w-5 h-5 text-[#4A3428] mr-3" />
+                      <CheckCircle className="w-5 h-5 text-[#FCB237] mr-3" />
                       <span>Visa</span>
                     </li>
                     <li className="flex items-center">
-                      <CheckCircle className="w-5 h-5 text-[#4A3428] mr-3" />
+                      <CheckCircle className="w-5 h-5 text-[#FCB237] mr-3" />
                       <span>Mastercard</span>
                     </li>
                   </ul>
@@ -48,7 +48,7 @@ export default function BetalningPage() {
                   <h3 className="text-lg font-semibold mb-4">Mobila betalningar</h3>
                   <ul className="space-y-3">
                     <li className="flex items-center">
-                      <CheckCircle className="w-5 h-5 text-[#4A3428] mr-3" />
+                      <CheckCircle className="w-5 h-5 text-[#FCB237] mr-3" />
                       <span>Swish</span>
                     </li>
                   </ul>
@@ -71,13 +71,13 @@ export default function BetalningPage() {
             {/* Säkerhet */}
             <section className="mb-12">
               <div className="flex items-center mb-6">
-                <Shield className="w-8 h-8 text-[#4A3428] mr-3" />
+                <Shield className="w-8 h-8 text-[#FCB237] mr-3" />
                 <h2 className="text-2xl font-semibold text-gray-900">Säkerhet & Certifieringar</h2>
               </div>
 
               <div className="grid md:grid-cols-3 gap-6 mb-8">
                 <div className="text-center p-6 bg-[#F5F3F0] rounded-xl">
-                  <Shield className="w-12 h-12 text-[#4A3428] mx-auto mb-4" />
+                  <Shield className="w-12 h-12 text-[#FCB237] mx-auto mb-4" />
                   <h3 className="font-semibold mb-2">SSL-kryptering</h3>
                   <p className="text-gray-700 text-sm">
                     256-bitars SSL-kryptering skyddar alla dina personuppgifter under betalning.
@@ -85,7 +85,7 @@ export default function BetalningPage() {
                 </div>
 
                 <div className="text-center p-6 bg-[#F5F3F0] rounded-xl">
-                  <Lock className="w-12 h-12 text-[#4A3428] mx-auto mb-4" />
+                  <Lock className="w-12 h-12 text-[#FCB237] mx-auto mb-4" />
                   <h3 className="font-semibold mb-2">PCI DSS</h3>
                   <p className="text-gray-700 text-sm">
                     Vi följer PCI DSS-standarden för säker hantering av kortbetalningar.
@@ -93,7 +93,7 @@ export default function BetalningPage() {
                 </div>
 
                 <div className="text-center p-6 bg-[#F5F3F0] rounded-xl">
-                  <CheckCircle className="w-12 h-12 text-[#4A3428] mx-auto mb-4" />
+                  <CheckCircle className="w-12 h-12 text-[#FCB237] mx-auto mb-4" />
                   <h3 className="font-semibold mb-2">GDPR-kompatibel</h3>
                   <p className="text-gray-700 text-sm">
                     Fullständig efterlevnad av GDPR och svensk datalagstiftning.

@@ -90,7 +90,7 @@
                    <button onClick={() => (window as any).dispatchEvent(new CustomEvent('focus-city', { detail: p.city }))} className="truncate text-left hover:underline">
                      {p.city}
                    </button>
-                   <span className="px-2 py-0.5 text-xs rounded-full bg-[#4A3428]/10 text-[#4A3428]">{p.retailers.length}</span>
+                   <span className="px-2 py-0.5 text-xs rounded-full bg-[#FCB237]/10 text-[#FCB237]">{p.retailers.length}</span>
                  </li>
                ))}
              </ul>
@@ -109,9 +109,9 @@
                      <div key={city.city} className="border rounded-lg p-3">
                        <div className="flex items-center justify-between mb-1">
                          <button onClick={() => (window as any).dispatchEvent(new CustomEvent('focus-city', { detail: city.city }))} className="font-semibold text-gray-900 hover:underline flex items-center gap-2">
-                           <MapPin className="w-4 h-4 text-[#4A3428]" /> {city.city}
+                           <MapPin className="w-4 h-4 text-[#FCB237]" /> {city.city}
                          </button>
-                         <span className="px-2 py-0.5 text-xs rounded-full bg-[#4A3428]/10 text-[#4A3428]">{city.retailers.length}</span>
+                         <span className="px-2 py-0.5 text-xs rounded-full bg-[#FCB237]/10 text-[#FCB237]">{city.retailers.length}</span>
                        </div>
                        <ul className="text-sm text-gray-700 space-y-1">
                          {city.retailers.map((r, idx) => (

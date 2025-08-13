@@ -200,7 +200,7 @@ export function SafeProductsSection() {
                       />
                       
                       {product.compareAtPrice && product.compareAtPrice > product.price && (
-                        <div className="absolute top-4 left-4 bg-[#8B4513] text-white px-3 py-1 rounded-full text-sm font-semibold">
+                        <div className="absolute top-4 left-4 bg-[#FCB237] text-white px-3 py-1 rounded-full text-sm font-semibold">
                           -{Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100)}%
                         </div>
                       )}
@@ -242,7 +242,7 @@ export function SafeProductsSection() {
 
                     <div className="mt-auto">
                       <div className="flex items-center gap-2 mb-4">
-                        <span className="text-2xl font-bold text-[#4A3428]">
+                        <span className="text-2xl font-bold text-[#FCB237]">
                           {product.price} kr
                         </span>
                         {product.compareAtPrice && product.compareAtPrice > product.price && (
@@ -254,7 +254,7 @@ export function SafeProductsSection() {
                       
                       <Link
                         href={`/products/${product.slug}`}
-                        className="block w-full text-center bg-[#4A3428] hover:bg-[#3A2A1E] text-white px-4 py-3 rounded-full font-semibold transition-all transform hover:scale-105"
+                        className="block w-full text-center bg-[#FCB237] hover:bg-[#3A2A1E] text-white px-4 py-3 rounded-full font-semibold transition-all transform hover:scale-105"
                       >
                         Se produkt
                       </Link>
@@ -274,7 +274,7 @@ export function SafeProductsSection() {
         >
           <Link
             href="/products"
-            className="inline-flex items-center gap-2 bg-[#4A3428] hover:bg-[#3A2A1E] text-white px-8 py-4 rounded-full font-semibold text-lg transition-all transform hover:scale-105 shadow-xl"
+            className="inline-flex items-center gap-2 bg-[#FCB237] hover:bg-[#3A2A1E] text-white px-8 py-4 rounded-full font-semibold text-lg transition-all transform hover:scale-105 shadow-xl"
           >
             <ShoppingBag className="w-5 h-5" />
             Se alla produkter

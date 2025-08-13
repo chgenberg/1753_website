@@ -103,7 +103,7 @@ export default function IngredientsPage() {
               transition={{ duration: 0.8 }}
               className="text-white"
             >
-              <span className="text-[#8B4513] font-medium text-sm uppercase tracking-wider">Ingredienser</span>
+              <span className="text-[#FCB237] font-medium text-sm uppercase tracking-wider">Ingredienser</span>
               <h1 className="text-5xl md:text-6xl font-bold mt-4 mb-6">
                 Låt oss prata växter
               </h1>
@@ -171,14 +171,14 @@ export default function IngredientsPage() {
                         />
                       </div>
                     ) : (
-                      <div className="w-20 h-20 bg-[#8B4513] text-white rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-[#6B3410] transition-colors duration-300">
+                      <div className="w-20 h-20 bg-[#FCB237] text-white rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-[#E79C1A] transition-colors duration-300">
                         {ingredient.icon}
                       </div>
                     )}
                     
-                    <h3 className="text-2xl font-bold mb-4 group-hover:text-[#8B4513] transition-colors">{ingredient.name}</h3>
+                    <h3 className="text-2xl font-bold mb-4 group-hover:text-[#FCB237] transition-colors">{ingredient.name}</h3>
                     <p className="text-gray-600 mb-6">{ingredient.description}</p>
-                    <span className="inline-block px-6 py-2 bg-[#8B4513] text-white rounded-full font-medium group-hover:bg-[#6B3410] transition-colors duration-300">
+                    <span className="inline-block px-6 py-2 bg-[#FCB237] text-white rounded-full font-medium group-hover:bg-[#E79C1A] transition-colors duration-300">
                       Läs mer
                     </span>
                   </div>
@@ -222,7 +222,7 @@ export default function IngredientsPage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                 </div>
                 <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-[#8B4513] transition-colors">Chaga</h3>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-[#FCB237] transition-colors">Chaga</h3>
                   <p className="text-gray-600 mb-4">
                     "Skogens diamant" - Rik på antioxidanter och stärker immunförsvaret
                   </p>
@@ -234,7 +234,7 @@ export default function IngredientsPage() {
                       Immunförsvar
                     </span>
                   </div>
-                  <span className="text-[#8B4513] hover:text-[#6B3410] font-medium flex items-center">
+                  <span className="text-[#FCB237] hover:text-[#E79C1A] font-medium flex items-center">
                     Läs mer
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </span>
@@ -262,7 +262,7 @@ export default function IngredientsPage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                 </div>
                 <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-[#8B4513] transition-colors">Reishi</h3>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-[#FCB237] transition-colors">Reishi</h3>
                   <p className="text-gray-600 mb-4">
                     "Odödlighetens svamp" - Adaptogen som balanserar stress och sömn
                   </p>
@@ -274,7 +274,7 @@ export default function IngredientsPage() {
                       Stressbalans
                     </span>
                   </div>
-                  <span className="text-[#8B4513] hover:text-[#6B3410] font-medium flex items-center">
+                  <span className="text-[#FCB237] hover:text-[#E79C1A] font-medium flex items-center">
                     Läs mer
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </span>
@@ -302,7 +302,7 @@ export default function IngredientsPage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                 </div>
                 <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-[#8B4513] transition-colors">Lion's Mane</h3>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-[#FCB237] transition-colors">Lion's Mane</h3>
                   <p className="text-gray-600 mb-4">
                     "Den smarta svampen" - Stödjer kognitiv funktion och fokus
                   </p>
@@ -314,7 +314,7 @@ export default function IngredientsPage() {
                       Fokus
                     </span>
                   </div>
-                  <span className="text-[#8B4513] hover:text-[#6B3410] font-medium flex items-center">
+                  <span className="text-[#FCB237] hover:text-[#E79C1A] font-medium flex items-center">
                     Läs mer
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </span>
@@ -342,7 +342,7 @@ export default function IngredientsPage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                 </div>
                 <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-[#8B4513] transition-colors">Cordyceps</h3>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-[#FCB237] transition-colors">Cordyceps</h3>
                   <p className="text-gray-600 mb-4">
                     "Energigivande svamp" - Ökar uthållighet och syreupptagning
                   </p>
@@ -354,7 +354,7 @@ export default function IngredientsPage() {
                       Uthållighet
                     </span>
                   </div>
-                  <span className="text-[#8B4513] hover:text-[#6B3410] font-medium flex items-center">
+                  <span className="text-[#FCB237] hover:text-[#E79C1A] font-medium flex items-center">
                     Läs mer
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </span>
@@ -381,7 +381,7 @@ export default function IngredientsPage() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="px-8 py-4 bg-[#00937c] text-white rounded-full font-semibold hover:bg-[#007363] transition-colors duration-300"
+                  className="px-8 py-4 bg-[#00937c] text-white rounded-full font-semibold hover:bg-[#E79C1A] transition-colors duration-300"
                 >
                   Läs mer
                 </motion.button>

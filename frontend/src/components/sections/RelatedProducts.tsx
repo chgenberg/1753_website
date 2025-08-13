@@ -67,11 +67,11 @@ export default function RelatedProducts({ currentProductSlug, locale }: RelatedP
       <section className="py-20 bg-gradient-to-b from-white to-[#F5F3F0]">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-center gap-3 mb-12">
-            <Sparkles className="w-6 h-6 text-[#4A3428]" />
-            <h2 className="text-3xl md:text-4xl font-bold text-[#4A3428]">
+            <Sparkles className="w-6 h-6 text-[#FCB237]" />
+            <h2 className="text-3xl md:text-4xl font-bold text-[#FCB237]">
               Du kanske också gillar
             </h2>
-            <Sparkles className="w-6 h-6 text-[#4A3428]" />
+            <Sparkles className="w-6 h-6 text-[#FCB237]" />
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[...Array(4)].map((_, index) => (
@@ -103,11 +103,11 @@ export default function RelatedProducts({ currentProductSlug, locale }: RelatedP
           transition={{ duration: 0.6 }}
         >
           <div className="flex items-center justify-center gap-3 mb-4">
-            <Sparkles className="w-6 h-6 text-[#4A3428]" />
-            <h2 className="text-3xl md:text-4xl font-bold text-[#4A3428]">
+            <Sparkles className="w-6 h-6 text-[#FCB237]" />
+            <h2 className="text-3xl md:text-4xl font-bold text-[#FCB237]">
               Du kanske också gillar
             </h2>
-            <Sparkles className="w-6 h-6 text-[#4A3428]" />
+            <Sparkles className="w-6 h-6 text-[#FCB237]" />
           </div>
           <p className="text-gray-600">Handplockade rekommendationer för din hudvårdsrutin</p>
         </motion.div>
@@ -156,7 +156,7 @@ export default function RelatedProducts({ currentProductSlug, locale }: RelatedP
                     
                     {/* Discount Badge */}
                     {product.compareAtPrice && product.compareAtPrice > product.price && (
-                      <div className="absolute top-2 left-2 bg-[#8B4513] text-white text-xs px-2 py-1 rounded-full font-semibold">
+                      <div className="absolute top-2 left-2 bg-[#FCB237] text-white text-xs px-2 py-1 rounded-full font-semibold">
                         -{Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100)}%
                       </div>
                     )}
@@ -173,7 +173,7 @@ export default function RelatedProducts({ currentProductSlug, locale }: RelatedP
                 {/* Product Info */}
                 <div className="p-4">
                   <Link href={`/${locale}/products/${product.slug}`}>
-                    <h3 className="font-semibold text-[#4A3428] mb-1 line-clamp-1 group-hover:text-[#6B5745] transition-colors">
+                    <h3 className="font-semibold text-[#FCB237] mb-1 line-clamp-1 group-hover:text-[#6B5745] transition-colors">
                       {product.name}
                     </h3>
                   </Link>
@@ -202,7 +202,7 @@ export default function RelatedProducts({ currentProductSlug, locale }: RelatedP
                   {/* Price */}
                   <div className="flex items-center justify-between mb-3">
                     <div>
-                      <span className="text-lg font-bold text-[#4A3428]">
+                      <span className="text-lg font-bold text-[#FCB237]">
                         {product.price} kr
                       </span>
                       {product.compareAtPrice && product.compareAtPrice > product.price && (
@@ -219,7 +219,7 @@ export default function RelatedProducts({ currentProductSlug, locale }: RelatedP
                     className={`w-full py-2 px-4 rounded-full font-medium transition-all duration-300 flex items-center justify-center gap-2 ${
                       addedToCart.includes(product.id)
                         ? 'bg-green-500 text-white'
-                        : 'bg-[#4A3428] text-white hover:bg-[#3A2418]'
+                        : 'bg-[#FCB237] text-white hover:bg-[#E79C1A]'
                     }`}
                   >
                     <ShoppingBag className="w-4 h-4" />
@@ -242,7 +242,7 @@ export default function RelatedProducts({ currentProductSlug, locale }: RelatedP
         >
           <Link
             href={`/${locale}/products`}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-white text-[#4A3428] rounded-full shadow-md hover:shadow-lg transition-all duration-300 font-medium"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-white text-[#FCB237] rounded-full shadow-md hover:shadow-lg transition-all duration-300 font-medium"
           >
             Se alla produkter
             <ChevronRight className="w-5 h-5" />

@@ -64,20 +64,20 @@ const SummaryTab = ({ summary }: { summary: any }) => (
   <div className="space-y-4">
     {/* Greeting and Overview */}
     <div className="bg-white rounded-xl p-4 shadow-sm">
-      <h3 className="text-xl font-semibold text-[#4A3428] mb-3">{summary.greeting}</h3>
+      <h3 className="text-xl font-semibold text-[#FCB237] mb-3">{summary.greeting}</h3>
       <p className="text-gray-700 leading-relaxed text-sm">{summary.overview}</p>
     </div>
 
     {/* Main Concerns */}
     <div className="bg-white rounded-xl p-4 shadow-sm">
       <h4 className="text-base font-semibold text-gray-900 mb-3 flex items-center gap-2">
-        <Target className="w-4 h-4 text-[#4A3428]" />
+        <Target className="w-4 h-4 text-[#FCB237]" />
         Dina huvudbekymmer
       </h4>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
         {summary.mainConcerns?.map((concern: string, index: number) => (
           <div key={index} className="flex items-center gap-2 bg-gray-50 p-2 rounded-lg">
-            <CheckCircle className="w-4 h-4 text-[#4A3428] flex-shrink-0" />
+            <CheckCircle className="w-4 h-4 text-[#FCB237] flex-shrink-0" />
             <span className="text-sm text-gray-700">{concern}</span>
           </div>
         ))}
@@ -85,9 +85,9 @@ const SummaryTab = ({ summary }: { summary: any }) => (
     </div>
 
     {/* Skin Analysis */}
-    <div className="bg-gradient-to-br from-[#4A3428]/5 to-[#4A3428]/10 rounded-xl p-4">
+    <div className="bg-gradient-to-br from-[#FCB237]/5 to-[#FCB237]/10 rounded-xl p-4">
       <h4 className="text-base font-semibold text-gray-900 mb-3 flex items-center gap-2">
-        <Brain className="w-4 h-4 text-[#4A3428]" />
+        <Brain className="w-4 h-4 text-[#FCB237]" />
         Din hudanalys
       </h4>
       <div className="space-y-3">
@@ -114,7 +114,7 @@ const SummaryTab = ({ summary }: { summary: any }) => (
       <div className="space-y-2">
         {summary.actionPlan?.map((action: string, index: number) => (
           <div key={index} className="flex items-start gap-2">
-            <span className="text-[#4A3428] mt-0.5">{index + 1}.</span>
+            <span className="text-[#FCB237] mt-0.5">{index + 1}.</span>
             <span className="text-sm text-gray-700">{action}</span>
           </div>
         ))}
@@ -142,7 +142,7 @@ const ProductsTab = ({ products, addToCart }: { products: any, addToCart: any })
     <div className="space-y-4">
       {/* Skincare Routine */}
       <div className="bg-white rounded-xl p-4 shadow-sm">
-        <h3 className="text-lg font-semibold text-[#4A3428] mb-4">Din hudvårdsrutin</h3>
+        <h3 className="text-lg font-semibold text-[#FCB237] mb-4">Din hudvårdsrutin</h3>
         
         <div className="grid md:grid-cols-2 gap-4">
           {/* Morning Routine */}
@@ -196,7 +196,7 @@ const ProductsTab = ({ products, addToCart }: { products: any, addToCart: any })
 
       {/* Product Recommendations */}
       <div className="bg-white rounded-xl p-4 shadow-sm">
-        <h3 className="text-lg font-semibold text-[#4A3428] mb-4">Rekommenderade produkter</h3>
+        <h3 className="text-lg font-semibold text-[#FCB237] mb-4">Rekommenderade produkter</h3>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
           {Object.entries(productData).map(([name, data]) => (
             <div key={name} className="bg-gray-50 rounded-lg p-4">
@@ -213,7 +213,7 @@ const ProductsTab = ({ products, addToCart }: { products: any, addToCart: any })
               </Link>
               <h4 className="font-medium text-sm text-gray-900 mb-1">{name}</h4>
               <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-[#4A3428]">{data.price} kr</span>
+                <span className="text-sm font-semibold text-[#FCB237]">{data.price} kr</span>
                 <button
                   onClick={() => addToCart({
                     id: data.slug,
@@ -222,7 +222,7 @@ const ProductsTab = ({ products, addToCart }: { products: any, addToCart: any })
                     quantity: 1,
                     image: data.image
                   })}
-                  className="p-2 bg-[#4A3428] text-white rounded-lg hover:bg-[#3A2418] transition-colors"
+                  className="p-2 bg-[#FCB237] text-white rounded-lg hover:bg-[#E79C1A] transition-colors"
                   aria-label={`Lägg ${name} i varukorg`}
                 >
                   <Plus className="w-4 h-4" />
@@ -235,7 +235,7 @@ const ProductsTab = ({ products, addToCart }: { products: any, addToCart: any })
 
       {/* Why These Products */}
       {products.reasoning && (
-        <div className="bg-gradient-to-br from-[#4A3428]/5 to-[#4A3428]/10 rounded-xl p-4">
+        <div className="bg-gradient-to-br from-[#FCB237]/5 to-[#FCB237]/10 rounded-xl p-4">
           <h4 className="font-medium text-gray-900 mb-2">Varför dessa produkter?</h4>
           <p className="text-sm text-gray-700">{products.reasoning}</p>
         </div>
@@ -253,7 +253,7 @@ const TimelineTab = ({ timeline }: { timeline: any }) => (
       animate={{ opacity: 1, y: 0 }}
       className="bg-white rounded-xl p-4 shadow-sm"
     >
-      <h3 className="text-lg font-semibold text-[#4A3428] mb-3">
+      <h3 className="text-lg font-semibold text-[#FCB237] mb-3">
         Vecka 1: {timeline.week1?.focus}
       </h3>
       
@@ -266,7 +266,7 @@ const TimelineTab = ({ timeline }: { timeline: any }) => (
           <ul className="space-y-1">
             {timeline.week1?.morningRoutine?.map((step: string, i: number) => (
               <li key={i} className="flex items-start gap-2 text-xs text-gray-700">
-                <span className="text-[#4A3428] mt-0.5">{i + 1}.</span>
+                <span className="text-[#FCB237] mt-0.5">{i + 1}.</span>
                 {step}
               </li>
             ))}
@@ -281,7 +281,7 @@ const TimelineTab = ({ timeline }: { timeline: any }) => (
           <ul className="space-y-1">
             {timeline.week1?.eveningRoutine?.map((step: string, i: number) => (
               <li key={i} className="flex items-start gap-2 text-xs text-gray-700">
-                <span className="text-[#4A3428] mt-0.5">{i + 1}.</span>
+                <span className="text-[#FCB237] mt-0.5">{i + 1}.</span>
                 {step}
               </li>
             ))}
@@ -303,7 +303,7 @@ const TimelineTab = ({ timeline }: { timeline: any }) => (
       transition={{ delay: 0.2 }}
       className="bg-white rounded-xl p-4 shadow-sm"
     >
-      <h3 className="text-lg font-semibold text-[#4A3428] mb-3">
+      <h3 className="text-lg font-semibold text-[#FCB237] mb-3">
         Månad 1: {timeline.month1?.focus}
       </h3>
       
@@ -327,9 +327,9 @@ const TimelineTab = ({ timeline }: { timeline: any }) => (
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
-      className="bg-gradient-to-br from-[#4A3428]/5 to-[#4A3428]/10 rounded-xl p-4"
+      className="bg-gradient-to-br from-[#FCB237]/5 to-[#FCB237]/10 rounded-xl p-4"
     >
-      <h3 className="text-lg font-semibold text-[#4A3428] mb-3 flex items-center gap-2">
+      <h3 className="text-lg font-semibold text-[#FCB237] mb-3 flex items-center gap-2">
         <Target className="w-4 h-4" />
         3 månader: {timeline.month3?.focus}
       </h3>
@@ -340,7 +340,7 @@ const TimelineTab = ({ timeline }: { timeline: any }) => (
           <ul className="space-y-1">
             {timeline.month3?.expectedResults?.map((result: string, i: number) => (
               <li key={i} className="flex items-start gap-2 text-xs text-gray-700">
-                <Star className="w-3 h-3 text-[#4A3428] mt-0.5 flex-shrink-0" />
+                <Star className="w-3 h-3 text-[#FCB237] mt-0.5 flex-shrink-0" />
                 {result}
               </li>
             ))}
@@ -362,7 +362,7 @@ const LifestyleTab = ({ lifestyle }: { lifestyle: any }) => (
         transition={{ delay: index * 0.1 }}
         className="bg-white rounded-xl p-4 shadow-sm"
       >
-        <h3 className="text-base font-semibold text-[#4A3428] mb-3 flex items-center gap-2">
+        <h3 className="text-base font-semibold text-[#FCB237] mb-3 flex items-center gap-2">
           {category.icon === 'Sleep' && <Moon className="w-4 h-4" />}
           {category.icon === 'Exercise' && <Dumbbell className="w-4 h-4" />}
           {category.icon === 'Stress' && <Brain className="w-4 h-4" />}
@@ -414,7 +414,7 @@ const NutritionTab = ({ nutrition }: { nutrition: any }) => (
             transition={{ delay: i * 0.1 }}
             className="bg-white rounded-lg p-3 shadow-sm"
           >
-            <h4 className="font-semibold text-[#4A3428] mb-2 text-sm">{category.category}</h4>
+            <h4 className="font-semibold text-[#FCB237] mb-2 text-sm">{category.category}</h4>
             <div className="space-y-2">
               <div className="flex flex-wrap gap-1">
                 {category.foods?.map((food: string, j: number) => (
@@ -448,7 +448,7 @@ const SourcesTab = ({ sources }: { sources: any }) => (
         <ul className="space-y-2">
           {sources.scientificFoundation.map((source: string, i: number) => (
             <li key={i} className="flex items-start gap-2">
-              <span className="text-[#4A3428] mt-0.5">•</span>
+              <span className="text-[#FCB237] mt-0.5">•</span>
               <span className="text-sm text-gray-700">{source}</span>
             </li>
           ))}
@@ -600,7 +600,7 @@ export default function QuizResults({
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            className="w-16 h-16 bg-gradient-to-br from-[#4A3428] to-[#3A2418] rounded-full mx-auto mb-6 flex items-center justify-center"
+            className="w-16 h-16 bg-gradient-to-br from-[#FCB237] to-[#E79C1A] rounded-full mx-auto mb-6 flex items-center justify-center"
           >
             <Sparkles className="w-8 h-8 text-white" />
           </motion.div>
@@ -635,7 +635,7 @@ export default function QuizResults({
                       cx="40"
                       cy="40"
                       r="35"
-                      stroke="#4A3428"
+                      stroke="#FCB237"
                       strokeWidth="8"
                       fill="none"
                       strokeLinecap="round"
@@ -649,7 +649,7 @@ export default function QuizResults({
                     />
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-xl font-bold text-[#4A3428]">{skinScore}</span>
+                    <span className="text-xl font-bold text-[#FCB237]">{skinScore}</span>
                     <span className="text-[10px] text-gray-500 uppercase tracking-wider">HUDPOÄNG</span>
                   </div>
                   <button
@@ -674,7 +674,7 @@ export default function QuizResults({
                 </div>
                 <button
                   onClick={() => setShowRegisterModal(true)}
-                  className="px-4 py-2 bg-[#4A3428] text-white rounded-lg hover:bg-[#3A2418] transition-colors flex items-center gap-2 text-sm"
+                  className="px-4 py-2 bg-[#FCB237] text-white rounded-lg hover:bg-[#E79C1A] transition-colors flex items-center gap-2 text-sm"
                 >
                   <Send className="w-4 h-4" />
                   Skicka till mail
@@ -690,7 +690,7 @@ export default function QuizResults({
                   onClick={() => setActiveTab(tab.id)}
                   className={`px-3 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap flex items-center gap-2 ${
                     activeTab === tab.id
-                      ? 'bg-[#4A3428] text-white'
+                      ? 'bg-[#FCB237] text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
@@ -732,7 +732,7 @@ export default function QuizResults({
                   <SummaryTab summary={results.summary} />
                 ) : (
                   <div className="bg-white rounded-xl p-6 shadow-sm">
-                    <h3 className="text-xl font-semibold text-[#4A3428] mb-4">Din Hudanalys</h3>
+                    <h3 className="text-xl font-semibold text-[#FCB237] mb-4">Din Hudanalys</h3>
                     <p className="text-gray-700 mb-4">
                       Baserat på dina svar har vi skapat en personlig hudvårdsplan som är anpassad för just din hudtyp och livsstil.
                     </p>
@@ -755,9 +755,9 @@ export default function QuizResults({
                   <TimelineTab timeline={results.timeline} />
                 ) : (
                   <div className="bg-white rounded-xl p-6 shadow-sm">
-                    <h3 className="text-xl font-semibold text-[#4A3428] mb-4">Din Hudvårds-tidslinje</h3>
+                    <h3 className="text-xl font-semibold text-[#FCB237] mb-4">Din Hudvårds-tidslinje</h3>
                     <div className="space-y-4">
-                      <div className="p-4 border-l-4 border-[#4A3428]">
+                      <div className="p-4 border-l-4 border-[#FCB237]">
                         <h4 className="font-medium text-gray-900">Vecka 1-2</h4>
                         <p className="text-sm text-gray-600">Anpassning till nya produkter och rutin</p>
                       </div>
@@ -779,7 +779,7 @@ export default function QuizResults({
                   <LifestyleTab lifestyle={results.lifestyle} />
                 ) : (
                   <div className="bg-white rounded-xl p-6 shadow-sm">
-                    <h3 className="text-xl font-semibold text-[#4A3428] mb-4">Livsstilsrekommendationer</h3>
+                    <h3 className="text-xl font-semibold text-[#FCB237] mb-4">Livsstilsrekommendationer</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="p-4 bg-blue-50 rounded-lg">
                         <h4 className="font-medium text-blue-900 flex items-center gap-2">
@@ -819,7 +819,7 @@ export default function QuizResults({
                   <ProductsTab products={results.products} addToCart={handleAddToCart} />
                 ) : (
                   <div className="bg-white rounded-xl p-6 shadow-sm">
-                    <h3 className="text-xl font-semibold text-[#4A3428] mb-4">Rekommenderade Produkter</h3>
+                    <h3 className="text-xl font-semibold text-[#FCB237] mb-4">Rekommenderade Produkter</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {Object.entries(productData).map(([name, product]) => (
                         <div key={name} className="p-4 border border-gray-200 rounded-lg">
@@ -833,7 +833,7 @@ export default function QuizResults({
                             />
                           </div>
                           <h4 className="font-medium text-gray-900 mb-2">{name}</h4>
-                          <p className="text-[#4A3428] font-semibold mb-3">{product.price} kr</p>
+                          <p className="text-[#FCB237] font-semibold mb-3">{product.price} kr</p>
                           <button
                             onClick={() => handleAddToCart({
                               id: product.slug,
@@ -842,7 +842,7 @@ export default function QuizResults({
                               image: product.image,
                               slug: product.slug
                             })}
-                            className="w-full bg-[#4A3428] text-white py-2 rounded-lg hover:bg-[#3A2418] transition-colors flex items-center justify-center gap-2"
+                            className="w-full bg-[#FCB237] text-white py-2 rounded-lg hover:bg-[#E79C1A] transition-colors flex items-center justify-center gap-2"
                           >
                             <Plus className="w-4 h-4" />
                             Lägg i varukorg
@@ -859,7 +859,7 @@ export default function QuizResults({
                   <NutritionTab nutrition={results.nutrition} />
                 ) : (
                   <div className="bg-white rounded-xl p-6 shadow-sm">
-                    <h3 className="text-xl font-semibold text-[#4A3428] mb-4">Kostråd för Huden</h3>
+                    <h3 className="text-xl font-semibold text-[#FCB237] mb-4">Kostråd för Huden</h3>
                     <p className="text-gray-700 mb-4">
                       En hudvänlig kost kan dramatiskt förbättra ditt hudtillstånd inifrån och ut.
                     </p>
@@ -892,7 +892,7 @@ export default function QuizResults({
                   <SourcesTab sources={results.sources} />
                 ) : (
                   <div className="bg-white rounded-xl p-6 shadow-sm">
-                    <h3 className="text-xl font-semibold text-[#4A3428] mb-4">Vetenskapliga Källor</h3>
+                    <h3 className="text-xl font-semibold text-[#FCB237] mb-4">Vetenskapliga Källor</h3>
                     <p className="text-gray-700 mb-4">
                       Våra rekommendationer baseras på den senaste forskningen inom dermatologi och hudvetenskap.
                     </p>

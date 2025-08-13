@@ -234,7 +234,7 @@ export default function AboutPage() {
                   </p>
                   <p>
                     Har du idéer, tankar eller frågor kring hur vi kommunicerar vårt budskap så älskar vi när du hör av dig. Du hittar våra kontaktuppgifter{' '}
-                    <a href="/kontakt" className="text-[#00937c] hover:text-[#007363] font-semibold underline transition-colors duration-300">
+                    <a href="/kontakt" className="text-[#00937c] hover:text-[#E79C1A] font-semibold underline transition-colors duration-300">
                       här!
                     </a>
                   </p>

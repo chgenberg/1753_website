@@ -11,7 +11,7 @@ export default function VillkorPage() {
         {/* Breadcrumb */}
         <div className="bg-gray-50 py-4">
           <div className="container mx-auto px-4">
-            <Link href="/" className="inline-flex items-center text-gray-600 hover:text-[#4A3428] transition-colors">
+            <Link href="/" className="inline-flex items-center text-gray-600 hover:text-[#FCB237] transition-colors">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Tillbaka till startsidan
             </Link>
@@ -21,7 +21,7 @@ export default function VillkorPage() {
         <div className="container mx-auto px-4 py-16">
           <div className="max-w-4xl mx-auto">
             <div className="flex items-center mb-8">
-              <FileText className="w-8 h-8 text-[#4A3428] mr-3" />
+              <FileText className="w-8 h-8 text-[#FCB237] mr-3" />
               <h1 className="text-4xl font-bold text-gray-900">Allmänna Villkor</h1>
             </div>
 
@@ -219,7 +219,7 @@ export default function VillkorPage() {
             {/* Kontaktinfo */}
             <section className="bg-gray-50 rounded-xl p-8">
               <div className="flex items-center mb-4">
-                <Scale className="w-6 h-6 text-[#4A3428] mr-3" />
+                <Scale className="w-6 h-6 text-[#FCB237] mr-3" />
                 <h2 className="text-xl font-semibold text-gray-900">Frågor om villkoren?</h2>
               </div>
               <p className="text-gray-700 mb-4">

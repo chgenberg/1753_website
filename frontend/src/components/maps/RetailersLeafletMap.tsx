@@ -67,7 +67,7 @@ const RetailersLeafletMap: FC<{ points: CityPoint[] }> = ({ points }) => {
         url="https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
       />
       {points.map((p, idx) => (
-        <CircleMarker key={idx} center={[p.lat, p.lon]} radius={6 + Math.min(6, p.retailers.length)} pathOptions={{ color: '#4A3428', fillColor: '#4A3428', fillOpacity: 0.85 }}>
+        <CircleMarker key={idx} center={[p.lat, p.lon]} radius={6 + Math.min(6, p.retailers.length)} pathOptions={{ color: '#FCB237', fillColor: '#FCB237', fillOpacity: 0.85 }}>
           <Popup>
             <div className="text-sm">
               <div className="font-semibold mb-1">{p.city}</div>
@@ -78,7 +78,7 @@ const RetailersLeafletMap: FC<{ points: CityPoint[] }> = ({ points }) => {
                     <div className="text-gray-600">{r.address}, {r.postalCode}</div>
                     {r.phone && <div className="text-gray-600">{r.phone}</div>}
                     {r.website && r.website !== 'Hemsida' && (
-                      <a className="text-[#4A3428] underline" href={r.website.startsWith('http') ? r.website : `https://${r.website}`} target="_blank" rel="noopener noreferrer">Besök webbplats</a>
+                      <a className="text-[#FCB237] underline" href={r.website.startsWith('http') ? r.website : `https://${r.website}`} target="_blank" rel="noopener noreferrer">Besök webbplats</a>
                     )}
                   </li>
                 ))}

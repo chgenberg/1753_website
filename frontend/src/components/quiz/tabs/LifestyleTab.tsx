@@ -18,9 +18,9 @@ export function LifestyleTab({ results }: LifestyleTabProps) {
       <div className="bg-white rounded-2xl p-8 shadow-lg border border-[#E5DDD5]">
         <div className="flex items-center mb-4">
           <Moon className="w-6 h-6 text-[#6366F1] mr-3" />
-          <h3 className="text-2xl font-serif text-[#4A3428]">Sömn & Återhämtning</h3>
+          <h3 className="text-2xl font-serif text-[#FCB237]">Sömn & Återhämtning</h3>
         </div>
-        <p className="text-[#4A3428] mb-4">
+        <p className="text-[#FCB237] mb-4">
           7-9 timmars kvalitetssömn är avgörande för hudens reparationsprocesser. 
           Under djupsömn produceras tillväxthormon som stimulerar kollagenproduktion.
         </p>
@@ -36,10 +36,10 @@ export function LifestyleTab({ results }: LifestyleTabProps) {
       {/* Träning */}
       <div className="bg-white rounded-2xl p-8 shadow-lg border border-[#E5DDD5]">
         <div className="flex items-center mb-4">
-          <Activity className="w-6 h-6 text-[#4A3428] mr-3" />
-          <h3 className="text-2xl font-serif text-[#4A3428]">Fysisk Aktivitet</h3>
+          <Activity className="w-6 h-6 text-[#FCB237] mr-3" />
+          <h3 className="text-2xl font-serif text-[#FCB237]">Fysisk Aktivitet</h3>
         </div>
-        <p className="text-[#4A3428] mb-4">
+        <p className="text-[#FCB237] mb-4">
           Regelbunden träning förbättrar blodcirkulationen vilket ger huden näring och syre.
         </p>
         <div className="bg-[#F5F3F0] p-4 rounded-lg">
@@ -55,9 +55,9 @@ export function LifestyleTab({ results }: LifestyleTabProps) {
       <div className="bg-white rounded-2xl p-8 shadow-lg border border-[#E5DDD5]">
         <div className="flex items-center mb-4">
           <Flower2 className="w-6 h-6 text-pink-600 mr-3" />
-          <h3 className="text-2xl font-serif text-[#4A3428]">Stresshantering</h3>
+          <h3 className="text-2xl font-serif text-[#FCB237]">Stresshantering</h3>
         </div>
-        <p className="text-[#4A3428] mb-4">
+        <p className="text-[#FCB237] mb-4">
           Kronisk stress ökar kortisolnivåerna vilket bryter ner kollagen och ökar inflammation.
         </p>
         <div className="bg-[#F5F3F0] p-4 rounded-lg">

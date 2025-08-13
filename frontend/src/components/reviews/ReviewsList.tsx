@@ -231,7 +231,7 @@ export const ReviewsList: React.FC<ReviewsListProps> = ({
             </motion.div>
             
             <motion.div 
-              className="text-6xl font-bold bg-gradient-to-br from-[#8B4513] to-[#A0522D] bg-clip-text text-transparent"
+              className="text-6xl font-bold bg-gradient-to-br from-[#FCB237] to-[#E79C1A] bg-clip-text text-transparent"
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: "spring", stiffness: 100 }}
@@ -244,7 +244,7 @@ export const ReviewsList: React.FC<ReviewsListProps> = ({
             </div>
             
             <p className="text-gray-700 font-medium">
-              <span className="text-2xl font-bold text-[#8B4513]">{stats.totalReviews}</span>
+              <span className="text-2xl font-bold text-[#FCB237]">{stats.totalReviews}</span>
               <span className="text-gray-600 ml-2">verifierade recensioner</span>
             </p>
             
@@ -293,7 +293,7 @@ export const ReviewsList: React.FC<ReviewsListProps> = ({
                     }`}
                   >
                     <div className={`flex items-center gap-1.5 min-w-[3rem] font-medium ${
-                      selectedRating === rating ? 'text-[#8B4513]' : 'text-gray-700'
+                      selectedRating === rating ? 'text-[#FCB237]' : 'text-gray-700'
                     }`}>
                       <span>{rating}</span>
                       <Star className="w-4 h-4 fill-current" />
@@ -321,7 +321,7 @@ export const ReviewsList: React.FC<ReviewsListProps> = ({
                     </div>
                     
                     <span className={`text-sm font-medium min-w-[2.5rem] text-right ${
-                      selectedRating === rating ? 'text-[#8B4513]' : 'text-gray-600'
+                      selectedRating === rating ? 'text-[#FCB237]' : 'text-gray-600'
                     }`}>
                       {count}
                     </span>
@@ -363,7 +363,7 @@ export const ReviewsList: React.FC<ReviewsListProps> = ({
                   animate={{ scale: 1, opacity: 1 }}
                   exit={{ scale: 0, opacity: 0 }}
                   onClick={() => setSelectedRating(null)}
-                  className="flex items-center gap-2 bg-gradient-to-r from-[#8B4513] to-[#A0522D] text-white px-4 py-2.5 rounded-full hover:shadow-lg transition-all font-medium text-sm"
+                  className="flex items-center gap-2 bg-gradient-to-r from-[#FCB237] to-[#E79C1A] text-white px-4 py-2.5 rounded-full hover:shadow-lg transition-all font-medium text-sm"
                 >
                   <X className="w-4 h-4" />
                   Visa alla betyg
@@ -409,7 +409,7 @@ export const ReviewsList: React.FC<ReviewsListProps> = ({
                 className="relative"
                 whileHover={{ scale: 1.1, rotate: 5 }}
               >
-                <div className="w-12 h-12 bg-gradient-to-br from-[#8B4513] to-[#A0522D] rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                <div className="w-12 h-12 bg-gradient-to-br from-[#FCB237] to-[#E79C1A] rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
                   {review.reviewer.name.charAt(0).toUpperCase()}
                 </div>
                 {review.isVerifiedPurchase && (
@@ -467,7 +467,7 @@ export const ReviewsList: React.FC<ReviewsListProps> = ({
           {shouldTruncate && (
             <motion.button
               onClick={() => setExpandedReview(isExpanded ? null : review._id)}
-              className="inline-flex items-center gap-1 text-[#8B4513] hover:text-[#6B3410] text-sm font-semibold mt-3 transition-all group"
+              className="inline-flex items-center gap-1 text-[#FCB237] hover:text-[#E79C1A] text-sm font-semibold mt-3 transition-all group"
               whileHover={{ x: 5 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -711,7 +711,7 @@ export const ReviewsList: React.FC<ReviewsListProps> = ({
             Din åsikt är värdefull för oss och hjälper andra kunder att fatta bättre beslut.
           </p>
           <motion.button
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#8B4513] to-[#A0522D] text-white px-6 py-3 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FCB237] to-[#E79C1A] text-white px-6 py-3 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -733,7 +733,7 @@ export const ReviewsList: React.FC<ReviewsListProps> = ({
           <button
             onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
             disabled={!pagination.hasPrev}
-            className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-[#8B4513] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-[#FCB237] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             <ChevronLeft className="w-4 h-4" />
             Föregående
@@ -746,7 +746,7 @@ export const ReviewsList: React.FC<ReviewsListProps> = ({
           <button
             onClick={() => setCurrentPage(prev => prev + 1)}
             disabled={!pagination.hasNext}
-            className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-[#8B4513] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-[#FCB237] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             Nästa
             <ChevronRight className="w-4 h-4" />

@@ -125,7 +125,7 @@ export default function NewsletterSection({
       <div className={`bg-gradient-to-r from-[#F5F3F0] to-blue-50 rounded-2xl p-6 ${className}`}>
         <div className="text-center mb-6">
           <div className="inline-flex items-center justify-center w-12 h-12 bg-[#E5DDD5] rounded-full mb-4">
-            <Mail className="w-6 h-6 text-[#4A3428]" />
+            <Mail className="w-6 h-6 text-[#FCB237]" />
           </div>
           <h3 className="text-xl font-bold text-gray-900 mb-2">Få våra senaste nyheter</h3>
           <p className="text-gray-600">
@@ -140,7 +140,7 @@ export default function NewsletterSection({
             className="text-center py-8"
           >
             <div className="inline-flex items-center justify-center w-16 h-16 bg-[#E5DDD5] rounded-full mb-4">
-              <Check className="w-8 h-8 text-[#4A3428]" />
+              <Check className="w-8 h-8 text-[#FCB237]" />
             </div>
             <h4 className="text-lg font-semibold text-gray-900 mb-2">Tack!</h4>
             <p className="text-gray-600">Vi skickar snart vårt välkomstmail till dig.</p>
@@ -162,7 +162,7 @@ export default function NewsletterSection({
               disabled={isSubmitting}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="px-6 py-3 bg-[#4A3428] text-white rounded-lg font-semibold hover:bg-[#3A2A1E] transition-colors duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-3 bg-[#FCB237] text-white rounded-lg font-semibold hover:bg-[#3A2A1E] transition-colors duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -222,7 +222,7 @@ export default function NewsletterSection({
             className="bg-white rounded-2xl shadow-xl p-8 text-center"
           >
             <div className="inline-flex items-center justify-center w-20 h-20 bg-[#E5DDD5] rounded-full mb-6">
-              <Check className="w-10 h-10 text-[#4A3428]" />
+              <Check className="w-10 h-10 text-[#FCB237]" />
             </div>
             <h3 className="text-2xl font-bold text-gray-900 mb-4">Välkommen till familjen! 🎉</h3>
             <p className="text-gray-600 mb-6">
@@ -348,7 +348,7 @@ export default function NewsletterSection({
                 disabled={isSubmitting}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full px-6 py-4 bg-[#4A3428] text-white rounded-lg font-semibold hover:bg-[#3A2418] transition-all duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed text-lg"
+                className="w-full px-6 py-4 bg-[#FCB237] text-white rounded-lg font-semibold hover:bg-[#E79C1A] transition-all duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed text-lg"
               >
                 {isSubmitting ? (
                   <Loader2 className="w-6 h-6 animate-spin" />

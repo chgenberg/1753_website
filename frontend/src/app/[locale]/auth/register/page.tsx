@@ -219,7 +219,7 @@ export default function RegisterPage() {
               disabled={isLoading || !acceptedTerms}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full py-3 bg-[#4A3428] hover:bg-[#3A2A1E] text-white rounded-xl font-medium transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-3 bg-[#FCB237] hover:bg-[#3A2A1E] text-white rounded-xl font-medium transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Skapar konto...' : 'Skapa konto'}
             </motion.button>

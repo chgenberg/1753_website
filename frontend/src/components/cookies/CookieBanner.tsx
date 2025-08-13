@@ -189,7 +189,7 @@ export default function CookieBanner() {
                             </p>
                           </div>
                           <div className="ml-4">
-                            <div className="w-12 h-7 bg-[#4A3428] rounded-full flex items-center justify-center cursor-not-allowed opacity-60">
+                            <div className="w-12 h-7 bg-[#FCB237] rounded-full flex items-center justify-center cursor-not-allowed opacity-60">
                               <Check className="w-4 h-4 text-white" />
                             </div>
                           </div>
@@ -208,7 +208,7 @@ export default function CookieBanner() {
                             </p>
                           </div>
                           <div className="ml-4">
-                            <button onClick={() => setPreferences({ ...preferences, analytics: !preferences.analytics })} className={`w-12 h-7 rounded-full transition-colors relative ${preferences.analytics ? 'bg-[#4A3428]' : 'bg-gray-300'}`}>
+                            <button onClick={() => setPreferences({ ...preferences, analytics: !preferences.analytics })} className={`w-12 h-7 rounded-full transition-colors relative ${preferences.analytics ? 'bg-[#FCB237]' : 'bg-gray-300'}`}>
                               <motion.div className="w-5 h-5 bg-white rounded-full absolute top-1" animate={{ x: preferences.analytics ? 20 : 2 }} transition={{ type: 'spring', stiffness: 500, damping: 30 }} />
                             </button>
                           </div>
@@ -227,7 +227,7 @@ export default function CookieBanner() {
                             </p>
                           </div>
                           <div className="ml-4">
-                            <button onClick={() => setPreferences({ ...preferences, marketing: !preferences.marketing })} className={`w-12 h-7 rounded-full transition-colors relative ${preferences.marketing ? 'bg-[#4A3428]' : 'bg-gray-300'}`}>
+                            <button onClick={() => setPreferences({ ...preferences, marketing: !preferences.marketing })} className={`w-12 h-7 rounded-full transition-colors relative ${preferences.marketing ? 'bg-[#FCB237]' : 'bg-gray-300'}`}>
                               <motion.div className="w-5 h-5 bg-white rounded-full absolute top-1" animate={{ x: preferences.marketing ? 20 : 2 }} transition={{ type: 'spring', stiffness: 500, damping: 30 }} />
                             </button>
                           </div>
@@ -236,10 +236,10 @@ export default function CookieBanner() {
                     </div>
                     
                     <div className="flex gap-3 mt-8">
-                      <button onClick={acceptSelected} className="flex-1 px-6 py-3 bg-[#4A3428] text-white rounded-full font-medium hover:bg-[#3A2418] transition-colors">
+                      <button onClick={acceptSelected} className="flex-1 px-6 py-3 bg-[#FCB237] text-white rounded-full font-medium hover:bg-[#E79C1A] transition-colors">
                         {t('cookieBanner.saveSettings')}
                       </button>
-                      <button onClick={acceptAll} className="flex-1 px-6 py-3 border-2 border-[#4A3428] text-[#4A3428] rounded-full font-medium hover:bg-[#4A3428] hover:text-white transition-colors">
+                      <button onClick={acceptAll} className="flex-1 px-6 py-3 border-2 border-[#FCB237] text-[#FCB237] rounded-full font-medium hover:bg-[#FCB237] hover:text-white transition-colors">
                         {t('cookieBanner.acceptAll')}
                       </button>
                     </div>

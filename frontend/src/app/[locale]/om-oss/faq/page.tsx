@@ -34,7 +34,7 @@ export default function FAQPage() {
             och har en effekt på hudens endocannabinoidsystem (ECS), vilket kontrollerar alla funktioner 
             i din hud. Ett ECS i balans är avgörande för att uppnå optimal hudhälsa.
           </p>
-          <Link href="/om-oss/ingredienser/cbd" className="inline-flex items-center text-[#00937c] hover:text-[#007363] font-medium">
+          <Link href="/om-oss/ingredienser/cbd" className="inline-flex items-center text-[#00937c] hover:text-[#E79C1A] font-medium">
             Läs mer om CBD <ExternalLink className="w-4 h-4 ml-1" />
           </Link>
         </div>
@@ -53,7 +53,7 @@ export default function FAQPage() {
             antibakteriellt och antioxidant. CBG har också en positiv effekt på endocannabinoidsystemet, 
             vilket är avgörande för optimal hudhälsa.
           </p>
-          <Link href="/om-oss/ingredienser/cbg" className="inline-flex items-center text-[#00937c] hover:text-[#007363] font-medium">
+          <Link href="/om-oss/ingredienser/cbg" className="inline-flex items-center text-[#00937c] hover:text-[#E79C1A] font-medium">
             Läs mer om CBG <ExternalLink className="w-4 h-4 ml-1" />
           </Link>
         </div>
@@ -68,7 +68,7 @@ export default function FAQPage() {
           </p>
           <button 
             onClick={() => setShowVideoModal(true)}
-            className="inline-flex items-center text-[#00937c] hover:text-[#007363] font-medium"
+            className="inline-flex items-center text-[#00937c] hover:text-[#E79C1A] font-medium"
           >
             Se föreläsningen <ExternalLink className="w-4 h-4 ml-1" />
           </button>
@@ -92,7 +92,7 @@ export default function FAQPage() {
             <li>Återfukta torr hud</li>
           </ol>
           <p>Om du vill veta mer om hur CBD och CBG kan påverka din hud, besök vår CBD sida!</p>
-          <Link href="/om-oss/ingredienser/cbd" className="inline-flex items-center text-[#00937c] hover:text-[#007363] font-medium">
+          <Link href="/om-oss/ingredienser/cbd" className="inline-flex items-center text-[#00937c] hover:text-[#E79C1A] font-medium">
             Läs mer om CBD och CBG <ExternalLink className="w-4 h-4 ml-1" />
           </Link>
         </div>
@@ -156,7 +156,7 @@ export default function FAQPage() {
           <p>Du hittar vår kostnadsfria e-bok här:</p>
           <Link 
             href="/kunskap/e-bok" 
-            className="inline-flex items-center text-[#00937c] hover:text-[#007363] font-medium"
+            className="inline-flex items-center text-[#00937c] hover:text-[#E79C1A] font-medium"
           >
             Ladda ner e-boken <ExternalLink className="w-4 h-4 ml-1" />
           </Link>
@@ -193,7 +193,7 @@ export default function FAQPage() {
           <p>
             Vi är en familj med målet att förbättra människors hudhälsa på både kort- och lång sikt.
           </p>
-          <Link href="/om-oss" className="inline-flex items-center text-[#00937c] hover:text-[#007363] font-medium">
+          <Link href="/om-oss" className="inline-flex items-center text-[#00937c] hover:text-[#E79C1A] font-medium">
             Läs vår historia <ExternalLink className="w-4 h-4 ml-1" />
           </Link>
         </div>
@@ -244,7 +244,7 @@ export default function FAQPage() {
         <div className="space-y-4">
           <Link 
             href="/leverans-retur" 
-            className="inline-flex items-center text-[#00937c] hover:text-[#007363] font-medium"
+            className="inline-flex items-center text-[#00937c] hover:text-[#E79C1A] font-medium"
           >
             Läs vår returpolicy <ExternalLink className="w-4 h-4 ml-1" />
           </Link>
@@ -397,14 +397,14 @@ export default function FAQPage() {
               Vi ❤️ frågor, tveka inte att skicka ett meddelande på{' '}
               <a 
                 href="mailto:christopher@1753skincare.com" 
-                className="text-[#00937c] hover:text-[#007363] font-medium"
+                className="text-[#00937c] hover:text-[#E79C1A] font-medium"
               >
                 christopher@1753skincare.com
               </a>
             </p>
             <Link
               href="/kontakt"
-              className="inline-flex items-center px-8 py-4 bg-[#00937c] text-white rounded-full hover:bg-[#007363] transition-colors duration-300 font-medium"
+              className="inline-flex items-center px-8 py-4 bg-[#00937c] text-white rounded-full hover:bg-[#E79C1A] transition-colors duration-300 font-medium"
             >
               Kontakta oss
             </Link>

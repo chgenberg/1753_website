@@ -277,7 +277,7 @@ export default function DashboardPage() {
             >
               <div className="flex items-center">
                 <div className="p-3 bg-[#E5DDD5] rounded-lg">
-                  <TrendingUp className="w-6 h-6 text-[#4A3428]" />
+                  <TrendingUp className="w-6 h-6 text-[#FCB237]" />
                 </div>
                 <div className="ml-4">
                   <p className="text-sm text-gray-500">Nuvarande Kondition</p>
@@ -354,14 +354,14 @@ export default function DashboardPage() {
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="bg-white rounded-xl p-6 shadow-sm mb-8">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-xl font-bold text-gray-900">Din rutin</h2>
-                  <button onClick={addRoutineToCart} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#4A3428] text-white hover:bg-[#3A2418]">
+                  <button onClick={addRoutineToCart} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#FCB237] text-white hover:bg-[#E79C1A]">
                     <ShoppingBag className="w-4 h-4" /> Lägg allt i varukorgen
                   </button>
                 </div>
                 {routine.length ? (
                   <div className="grid sm:grid-cols-2 gap-3">
                     {routine.map(step => (
-                      <label key={step.id} className="flex items-center gap-3 p-3 border rounded-lg hover:border-[#4A3428]/50">
+                      <label key={step.id} className="flex items-center gap-3 p-3 border rounded-lg hover:border-[#FCB237]/50">
                         <input type="checkbox" checked={!!routineDone[step.id]} onChange={e => markStepDone(step.id, e.target.checked)} className="w-4 h-4" />
                         <div className="flex-1">
                           <div className="font-medium text-gray-900">{step.title}</div>
@@ -492,7 +492,7 @@ export default function DashboardPage() {
                             const match = featured.find(p => p.id === (it as any).productId || p.name === it.name)
                             if (match) addToCart(match as any, 1)
                           }}
-                          className="px-3 py-1.5 rounded-full bg-[#4A3428] text-white text-sm"
+                          className="px-3 py-1.5 rounded-full bg-[#FCB237] text-white text-sm"
                         >
                           Lägg i varukorgen
                         </button>
@@ -553,7 +553,7 @@ export default function DashboardPage() {
                   </button>
                   
                   <button className="w-full flex items-center p-3 text-left hover:bg-gray-50 rounded-lg transition-colors">
-                    <BookOpen className="w-5 h-5 text-[#4A3428] mr-3" />
+                    <BookOpen className="w-5 h-5 text-[#FCB237] mr-3" />
                     <span className="text-gray-900">Utforska kunskapscentral</span>
                   </button>
                   
