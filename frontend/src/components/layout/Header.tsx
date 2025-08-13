@@ -248,6 +248,18 @@ export function Header() {
     }, 300)
   }
 
+  const handleMenuKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>, id: string) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      setActiveDropdown(prev => (prev === id ? null : id))
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      setActiveDropdown(id)
+    } else if (e.key === 'Escape') {
+      setActiveDropdown(null)
+    }
+  }
+ 
   return (
     <>
       {/* Restored Top Bar */}
@@ -359,8 +371,8 @@ export function Header() {
                       {isSimple ? (
                         <Link
                           href={localize(item.href!)}
-                          className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-all rounded-lg hover:bg-gray-50 ${
-                            isItemActive ? 'text-[#FCB237]' : 'text-gray-700 hover:text-[#FCB237]'
+                          className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-all rounded-lg hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 ${
+                            isItemActive ? 'text-primary-700' : 'text-gray-700 hover:text-primary-700'
                           }`}
                         >
                           <Icon className="w-4 h-4" />
@@ -369,9 +381,13 @@ export function Header() {
                       ) : (
                         <>
                           <button
-                            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-all rounded-lg hover:bg-gray-50 ${
-                              isItemActive ? 'text-[#FCB237]' : 'text-gray-700 hover:text-[#FCB237]'
+                            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-all rounded-lg hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 ${
+                              isItemActive ? 'text-primary-700' : 'text-gray-700 hover:text-primary-700'
                             } ${item.featured ? 'bg-[#FCB237]/10 hover:bg-[#FCB237]/20' : ''}`}
+                            aria-haspopup="menu"
+                            aria-expanded={activeDropdown === item.id}
+                            aria-controls={`menu-${item.id}`}
+                            onKeyDown={(e) => handleMenuKeyDown(e, item.id)}
                           >
                             <Icon className="w-4 h-4" />
                             {t(item.label)}
@@ -390,6 +406,8 @@ export function Header() {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -10 }}
                                 transition={{ duration: 0.2 }}
+                                id={`menu-${item.id}`}
+                                role="menu"
                                 className="absolute top-full left-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden"
                               >
                                 <div className="p-2">
@@ -399,19 +417,20 @@ export function Header() {
                                       <Link
                                         key={index}
                                         href={localize(child.href)}
-                                        className={`flex items-start gap-3 px-4 py-3 rounded-lg transition-all hover:bg-gray-50 group ${
+                                        className={`flex items-start gap-3 px-4 py-3 rounded-lg transition-all hover:bg-gray-50 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 ${
                                           child.featured ? 'bg-gradient-to-r from-[#FCB237]/5 to-[#FCB237]/10 hover:from-[#FCB237]/10 hover:to-[#FCB237]/15' : ''
                                         }`}
+                                        role="menuitem"
                                       >
                                         <div className={`p-2 rounded-lg ${
                                           child.featured ? 'bg-[#FCB237]/20' : 'bg-gray-100 group-hover:bg-[#FCB237]/10'
                                         }`}>
                                           <ChildIcon className={`w-4 h-4 ${
-                                            child.featured ? 'text-[#FCB237]' : 'text-gray-600 group-hover:text-[#FCB237]'
+                                            child.featured ? 'text-[#FCB237]' : 'text-gray-600 group-hover:text-primary-700'
                                           }`} />
                                         </div>
                                         <div className="flex-1">
-                                          <h4 className="text-sm font-medium text-gray-900 group-hover:text-[#FCB237] flex items-center gap-2">
+                                          <h4 className="text-sm font-medium text-gray-900 group-hover:text-primary-700 flex items-center gap-2">
                                             {child.label.includes('.') ? t(child.label) : child.label}
                                             {child.featured && (
                                               <span className="text-xs bg-[#FCB237] text-white px-2 py-0.5 rounded-full">Ny!</span>
@@ -421,7 +440,7 @@ export function Header() {
                                             <p className="text-xs text-gray-500 mt-0.5">{(child.description as string).includes('.') ? t(child.description as string) : (child.description as string)}</p>
                                           )}
                                         </div>
-                                        <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-[#FCB237] transition-transform group-hover:translate-x-1" />
+                                        <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-primary-700 transition-transform group-hover:translate-x-1" />
                                       </Link>
                                     )
                                   })}

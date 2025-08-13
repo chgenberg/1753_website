@@ -152,7 +152,7 @@ export default function BlogContent({ posts }: BlogContentProps) {
                   placeholder="Sök bland våra artiklar..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 rounded-full border border-gray-300 focus:outline-none focus:border-[#00937c] transition-colors duration-300"
+                  className="w-full pl-12 pr-4 py-4 rounded-full border border-gray-300 focus:outline-none focus:border-primary-700 transition-colors duration-300"
                 />
               </div>
             </div>
@@ -175,7 +175,7 @@ export default function BlogContent({ posts }: BlogContentProps) {
                   onClick={() => setSelectedCategory(null)}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-300 ${
                     !selectedCategory 
-                      ? 'bg-[#00937c] text-white' 
+                      ? 'bg-brand text-white' 
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
@@ -187,7 +187,7 @@ export default function BlogContent({ posts }: BlogContentProps) {
                     onClick={() => setSelectedCategory(category)}
                     className={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-300 ${
                       selectedCategory === category 
-                        ? 'bg-[#00937c] text-white' 
+                        ? 'bg-brand text-white' 
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
@@ -208,7 +208,7 @@ export default function BlogContent({ posts }: BlogContentProps) {
                   onClick={() => setSelectedTag(null)}
                   className={`px-3 py-1 rounded-full text-sm transition-colors duration-300 ${
                     !selectedTag 
-                      ? 'bg-[#00937c] text-white' 
+                      ? 'bg-brand text-white' 
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
                 >
@@ -220,7 +220,7 @@ export default function BlogContent({ posts }: BlogContentProps) {
                     onClick={() => setSelectedTag(tag)}
                     className={`px-3 py-1 rounded-full text-sm transition-colors duration-300 ${
                       selectedTag === tag 
-                        ? 'bg-[#00937c] text-white' 
+                        ? 'bg-brand text-white' 
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}
                   >
@@ -232,7 +232,7 @@ export default function BlogContent({ posts }: BlogContentProps) {
           </div>
 
           {/* Results Count */}
-          <div className="mt-6 text-gray-600">
+          <div className="mt-6 text-gray-600" aria-live="polite" aria-atomic="true">
             Visar {filteredPosts.length} av {safePosts.length} artiklar
           </div>
         </div>
@@ -289,12 +289,12 @@ export default function BlogContent({ posts }: BlogContentProps) {
                     
                     <div className="p-6 flex-1 flex flex-col">
                       <div className="mb-4">
-                        <span className="inline-block px-3 py-1 bg-[#00937c] bg-opacity-10 text-[#00937c] rounded-full text-sm font-medium">
+                        <span className="inline-block px-3 py-1 bg-brand/10 text-primary-700 rounded-full text-sm font-medium">
                           {post.category}
                         </span>
                       </div>
                       
-                      <h2 className="text-xl font-bold mb-3 group-hover:text-[#00937c] transition-colors duration-300 line-clamp-2">
+                      <h2 className="text-xl font-bold mb-3 group-hover:text-primary-700 transition-colors duration-300 line-clamp-2">
                         {post.title}
                       </h2>
                       
