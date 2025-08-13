@@ -66,7 +66,7 @@ export const CartDrawer = () => {
                     {/* Header */}
                     <div className="flex items-center justify-between px-6 py-4 border-b">
                       <div className="flex items-center gap-3">
-                        <ShoppingBag className="h-6 w-6 text-[#4A3428]" />
+                        <ShoppingBag className="h-6 w-6 text-[#FCB237]" />
                         <h2 className="text-xl font-semibold">
                           Din varukorg ({cartCount})
                         </h2>
@@ -87,11 +87,11 @@ export const CartDrawer = () => {
                           <span className="text-sm text-gray-700">
                             {remainingForFreeShipping} kr kvar till fri frakt!
                           </span>
-                          <Truck className="h-4 w-4 text-[#4A3428]" />
+                          <Truck className="h-4 w-4 text-[#FCB237]" />
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
                           <motion.div
-                            className="bg-[#4A3428] h-2 rounded-full"
+                            className="bg-[#FCB237] h-2 rounded-full"
                             initial={{ width: 0 }}
                             animate={{ width: `${(subtotal / freeShippingThreshold) * 100}%` }}
                             transition={{ duration: 0.5 }}
@@ -114,7 +114,7 @@ export const CartDrawer = () => {
                           <Link
                             href="/products"
                             onClick={closeCart}
-                            className="bg-[#4A3428] text-white px-6 py-3 rounded-lg hover:bg-[#3A2A1E] transition-colors flex items-center gap-2"
+                            className="bg-[#FCB237] text-white px-6 py-3 rounded-lg hover:bg-[#E79C1A] transition-colors flex items-center gap-2"
                           >
                             Börja handla
                             <ArrowRight className="h-4 w-4" />
@@ -149,7 +149,7 @@ export const CartDrawer = () => {
                                   <Link
                                     href={`/products/${item.product.slug}`}
                                     onClick={closeCart}
-                                    className="font-medium text-gray-900 hover:text-[#4A3428] transition-colors line-clamp-2"
+                                    className="font-medium text-gray-900 hover:text-[#FCB237] transition-colors line-clamp-2"
                                   >
                                     {item.product.name}
                                   </Link>
@@ -250,7 +250,7 @@ export const CartDrawer = () => {
                           <Link
                             href="/checkout"
                             onClick={closeCart}
-                            className="w-full bg-[#4A3428] text-white py-3 rounded-lg font-medium hover:bg-[#3A2A1E] transition-colors flex items-center justify-center gap-2"
+                            className="w-full bg-[#FCB237] text-white py-3 rounded-lg font-medium hover:bg-[#E79C1A] transition-colors flex items-center justify-center gap-2"
                           >
                             Till kassan
                             <ArrowRight className="h-4 w-4" />
