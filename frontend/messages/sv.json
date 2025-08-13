@@ -296,6 +296,15 @@
       "foundersTitle": "Grundare, 1753 Skincare"
     }
   },
+  "menu": {
+    "products": {
+      "skincare": "Hudvård",
+      "skincareDesc": "Naturlig hudvård med CBD & adaptogener",
+      "duo": "Duo-kit",
+      "duoDesc": "Perfekta kombinationer för din hud",
+      "allDesc": "Se hela vårt sortiment"
+    }
+  },
   "productDetail": {
     "notFound": "Produkten kunde inte hittas.",
     "saved": "Du sparar {amount} kr",

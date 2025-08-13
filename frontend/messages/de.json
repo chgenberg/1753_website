@@ -41,6 +41,15 @@
     "naturalIngredients": "Natürliche Inhaltsstoffe",
     "openPurchase": "30 Tage Rückgaberecht"
   },
+  "menu": {
+    "products": {
+      "skincare": "Hautpflege",
+      "skincareDesc": "Natürliche Hautpflege mit CBD & Adaptogenen",
+      "duo": "Duos",
+      "duoDesc": "Perfekte Kombinationen für deine Haut",
+      "allDesc": "Unser gesamtes Sortiment ansehen"
+    }
+  },
   "hero": {
     "title": "Entdecke die Kraft von CBD für deine Haut",
     "subtitle": "Natürliche Hautpflegeprodukte, die den natürlichen Heilungsprozess deiner Haut unterstützen",

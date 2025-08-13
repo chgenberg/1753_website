@@ -51,22 +51,22 @@ const menuStructure: MenuItem[] = [
     featured: true,
     children: [
       {
-        label: 'productsPage.categories.skincare',
+        label: 'menu.products.skincare',
         href: '/products?category=skincare',
         icon: Heart,
-        description: 'Naturlig hudvård med CBD & adaptogener'
+        description: 'menu.products.skincareDesc'
       },
       {
-        label: 'productsPage.categories.duo',
+        label: 'menu.products.duo',
         href: '/products?category=duo',
         icon: Star,
-        description: 'Perfekta kombinationer för din hud'
+        description: 'menu.products.duoDesc'
       },
       {
         label: 'navigation.allProducts',
         href: '/products',
         icon: Package,
-        description: 'Se hela vårt sortiment'
+        description: 'menu.products.allDesc'
       }
     ]
   },
@@ -76,7 +76,7 @@ const menuStructure: MenuItem[] = [
     icon: Info,
     children: [
       {
-        label: 'navigation.aboutUs',
+        label: 'navigation.about',
         href: '/om-oss',
         icon: Info,
         description: 'Vår historia och värderingar'
@@ -438,7 +438,7 @@ export function Header() {
                                             )}
                                           </h4>
                                           {child.description && (
-                                            <p className="text-xs text-gray-500 mt-0.5">{child.description}</p>
+                                            <p className="text-xs text-gray-500 mt-0.5">{(child.description as string).includes('.') ? t(child.description as string) : (child.description as string)}</p>
                                           )}
                                         </div>
                                         <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-[#FCB237] transition-transform group-hover:translate-x-1" />

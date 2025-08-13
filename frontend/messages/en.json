@@ -41,6 +41,15 @@
     "naturalIngredients": "Natural ingredients",
     "openPurchase": "30-day open purchase"
   },
+  "menu": {
+    "products": {
+      "skincare": "Skincare",
+      "skincareDesc": "Natural skincare with CBD & adaptogens",
+      "duo": "Duos",
+      "duoDesc": "Perfect combinations for your skin",
+      "allDesc": "See our full assortment"
+    }
+  },
   "hero": {
     "title": "Discover the power of CBD for your skin",
     "subtitle": "Natural skincare products that support your skin's own healing process",

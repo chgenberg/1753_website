@@ -41,6 +41,15 @@
     "naturalIngredients": "Ingredientes naturales",
     "openPurchase": "30 días de derecho de devolución"
   },
+  "menu": {
+    "products": {
+      "skincare": "Cuidado de la piel",
+      "skincareDesc": "Cuidado natural con CBD y adaptógenos",
+      "duo": "Dúos",
+      "duoDesc": "Combinaciones perfectas para tu piel",
+      "allDesc": "Ver toda nuestra gama"
+    }
+  },
   "hero": {
     "title": "Descubre el poder del CBD para tu piel",
     "subtitle": "Productos de cuidado de la piel naturales que apoyan el propio proceso de curación de tu piel",

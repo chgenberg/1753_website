@@ -41,6 +41,15 @@
     "naturalIngredients": "Ingrédients naturels",
     "openPurchase": "30 jours de droit de rétractation"
   },
+  "menu": {
+    "products": {
+      "skincare": "Soin de la peau",
+      "skincareDesc": "Soins naturels avec CBD et adaptogènes",
+      "duo": "Duos",
+      "duoDesc": "Combinaisons parfaites pour votre peau",
+      "allDesc": "Voir toute notre gamme"
+    }
+  },
   "hero": {
     "title": "Découvrez la puissance du CBD pour votre peau",
     "subtitle": "Produits de soin naturels qui soutiennent le propre processus de guérison de votre peau",
