@@ -22,6 +22,9 @@ module.exports = {
           800: '#9d6117',
           900: '#804f16',
         },
+        // Aliases for brand usage
+        brand: '#fcb237',
+        'brand-hover': '#e79c1a',
         secondary: {
           50: '#f6f7f9',
           100: '#eceef2',

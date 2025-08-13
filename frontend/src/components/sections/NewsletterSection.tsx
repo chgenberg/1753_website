@@ -348,7 +348,7 @@ export default function NewsletterSection({
                 disabled={isSubmitting}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full px-6 py-4 bg-[#FCB237] text-white rounded-lg font-semibold hover:bg-[#E79C1A] transition-all duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed text-lg"
+                className="w-full px-6 py-4 bg-brand text-white rounded-lg font-semibold hover:bg-brand-hover transition-all duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed text-lg"
               >
                 {isSubmitting ? (
                   <Loader2 className="w-6 h-6 animate-spin" />
@@ -362,11 +362,11 @@ export default function NewsletterSection({
 
               <p className="text-xs text-gray-500 text-center">
                 Genom att prenumerera godkänner du våra{' '}
-                <a href="/privacy" className="text-orange-600 hover:underline">
+                <a href="/privacy" className="text-brand hover:underline">
                   villkor
                 </a>{' '}
                 och{' '}
-                <a href="/privacy" className="text-orange-600 hover:underline">
+                <a href="/privacy" className="text-brand hover:underline">
                   integritetspolicy
                 </a>
                 . Du kan avregistrera dig när som helst.
