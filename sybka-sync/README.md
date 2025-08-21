@@ -1,6 +1,27 @@
-# Sybka Sync Service
+# Sybka+ Sync Service
 
-En enkel Laravel-app för att synka ordrar och refunds mellan Fortnox och Sybka.
+En Laravel/PHP-app för att integrera med Sybka+ warehouse management system.
+
+## Vad är Sybka+?
+
+Sybka+ är ett warehouse management system (WMS) som:
+- **Synkar produkter från Fortnox automatiskt** (därför är product endpoint tom initialt)
+- **Tar emot ordrar från e-handel** och skickar till lagret för plockning/packning
+- **Hanterar lagerhantering och fulfillment**
+
+## Fungerande API Endpoints
+
+Baserat på API-utforskning har vi identifierat följande endpoints:
+
+### ✅ Tillgängliga:
+- `GET /api/product` - Hämta produkter (synkas från Fortnox)
+- `GET /api/order` - Hämta ordrar 
+- `POST /api/order` - Skapa ny order (från e-handel till lager)
+
+### ❌ Inte tillgängliga:
+- `/products`, `/orders` (pluralform fungerar inte)
+- Warehouse-specifika endpoints 
+- Customer/company endpoints
 
 ## Installation
 
@@ -16,105 +37,87 @@ php --version
 composer --version
 ```
 
-2. **Skapa Laravel-projekt**
+2. **Starta servern**
 ```bash
-composer create-project laravel/laravel sybka-sync
 cd sybka-sync
+php -S localhost:8000 simple-server.php
 ```
 
-3. **Kopiera filer från detta repo**
-```bash
-# Kopiera SybkaController.php till app/Http/Controllers/
-# Kopiera routes/web.php
-```
-
-### Alternativ 2: Docker (rekommenderat)
+### Alternativ 2: Docker
 
 ```bash
-# Starta med Docker Compose
+cd sybka-sync
 docker-compose up -d
-
-# Installera dependencies
-docker-compose exec app composer install
-
-# Generera app key
-docker-compose exec app php artisan key:generate
 ```
 
 ## Konfiguration
 
-1. **Kopiera .env.example till .env**
-```bash
-cp .env.example .env
-```
-
-2. **Sätt Sybka API-uppgifter i .env**
-```
-SYNKA_ACCESS_TOKEN=your_sybka_access_token
-SYNKA_API_URL=https://api.sybka.com/v1/
-SYNKA_TEAM_ID=your_team_id
-```
-
-## API Endpoints
-
-### GET /api/sybka/products
-Hämta produkter från Sybka
-- Query parameter: `sku` (optional)
-
-### POST /api/sybka/orders
-Skapa order i Sybka från Fortnox invoice-data
-- Body: Fortnox invoice JSON
-
-### POST /api/sybka/refunds  
-Skapa refund i Sybka från Fortnox credit note
-- Body: Fortnox credit note JSON
-
-### GET /api/sybka/test
-Testa API-anslutning till Sybka
-
-### GET /health
-Health check endpoint
+API-uppgifter är redan konfigurerade:
+- **API URL:** `https://mitt.synkaplus.se/api/`
+- **Team ID:** `844`
+- **Token:** `QgFCIjnAOZrZlD2J4pxyJq8VmPZNH7sl5jG5U3gSQbBb25eO6r2yEQoYm1eV`
 
 ## Användning
 
-### Från Fortnox webhook:
+### Testa anslutning:
 ```bash
-# När en faktura skapas i Fortnox
-curl -X POST http://localhost:8000/api/sybka/orders \
-  -H "Content-Type: application/json" \
-  -d @fortnox_invoice.json
-
-# När en kreditnota skapas i Fortnox  
-curl -X POST http://localhost:8000/api/sybka/refunds \
-  -H "Content-Type: application/json" \
-  -d @fortnox_credit_note.json
+curl http://localhost:8000/api/sybka/test
 ```
 
-### Integrering i befintlig backend:
+### Hämta produkter (från Fortnox):
+```bash
+curl http://localhost:8000/api/sybka/products
+```
+
+### Skapa order (från e-handel till lager):
+```bash
+curl -X POST http://localhost:8000/api/sybka/orders \
+  -H "Content-Type: application/json" \
+  -d @order_data.json
+```
+
+## Integration Flow
+
+```
+Fortnox ERP → Sybka+ → Warehouse
+     ↓           ↑
+E-commerce → Order API
+```
+
+1. **Produkter:** Fortnox → Sybka+ (automatisk synk)
+2. **Ordrar:** E-commerce → Sybka+ → Warehouse fulfillment
+3. **Inventory:** Sybka+ hanterar lagersaldon
+
+## Från din Node.js backend:
+
 ```javascript
-// Från din Node.js backend
-const response = await fetch('http://localhost:8000/api/sybka/orders', {
+// Skicka order till Sybka+ för fulfillment
+const orderResponse = await fetch('http://localhost:8000/api/sybka/orders', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(fortnoxInvoiceData)
+  body: JSON.stringify({
+    // Order data från din e-handel
+    shop_order_id: orderId,
+    customer_info: customerData,
+    order_items: items,
+    shipping_address: shippingAddress
+  })
 });
 ```
 
-## Deployment
+## Nästa steg:
 
-### Railway/Heroku
-1. Lägg till PHP buildpack
-2. Sätt environment variables
-3. Deploy från Git
-
-### VPS
-1. Installera PHP 8.1+, Nginx, MySQL
-2. Klona repo och kör `composer install --no-dev`
-3. Konfigurera Nginx att peka på `public/` mappen
+1. **Synka produkter från Fortnox** - kontrollera Sybka+ inställningar för att aktivera produktsynk
+2. **Testa orderflödet** - skicka testorder från din e-handel
+3. **Verifiera warehouse-integration** - kontrollera att ordrar kommer fram till lagret
 
 ## Loggning
 
 Alla API-anrop loggas. Kontrollera:
 ```bash
+# För lokal server
 tail -f storage/logs/laravel.log
+
+# För Docker
+docker-compose logs app
 ``` 

@@ -10,20 +10,20 @@ return [
     |
     */
 
-    'access_token' => env('SYNKA_ACCESS_TOKEN', 'VlLeysd3nZNCMiqSxF0qWv6SHYMn7YXVl85kSMaEb0EkvbBNJVrKnP01odSD'),
-    'api_url' => env('SYNKA_API_URL', 'https://api.sybka.com/v1/'),
-    'team_id' => env('SYNKA_TEAM_ID', ''),
+    'access_token' => env('SYNKA_ACCESS_TOKEN', 'QgFCIjnAOZrZlD2J4pxyJq8VmPZNH7sl5jG5U3gSQbBb25eO6r2yEQoYm1eV'),
+    'api_url' => env('SYNKA_API_URL', 'https://mitt.synkaplus.se/api/'),
+    'team_id' => env('SYNKA_TEAM_ID', '844'),
 
     /*
     |--------------------------------------------------------------------------
-    | API Endpoints
+    | API Endpoints (based on test results)
     |--------------------------------------------------------------------------
     */
 
     'endpoints' => [
-        'products' => 'product',
-        'orders' => 'order',
-        'refunds' => 'refund',
+        'products' => 'product',  // Use singular form
+        'orders' => 'order',     // Use singular form  
+        'refunds' => 'refund',   // Use singular form
     ],
 
     /*
@@ -44,6 +44,6 @@ return [
 
     'fortnox' => [
         'webhook_secret' => env('FORTNOX_WEBHOOK_SECRET', ''),
-        'order_prefix' => env('FORTNOX_ORDER_PREFIX', 'PREFIX-'),
+        'order_prefix' => env('FORTNOX_ORDER_PREFIX', '1753-'),
     ],
 ]; 
