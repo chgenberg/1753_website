@@ -57,7 +57,7 @@ export function HeroSection() {
           className="object-cover"
         />
         {/* Subtle gradient overlay for better text readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/40" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/20" />
       </div>
 
       {/* Minimalist Navigation */}
@@ -101,79 +101,59 @@ export function HeroSection() {
         </div>
       </nav>
 
-      {/* Fullscreen Menu */}
+      {/* Slide-in Menu from Right */}
       <AnimatePresence>
         {isMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 bg-black/95 backdrop-blur-md z-40 flex items-center justify-center"
-          >
-            <motion.nav
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.3, delay: 0.1 }}
-              className="text-center"
+          <>
+            {/* Background overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+              onClick={() => setIsMenuOpen(false)}
+            />
+            
+            {/* Menu panel */}
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'tween', duration: 0.3 }}
+              className="fixed right-0 top-0 h-full w-80 md:w-96 bg-black/90 backdrop-blur-md z-50 p-8 md:p-12"
             >
-              {menuItems.map((item, index) => (
-                <motion.div
-                  key={item.href}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: 0.2 + index * 0.1 }}
-                >
-                  <Link
-                    href={item.href}
-                    onClick={() => setIsMenuOpen(false)}
-                    className="block text-3xl md:text-4xl text-white font-light py-4 hover:opacity-70 transition-opacity"
+              {/* Close button */}
+              <button
+                onClick={() => setIsMenuOpen(false)}
+                className="absolute top-6 right-6 md:top-8 md:right-8 p-2 hover:opacity-80 transition-opacity"
+              >
+                <X className="w-6 h-6 md:w-8 md:h-8 text-white" />
+              </button>
+
+              {/* Menu items */}
+              <nav className="mt-20">
+                {menuItems.map((item, index) => (
+                  <motion.div
+                    key={item.href}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: 0.1 + index * 0.05 }}
                   >
-                    {item.label}
-                  </Link>
-                </motion.div>
-              ))}
-            </motion.nav>
-          </motion.div>
+                    <Link
+                      href={item.href}
+                      onClick={() => setIsMenuOpen(false)}
+                      className="block text-2xl md:text-3xl text-white font-light py-4 hover:opacity-70 transition-opacity"
+                    >
+                      {item.label}
+                    </Link>
+                  </motion.div>
+                ))}
+              </nav>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
-
-      {/* Content */}
-      <div className="relative z-10 container mx-auto px-6 md:px-8 min-h-screen flex items-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.5 }}
-          className="max-w-2xl"
-        >
-          {/* Main Text */}
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-light text-white mb-6 tracking-tight">
-            {t('home.hero.headingLine1')}
-            <span className="block mt-2">{t('home.hero.headingLine2')}</span>
-          </h1>
-          
-          <p className="text-lg md:text-xl text-white/90 mb-12 font-light max-w-lg">
-            {t('home.hero.subtitle')}
-          </p>
-
-          {/* Minimalist CTA */}
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Link
-              href="/quiz"
-              className="inline-block px-8 py-3 text-white border border-white hover:bg-white hover:text-black transition-all duration-300 text-center"
-            >
-              {t('home.hero.ctaQuiz')}
-            </Link>
-            <Link
-              href="/products"
-              className="inline-block px-8 py-3 text-white/90 hover:text-white transition-all duration-300 text-center"
-            >
-              {t('home.hero.ctaProducts')} →
-            </Link>
-          </div>
-        </motion.div>
-      </div>
     </section>
   )
 } 
