@@ -1,6 +1,7 @@
 import express from 'express'
 import { query } from 'express-validator'
 import { validate } from '../middleware/validate'
+import { productCache, staticDataCache } from '../middleware/cache'
 import {
   getProducts,
   getProductBySlug,
@@ -54,9 +55,9 @@ const limitValidation = [
 ]
 
 // Routes
-router.get('/', getProductsValidation, validate, getProducts)
-router.get('/featured', limitValidation, validate, getFeaturedProducts)
-router.get('/:slug', getProductBySlug)
-router.get('/:slug/related', limitValidation, validate, getRelatedProducts)
+router.get('/', getProductsValidation, validate, productCache, getProducts)
+router.get('/featured', limitValidation, validate, staticDataCache, getFeaturedProducts)
+router.get('/:slug', productCache, getProductBySlug)
+router.get('/:slug/related', limitValidation, validate, productCache, getRelatedProducts)
 
 export default router 

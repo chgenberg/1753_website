@@ -71,6 +71,81 @@ const nextConfig = {
           },
         ],
       },
+      // API routes caching
+      {
+        source: '/api/products/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400', // 1 hour, stale for 1 day
+          },
+        ],
+      },
+      {
+        source: '/api/blog/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=1800, s-maxage=1800, stale-while-revalidate=3600', // 30 min, stale for 1 hour
+          },
+        ],
+      },
+      {
+        source: '/api/knowledge/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=7200, s-maxage=7200, stale-while-revalidate=86400', // 2 hours, stale for 1 day
+          },
+        ],
+      },
+      {
+        source: '/api/reviews/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=300, s-maxage=300, stale-while-revalidate=1800', // 5 min, stale for 30 min
+          },
+        ],
+      },
+      {
+        source: '/api/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=300, s-maxage=300', // 5 minutes default
+          },
+        ],
+      },
+      // Static assets
+      {
+        source: '/_next/static/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable', // 1 year
+          },
+        ],
+      },
+      {
+        source: '/images/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=86400, s-maxage=86400', // 1 day
+          },
+        ],
+      },
+      // Fonts
+      {
+        source: '/fonts/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable', // 1 year
+          },
+        ],
+      },
     ]
   },
 }

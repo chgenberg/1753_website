@@ -1,145 +1,121 @@
-import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
-import morgan from 'morgan'
-import compression from 'compression'
-import cookieParser from 'cookie-parser'
 import rateLimit from 'express-rate-limit'
-
-import { errorHandler } from './middleware/errorHandler'
-import { notFound } from './middleware/notFound'
-import { logger } from './utils/logger'
-import { prisma } from './lib/prisma'
+import { PrismaClient } from '@prisma/client'
 import { validateEnv, env } from './config/env'
+import { errorHandler, notFoundHandler } from './middleware/errorHandler'
+import { requestLogger } from './middleware/requestLogger'
+import { performanceMiddleware } from './middleware/performance'
+import { logInfo, logError, logger } from './utils/logger'
 
 // Routes
 import authRoutes from './routes/auth'
+import blogRoutes from './routes/blog'
+import cacheRoutes from './routes/cache'
+import contactRoutes from './routes/contact'
+import databaseRoutes from './routes/database'
+import discountRoutes from './routes/discounts'
+import healthRoutes from './routes/health'
+import knowledgeRoutes from './routes/knowledge'
+import orderRoutes from './routes/orders'
+import performanceRoutes from './routes/performance'
 import productRoutes from './routes/products'
 import quizRoutes from './routes/quiz'
-import reviewRoutes from './routes/reviews'
-import newsletterRoutes from './routes/newsletter'
-import progressRoutes from './routes/progress'
-import knowledgeRoutes from './routes/knowledge'
-import blogRoutes from './routes/blog'
 import rawMaterialsRoutes from './routes/rawMaterials'
-import contactRoutes from './routes/contact'
-import orderRoutes from './routes/orders'
-import discountRoutes from './routes/discounts'
 import retailersRoutes from './routes/retailers'
-
-// Validate environment variables
-const envConfig = validateEnv()
-
+import reviewRoutes from './routes/reviews'
+// Initialize
 const app = express()
-const PORT = process.env.PORT || envConfig.PORT || 5002
+const PORT = parseInt(process.env.PORT || '5002')
+const prisma = new PrismaClient()
 
-// Trust proxy configuration for Railway
-// Railway uses specific proxy setup, so we trust the first proxy
+// Validate environment
+validateEnv()
+
+// Trust proxy (important for Railway/cloud deployments)
 app.set('trust proxy', 1)
 
 // Security middleware
 app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" }
+  crossOriginEmbedderPolicy: false,
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'"],
+      imgSrc: ["'self'", "data:", "https:"],
+    },
+  },
 }))
-app.use(helmet.hsts({ maxAge: 15552000, includeSubDomains: true, preload: true }))
-app.use(helmet.permittedCrossDomainPolicies())
-app.use(helmet.referrerPolicy({ policy: 'origin-when-cross-origin' }))
-app.use(helmet.crossOriginOpenerPolicy({ policy: 'same-origin' }))
-app.use(helmet.crossOriginEmbedderPolicy({ policy: 'require-corp' }))
-app.use(helmet.contentSecurityPolicy({
-  useDefaults: true,
-  directives: {
-    defaultSrc: ["'self'"],
-    scriptSrc: ["'self'"],
-    styleSrc: ["'self'", "'unsafe-inline'"],
-    imgSrc: ["'self'", 'data:', 'https:'],
-    connectSrc: ["'self'", 'https://1753skincare.com', 'https://1753websitebackend-production.up.railway.app'],
-    fontSrc: ["'self'", 'https:', 'data:'],
-    objectSrc: ["'none'"],
-    frameAncestors: ["'none'"],
-    baseUri: ["'self'"],
-    formAction: ["'self'"],
-  }
-}))
-app.use((_req, res, next) => {
-  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
-  next()
-})
 
-// Rate limiting - more lenient for production
+// CORS configuration
+const corsOptions = {
+  origin: env.CORS_ORIGIN === '*' ? true : env.CORS_ORIGIN.split(','),
+  credentials: true,
+  optionsSuccessStatus: 200
+}
+app.use(cors(corsOptions))
+
+// Rate limiting
 const limiter = rateLimit({
-  windowMs: parseInt(envConfig.RATE_LIMIT_WINDOW_MS || '900000'), // 15 minutes
-  max: parseInt(envConfig.RATE_LIMIT_MAX_REQUESTS || '1000'), // Increased for production
-  message: 'Too many requests from this IP, please try again later.',
+  windowMs: parseInt(env.RATE_LIMIT_WINDOW_MS),
+  max: parseInt(env.RATE_LIMIT_MAX_REQUESTS),
+  message: {
+    error: 'Too many requests from this IP, please try again later.',
+    retryAfter: Math.ceil(parseInt(env.RATE_LIMIT_WINDOW_MS) / 1000 / 60)
+  },
   standardHeaders: true,
   legacyHeaders: false,
-  skip: (req) => {
-    // Skip rate limiting for health checks
-    return req.path === '/health' || req.path === '/api/health'
+  handler: (req, res) => {
+    logError('Rate limit exceeded', undefined, {
+      ip: req.ip,
+      userAgent: req.get('User-Agent'),
+      url: req.url
+    })
+    res.status(429).json({
+      error: 'Too many requests from this IP, please try again later.',
+      retryAfter: Math.ceil(parseInt(env.RATE_LIMIT_WINDOW_MS) / 1000 / 60)
+    })
   }
 })
 app.use(limiter)
 
-// CORS - more permissive for production
-const corsOrigins = process.env.NODE_ENV === 'production' 
-  ? ['https://1753skincare.com', 'https://www.1753skincare.com', 'https://1753website-production.up.railway.app']
-  : ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002']
+// Request logging middleware
+app.use(requestLogger)
 
-app.use(cors({
-  origin: envConfig.CORS_ORIGIN === '*' ? true : corsOrigins,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-}))
+// Performance monitoring middleware
+app.use(performanceMiddleware)
 
-// Body parsing middleware
+// Body parsing
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true, limit: '10mb' }))
-app.use(cookieParser())
 
-// Compression
-app.use(compression())
-
-// Logging
-if (process.env.NODE_ENV !== 'test') {
-  app.use(morgan('combined', { stream: { write: message => logger.info(message.trim()) } }))
-}
-
-// Health check
-app.get('/health', (_req, res) => {
+// Health check endpoint
+app.get('/health', (req, res) => {
   res.status(200).json({
-    status: 'OK',
+    status: 'healthy',
     timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
     environment: process.env.NODE_ENV,
-    port: PORT,
-    database: 'connected'
+    version: process.env.npm_package_version || '1.0.0'
   })
 })
 
-// Simple health check for Railway
-app.get('/', (_req, res) => {
-  res.status(200).json({
-    message: '1753 Skincare API is running',
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV
-  })
-})
-
-// API Routes
+// API routes
 app.use('/api/auth', authRoutes)
+app.use('/api/blog', blogRoutes)
+app.use('/api/cache', cacheRoutes)
+app.use('/api/contact', contactRoutes)
+app.use('/api/database', databaseRoutes)
+app.use('/api/discounts', discountRoutes)
+app.use('/api/health', healthRoutes)
+app.use('/api/knowledge', knowledgeRoutes)
+app.use('/api/performance', performanceRoutes)
 app.use('/api/products', productRoutes)
 app.use('/api/quiz', quizRoutes)
-app.use('/api/newsletter', newsletterRoutes)
-app.use('/api/reviews', reviewRoutes)
-app.use('/api/progress', progressRoutes)
-app.use('/api/knowledge', knowledgeRoutes)
-app.use('/api/blog', blogRoutes)
 app.use('/api/raw-materials', rawMaterialsRoutes)
-app.use('/api/contact', contactRoutes)
-app.use('/api/discounts', discountRoutes)
 app.use('/api/retailers', retailersRoutes)
+app.use('/api/reviews', reviewRoutes)
 
 // Debug middleware for orders route (only in development)
 if (process.env.NODE_ENV === 'development') {
@@ -154,18 +130,10 @@ if (process.env.NODE_ENV === 'development') {
 
 app.use('/api/orders', orderRoutes)
 
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.status(200).json({ 
-    success: true, 
-    message: 'Backend API is running',
-    timestamp: new Date().toISOString(),
-    version: '1.0.0'
-  })
-})
+// 404 handler for unknown routes
+app.use(notFoundHandler)
 
-// Middleware
-app.use(notFound)
+// Global error handler (must be last)
 app.use(errorHandler)
 
 async function startServer() {
@@ -204,7 +172,12 @@ async function startServer() {
 
     // Start server
     const server = app.listen(PORT, '0.0.0.0', () => {
-      logger.info(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`)
+      logInfo(`Server started successfully`, {
+        port: PORT,
+        environment: process.env.NODE_ENV,
+        cors_origin: env.CORS_ORIGIN
+      })
+      
       if (process.env.NODE_ENV === 'development') {
         console.log(`🚀 Server ready at http://0.0.0.0:${PORT}`)
         console.log(`📊 Health check available at http://0.0.0.0:${PORT}/health`)
@@ -230,18 +203,18 @@ async function startServer() {
 
     // Graceful shutdown
     process.on('SIGTERM', async () => {
-      logger.info('SIGTERM received, shutting down gracefully')
+      logInfo('SIGTERM received, shutting down gracefully')
       server.close(() => {
-        logger.info('Server closed')
+        logInfo('Server closed')
         prisma.$disconnect()
         process.exit(0)
       })
     })
 
     process.on('SIGINT', async () => {
-      logger.info('SIGINT received, shutting down gracefully')
+      logInfo('SIGINT received, shutting down gracefully')
       server.close(() => {
-        logger.info('Server closed')
+        logInfo('Server closed')
         prisma.$disconnect()
         process.exit(0)
       })
@@ -249,15 +222,14 @@ async function startServer() {
 
   } catch (error) {
     console.error('❌ Failed to start server:', error)
-    logger.error('Failed to start server', { error })
+    logError('Failed to start server', error instanceof Error ? error : new Error(String(error)))
     process.exit(1)
   }
 }
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err: Error) => {
-  logger.error('Unhandled Promise Rejection:', err)
-  console.error('❌ Unhandled Promise Rejection:', err)
+  logError('Unhandled Promise Rejection', err)
   
   if (process.env.NODE_ENV === 'production') {
     process.exit(1)
@@ -266,11 +238,9 @@ process.on('unhandledRejection', (err: Error) => {
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (err: Error) => {
-  logger.error('Uncaught Exception:', err)
+  logError('Uncaught Exception', err)
   console.error('❌ Uncaught Exception:', err)
   process.exit(1)
 })
 
-startServer()
-
-export default app 
+startServer() 
