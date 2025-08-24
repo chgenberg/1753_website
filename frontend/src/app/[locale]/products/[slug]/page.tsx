@@ -106,9 +106,9 @@ export default function ProductPage() {
             longDescription: foundProduct.longDescription || foundProduct.description || 'En fantastisk produkt från 1753 Skincare.',
             price: foundProduct.price,
             compareAtPrice: foundProduct.compareAtPrice,
-            images: foundProduct.images?.map((img: string, index: number) => ({
-              url: img,
-              alt: `${foundProduct.name} bild ${index + 1}`,
+            images: foundProduct.images?.map((img: any, index: number) => ({
+              url: typeof img === 'string' ? img : img.url,
+              alt: typeof img === 'string' ? `${foundProduct.name} bild ${index + 1}` : (img.alt || `${foundProduct.name} bild ${index + 1}`),
               position: index
             })) || [{ url: '/images/products/default.png', alt: foundProduct.name, position: 0 }],
             category: { name: foundProduct.category || 'Hudvård', slug: foundProduct.category?.toLowerCase() || 'hudvard' },
