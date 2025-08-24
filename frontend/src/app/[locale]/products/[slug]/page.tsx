@@ -11,8 +11,7 @@ import { useCart } from '@/contexts/CartContext'
 import { 
   Heart, 
   ShoppingBag, 
-  Check, 
-  ChevronLeft, 
+    Check, 
   ChevronRight,
   Star,
   Truck,
@@ -29,6 +28,7 @@ import ProductReviews from '@/components/reviews/ProductReviews'
 import RelatedProducts from '@/components/sections/RelatedProducts'
 import FloatingReviews from '@/components/reviews/FloatingReviews'
 import { useTranslations } from 'next-intl'
+import { ProductImageDisplay } from '@/components/products/ProductImageDisplay'
 
 interface Product {
   id: string
@@ -77,7 +77,7 @@ export default function ProductPage() {
   const { addToCart } = useCart()
   const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
-  const [selectedImage, setSelectedImage] = useState(0)
+
   const [quantity, setQuantity] = useState(1)
   const [addedToCart, setAddedToCart] = useState(false)
   const [isFavorite, setIsFavorite] = useState(false)
@@ -221,98 +221,46 @@ export default function ProductPage() {
       <section className="container mx-auto px-4 py-8">
         <div className="grid lg:grid-cols-2 gap-12">
           {/* Image Gallery */}
-          <div className="space-y-4">
-            {/* Main Image */}
-            <motion.div 
-              className="relative aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-[#F5F3F0] to-[#F5F3F0]"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
-            >
-              <AnimatePresence mode="wait">
-                {product.images[selectedImage]?.url && (
-                  <motion.div
-                    key={selectedImage}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="relative w-full h-full"
-                  >
-                    <Image
-                      src={product.images[selectedImage].url}
-                      alt={product.images[selectedImage].alt || product.name}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 50vw"
-                      className="object-cover"
-                      priority
-                    />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Image Navigation */}
-              {product.images.length > 1 && (
-                <>
-                  <button
-                    onClick={() => setSelectedImage((prev) => (prev - 1 + product.images.length) % product.images.length)}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-sm p-2 rounded-full shadow-lg hover:bg-white transition-colors"
-                  >
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                  <button
-                    onClick={() => setSelectedImage((prev) => (prev + 1) % product.images.length)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-sm p-2 rounded-full shadow-lg hover:bg-white transition-colors"
-                  >
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-                </>
-              )}
+          <div className="relative">
+            <ProductImageDisplay 
+              images={product.images}
+              productName={product.name}
+              isListView={false}
+            />
 
               {/* Badges */}
-              <div className="absolute top-4 left-4 flex flex-col gap-2">
+              <div className="absolute top-6 left-6 flex flex-col gap-2">
                 {product.bestseller && (
-                  <span className="bg-[#FCB237] text-white text-sm px-3 py-1 rounded-full">
+                  <motion.span 
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="bg-black/80 backdrop-blur-sm text-white text-sm px-4 py-2 rounded-full"
+                  >
                     Bästsäljare
-                  </span>
+                  </motion.span>
                 )}
                 {product.newProduct && (
-                  <span className="bg-blue-500 text-white text-sm px-3 py-1 rounded-full">
+                  <motion.span 
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="bg-emerald-500/90 backdrop-blur-sm text-white text-sm px-4 py-2 rounded-full"
+                  >
                     Nyhet
-                  </span>
+                  </motion.span>
                 )}
                 {discountPercentage > 0 && (
-                  <span className="bg-[#FCB237] text-white text-sm px-3 py-1 rounded-full">
+                  <motion.span 
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.4 }}
+                    className="bg-red-500/90 backdrop-blur-sm text-white text-sm px-4 py-2 rounded-full"
+                  >
                     -{discountPercentage}%
-                  </span>
+                  </motion.span>
                 )}
               </div>
-            </motion.div>
-
-            {/* Thumbnail Gallery */}
-            {product.images.length > 1 && (
-              <div className="flex gap-2 overflow-x-auto pb-2">
-                {product.images.map((image, index) => image.url && (
-                  <button
-                    key={index}
-                    onClick={() => setSelectedImage(index)}
-                    className={`relative flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden transition-all ${
-                      selectedImage === index 
-                        ? 'ring-2 ring-[#FCB237] ring-offset-2' 
-                        : 'opacity-70 hover:opacity-100'
-                    }`}
-                  >
-                    <Image
-                      src={image.url}
-                      alt={image.alt || product.name}
-                      fill
-                      sizes="100px"
-                      className="object-cover"
-                    />
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
 
           {/* Product Info */}

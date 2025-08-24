@@ -7,8 +7,9 @@ import Link from 'next/link'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { useCart } from '@/contexts/CartContext'
-import { Filter, ChevronDown, ShoppingBag, Star, Heart, Eye, Sparkles, Package } from 'lucide-react'
+import { Filter, ChevronDown, ShoppingBag, Star, Heart, Eye, Sparkles } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { ProductImageDisplay } from '@/components/products/ProductImageDisplay'
 
 interface Product {
   id: string
@@ -27,7 +28,7 @@ interface Product {
     average: number
     count: number
   }
-  images?: string[]
+  images?: any[] // Changed to any[] to match database structure
 }
 
 export default function ProductsPage() {
@@ -104,6 +105,31 @@ export default function ProductsPage() {
     const newFavorites = favorites.includes(productId) ? favorites.filter(id => id !== productId) : [...favorites, productId]
     setFavorites(newFavorites)
     localStorage.setItem('favorites', JSON.stringify(newFavorites))
+  }
+
+  const handleAddToCart = (product: any) => {
+    // Convert the API product to the full Product type expected by addToCart
+    const fullProduct = {
+      ...product,
+      tags: product.tags || [],
+      variants: product.variants || [],
+      inventory: product.inventory || 100,
+      trackInventory: product.trackInventory ?? false,
+      allowBackorder: product.allowBackorder ?? true,
+      isActive: product.isActive ?? true,
+      isFeatured: product.isFeatured ?? product.featured,
+      seoKeywords: product.seoKeywords || [],
+      keyIngredients: product.keyIngredients || [],
+      skinConcerns: product.skinConcerns || [],
+      timeOfDay: product.timeOfDay,
+      benefitsDetails: product.benefitsDetails || [],
+      ingredientsDetails: product.ingredientsDetails || [],
+      imagesData: product.imagesData || [],
+      rating: product.rating || { average: 0, count: 0 },
+      createdAt: product.createdAt || new Date().toISOString(),
+      updatedAt: product.updatedAt || new Date().toISOString()
+    }
+          addToCart(fullProduct as any, 1)
   }
 
   const resetFilters = () => {
@@ -205,54 +231,128 @@ export default function ProductsPage() {
                 </button>
               </motion.div>
             ) : (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {filteredProducts.map((product, index) => (
-                  <motion.div key={product.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: index * 0.1 }} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group relative" onMouseEnter={() => setHoveredProduct(product.id)} onMouseLeave={() => setHoveredProduct(null)}>
-                    <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
-                      {product.featured && (<span className="bg-[#FCB237] text-white text-xs font-bold px-3 py-1 rounded-full">{t('productsPage.badges.recommended')}</span>)}
-                      {product.bestseller && (<span className="bg-[#FCB237] text-white text-xs font-bold px-3 py-1 rounded-full">{t('productsPage.badges.bestseller')}</span>)}
-                      {product.newProduct && (<span className="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">{t('productsPage.badges.new')}</span>)}
-                    </div>
-                    <button onClick={() => toggleFavorite(product.id)} className="absolute top-4 right-4 z-10 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-white transition-all duration-200">
-                      <Heart className={`w-5 h-5 transition-colors ${favorites.includes(product.id) ? 'text-red-500 fill-red-500' : 'text-gray-600 hover:text-red-500'}`} />
-                    </button>
-                    <div className="relative h-64 bg-gray-100 overflow-hidden">
-                      {product.images && product.images.length > 0 ? (
-                        <Image src={product.images[0]} alt={product.name} fill className="object-contain p-4 group-hover:scale-105 transition-transform duration-300" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-400"><Package className="w-16 h-16" /></div>
-                      )}
-                      <div className={`absolute inset-0 bg-black/50 flex items-center justify-center transition-opacity duration-300 ${hoveredProduct === product.id ? 'opacity-100' : 'opacity-0'}`}>
-                        <Link href={`/products/${product.slug}`} className="bg-white text-gray-900 px-6 py-2 rounded-full font-medium hover:bg-gray-100 transition-colors flex items-center gap-2">
-                          <Eye className="w-4 h-4" />
-                          {t('productsPage.quickView')}
-                        </Link>
+                  <motion.div 
+                    key={product.id} 
+                    initial={{ opacity: 0, y: 20 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    transition={{ duration: 0.5, delay: index * 0.1 }} 
+                    className="group relative"
+                    onMouseEnter={() => setHoveredProduct(product.id)} 
+                    onMouseLeave={() => setHoveredProduct(null)}
+                  >
+                    <div className="bg-white rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:border-transparent">
+                      {/* Badges */}
+                      <div className="absolute top-6 left-6 z-10 flex flex-col gap-2">
+                        {product.featured && (
+                          <span className="bg-black/80 backdrop-blur-sm text-white text-xs font-medium px-3 py-1.5 rounded-full">
+                            {t('productsPage.badges.recommended')}
+                          </span>
+                        )}
+                        {product.bestseller && (
+                          <span className="bg-[#FCB237]/90 backdrop-blur-sm text-white text-xs font-medium px-3 py-1.5 rounded-full">
+                            {t('productsPage.badges.bestseller')}
+                          </span>
+                        )}
+                        {product.newProduct && (
+                          <span className="bg-emerald-500/90 backdrop-blur-sm text-white text-xs font-medium px-3 py-1.5 rounded-full">
+                            {t('productsPage.badges.new')}
+                          </span>
+                        )}
                       </div>
-                    </div>
-                    <div className="p-6">
-                      <div className="mb-2"><span className="text-xs font-medium text-[#FCB237] uppercase tracking-wider">{product.category}</span></div>
-                      <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-[#FCB237] transition-colors">{product.name}</h3>
-                      <p className="text-gray-600 text-sm mb-4 line-clamp-2">{product.description}</p>
-                      {product.rating && (
-                        <div className="flex items-center gap-2 mb-4">
-                          <div className="flex items-center">
-                            {[...Array(5)].map((_, i) => (
-                              <Star key={i} className={`w-4 h-4 ${i < Math.round(product.rating!.average) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
-                            ))}
-                          </div>
-                          <span className="text-sm text-gray-500">{product.rating.average.toFixed(1)} ({product.rating.count})</span>
-                        </div>
-                      )}
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-2">
-                          <span className="text-2xl font-bold text-gray-900">{product.price} kr</span>
-                          {product.compareAtPrice && (<span className="text-lg text-gray-500 line-through">{product.compareAtPrice} kr</span>)}
-                        </div>
-                      </div>
-                      <button onClick={() => addToCart({ ...product, tags: [], images: [{ url: product.image, alt: product.name, position: 0 }], variants: [], inventory: 100, trackInventory: false, allowBackorder: true, isActive: true, isFeatured: product.featured, seoKeywords: [], keyIngredients: [], skinConcerns: [], timeOfDay: undefined, benefitsDetails: [], ingredientsDetails: [], imagesData: [], rating: product.rating || { average: 0, count: 0 }, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() })} className="w-full bg-[#FCB237] text-white py-3 rounded-xl font-medium hover:bg-[#E79C1A] transition-colors flex items-center justify-center gap-2 group">
-                        <ShoppingBag className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                        {t('productsPage.addToCart')}
+                      
+                      {/* Favorite Button */}
+                      <button 
+                        onClick={() => toggleFavorite(product.id)} 
+                        className="absolute top-6 right-6 z-10 w-10 h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-white hover:scale-110 transition-all duration-300"
+                      >
+                        <Heart className={`w-5 h-5 transition-all ${favorites.includes(product.id) ? 'text-red-500 fill-red-500' : 'text-gray-400 hover:text-red-500'}`} />
                       </button>
+                      
+                      {/* Product Image Container */}
+                      <Link href={`/products/${product.slug}`} className="block">
+                        <div className="relative h-80 overflow-hidden">
+                          <ProductImageDisplay 
+                            images={product.images?.map(img => 
+                              typeof img === 'string' ? { url: img } : img
+                            ) || []}
+                            productName={product.name}
+                            isListView={true}
+                          />
+                          
+                          {/* Overlay with Quick Actions */}
+                          <div className={`absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent flex items-end p-6 transition-all duration-500 ${hoveredProduct === product.id ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                            <div className="flex items-center gap-3 w-full">
+                              <button 
+                                onClick={(e) => { e.preventDefault(); handleAddToCart(product); }} 
+                                className="flex-1 bg-white text-gray-900 px-4 py-2.5 rounded-full font-medium hover:bg-[#FCB237] hover:text-white transition-all duration-300 flex items-center justify-center gap-2"
+                              >
+                                <ShoppingBag className="w-4 h-4" />
+                                {t('productsPage.addToCart')}
+                              </button>
+                              <button className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-300">
+                                <Eye className="w-5 h-5 text-white" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                      
+                      {/* Product Info */}
+                      <div className="p-6 space-y-3">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-medium text-[#FCB237] uppercase tracking-wider">
+                            {product.category}
+                          </span>
+                          {product.rating && (
+                            <>
+                              <span className="text-gray-300">•</span>
+                              <div className="flex items-center gap-1">
+                                {[...Array(5)].map((_, i) => (
+                                  <Star key={i} className={`w-3.5 h-3.5 ${i < Math.round(product.rating!.average) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200'}`} />
+                                ))}
+                                <span className="text-xs text-gray-500 ml-1">
+                                  {product.rating.average.toFixed(1)}
+                                </span>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                        
+                        <h3 className="text-lg font-semibold text-gray-900 line-clamp-1 group-hover:text-[#FCB237] transition-colors">
+                          {product.name}
+                        </h3>
+                        
+                        <p className="text-gray-500 text-sm line-clamp-2">
+                          {product.description}
+                        </p>
+                        
+                        <div className="flex items-baseline gap-2 pt-2">
+                          <span className="text-2xl font-bold text-gray-900">
+                            {product.price} kr
+                          </span>
+                          {product.compareAtPrice && (
+                            <>
+                              <span className="text-base text-gray-400 line-through">
+                                {product.compareAtPrice} kr
+                              </span>
+                              <span className="text-xs font-medium text-red-500">
+                                -{Math.round((1 - product.price / product.compareAtPrice) * 100)}%
+                              </span>
+                            </>
+                          )}
+                        </div>
+                        
+                        {/* Mobile Add to Cart */}
+                        <button 
+                          onClick={() => handleAddToCart(product)} 
+                          className="w-full mt-4 bg-gray-900 text-white px-4 py-3 rounded-full font-medium hover:bg-[#FCB237] transition-all duration-300 flex items-center justify-center gap-2 md:hidden"
+                        >
+                          <ShoppingBag className="w-4 h-4" />
+                          {t('productsPage.addToCart')}
+                        </button>
+                      </div>
                     </div>
                   </motion.div>
                 ))}
