@@ -141,14 +141,16 @@ app.use('/api/contact', contactRoutes)
 app.use('/api/discounts', discountRoutes)
 app.use('/api/retailers', retailersRoutes)
 
-// Debug: Log all requests to /api/orders
-app.use('/api/orders', (req, res, next) => {
-  console.log(`🚀 Request to /api/orders: ${req.method} ${req.url}`)
-  console.log(`   Original URL: ${req.originalUrl}`)
-  console.log(`   Base URL: ${req.baseUrl}`)
-  console.log(`   Path: ${req.path}`)
-  next()
-})
+// Debug middleware for orders route (only in development)
+if (process.env.NODE_ENV === 'development') {
+  app.use('/api/orders', (req, res, next) => {
+    console.log(`🚀 Request to /api/orders: ${req.method} ${req.url}`)
+    console.log(`   Original URL: ${req.originalUrl}`)
+    console.log(`   Base URL: ${req.baseUrl}`)
+    console.log(`   Path: ${req.path}`)
+    next()
+  })
+}
 
 app.use('/api/orders', orderRoutes)
 
@@ -168,10 +170,13 @@ app.use(errorHandler)
 
 async function startServer() {
   try {
-    console.log('🚀 Starting 1753 Skincare API server...')
-    console.log(`📍 NODE_ENV: ${process.env.NODE_ENV}`)
-    console.log(`🌐 PORT: ${PORT}`)
-    console.log(`🗄️  DATABASE_URL: ${process.env.DATABASE_URL ? 'Set' : 'Missing'}`)
+    // Only show detailed startup info in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🚀 Starting 1753 Skincare API server...')
+      console.log(`📍 NODE_ENV: ${process.env.NODE_ENV}`)
+      console.log(`🌐 PORT: ${PORT}`)
+      console.log(`🗄️  DATABASE_URL: ${process.env.DATABASE_URL ? 'Set' : 'Missing'}`)
+    }
     
     // Database connection with retry logic
     let retries = 5
@@ -179,12 +184,16 @@ async function startServer() {
       try {
         await prisma.$connect()
         logger.info('Connected to PostgreSQL via Prisma')
-        console.log('✅ Database connection successful')
+        if (process.env.NODE_ENV === 'development') {
+          console.log('✅ Database connection successful')
+        }
         break
       } catch (error) {
         retries--
         logger.warn(`Failed to connect to database. Retries left: ${retries}`)
-        console.warn(`⚠️  Database connection failed. Retries left: ${retries}`)
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(`⚠️  Database connection failed. Retries left: ${retries}`)
+        }
         if (retries === 0) {
           console.error('❌ Database connection failed permanently:', error)
           throw error
@@ -196,48 +205,52 @@ async function startServer() {
     // Start server
     const server = app.listen(PORT, '0.0.0.0', () => {
       logger.info(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`)
-      console.log(`🚀 Server ready at http://0.0.0.0:${PORT}`)
-      console.log(`📊 Health check available at http://0.0.0.0:${PORT}/health`)
-      console.log(`📋 API routes available at http://0.0.0.0:${PORT}/api`)
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🚀 Server ready at http://0.0.0.0:${PORT}`)
+        console.log(`📊 Health check available at http://0.0.0.0:${PORT}/health`)
+        console.log(`📋 API routes available at http://0.0.0.0:${PORT}/api`)
+      }
     })
 
-    // Test that server is actually responding
-    setTimeout(async () => {
-      try {
-        const response = await fetch(`http://localhost:${PORT}/health`)
-        if (response.ok) {
-          console.log('✅ Health check endpoint is responding')
-        } else {
-          console.warn('⚠️  Health check endpoint returned non-200 status:', response.status)
+    // Test that server is actually responding (only in development)
+    if (process.env.NODE_ENV === 'development') {
+      setTimeout(async () => {
+        try {
+          const response = await fetch(`http://localhost:${PORT}/health`)
+          if (response.ok) {
+            console.log('✅ Health check endpoint is responding')
+          } else {
+            console.warn('⚠️  Health check endpoint returned non-200 status:', response.status)
+          }
+        } catch (error) {
+          console.warn('⚠️  Could not test health check endpoint:', error.message)
         }
-      } catch (error) {
-        console.warn('⚠️  Could not test health check endpoint:', error.message)
-      }
-    }, 2000)
+      }, 2000)
+    }
 
     // Graceful shutdown
-    process.on('SIGTERM', () => {
-      logger.info('SIGTERM signal received: closing HTTP server')
-      console.log('📴 Received SIGTERM, shutting down gracefully...')
+    process.on('SIGTERM', async () => {
+      logger.info('SIGTERM received, shutting down gracefully')
       server.close(() => {
-        logger.info('HTTP server closed')
-        console.log('✅ HTTP server closed')
+        logger.info('Server closed')
+        prisma.$disconnect()
+        process.exit(0)
+      })
+    })
+
+    process.on('SIGINT', async () => {
+      logger.info('SIGINT received, shutting down gracefully')
+      server.close(() => {
+        logger.info('Server closed')
         prisma.$disconnect()
         process.exit(0)
       })
     })
 
   } catch (error) {
-    logger.error('Failed to start server:', error)
-    console.error('❌ Server startup failed:', error)
-    
-    // In production, exit gracefully
-    if (process.env.NODE_ENV === 'production') {
-      console.error('💥 Exiting due to startup failure in production')
-      process.exit(1)
-    } else {
-      throw error
-    }
+    console.error('❌ Failed to start server:', error)
+    logger.error('Failed to start server', { error })
+    process.exit(1)
   }
 }
 

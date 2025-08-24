@@ -43,7 +43,19 @@ return [
     */
 
     'fortnox' => [
+        'client_id' => env('FORTNOX_CLIENT_ID', 'lWspWpJ1EjTS'),
+        'client_secret' => env('FORTNOX_CLIENT_SECRET', 'vyzsHYsaNu'),
         'webhook_secret' => env('FORTNOX_WEBHOOK_SECRET', ''),
         'order_prefix' => env('FORTNOX_ORDER_PREFIX', '1753-'),
+        
+        // Recommended settings for Sybka+ integration
+        'sync_settings' => [
+            'fortnox_as_master' => true,
+            'import_non_stock_items' => false,
+            'sync_interval' => '15_minutes',
+            'create_order_on_status' => 'completed',
+            'create_invoice_on_status' => 'shipped',
+            'sync_from_date' => '2025-08-21'
+        ]
     ],
 ]; 

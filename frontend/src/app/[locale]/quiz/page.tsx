@@ -505,64 +505,32 @@ export default function QuizPage() {
 
   const calculateResults = async () => {
     try {
-      console.log('Starting quiz submission...')
+      // Removed console.log that exposed sensitive user data
       
-      // Save to database first
-      console.log('Saving quiz data...')
-      const saveResponse = await fetch('/api/quiz/save', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userInfo,
-          answers,
-          imageMetrics, // include metrics snapshot
-          timestamp: new Date().toISOString()
-        })
-      })
-
-      console.log('Save response status:', saveResponse.status)
-      console.log('Save response headers:', saveResponse.headers)
-      
-      if (!saveResponse.ok) {
-        const errorText = await saveResponse.text()
-        console.error('Save API error:', errorText)
-        throw new Error(`Save failed: ${saveResponse.status} - ${errorText}`)
-      }
-
-      const saveData = await saveResponse.json()
-      console.log('Save successful:', saveData)
-
-      // Get AI recommendations
-      console.log('Getting AI recommendations...')
       const response = await fetch('/api/quiz/results', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
-          userInfo,
           answers,
+          userInfo,
           imageMetrics
         })
       })
 
-      console.log('Results response status:', response.status)
-      console.log('Results response headers:', response.headers)
-      console.log('Results response URL:', response.url)
-
       if (!response.ok) {
         const errorText = await response.text()
-        console.error('Results API error:', errorText)
-        throw new Error(`Results failed: ${response.status} - ${errorText}`)
+        console.error('Quiz results API error:', response.status)
+        throw new Error(`Results failed: ${response.status}`)
       }
 
       const data = await response.json()
-      console.log('Results successful:', data)
       
       setResults(data)
       setCurrentStep('results')
     } catch (error) {
-      console.error('Quiz calculation error:', error)
-      console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace')
-      console.error('Current location:', window.location.href)
+      console.error('Quiz calculation error:', error instanceof Error ? error.message : 'Unknown error')
       
       // Fallback results
       setResults({

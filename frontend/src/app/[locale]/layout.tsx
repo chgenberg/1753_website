@@ -14,9 +14,10 @@ export default async function LocaleLayout({
   params
 }: {
   children: ReactNode
-  params: any
+  params: Promise<{ locale?: string }>
 }) {
-  const locale = params?.locale ?? 'sv'
+  const resolvedParams = await params
+  const locale = resolvedParams?.locale ?? 'sv'
   setRequestLocale(locale)
   const messages = await getMessages()
   const siteUrl = 'https://1753skincare.com'

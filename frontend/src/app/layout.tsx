@@ -80,11 +80,13 @@ export const metadata: Metadata = {
 
 interface Props {
   children: React.ReactNode
-  params?: { locale?: string }
+  params?: Promise<{ locale?: string }>
 }
 
-export default function RootLayout({ children, params }: Props) {
-  const locale = params?.locale || 'sv'
+export default async function RootLayout({ children, params }: Props) {
+  const resolvedParams = await params
+  const locale = resolvedParams?.locale || 'sv'
+  
   return (
     <html lang={locale} data-scroll-behavior="smooth" className={`${inter.variable} ${playfair.variable}`}>
       <body className="font-sans">

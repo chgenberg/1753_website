@@ -27,6 +27,59 @@ export function NutritionTab({ results }: NutritionTabProps) {
           funktionella livsmedel kan du stödja både din tarm och hud samtidigt.
         </p>
       </div>
+
+      {/* Nordiska Superfoods från 1753 */}
+      <div className="bg-gradient-to-r from-[#FCB237]/10 to-[#8B7355]/10 rounded-2xl p-8 border border-[#FCB237]/20">
+        <div className="flex items-center mb-4">
+          <Leaf className="w-6 h-6 text-[#FCB237] mr-3" />
+          <h3 className="text-2xl font-serif text-[#FCB237]">Nordiska Funktionella Råvaror</h3>
+        </div>
+        <p className="text-[#6B5D54] mb-6">
+          Baserat på vår forskning om funktionella råvaror rekommenderar vi dessa kraftfulla 
+          naturliga ingredienser för optimal hudhälsa via gut-skin-axeln:
+        </p>
+        
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="bg-white/80 p-4 rounded-lg">
+            <h4 className="font-semibold text-[#FCB237] mb-2">🫐 Blåbär & Lingon</h4>
+            <p className="text-sm text-[#6B5D54]">Antocyaniner som motverkar oxidativ stress och minskar hudinflammation</p>
+          </div>
+          
+          <div className="bg-white/80 p-4 rounded-lg">
+            <h4 className="font-semibold text-[#FCB237] mb-2">🌿 Havtorn</h4>
+            <p className="text-sm text-[#6B5D54]">Omega-7 för starkare hudbarriär och förbättrad elasticitet</p>
+          </div>
+          
+          <div className="bg-white/80 p-4 rounded-lg">
+            <h4 className="font-semibold text-[#FCB237] mb-2">🍃 Grönt Te</h4>
+            <p className="text-sm text-[#6B5D54]">Katechiner som skyddar mot UV-stress och förhindrar för tidig hudåldrande</p>
+          </div>
+          
+          <div className="bg-white/80 p-4 rounded-lg">
+            <h4 className="font-semibold text-[#FCB237] mb-2">🧄 Gurkmeja</h4>
+            <p className="text-sm text-[#6B5D54]">Curcumin dämpar inflammation och ger huden naturlig lyster</p>
+          </div>
+          
+          <div className="bg-white/80 p-4 rounded-lg">
+            <h4 className="font-semibold text-[#FCB237] mb-2">🥬 Kimchi & Kefir</h4>
+            <p className="text-sm text-[#6B5D54]">Probiotika för balanserad gut-skin-axel och stärkt mikrobiom</p>
+          </div>
+          
+          <div className="bg-white/80 p-4 rounded-lg">
+            <h4 className="font-semibold text-[#FCB237] mb-2">🌰 Chiafrön & Valnötter</h4>
+            <p className="text-sm text-[#6B5D54]">Omega-3 för hudens fuktbalans och antiinflammatorisk effekt</p>
+          </div>
+        </div>
+        
+        <div className="mt-6 p-4 bg-[#FCB237]/10 rounded-lg">
+          <p className="text-sm text-[#6B5D54]">
+            <strong>💡 Tips:</strong> Läs mer om funktionella råvaror och deras vetenskapliga bakgrund på vår 
+            <a href="/sv/kunskap/funktionella-ravaror" className="text-[#FCB237] hover:underline ml-1">
+              kunskapssida om funktionella råvaror
+            </a>
+          </p>
+        </div>
+      </div>
       
       {/* Funktionella Livsmedel */}
       <div className="bg-white rounded-2xl p-8 shadow-lg border border-[#E5DDD5]">

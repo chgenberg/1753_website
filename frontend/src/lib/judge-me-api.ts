@@ -330,8 +330,24 @@ class JudgeMeAPI {
     body: string
   }): Promise<boolean> {
     if (this.isDevelopment) {
-      // Simulate successful review creation in development
-      console.log('Mock review created:', reviewData)
+      // Create mock review for development
+      const mockReview = {
+        id: `mock-${Date.now()}`,
+        rating: reviewData.rating,
+        title: reviewData.title,
+        body: reviewData.body,
+        reviewer: {
+          name: reviewData.reviewer_name,
+          email: reviewData.reviewer_email
+        },
+        created_at: new Date().toISOString(),
+        verified: false
+      }
+
+      // Only log in development
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Mock review created:', mockReview)
+      }
       return true
     }
 

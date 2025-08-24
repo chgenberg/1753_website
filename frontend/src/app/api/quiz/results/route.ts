@@ -4,15 +4,12 @@ export async function POST(request: NextRequest) {
   try {
     const { answers, userInfo, imageMetrics } = await request.json()
     
-    console.log('Quiz API called with userInfo:', userInfo)
-    console.log('OpenAI API Key available:', !!process.env.OPENAI_API_KEY)
-
-    const model = process.env.OPENAI_MODEL || 'gpt-5-mini' // Set to 'gpt-5' when available
+    // Removed console.log statements that exposed sensitive data
+    const model = process.env.OPENAI_MODEL || 'gpt-5' // Updated to use GPT-5 which was released August 7, 2025
 
     // Always generate comprehensive plan with OpenAI
     if (process.env.OPENAI_API_KEY) {
       try {
-        console.log('Attempting to use OpenAI...')
         const { default: OpenAI } = await import('openai')
         const openai = new OpenAI({
           apiKey: process.env.OPENAI_API_KEY!,
@@ -20,7 +17,6 @@ export async function POST(request: NextRequest) {
 
         const holisticPrompt = generateHolisticPrompt(answers, userInfo, imageMetrics)
         
-        console.log('Making OpenAI request with model:', model)
         const completion = await openai.chat.completions.create({
           model,
           messages: [{ role: "user", content: holisticPrompt }],
@@ -29,44 +25,36 @@ export async function POST(request: NextRequest) {
           response_format: { type: 'json_object' }
         })
 
-        console.log('OpenAI request completed')
         const aiResponse = completion.choices[0]?.message?.content
         
         try {
           const parsed = safeParseJson(aiResponse || '')
           if (parsed) {
-            console.log('AI plan generated successfully (strict JSON)')
             const normalized = normalizeResults(parsed)
             return NextResponse.json(normalized)
           }
           throw new Error('Parsed result was null')
         } catch (parseError) {
-          console.log('AI response was not valid JSON, using enhanced fallback. Parse error:', parseError)
-          console.log('AI Response was:', aiResponse)
+          // Log error without exposing AI response content
+          console.error('AI response parsing failed:', parseError instanceof Error ? parseError.message : 'Unknown error')
           const fallbackPlan = generateEnhancedFallbackPlan(answers, userInfo, imageMetrics)
           return NextResponse.json(normalizeResults(fallbackPlan))
         }
       } catch (error) {
-        console.error('OpenAI error:', error)
-        console.log('Falling back to enhanced fallback plan due to OpenAI error')
+        console.error('OpenAI API error:', error instanceof Error ? error.message : 'Unknown error')
+        // Fall through to fallback plan
       }
-    } else {
-      console.log('No OpenAI API key found, using fallback plan')
     }
     
     // Generate enhanced fallback plan
-    console.log('Generating enhanced fallback plan...')
     const plan = generateEnhancedFallbackPlan(answers, userInfo, imageMetrics)
-    console.log('Enhanced fallback plan generated successfully')
     return NextResponse.json(normalizeResults(plan))
 
   } catch (error) {
-    console.error('Quiz results error:', error)
-    console.error('Error details:', error instanceof Error ? error.message : 'Unknown error')
+    console.error('Quiz results error:', error instanceof Error ? error.message : 'Unknown error')
     return NextResponse.json({
       error: 'Failed to generate results',
-      fallback: true,
-      details: error instanceof Error ? error.message : 'Unknown error'
+      fallback: true
     }, { status: 500 })
   }
 }
@@ -178,12 +166,24 @@ Kundinformation:
  3. Vi fokuserar på holistisk hälsa: sömn, stress, kost, rörelse, mindfulness
  4. Våra produkter innehåller CBD och CBG som arbetar med kroppens endocannabinoidsystem
  5. Vi tror på "mindre är mer" - kvalitet över kvantitet
- 
+
+FUNKTIONELLA RÅVAROR för nutrition-råd (använd dessa i lifestyle.nutrition):
+- Blåbär: Rika på antocyaniner som motverkar oxidativ stress och stödjer hudhälsan inifrån
+- Lingon: Antiinflammatorisk verkan som gynnar hudhälsan och minskar rodnad
+- Havtorn: Omega-7 för starkare hudbarriär och förbättrad hudelasticitet
+- Grönt te: Katechiner som skyddar mot UV-stress och förhindrar för tidig hudåldrande
+- Gurkmeja: Curcumin som dämpar hudinflammation och ger huden en naturlig lyster
+- Kimchi: Probiotika för balanserad gut-skin-axel och förbättrad hudhälsa
+- Chiafrön: Omega-3 fettsyror som stödjer hudens fuktbalans och elasticitet
+- Kefir: Probiotika som stärker tarmhälsan och därmed hudens mikrobiom
+- Valnötter: Omega-3 och zink för antiinflammatorisk effekt
+- Avokado: Vitamin E och nyttiga fetter för hudbarriären
+
 KRAV PER SEKTION:
 - summary: skriv en unik hälsning med namn, en tydlig hudanalys (inkludera hudtyp och 1–3 fokusområden), sätt holisticScore (0–100) och scoreBreakdown (varje 0–25) utifrån svaren och ev. bildmått.
 - quickTips: 5 korta åtgärder (title, tip, why) som går att göra idag (morgon, kväll, livsstil, nutrition, stress).
-- products: skapa morgon/kvällsrutin (3–5 steg vardera). Använd endast dessa produktnamn: "Au Naturel Makeup Remover", "The ONE Facial Oil", "I LOVE Facial Oil", "TA-DA Serum", samt paket "DUO-KIT + TA-DA Serum". Lägg dessutom 3 rekommendationer (med price i SEK och motivering). Undvik påhittade produkter.
-- lifestyle: inkludera sleep, movement, sunExposure, stress och nutrition. Ge riktlinjer, frekvens, och veckoschema där relevant.
+- products: skapa morgon/kvällsrutin (3–5 steg vardera). Använd endast dessa produktnamn: "Au Naturel Makeup Remover" (399 kr), "The ONE Facial Oil" (649 kr), "I LOVE Facial Oil" (849 kr), "TA-DA Serum" (699 kr), samt paket "DUO-KIT + TA-DA Serum" (1498 kr). Lägg dessutom 3 rekommendationer (med price i SEK och motivering). Undvik påhittade produkter.
+- lifestyle: inkludera sleep, movement, sunExposure, stress och nutrition. För nutrition, använd funktionella råvaror ovan och förklara gut-skin-axeln. Ge riktlinjer, frekvens, och veckoschema där relevant.
 - holisticProtocol: gör en 4-veckors plan (initiation, consolidation, optimization, maintenance) med fokus, dagliga vanor och checkpoints.
 - education: 3–6 korta förklaringar (vetenskap) + 3 boktips i bookRecommendations.
 - nextSteps: immediate (3 saker idag), thisWeek (3–5 saker), support (kort text hur vi kan hjälpa).
@@ -297,8 +297,8 @@ function generateEnhancedFallbackPlan(answers: Record<string, any>, userInfo: an
         proTip: 'Gör detta till en mindful ritual'
       },
       recommendations: [
-        { priority: 1, product: 'DUO-KIT + TA-DA Serum', price: '1099 kr', why: 'Komplett system för optimal CBD/CBG-synergi', usage: 'Används enligt rutinerna ovan', expectedResults: 'Synlig förbättring inom 2 veckor', savings: 'Spar 300 kr jämfört med att köpa separat' },
-        { priority: 2, product: 'Au Naturel Makeup Remover', price: '299 kr', why: 'Mild men effektiv rengöring', usage: 'Varje kväll', expectedResults: 'Renare porer och balanserad hud' },
+        { priority: 1, product: 'DUO-KIT + TA-DA Serum', price: '1498 kr', why: 'Komplett system för optimal CBD/CBG-synergi', usage: 'Används enligt rutinerna ovan', expectedResults: 'Synlig förbättring inom 2 veckor', savings: 'Spar 349 kr jämfört med att köpa separat' },
+        { priority: 2, product: 'Au Naturel Makeup Remover', price: '399 kr', why: 'Mild men effektiv rengöring', usage: 'Varje kväll', expectedResults: 'Renare porer och balanserad hud' },
         { priority: 3, product: 'Fungtastic Mushroom Extract', price: '399 kr', why: 'Adaptogener för stresshantering', usage: '5 droppar 2x dagligen', expectedResults: 'Bättre stresshantering = lugnare hud' }
       ],
       budgetOption: skinType === 'dry' ? 'Börja med I LOVE Facial Oil' : 'Börja med TA-DA Serum'

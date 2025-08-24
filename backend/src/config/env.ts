@@ -7,14 +7,23 @@ const envSchema = z.object({
   // Database
   DATABASE_URL: z.string().min(1, 'Database URL is required'),
   
-  // JWT
-  JWT_SECRET: z.string().min(1, 'JWT secret is required').default('fallback-jwt-secret-for-development-only'),
+  // JWT - CRITICAL: No fallback secrets in production
+  JWT_SECRET: z.string().min(32, 'JWT secret must be at least 32 characters').refine(
+    (val) => process.env.NODE_ENV !== 'production' || val !== 'fallback-jwt-secret-for-development-only',
+    'JWT_SECRET must be set to a secure value in production'
+  ),
   JWT_EXPIRES_IN: z.string().default('7d'),
-  REFRESH_TOKEN_SECRET: z.string().min(1, 'Refresh token secret is required').default('fallback-refresh-secret-for-development-only'),
+  REFRESH_TOKEN_SECRET: z.string().min(32, 'Refresh token secret must be at least 32 characters').refine(
+    (val) => process.env.NODE_ENV !== 'production' || val !== 'fallback-refresh-secret-for-development-only',
+    'REFRESH_TOKEN_SECRET must be set to a secure value in production'
+  ),
   REFRESH_TOKEN_EXPIRES_IN: z.string().default('30d'),
   
-  // CORS
-  CORS_ORIGIN: z.string().default('*'),
+  // CORS - Secure configuration
+  CORS_ORIGIN: z.string().refine(
+    (val) => process.env.NODE_ENV !== 'production' || val !== '*',
+    'CORS_ORIGIN must be set to specific domain(s) in production, not "*"'
+  ).default(process.env.NODE_ENV === 'production' ? 'https://1753website-production.up.railway.app' : '*'),
   FRONTEND_URL: z.string().default('https://1753website-production.up.railway.app'),
   BACKEND_URL: z.string().default('https://1753websitebackend-production.up.railway.app'),
   
@@ -83,9 +92,11 @@ export function validateEnv() {
   try {
     const parsed = envSchema.parse(process.env)
     
-    // Log startup info
-    console.log(`🔧 Environment: ${parsed.NODE_ENV}`)
-    console.log(`🗄️  Database: ${parsed.DATABASE_URL ? 'Connected' : 'Missing'}`)
+    // Log startup info in production-appropriate way
+    if (parsed.NODE_ENV === 'development') {
+      console.log(`🔧 Environment: ${parsed.NODE_ENV}`)
+      console.log(`🗄️  Database: ${parsed.DATABASE_URL ? 'Connected' : 'Missing'}`)
+    }
     
     // Log warnings for missing important but optional variables in production
     if (parsed.NODE_ENV === 'production') {
@@ -99,6 +110,9 @@ export function validateEnv() {
         console.warn(`⚠️  Missing optional environment variables: ${warnings.join(', ')}`)
         console.warn('Some features may be disabled.')
       }
+
+      // Security validation passed - log success
+      console.log('🔒 Security validation passed: JWT secrets and CORS properly configured')
     }
     
     return parsed
@@ -110,40 +124,47 @@ export function validateEnv() {
       })
     }
     
-    // In production, create a minimal config and continue
+    // In production, we MUST have proper security configuration
     if (process.env.NODE_ENV === 'production') {
-      console.warn('⚠️  Creating fallback config for production...')
-      
-      // Ensure we have the most critical variables
-      if (!process.env.DATABASE_URL) {
-        console.error('❌ DATABASE_URL is required in production!')
-        process.exit(1)
-      }
-      
-      return {
-        NODE_ENV: process.env.NODE_ENV || 'production',
-        PORT: process.env.PORT || '5002',
-        DATABASE_URL: process.env.DATABASE_URL,
-        JWT_SECRET: process.env.JWT_SECRET || 'fallback-jwt-secret-for-production',
-        REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET || 'fallback-refresh-secret-for-production',
-        CORS_ORIGIN: process.env.CORS_ORIGIN || '*',
-        FRONTEND_URL: process.env.FRONTEND_URL || 'https://1753skincare.com',
-        BACKEND_URL: process.env.BACKEND_URL || 'https://1753websitebackend-production.up.railway.app',
-        RATE_LIMIT_WINDOW_MS: process.env.RATE_LIMIT_WINDOW_MS || '900000',
-        RATE_LIMIT_MAX_REQUESTS: process.env.RATE_LIMIT_MAX_REQUESTS || '1000',
-        BCRYPT_ROUNDS: process.env.BCRYPT_ROUNDS || '12',
-        JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',
-        REFRESH_TOKEN_EXPIRES_IN: process.env.REFRESH_TOKEN_EXPIRES_IN || '30d',
-        // Include all other env vars as-is
-        ...Object.fromEntries(
-          Object.entries(process.env).filter(([key]) => 
-            !['NODE_ENV', 'PORT', 'DATABASE_URL', 'JWT_SECRET', 'REFRESH_TOKEN_SECRET'].includes(key)
-          )
-        )
-      } as any
+      console.error('💥 CRITICAL: Cannot start in production without proper security configuration!')
+      console.error('Please set the following environment variables:')
+      console.error('  - JWT_SECRET (minimum 32 characters, cryptographically secure)')
+      console.error('  - REFRESH_TOKEN_SECRET (minimum 32 characters, cryptographically secure)')
+      console.error('  - CORS_ORIGIN (specific domain, not "*")')
+      console.error('  - DATABASE_URL')
+      console.error('')
+      console.error('Example secure values:')
+      console.error('  JWT_SECRET="$(openssl rand -base64 32)"')
+      console.error('  REFRESH_TOKEN_SECRET="$(openssl rand -base64 32)"')
+      console.error('  CORS_ORIGIN="https://yourdomain.com"')
+      process.exit(1)
     }
     
-    process.exit(1)
+    // Development fallback with warnings
+    console.warn('⚠️  Using development fallback configuration...')
+    console.warn('⚠️  This configuration is NOT suitable for production!')
+    
+    return {
+      NODE_ENV: process.env.NODE_ENV || 'development',
+      PORT: process.env.PORT || '5002',
+      DATABASE_URL: process.env.DATABASE_URL || '',
+      JWT_SECRET: process.env.JWT_SECRET || 'fallback-jwt-secret-for-development-only',
+      REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET || 'fallback-refresh-secret-for-development-only',
+      CORS_ORIGIN: process.env.CORS_ORIGIN || '*',
+      FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:3000',
+      BACKEND_URL: process.env.BACKEND_URL || 'http://localhost:5002',
+      RATE_LIMIT_WINDOW_MS: process.env.RATE_LIMIT_WINDOW_MS || '900000',
+      RATE_LIMIT_MAX_REQUESTS: process.env.RATE_LIMIT_MAX_REQUESTS || '100',
+      BCRYPT_ROUNDS: process.env.BCRYPT_ROUNDS || '12',
+      JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',
+      REFRESH_TOKEN_EXPIRES_IN: process.env.REFRESH_TOKEN_EXPIRES_IN || '30d',
+      // Include all other env vars as-is
+      ...Object.fromEntries(
+        Object.entries(process.env).filter(([key]) => 
+          !['NODE_ENV', 'PORT', 'DATABASE_URL', 'JWT_SECRET', 'REFRESH_TOKEN_SECRET', 'CORS_ORIGIN'].includes(key)
+        )
+      )
+    } as any
   }
 }
 

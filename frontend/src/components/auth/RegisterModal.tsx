@@ -366,8 +366,8 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, q
                     type="button"
                     className="text-amber-600 hover:underline font-medium"
                     onClick={() => {
-                      // TODO: Open login modal
-                      console.log('Open login modal')
+                      // Login functionality to be implemented
+                      onClose()
                     }}
                   >
                     Logga in
