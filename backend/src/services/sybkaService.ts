@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios'
-import { logger } from '@/utils/logger'
+import { logger } from '../utils/logger'
 
 interface SybkaOrderData {
   shop_order_id: string
