@@ -17,7 +17,8 @@ import {
   ArrowRight,
   Package,
   Calendar,
-  ChevronRight
+  ChevronRight,
+  User
 } from 'lucide-react'
 import { useCart } from '@/contexts/CartContext'
 import { useRouter } from 'next/navigation'
@@ -67,10 +68,20 @@ export default function DashboardPage() {
   const { user } = useAuth()
   const { addToCart } = useCart()
   const router = useRouter()
-  const [activeTab, setActiveTab] = useState<'orders' | 'knowledge' | 'videos' | 'quiz'>('orders')
+  const [activeTab, setActiveTab] = useState<'overview' | 'orders' | 'knowledge' | 'videos' | 'quiz'>('overview')
   const [showVideoModal, setShowVideoModal] = useState(false)
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   useEffect(() => {
     // Fetch user orders from API
@@ -96,6 +107,7 @@ export default function DashboardPage() {
   }
 
   const tabs = [
+    { id: 'overview', label: 'Översikt', icon: User },
     { id: 'orders', label: 'Mina ordrar', icon: ShoppingBag },
     { id: 'knowledge', label: 'Kunskapscentral', icon: BookOpen },
     { id: 'videos', label: 'Videoguider', icon: PlayCircle },
@@ -109,121 +121,244 @@ export default function DashboardPage() {
     { id: '4', title: 'Makeup Remover tekniken', thumbnail: '/products_2025/MakeupRemover_bottle.png', duration: '2:30' }
   ]
 
+  const dashboardActions = [
+    {
+      id: 'orders',
+      title: 'Mina ordrar',
+      description: 'Se och hantera dina beställningar',
+      icon: ShoppingBag,
+      bgColor: 'from-amber-400 to-orange-500',
+      action: () => setActiveTab('orders')
+    },
+    {
+      id: 'knowledge',
+      title: 'Kunskapscentral',
+      description: 'Utforska våra guider och tips',
+      icon: BookOpen,
+      bgColor: 'from-emerald-400 to-green-500',
+      action: () => setActiveTab('knowledge')
+    },
+    {
+      id: 'videos',
+      title: 'Videoguider',
+      description: 'Se instruktionsvideor',
+      icon: PlayCircle,
+      bgColor: 'from-purple-400 to-pink-500',
+      action: () => setActiveTab('videos')
+    },
+    {
+      id: 'quiz',
+      title: 'Hudanalys',
+      description: 'Gör om din hudanalys',
+      icon: Sparkles,
+      bgColor: 'from-blue-400 to-indigo-500',
+      action: () => router.push('/quiz')
+    }
+  ]
+
+  if (activeTab === 'overview') {
+    return (
+      <>
+        <Header />
+        <div className="relative min-h-screen">
+          {/* Background Image */}
+          <div className="fixed inset-0 -z-10">
+            <Image
+              src={isMobile ? '/background/inlogg_mobile.png' : '/background/inlogg.png'}
+              alt="Dashboard Background"
+              fill
+              className="object-cover"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/30" />
+          </div>
+
+          {/* Content */}
+          <div className="relative min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="text-center max-w-4xl mx-auto"
+            >
+              <h1 className="text-4xl md:text-6xl font-light text-white mb-4">
+                Välkommen tillbaka
+              </h1>
+              <p className="text-lg md:text-xl text-white/90 mb-12">
+                {user?.email ? `${user.email.split('@')[0]}` : 'till ditt konto'}
+              </p>
+
+              {/* Action Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+                {dashboardActions.map((action, index) => (
+                  <motion.button
+                    key={action.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    onClick={action.action}
+                    className="group relative overflow-hidden rounded-2xl p-6 text-left transition-all hover:scale-105"
+                  >
+                    {/* Background gradient */}
+                    <div className={`absolute inset-0 bg-gradient-to-br ${action.bgColor} opacity-90 group-hover:opacity-100 transition-opacity`} />
+                    
+                    {/* Content */}
+                    <div className="relative z-10">
+                      <action.icon className="w-8 h-8 text-white mb-3" />
+                      <h3 className="text-xl font-medium text-white mb-1">
+                        {action.title}
+                      </h3>
+                      <p className="text-white/80 text-sm">
+                        {action.description}
+                      </p>
+                    </div>
+
+                    {/* Hover effect */}
+                    <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </motion.button>
+                ))}
+              </div>
+
+              {/* Quick Stats */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+                className="mt-12 flex flex-wrap justify-center gap-8 text-white"
+              >
+                <div className="text-center">
+                  <p className="text-3xl font-light">{orders.length}</p>
+                  <p className="text-sm text-white/80">Ordrar</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-3xl font-light">85%</p>
+                  <p className="text-sm text-white/80">Hudpoäng</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-3xl font-light">3</p>
+                  <p className="text-sm text-white/80">Favoriter</p>
+                </div>
+              </motion.div>
+            </motion.div>
+          </div>
+        </div>
+        <Footer />
+      </>
+    )
+  }
+
+  // Rest of the component for other tabs
   return (
     <>
       <Header />
       <div className="min-h-screen bg-[#FAFAFA]">
-        {/* Hero Section */}
+        {/* Back to overview button */}
         <div className="bg-white border-b">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <h1 className="text-3xl font-light tracking-wider text-gray-900">
-              Välkommen tillbaka{user?.email ? `, ${user.email.split('@')[0]}` : ''}
-            </h1>
-            <p className="mt-2 text-gray-600 font-light">
-              Hantera dina ordrar och utforska vårt kunskapscentrum
-            </p>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <button
+              onClick={() => setActiveTab('overview')}
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              <ChevronRight className="w-4 h-4 rotate-180" />
+              <span>Tillbaka till översikt</span>
+            </button>
           </div>
         </div>
 
         {/* Tabs */}
         <div className="bg-white border-b sticky top-0 z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <nav className="flex space-x-8" aria-label="Tabs">
-              {tabs.map((tab) => {
-                const Icon = tab.icon
+            <div className="flex space-x-8 overflow-x-auto">
+              {tabs.filter(tab => tab.id !== 'overview').map((tab) => {
+                const isActive = activeTab === tab.id
                 return (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id as any)}
                     className={`
-                      py-4 px-1 border-b-2 font-light text-sm tracking-wider
-                      flex items-center gap-2 transition-colors
-                      ${activeTab === tab.id
-                        ? 'border-[#FCB237] text-gray-900'
+                      flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap
+                      ${isActive 
+                        ? 'border-[#FCB237] text-gray-900' 
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                       }
                     `}
                   >
-                    <Icon className="w-4 h-4" />
+                    <tab.icon className="w-4 h-4" />
                     {tab.label}
                   </button>
                 )
               })}
-            </nav>
+            </div>
           </div>
         </div>
 
         {/* Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <AnimatePresence mode="wait">
-            {/* Orders Tab */}
             {activeTab === 'orders' && (
               <motion.div
                 key="orders"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.2 }}
+                transition={{ duration: 0.3 }}
               >
                 {loading ? (
-                  <div className="flex items-center justify-center py-12">
-                    <RefreshCw className="w-6 h-6 animate-spin text-gray-400" />
+                  <div className="flex justify-center items-center h-64">
+                    <RefreshCw className="w-8 h-8 text-gray-400 animate-spin" />
                   </div>
                 ) : orders.length === 0 ? (
                   <div className="text-center py-12">
-                    <Package className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                    <p className="text-gray-500 font-light">Inga ordrar ännu</p>
+                    <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">Inga ordrar ännu</h3>
+                    <p className="text-gray-600 mb-6">När du gör din första beställning kommer den synas här.</p>
                     <Link 
                       href="/products"
-                      className="mt-4 inline-flex items-center gap-2 text-[#FCB237] hover:text-[#E8A230] font-light"
+                      className="inline-flex items-center gap-2 px-6 py-3 bg-[#FCB237] text-white rounded-lg hover:bg-[#E79C1A] transition-colors"
                     >
-                      Börja handla <ArrowRight className="w-4 h-4" />
+                      Utforska produkter
+                      <ArrowRight className="w-4 h-4" />
                     </Link>
                   </div>
                 ) : (
                   <div className="space-y-6">
                     {orders.map((order) => (
-                      <motion.div
-                        key={order.id}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden"
-                      >
-                        {/* Order Header */}
-                        <div className="p-6 border-b border-gray-100">
-                          <div className="flex items-center justify-between">
+                      <div key={order.id} className="bg-white border rounded-lg overflow-hidden">
+                        <div className="p-6">
+                          <div className="flex justify-between items-start mb-4">
                             <div>
-                              <p className="text-sm text-gray-500 font-light">
+                              <h3 className="text-lg font-medium text-gray-900">
                                 Order #{order.orderNumber}
-                              </p>
-                              <p className="text-xs text-gray-400 mt-1 flex items-center gap-1">
-                                <Calendar className="w-3 h-3" />
-                                {new Date(order.date).toLocaleDateString('sv-SE')}
-                              </p>
+                              </h3>
+                              <div className="flex items-center gap-4 mt-1 text-sm text-gray-600">
+                                <span className="flex items-center gap-1">
+                                  <Calendar className="w-4 h-4" />
+                                  {new Date(order.date).toLocaleDateString('sv-SE')}
+                                </span>
+                                <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">
+                                  {order.status}
+                                </span>
+                              </div>
                             </div>
                             <div className="text-right">
-                              <p className="text-sm text-green-600 font-light">{order.status}</p>
-                              <p className="text-lg font-light mt-1">{order.total} kr</p>
+                              <p className="text-2xl font-light">{order.total} kr</p>
                             </div>
                           </div>
-                        </div>
 
-                        {/* Order Items */}
-                        <div className="p-6">
-                          <div className="space-y-4">
+                          <div className="space-y-3">
                             {order.items.map((item) => (
                               <div key={item.id} className="flex items-center gap-4">
-                                <div className="relative w-16 h-16 bg-gray-50 rounded-lg overflow-hidden">
+                                <div className="w-16 h-16 relative rounded-lg overflow-hidden bg-gray-100">
                                   <Image
                                     src={item.image}
                                     alt={item.name}
                                     fill
-                                    className="object-contain p-2"
+                                    className="object-cover"
                                   />
                                 </div>
                                 <div className="flex-1">
-                                  <p className="text-sm font-light">{item.name}</p>
-                                  <p className="text-xs text-gray-500">
+                                  <p className="font-medium text-gray-900">{item.name}</p>
+                                  <p className="text-sm text-gray-600">
                                     {item.quantity} x {item.price} kr
                                   </p>
                                 </div>
@@ -231,163 +366,138 @@ export default function DashboardPage() {
                             ))}
                           </div>
 
-                          {/* Reorder Button */}
-                          <button
-                            onClick={() => handleReorderAll(order)}
-                            className="mt-6 w-full bg-[#FCB237] text-white py-3 px-6 rounded-lg
-                                     font-light tracking-wider hover:bg-[#E8A230] transition-colors
-                                     flex items-center justify-center gap-2"
-                          >
-                            <RefreshCw className="w-4 h-4" />
-                            Beställ allt igen
-                          </button>
+                          <div className="mt-4 pt-4 border-t flex gap-3">
+                            <button
+                              onClick={() => handleReorderAll(order)}
+                              className="flex-1 py-2 px-4 bg-[#FCB237] text-white rounded-lg hover:bg-[#E79C1A] transition-colors flex items-center justify-center gap-2"
+                            >
+                              <RefreshCw className="w-4 h-4" />
+                              Beställ igen
+                            </button>
+                            <Link
+                              href={`/orders/${order.id}`}
+                              className="flex-1 py-2 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-center"
+                            >
+                              Visa detaljer
+                            </Link>
+                          </div>
                         </div>
-                      </motion.div>
+                      </div>
                     ))}
                   </div>
                 )}
               </motion.div>
             )}
 
-            {/* Knowledge Tab */}
             {activeTab === 'knowledge' && (
               <motion.div
                 key="knowledge"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.2 }}
-                className="text-center py-12"
+                transition={{ duration: 0.3 }}
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
               >
-                <BookOpen className="w-16 h-16 text-[#FCB237] mx-auto mb-6" />
-                <h2 className="text-2xl font-light tracking-wider mb-4">
-                  Utforska vårt kunskapscentrum
-                </h2>
-                <p className="text-gray-600 font-light mb-8 max-w-2xl mx-auto">
-                  Fördjupa dig i hudvårdens vetenskap och lär dig mer om våra ingredienser,
-                  funktionella råvaror och expertråd för din hudtyp.
-                </p>
-                <Link
-                  href="/kunskap"
-                  className="inline-flex items-center gap-2 bg-[#FCB237] text-white px-8 py-3 
-                           rounded-lg font-light tracking-wider hover:bg-[#E8A230] transition-colors"
-                >
-                  Gå till kunskapscentral
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
+                {[
+                  { title: 'CBD & CBG Guide', description: 'Lär dig mer om cannabinoider', link: '/kunskap' },
+                  { title: 'Hudvårdsrutiner', description: 'Skapa din perfekta rutin', link: '/kunskap' },
+                  { title: 'Ingredienslexikon', description: 'Förstå våra ingredienser', link: '/om-oss/ingredienser' },
+                  { title: 'FAQ', description: 'Vanliga frågor och svar', link: '/om-oss/faq' },
+                  { title: 'E-bok', description: 'Ladda ner vår gratisbok', link: '/kunskap/e-bok' },
+                  { title: 'Blogg', description: 'Senaste nyheterna', link: '/blogg' }
+                ].map((item, index) => (
+                  <Link
+                    key={index}
+                    href={item.link}
+                    className="group bg-white border rounded-lg p-6 hover:shadow-lg transition-all"
+                  >
+                    <h3 className="text-lg font-medium text-gray-900 mb-2 group-hover:text-[#FCB237] transition-colors">
+                      {item.title}
+                    </h3>
+                    <p className="text-gray-600 text-sm">{item.description}</p>
+                    <div className="mt-4 flex items-center text-[#FCB237] text-sm font-medium">
+                      Läs mer
+                      <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </Link>
+                ))}
               </motion.div>
             )}
 
-            {/* Videos Tab */}
             {activeTab === 'videos' && (
               <motion.div
                 key="videos"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.2 }}
+                transition={{ duration: 0.3 }}
+                className="grid grid-cols-1 md:grid-cols-2 gap-6"
               >
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {videos.map((video) => (
-                    <motion.button
-                      key={video.id}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => setShowVideoModal(true)}
-                      className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden
-                               hover:shadow-md transition-shadow text-left"
-                    >
-                      <div className="relative aspect-video bg-gray-50">
-                        <Image
-                          src={video.thumbnail}
-                          alt={video.title}
-                          fill
-                          className="object-contain p-4"
-                        />
-                        <div className="absolute inset-0 bg-black/20 flex items-center justify-center
-                                      opacity-0 hover:opacity-100 transition-opacity">
-                          <PlayCircle className="w-12 h-12 text-white" />
-                        </div>
-                        <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs
-                                      px-2 py-1 rounded">
-                          {video.duration}
-                        </div>
+                {videos.map((video) => (
+                  <button
+                    key={video.id}
+                    onClick={() => setShowVideoModal(true)}
+                    className="group bg-white border rounded-lg overflow-hidden hover:shadow-lg transition-all"
+                  >
+                    <div className="relative h-48 bg-gray-100">
+                      <Image
+                        src={video.thumbnail}
+                        alt={video.title}
+                        fill
+                        className="object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/40 transition-colors">
+                        <PlayCircle className="w-12 h-12 text-white" />
                       </div>
-                      <div className="p-4">
-                        <h3 className="font-light text-sm">{video.title}</h3>
+                      <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                        {video.duration}
                       </div>
-                    </motion.button>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-
-            {/* Quiz Tab */}
-            {activeTab === 'quiz' && (
-              <motion.div
-                key="quiz"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.2 }}
-                className="text-center py-12"
-              >
-                <Sparkles className="w-16 h-16 text-[#FCB237] mx-auto mb-6" />
-                <h2 className="text-2xl font-light tracking-wider mb-4">
-                  Personlig hudanalys
-                </h2>
-                <p className="text-gray-600 font-light mb-8 max-w-2xl mx-auto">
-                  Få en skräddarsydd hudvårdsrutin baserad på din unika hudtyp och behov.
-                  Vår expertanalys tar bara några minuter.
-                </p>
-                <Link
-                  href="/quiz"
-                  className="inline-flex items-center gap-2 bg-[#FCB237] text-white px-8 py-3 
-                           rounded-lg font-light tracking-wider hover:bg-[#E8A230] transition-colors"
-                >
-                  Starta hudanalys
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
+                    </div>
+                    <div className="p-4">
+                      <h3 className="font-medium text-gray-900 group-hover:text-[#FCB237] transition-colors">
+                        {video.title}
+                      </h3>
+                    </div>
+                  </button>
+                ))}
               </motion.div>
             )}
           </AnimatePresence>
         </div>
-      </div>
 
-      {/* Video Modal */}
-      <AnimatePresence>
-        {showVideoModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
-            onClick={() => setShowVideoModal(false)}
-          >
+        {/* Video Modal */}
+        <AnimatePresence>
+          {showVideoModal && (
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-lg overflow-hidden max-w-4xl w-full"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80"
+              onClick={() => setShowVideoModal(false)}
             >
-              <div className="flex items-center justify-between p-4 border-b">
-                <h3 className="font-light tracking-wider">Applicera produkter som ett proffs</h3>
+              <motion.div
+                initial={{ scale: 0.9 }}
+                animate={{ scale: 1 }}
+                exit={{ scale: 0.9 }}
+                className="relative max-w-4xl w-full bg-black rounded-lg overflow-hidden"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <button
                   onClick={() => setShowVideoModal(false)}
-                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                  className="absolute top-4 right-4 z-10 p-2 bg-white/10 backdrop-blur rounded-full hover:bg-white/20 transition-colors"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-5 h-5 text-white" />
                 </button>
-              </div>
-              <div className="aspect-video bg-black flex items-center justify-center">
-                <p className="text-white font-light">Video kommer snart...</p>
-              </div>
+                <div className="relative aspect-video bg-gray-900">
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <p className="text-white">Video kommer snart...</p>
+                  </div>
+                </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
+          )}
+        </AnimatePresence>
+      </div>
       <Footer />
     </>
   )
