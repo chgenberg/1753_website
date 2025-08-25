@@ -12,6 +12,8 @@ interface BlogPost {
   title: string
   excerpt: string
   date: string
+  publishedAt?: string
+  createdAt?: string
   readingTime?: string
 }
 
@@ -161,7 +163,7 @@ export function BlogSection() {
                     <div className="flex items-center gap-4 text-sm text-[var(--color-gray-500)] mb-3">
                       <span className="flex items-center gap-1">
                         <Calendar className="w-4 h-4" />
-                        {new Date(post.publishedAt || post.date || post.createdAt).toLocaleDateString('sv-SE', {
+                        {new Date(post.publishedAt || post.date || post.createdAt || new Date()).toLocaleDateString('sv-SE', {
                           year: 'numeric',
                           month: 'short',
                           day: 'numeric'
