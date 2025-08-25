@@ -20,8 +20,8 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   title: {
-    default: '1753 Skincare - Naturlig hudvård med CBD',
-    template: '%s | 1753 Skincare'
+    default: '1753 SKINCARE - CBD & CBG',
+    template: '%s | 1753 SKINCARE - CBD & CBG'
   },
   description: 'Upptäck kraften i CBD och CBG för din hud. Naturliga hudvårdsprodukter som stödjer hudens egen läkningsprocess.',
   keywords: ['CBD hudvård', 'naturlig hudvård', 'CBG', 'cannabinoider', 'hudvård', 'skincare'],
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: '1753 Skincare - Naturlig hudvård med CBD',
+    title: '1753 SKINCARE - CBD & CBG',
     description: 'Upptäck kraften i CBD och CBG för din hud.',
     url: 'https://1753skincare.com',
     siteName: '1753 Skincare',
@@ -61,7 +61,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: '1753 Skincare - Naturlig hudvård med CBD',
+    title: '1753 SKINCARE - CBD & CBG',
     description: 'Upptäck kraften i CBD och CBG för din hud.',
     images: ['/og-image.jpg'],
   },

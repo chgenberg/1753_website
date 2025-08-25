@@ -84,8 +84,8 @@ export default function ContactPage() {
     e.preventDefault()
     
     try {
-      // Send contact form to backend
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002'}/api/contact/send`, {
+      // Send contact form via API route
+      const response = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)

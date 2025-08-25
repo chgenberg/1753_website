@@ -91,9 +91,10 @@ export default function NewsletterSection({
         },
         body: JSON.stringify({
           email: formData.email,
-          tags: ['newsletter', 'website-signup'],
-          source: 'newsletter-section',
-          workflow: 'nyhetsbrev'
+          firstName: formData.firstName,
+          skinType: formData.skinType,
+          interests: formData.interests,
+          source: 'newsletter-section'
         }),
       })
 

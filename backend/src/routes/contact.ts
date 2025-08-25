@@ -27,7 +27,49 @@ router.post('/send', async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Invalid input', issues: parse.error.issues })
     }
     const { name, email, subject, message } = parse.data
+    
+    // Save to database
     const submission = await prisma.contactSubmission.create({ data: { name, email, subject, message } })
+    
+    // Send email notification to Christopher
+    try {
+      await sendEmail({
+        to: 'christopher@1753skincare.com',
+        subject: `Nytt meddelande från kontaktformulär: ${subject}`,
+        template: 'contactForm',
+        data: {
+          name,
+          email,
+          subject,
+          message,
+          timestamp: new Date().toLocaleString('sv-SE', { 
+            timeZone: 'Europe/Stockholm',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          })
+        }
+      })
+      logger.info(`Contact form email sent to christopher@1753skincare.com for submission ${submission.id}`)
+    } catch (emailError) {
+      logger.error('Failed to send contact form email:', emailError)
+      // Don't fail the request if email fails, but log it
+    }
+    
+    // Also add to Drip for tracking (optional)
+    try {
+      await dripService.addTagsToSubscriber(email, [
+        'Contact Form Submission',
+        `Subject: ${subject}`,
+        `Date: ${new Date().toISOString().split('T')[0]}`
+      ])
+    } catch (dripError) {
+      logger.error('Failed to add Drip tags for contact form:', dripError)
+      // Don't fail the request if Drip fails
+    }
+    
     res.json({ success: true, submissionId: submission.id })
   } catch (err) {
     next(err)

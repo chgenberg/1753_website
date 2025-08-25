@@ -10,7 +10,7 @@ export interface SEOPage {
 }
 
 export const SEO_CONFIG = {
-  defaultTitle: '1753 Skincare - Naturlig Hudvård med CBD & CBG',
+  defaultTitle: '1753 SKINCARE - CBD & CBG',
   defaultDescription: 'Revolutionerande hudvård med CBD, CBG och medicinska svampar. Naturliga produkter som stärker hudens endocannabinoidsystem för frisk och strålande hud.',
   defaultKeywords: ['CBD hudvård', 'CBG', 'naturlig hudvård', 'endocannabinoidsystem', 'medicinska svampar', 'ansiktsolja', 'serum'],
   siteName: '1753 Skincare',

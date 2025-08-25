@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
 
     const backendUrl = process.env.BACKEND_URL || 'https://1753websitebackend-production.up.railway.app';
 
-    const response = await fetch(`${backendUrl}/api/newsletter`, {
+    const response = await fetch(`${backendUrl}/api/newsletter/subscribe`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

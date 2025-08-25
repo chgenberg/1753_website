@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { 
   User, Mail, Calendar, Check, ChevronRight, ChevronLeft, 
   Sparkles, Heart, Sun, Moon, Droplets, Leaf, Timer, 
-  AlertCircle, Shield, Home, Info
+  AlertCircle, Shield, Home, Info, Camera, ArrowRight
 } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -14,71 +14,6 @@ import { LoadingAnimation } from '@/components/quiz/LoadingAnimation'
 import FacePhotoAnalyzer, { ImageMetricsResult } from '@/components/quiz/FacePhotoAnalyzer'
 import confetti from 'canvas-confetti'
 import { Header } from '@/components/layout/Header'
-
-// Soft cloud shape component
-const CloudShape = ({ children, className = "" }: { children: React.ReactNode, className?: string }) => (
-  <motion.div
-    className={`relative ${className}`}
-    whileHover={{ scale: 1.02 }}
-    transition={{ type: "spring", stiffness: 300 }}
-  >
-    <svg className="absolute inset-0 w-full h-full" viewBox="0 0 200 100" preserveAspectRatio="none">
-      <path
-        d="M 20,50 Q 20,20 50,20 Q 80,10 120,20 Q 150,20 180,50 Q 180,80 150,80 Q 120,90 80,80 Q 50,80 20,50"
-        fill="currentColor"
-        className="text-white/90 drop-shadow-lg"
-      />
-    </svg>
-    <div className="relative z-10 p-8">
-      {children}
-    </div>
-  </motion.div>
-)
-
-// Animated subtle background orbs
-const AnimatedOrbs = () => (
-  <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-    <motion.div
-      className="absolute -top-24 -left-24 w-80 h-80 rounded-full bg-[#8B6B47]/20 blur-3xl"
-      animate={{ x: [0, 40, -20, 0], y: [0, 20, -10, 0], opacity: [0.6, 0.8, 0.7, 0.6] }}
-      transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut' }}
-    />
-    <motion.div
-      className="absolute -bottom-24 -right-24 w-[28rem] h-[28rem] rounded-full bg-[#FCB237]/10 blur-3xl"
-      animate={{ x: [0, -30, 10, 0], y: [0, -15, 25, 0], opacity: [0.5, 0.65, 0.55, 0.5] }}
-      transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
-    />
-  </div>
-)
-
-// Accessible hint tooltip
-function HintPopover({ text }: { text: string }) {
-  const [open, setOpen] = useState(false)
-  const btnRef = useRef<HTMLButtonElement | null>(null)
-  return (
-    <span className="relative inline-block">
-      <button
-        ref={btnRef}
-        type="button"
-        aria-haspopup="dialog"
-        aria-expanded={open}
-        aria-label={text}
-        onMouseEnter={() => setOpen(true)}
-        onMouseLeave={() => setOpen(false)}
-        onFocus={() => setOpen(true)}
-        onBlur={() => setOpen(false)}
-        className="p-1 rounded hover:bg-gray-100"
-      >
-        <Info className="w-4 h-4 text-gray-500" />
-      </button>
-      {open && (
-        <div role="tooltip" className="absolute left-1/2 -translate-x-1/2 mt-2 w-64 text-xs bg-white border border-gray-200 shadow-md rounded p-2 z-10">
-          {text}
-        </div>
-      )}
-    </span>
-  )
-}
 
 interface UserInfo {
   email: string
@@ -105,6 +40,15 @@ export default function QuizPage() {
   const [resumePrompt, setResumePrompt] = useState(false)
   const [activeDescendantId, setActiveDescendantId] = useState<string | undefined>(undefined)
   const [imageMetrics, setImageMetrics] = useState<ImageMetricsResult | null>(null)
+  const [isMobile, setIsMobile] = useState(false)
+
+  // Check if mobile
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   // Focus heading on question change for better accessibility
   const questionHeadingRef = useRef<HTMLHeadingElement | null>(null)
@@ -136,906 +80,843 @@ export default function QuizPage() {
   const resumeFromStorage = () => {
     try {
       const raw = localStorage.getItem('quizProgress')
-      if (!raw) return setResumePrompt(false)
-      const data = JSON.parse(raw)
-      setUserInfo(data.userInfo || userInfo)
-      setPrivacyAccepted(!!data.privacyAccepted)
-      setQuestions(data.questions || [])
-      setAnswers(data.answers || {})
-      setCurrentQuestion(typeof data.currentQuestion === 'number' ? data.currentQuestion : 0)
-      setCurrentStep(data.currentStep || 'welcome')
-    } catch {}
-    setResumePrompt(false)
-  }
-
-  const discardStorage = () => {
-    try { localStorage.removeItem('quizProgress') } catch {}
-    setResumePrompt(false)
-  }
-
-  // Auto-save progress (with consent)
-  useEffect(() => {
-    if (!privacyAccepted) return
-    const payload = {
-      currentStep,
-      userInfo,
-      privacyAccepted,
-      currentQuestion,
-      answers,
-      questions
+      if (raw) {
+        const data = JSON.parse(raw)
+        setUserInfo(data.userInfo || {})
+        setAnswers(data.answers || {})
+        setCurrentQuestion(data.currentQuestion || 0)
+        setCurrentStep(data.currentStep || 'userInfo')
+        if (data.userInfo?.gender) loadQuestions(data.userInfo.gender)
+      }
+    } catch (error) {
+      console.error('Failed to resume quiz:', error)
     }
-    try { localStorage.setItem('quizProgress', JSON.stringify(payload)) } catch {}
-  }, [currentStep, userInfo, privacyAccepted, currentQuestion, answers, questions])
+    setResumePrompt(false)
+  }
 
-  const validateEmail = (email: string) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  const saveProgress = () => {
+    try {
+      localStorage.setItem('quizProgress', JSON.stringify({
+        userInfo,
+        answers,
+        currentQuestion,
+        currentStep,
+        timestamp: Date.now()
+      }))
+    } catch {}
+  }
+
+  const loadQuestions = (gender: string) => {
+    const baseQuestions = [
+      {
+        id: 'skin_type',
+        question: 'Hur skulle du beskriva din hudtyp?',
+        icon: Droplets,
+        options: [
+          { 
+            value: 'dry', 
+            label: 'Torr', 
+            description: 'Känns stram, fnasig eller matt',
+            icon: '🏜️'
+          },
+          { 
+            value: 'oily', 
+            label: 'Fet', 
+            description: 'Glansig, särskilt i T-zonen',
+            icon: '💧'
+          },
+          { 
+            value: 'combination', 
+            label: 'Kombinerad', 
+            description: 'Fet T-zon, torr på kinderna',
+            icon: '🌗'
+          },
+          { 
+            value: 'sensitive', 
+            label: 'Känslig', 
+            description: 'Reagerar lätt på produkter',
+            icon: '🌸'
+          },
+          { 
+            value: 'normal', 
+            label: 'Normal', 
+            description: 'Balanserad och problemfri',
+            icon: '✨'
+          }
+        ]
+      },
+      {
+        id: 'skin_concerns',
+        question: 'Vilka är dina huvudsakliga hudproblem?',
+        icon: Heart,
+        multiple: true,
+        options: [
+          { value: 'acne', label: 'Akne & utbrott', icon: '🔴' },
+          { value: 'aging', label: 'Åldrande & rynkor', icon: '⏰' },
+          { value: 'pigmentation', label: 'Pigmentfläckar', icon: '🎨' },
+          { value: 'redness', label: 'Rodnad & irritation', icon: '🌡️' },
+          { value: 'dryness', label: 'Torrhet & fjällning', icon: '🏜️' },
+          { value: 'pores', label: 'Stora porer', icon: '🕳️' },
+          { value: 'dullness', label: 'Trist & livlös hud', icon: '☁️' },
+          { value: 'sensitivity', label: 'Känslighet', icon: '🌸' }
+        ]
+      },
+      {
+        id: 'routine_time',
+        question: 'Hur mycket tid lägger du på hudvård dagligen?',
+        icon: Timer,
+        options: [
+          { value: 'minimal', label: '< 5 minuter', description: 'Snabb och enkel rutin', icon: '⚡' },
+          { value: 'moderate', label: '5-15 minuter', description: 'Balanserad rutin', icon: '⏱️' },
+          { value: 'extensive', label: '> 15 minuter', description: 'Omfattande rutin', icon: '🕰️' }
+        ]
+      },
+      {
+        id: 'lifestyle',
+        question: 'Hur skulle du beskriva din livsstil?',
+        icon: Sun,
+        options: [
+          { value: 'active', label: 'Aktiv & sportigt', icon: '🏃' },
+          { value: 'balanced', label: 'Balanserad', icon: '⚖️' },
+          { value: 'stressful', label: 'Stressig', icon: '😰' },
+          { value: 'relaxed', label: 'Lugn & avslappnad', icon: '😌' }
+        ]
+      },
+      {
+        id: 'sleep_quality',
+        question: 'Hur är din sömnkvalitet?',
+        icon: Moon,
+        options: [
+          { value: 'excellent', label: 'Utmärkt (7-9h)', icon: '😴' },
+          { value: 'good', label: 'Bra (6-7h)', icon: '😊' },
+          { value: 'fair', label: 'Okej (5-6h)', icon: '😐' },
+          { value: 'poor', label: 'Dålig (<5h)', icon: '😫' }
+        ]
+      },
+      {
+        id: 'diet_habits',
+        question: 'Hur skulle du beskriva dina matvanor?',
+        icon: Leaf,
+        options: [
+          { value: 'healthy', label: 'Hälsosam & balanserad', icon: '🥗' },
+          { value: 'moderate', label: 'Varierande', icon: '🍽️' },
+          { value: 'improving', label: 'Arbetar på det', icon: '📈' },
+          { value: 'unhealthy', label: 'Kunde vara bättre', icon: '🍔' }
+        ]
+      },
+      {
+        id: 'environment',
+        question: 'Vilken miljö vistas du mest i?',
+        icon: Home,
+        options: [
+          { value: 'urban', label: 'Stad', description: 'Föroreningar & stress', icon: '🏙️' },
+          { value: 'suburban', label: 'Förort', description: 'Balanserad miljö', icon: '🏘️' },
+          { value: 'rural', label: 'Landsbygd', description: 'Ren luft', icon: '🌲' },
+          { value: 'mixed', label: 'Varierat', description: 'Reser mycket', icon: '✈️' }
+        ]
+      }
+    ]
+
+    // Add gender-specific questions
+    if (gender === 'female') {
+      baseQuestions.push({
+        id: 'hormonal_phase',
+        question: 'Var befinner du dig hormonellt?',
+        icon: Heart,
+        options: [
+          { value: 'regular', label: 'Regelbunden cykel', icon: '🔄' },
+          { value: 'irregular', label: 'Oregelbunden cykel', icon: '〰️' },
+          { value: 'pregnancy', label: 'Gravid/ammar', icon: '🤰' },
+          { value: 'menopause', label: 'Klimakteriet', icon: '🦋' },
+          { value: 'post_menopause', label: 'Efter klimakteriet', icon: '🌟' }
+        ]
+      })
+    }
+
+    setQuestions(baseQuestions)
   }
 
   const handleUserInfoSubmit = () => {
     const newErrors: Record<string, string> = {}
-
-    if (!userInfo.email) {
-      newErrors.email = 'E-postadress krävs'
-    } else if (!validateEmail(userInfo.email)) {
+    
+    if (!userInfo.name.trim()) newErrors.name = 'Namn krävs'
+    if (!userInfo.email.trim()) newErrors.email = 'E-post krävs'
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userInfo.email)) {
       newErrors.email = 'Ogiltig e-postadress'
     }
-
-    if (!userInfo.name) {
-      newErrors.name = 'Namn krävs'
-    }
-
-    if (!userInfo.gender) {
-      newErrors.gender = 'Vänligen välj kön'
-    }
-
-    if (!userInfo.age) {
-      newErrors.age = 'Ålder krävs'
-    } else if (parseInt(userInfo.age) < 15 || parseInt(userInfo.age) > 100) {
-      newErrors.age = 'Ange en giltig ålder (15-100)'
-    }
-
-    if (!privacyAccepted) {
-      newErrors.privacy = 'Du måste acceptera integritetspolicyn'
-    }
+    if (!userInfo.gender) newErrors.gender = 'Välj kön'
+    if (!userInfo.age) newErrors.age = 'Ålder krävs'
+    if (!privacyAccepted) newErrors.privacy = 'Du måste acceptera integritetspolicyn'
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors)
       return
     }
 
-    setErrors({})
-    loadQuestionsForUser()
+    loadQuestions(userInfo.gender)
     setCurrentStep('photo')
+    saveProgress()
   }
 
-  const loadQuestionsForUser = () => {
-    // This would load dynamic questions based on gender and age
-    // For now, using a base set
-    setQuestions(getQuestionsForUser(userInfo))
+  const handlePhotoAnalyzed = (metrics: ImageMetricsResult) => {
+    setImageMetrics(metrics)
+    setCurrentStep('questions')
+    saveProgress()
   }
 
-  const getQuestionsForUser = (info: UserInfo) => {
-    const hints: Record<string, string> = {
-      skin_type: 'Om du är osäker, välj Osäker så kalibrerar vi i resultatet.',
-      skin_concerns: 'Välj 1–3 viktigaste områden att fokusera på först.',
-      lifestyle_stress: 'Stress påverkar hudens lyster och inflammation.',
-      sleep_quality: 'Sömn är kroppens reparationsfönster för huden.',
-      water_intake: 'Hudbarriären mår bättre vid jämn vätskenivå.',
-      sun_exposure: 'Gradvis exponering bygger tolerans – undvik rodnad.',
-      diet_quality: 'Hel och obearbetad mat gynnar tarm-hud-axeln.',
-      exercise_frequency: 'Rörelse ökar cirkulation och stödjer hudens läkning.',
-      current_routine: 'Vi anpassar rekommendationer utifrån din nivå.',
-      environmental_factors: 'Miljön påverkar behovet av skyddande strategier.'
-    }
-
-    // Base questions that everyone gets
-    const baseQuestions = [
-      {
-        id: 'skin_type',
-        text: 'Hur skulle du beskriva din hudtyp?',
-        hint: hints.skin_type,
-        type: 'single',
-        options: [
-          { value: 'dry', label: 'Torr', icon: '🏜️', description: 'Känns stram och kan fjälla' },
-          { value: 'oily', label: 'Oljig', icon: '💧', description: 'Glansig, särskilt i T-zonen' },
-          { value: 'combination', label: 'Kombinerad', icon: '🎭', description: 'Torr på vissa ställen, oljig på andra' },
-          { value: 'normal', label: 'Normal', icon: '✨', description: 'Välbalanserad utan större problem' },
-          { value: 'sensitive', label: 'Känslig', icon: '🌸', description: 'Reagerar lätt på produkter' },
-          { value: 'not_sure', label: 'Osäker', icon: '❓', description: 'Jag vet inte / svårt att säga' }
-        ]
-      },
-      {
-        id: 'skin_concerns',
-        text: 'Vilka hudproblem vill du främst adressera?',
-        hint: hints.skin_concerns,
-        type: 'multiple',
-        options: [
-          { value: 'acne', label: 'Akne', icon: '🔴', description: 'Utbrott, finnar' },
-          { value: 'aging', label: 'Åldrande', icon: '⏰', description: 'Rynkor, fasthet' },
-          { value: 'pigmentation', label: 'Pigmentering', icon: '🎨', description: 'Fläckar, ojämn ton' },
-          { value: 'redness', label: 'Rodnad', icon: '🌹', description: 'Känslighet, reaktivitet' },
-          { value: 'dryness', label: 'Torrhet', icon: '🏜️', description: 'Stram, flagnande' },
-          { value: 'oiliness', label: 'Oljighet', icon: '💧', description: 'Glans, utvidgade porer' },
-          { value: 'sensitivity', label: 'Känslighet', icon: '🌸', description: 'Reagerar lätt' },
-          { value: 'texture', label: 'Ojämn hudstruktur', icon: '🏔️', description: 'Knottror, förtjockning' }
-        ]
-      },
-      {
-        id: 'lifestyle_stress',
-        text: 'Hur skulle du beskriva din stressnivå i vardagen?',
-        hint: hints.lifestyle_stress,
-        type: 'single',
-        options: [
-          { value: 'low', label: 'Låg', icon: '😌', description: 'Oftast lugn' },
-          { value: 'moderate', label: 'Måttlig', icon: '😐', description: 'Hanterbar stress' },
-          { value: 'high', label: 'Hög', icon: '😰', description: 'Ofta stressad' },
-          { value: 'very_high', label: 'Mycket hög', icon: '😣', description: 'Påverkar välmående' }
-        ]
-      },
-      {
-        id: 'sleep_quality',
-        text: 'Hur är din sömnkvalitet?',
-        type: 'single',
-        options: [
-          { value: 'excellent', label: 'Utmärkt', icon: '😴', description: '7-9 timmar djup sömn' },
-          { value: 'good', label: 'Bra', icon: '😪', description: 'Sover oftast gott' },
-          { value: 'fair', label: 'Okej', icon: '😑', description: 'Vaknar ibland på natten' },
-          { value: 'poor', label: 'Dålig', icon: '😫', description: 'Svårt att somna eller sova djupt' }
-        ]
-      },
-      {
-        id: 'water_intake',
-        text: 'Hur mycket vatten dricker du dagligen?',
-        type: 'single',
-        options: [
-          { value: 'less_1L', label: 'Mindre än 1 liter', icon: '💧', description: '' },
-          { value: '1_2L', label: '1-2 liter', icon: '💧💧', description: '' },
-          { value: '2_3L', label: '2-3 liter', icon: '💧💧💧', description: '' },
-          { value: 'more_3L', label: 'Mer än 3 liter', icon: '💧💧💧💧', description: '' }
-        ]
-      },
-      {
-        id: 'sun_exposure',
-        text: 'Hur mycket tid spenderar du utomhus i solljus?',
-        type: 'single',
-        options: [
-          { value: 'minimal', label: 'Minimal', icon: '🏢', description: 'Mest inomhus' },
-          { value: 'moderate', label: 'Måttlig', icon: '⛅', description: '30-60 min dagligen' },
-          { value: 'high', label: 'Mycket', icon: '☀️', description: '1-3 timmar dagligen' },
-          { value: 'extensive', label: 'Omfattande', icon: '🏖️', description: 'Mer än 3 timmar' }
-        ]
-      },
-      {
-        id: 'diet_quality',
-        text: 'Hur skulle du beskriva din kost?',
-        type: 'single',
-        options: [
-          { value: 'whole_foods', label: 'Hela livsmedel', icon: '🥗', description: 'Mest obearbetad mat' },
-          { value: 'balanced', label: 'Balanserad', icon: '🍱', description: 'Blandning av hälsosamt och mindre hälsosamt' },
-          { value: 'processed', label: 'Bearbetad', icon: '🍕', description: 'Mycket färdigmat och snabbmat' },
-          { value: 'special', label: 'Specialkost', icon: '🌱', description: 'Vegetarisk/vegan/keto etc.' }
-        ]
-      },
-      {
-        id: 'exercise_frequency',
-        text: 'Hur ofta tränar du?',
-        type: 'single',
-        options: [
-          { value: 'never', label: 'Aldrig', icon: '🛋️', description: '' },
-          { value: '1_2_week', label: '1-2 ggr/vecka', icon: '🚶', description: '' },
-          { value: '3_4_week', label: '3-4 ggr/vecka', icon: '🏃', description: '' },
-          { value: 'daily', label: 'Dagligen', icon: '💪', description: '' }
-        ]
-      },
-      {
-        id: 'current_routine',
-        text: 'Hur ser din nuvarande hudvårdsrutin ut?',
-        type: 'single',
-        options: [
-          { value: 'none', label: 'Ingen rutin', icon: '🚫', description: 'Använder sällan hudvård' },
-          { value: 'basic', label: 'Enkel', icon: '💧', description: 'Rengöring och fukt' },
-          { value: 'moderate', label: 'Måttlig', icon: '🧴', description: '3-4 produkter' },
-          { value: 'extensive', label: 'Omfattande', icon: '🧪', description: '5+ produkter' }
-        ]
-      },
-      {
-        id: 'environmental_factors',
-        text: 'Vilken typ av miljö befinner du dig mest i?',
-        type: 'single',
-        options: [
-          { value: 'urban', label: 'Stadsmiljö', icon: '🏙️', description: 'Föroreningar och stress' },
-          { value: 'suburban', label: 'Förort', icon: '🏘️', description: 'Balanserad miljö' },
-          { value: 'rural', label: 'Landsbygd', icon: '🌳', description: 'Ren luft och natur' },
-          { value: 'mixed', label: 'Blandat', icon: '🗺️', description: 'Reser mycket' }
-        ]
-      }
-    ]
-
-    // Add gender-specific questions
-    if (info.gender === 'female') {
-      baseQuestions.push({
-        id: 'hormonal_factors',
-        text: 'Upplever du hormonella förändringar som påverkar din hud?',
-        type: 'single',
-        options: [
-          { value: 'menstrual', label: 'Menstruationscykel', icon: '🌙', description: '' },
-          { value: 'pregnancy', label: 'Graviditet', icon: '🤰', description: '' },
-          { value: 'menopause', label: 'Klimakteriet', icon: '🦋', description: '' },
-          { value: 'none', label: 'Inga märkbara', icon: '✨', description: '' },
-          { value: 'not_sure', label: 'Osäker', icon: '❓', description: '' }
-        ]
-      })
-    }
-
-    // Add age-specific questions
-    if (parseInt(info.age) < 25) {
-      baseQuestions.push({
-        id: 'acne_severity',
-        text: 'Hur allvarlig är din akne?',
-        type: 'single',
-        options: [
-          { value: 'none', label: 'Ingen akne', icon: '✨', description: '' },
-          { value: 'mild', label: 'Mild', icon: '🟡', description: 'Enstaka finnar' },
-          { value: 'moderate', label: 'Måttlig', icon: '🟠', description: 'Regelbundna utbrott' },
-          { value: 'severe', label: 'Svår', icon: '🔴', description: 'Omfattande problem' },
-          { value: 'not_sure', label: 'Osäker', icon: '❓', description: '' }
-        ]
-      })
-    } else if (parseInt(info.age) > 40) {
-      baseQuestions.push({
-        id: 'aging_concerns',
-        text: 'Vilka åldrande hudproblem oroar dig mest?',
-        type: 'multiple',
-        options: [
-          { value: 'wrinkles', label: 'Rynkor', icon: '〰️', description: '' },
-          { value: 'sagging', label: 'Slapphet', icon: '📉', description: '' },
-          { value: 'spots', label: 'Åldersfläckar', icon: '🟤', description: '' },
-          { value: 'dullness', label: 'Glansloshet', icon: '☁️', description: '' }
-        ]
-      })
-    }
-
-    return baseQuestions
-  }
-
-  const handleAnswer = (questionId: string, value: any) => {
+  const handleAnswer = (value: string | string[]) => {
     const question = questions[currentQuestion]
-    
-    if (question.type === 'multiple') {
-      const currentAnswers = answers[questionId] || []
-      const newAnswers = currentAnswers.includes(value)
-        ? currentAnswers.filter((v: string) => v !== value)
-        : [...currentAnswers, value]
-      
-      setAnswers({ ...answers, [questionId]: newAnswers })
-    } else {
-      setAnswers({ ...answers, [questionId]: value })
-      // update activedescendant for a11y
-      setActiveDescendantId(`opt-${questionId}-${value}`)
-      if (currentQuestion < questions.length - 1) {
-        setTimeout(() => setCurrentQuestion(currentQuestion + 1), 300)
-      }
-    }
-  }
+    setAnswers(prev => ({ ...prev, [question.id]: value }))
+    saveProgress()
 
-  // Helper: option label lookup and mini summary
-  const getOptionLabel = (qid: string, val: string) => {
-    const q = questions.find((x) => x.id === qid)
-    const o = q?.options?.find((op: any) => op.value === val)
-    return o?.label || val
-  }
-  const miniSummary = () => {
-    const parts: string[] = []
-    if (answers.skin_type) parts.push(`Hudtyp: ${getOptionLabel('skin_type', answers.skin_type)}`)
-    if (Array.isArray(answers.skin_concerns) && answers.skin_concerns.length) {
-      const labels = answers.skin_concerns.slice(0, 3).map((v: string) => getOptionLabel('skin_concerns', v))
-      parts.push(`Fokus: ${labels.join(', ')}`)
-    }
-    return parts.join(' · ')
-  }
-
-  // Keyboard shortcuts: 1-9 for options, Backspace to go back, Enter to continue for multiple
-  const onRadioGroupKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    const q = questions[currentQuestion]
-    if (!q) return
-
-    // Numeric selection
-    if (/^[1-9]$/.test(e.key)) {
-      const idx = parseInt(e.key, 10) - 1
-      const opt = q.options[idx]
-      if (opt) {
-        e.preventDefault()
-        handleAnswer(q.id, opt.value)
-        return
-      }
-    }
-
-    if (q.type === 'single') {
-      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight' && e.key !== 'Backspace') return
-      e.preventDefault()
-      if (e.key === 'Backspace') {
-        if (currentQuestion > 0) setCurrentQuestion(currentQuestion - 1)
-        return
-      }
-      const opts = q.options
-      const currentVal = answers[q.id]
-      const idx = Math.max(0, opts.findIndex((o: any) => o.value === currentVal))
-      const nextIdx = e.key === 'ArrowRight' ? Math.min(idx + 1, opts.length - 1) : Math.max(idx - 1, 0)
-      const nextVal = opts[nextIdx]?.value
-      if (nextVal != null) handleAnswer(q.id, nextVal)
-    } else {
-      if (e.key === 'Enter') {
-        e.preventDefault()
-        if (currentQuestion < questions.length - 1) setCurrentQuestion(currentQuestion + 1)
-        else setCurrentStep('review')
-      }
-    }
-  }
-
-  const handleNextFromMultiple = () => {
     if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1)
+      setCurrentQuestion(prev => prev + 1)
     } else {
       setCurrentStep('review')
     }
   }
 
-  const handleQuizComplete = async () => {
-    setCurrentStep('loading')
-    
-    // Start loading with 45 second duration
-    const duration = 45000 // 45 seconds
-    const interval = 100 // Update every 100ms for smooth animation
-    const increment = 100 / (duration / interval)
-    
-    // Start the API calls immediately
-    calculateResults()
-    
-    // Animate the progress bar over 45 seconds
-    const timer = setInterval(() => {
-      setLoadingProgress(prev => {
-        const newProgress = prev + increment
-        if (newProgress >= 100) {
-          clearInterval(timer)
-          return 100
-        }
-        return newProgress
-      })
-    }, interval)
-  }
-
-  const calculateResults = async () => {
-    try {
-      // Removed console.log that exposed sensitive user data
-      
-      const response = await fetch('/api/quiz/results', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          answers,
-          userInfo,
-          imageMetrics
-        })
-      })
-
-      if (!response.ok) {
-        const errorText = await response.text()
-        console.error('Quiz results API error:', response.status)
-        throw new Error(`Results failed: ${response.status}`)
-      }
-
-      const data = await response.json()
-      
-      setResults(data)
-      setCurrentStep('results')
-    } catch (error) {
-      console.error('Quiz calculation error:', error instanceof Error ? error.message : 'Unknown error')
-      
-      // Fallback results
-      setResults({
-        summary: 'Vi har analyserat dina svar',
-        recommendations: []
-      })
-      setCurrentStep('results')
+  const handleBack = () => {
+    if (currentQuestion > 0) {
+      setCurrentQuestion(prev => prev - 1)
+    } else if (currentStep === 'questions') {
+      setCurrentStep('photo')
+    } else if (currentStep === 'photo') {
+      setCurrentStep('userInfo')
     }
   }
 
-  const progress = currentStep === 'questions' 
-    ? ((currentQuestion + 1) / questions.length) * 100 
-    : 0
+  const submitQuiz = async () => {
+    setCurrentStep('loading')
+    
+    // Simulate AI processing with progress
+    const duration = 5000
+    const interval = 50
+    const steps = duration / interval
+    const increment = 100 / steps
 
-  const remaining = currentStep === 'questions' ? Math.max(questions.length - (currentQuestion + 1), 0) : 0
-  const etaSeconds = remaining * 7
-  const etaMinutes = Math.floor(etaSeconds / 60)
-  const etaRemainder = etaSeconds % 60
+    const timer = setInterval(() => {
+      setLoadingProgress(prev => {
+        const next = prev + increment
+        if (next >= 100) {
+          clearInterval(timer)
+          return 100
+        }
+        return next
+      })
+    }, interval)
+
+    try {
+      const response = await fetch('/api/quiz/results', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userInfo,
+          answers,
+          imageMetrics,
+          timestamp: new Date().toISOString()
+        })
+      })
+
+      const data = await response.json()
+      
+      if (data.results) {
+        setResults(data.results)
+        
+        // Save quiz data
+        await fetch('/api/quiz/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userInfo,
+            answers,
+            results: data.results,
+            timestamp: new Date().toISOString()
+          })
+        })
+
+        localStorage.removeItem('quizProgress')
+      }
+    } catch (error) {
+      console.error('Quiz submission error:', error)
+    } finally {
+      clearInterval(timer)
+      setLoadingProgress(100)
+      setTimeout(() => setCurrentStep('results'), 500)
+    }
+  }
+
+  const restartQuiz = () => {
+    setCurrentStep('welcome')
+    setUserInfo({ email: '', name: '', gender: '', age: '' })
+    setAnswers({})
+    setCurrentQuestion(0)
+    setLoadingProgress(0)
+    setResults(null)
+    setImageMetrics(null)
+    localStorage.removeItem('quizProgress')
+  }
+
+  const renderWelcome = () => (
+    <div className="relative min-h-screen overflow-hidden">
+      {/* Background Image */}
+      <div className="absolute inset-0">
+        <Image
+          src={isMobile ? "/background/yoga_woman_mobile.png" : "/background/yoga_woman.png"}
+          alt="Yoga Woman"
+          fill
+          className="object-cover"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent" />
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-center max-w-2xl mx-auto"
+        >
+          {/* Logo */}
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.6 }}
+            className="mb-8"
+          >
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-white/10 backdrop-blur-md rounded-full mb-4">
+              <Sparkles className="w-10 h-10 text-white" />
+            </div>
+          </motion.div>
+
+          {/* Title */}
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.6 }}
+            className="text-4xl md:text-6xl font-light text-white mb-6"
+          >
+            VÄLKOMMEN TILL DIN HUDRESA
+          </motion.h1>
+
+          {/* Subtitle */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.6 }}
+            className="text-lg md:text-xl text-white/90 mb-12 font-light"
+          >
+            Få personliga rekommendationer baserade på din unika hud
+          </motion.p>
+
+          {/* CTA Button */}
+          <motion.button
+            onClick={() => setCurrentStep(resumePrompt ? 'userInfo' : 'userInfo')}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.8, duration: 0.6 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="group relative px-8 py-4 bg-white text-gray-900 rounded-full font-medium text-lg shadow-2xl hover:shadow-3xl transition-all duration-300"
+          >
+            <span className="relative z-10 flex items-center gap-3">
+              STARTA HUDANALYS
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </span>
+          </motion.button>
+
+          {/* Resume Prompt */}
+          <AnimatePresence>
+            {resumePrompt && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="mt-8"
+              >
+                <button
+                  onClick={resumeFromStorage}
+                  className="text-white/80 hover:text-white underline text-sm transition-colors"
+                >
+                  Fortsätt där du slutade
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Info badges */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1, duration: 0.6 }}
+            className="mt-16 flex flex-wrap justify-center gap-6 text-white/80 text-sm"
+          >
+            <div className="flex items-center gap-2">
+              <Timer className="w-4 h-4" />
+              <span>10-14 frågor</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Shield className="w-4 h-4" />
+              <span>AI-stödd analys</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Check className="w-4 h-4" />
+              <span>100% säker</span>
+            </div>
+          </motion.div>
+        </motion.div>
+      </div>
+    </div>
+  )
+
+  const renderUserInfo = () => (
+    <div className="min-h-screen bg-gradient-to-br from-[#FAF8F5] via-white to-[#F5F0E8]">
+      <Header />
+      
+      <div className="container mx-auto px-4 py-8 md:py-16 max-w-2xl">
+        {/* Progress bar */}
+        <div className="mb-8">
+          <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: '20%' }}
+              transition={{ duration: 0.5 }}
+              className="h-full bg-gradient-to-r from-[#8B6B47] to-[#6B5337]"
+            />
+          </div>
+          <p className="text-sm text-gray-600 mt-2">Steg 1 av 3</p>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <h2 className="text-3xl md:text-4xl font-light mb-8 text-gray-900">
+            Låt oss lära känna dig
+          </h2>
+
+          <div className="space-y-6">
+            {/* Name Input */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Vad heter du?
+              </label>
+              <div className="relative">
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  value={userInfo.name}
+                  onChange={(e) => setUserInfo(prev => ({ ...prev, name: e.target.value }))}
+                  className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-[#8B6B47] focus:border-transparent outline-none transition-all ${
+                    errors.name ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  placeholder="Ditt namn"
+                />
+              </div>
+              {errors.name && (
+                <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+              )}
+            </div>
+
+            {/* Email Input */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Din e-postadress
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="email"
+                  value={userInfo.email}
+                  onChange={(e) => setUserInfo(prev => ({ ...prev, email: e.target.value }))}
+                  className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-[#8B6B47] focus:border-transparent outline-none transition-all ${
+                    errors.email ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  placeholder="din@email.com"
+                />
+              </div>
+              {errors.email && (
+                <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+              )}
+            </div>
+
+            {/* Gender Selection */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                Kön
+              </label>
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { value: 'female', label: 'Kvinna', icon: '👩' },
+                  { value: 'male', label: 'Man', icon: '👨' },
+                  { value: 'other', label: 'Annat', icon: '🌈' }
+                ].map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => setUserInfo(prev => ({ ...prev, gender: option.value as any }))}
+                    className={`p-4 rounded-xl border-2 transition-all ${
+                      userInfo.gender === option.value
+                        ? 'border-[#8B6B47] bg-[#8B6B47]/10'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="text-2xl mb-1">{option.icon}</div>
+                    <div className="text-sm font-medium">{option.label}</div>
+                  </button>
+                ))}
+              </div>
+              {errors.gender && (
+                <p className="text-red-500 text-sm mt-1">{errors.gender}</p>
+              )}
+            </div>
+
+            {/* Age Input */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Ålder
+              </label>
+              <div className="relative">
+                <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="number"
+                  value={userInfo.age}
+                  onChange={(e) => setUserInfo(prev => ({ ...prev, age: e.target.value }))}
+                  className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-[#8B6B47] focus:border-transparent outline-none transition-all ${
+                    errors.age ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  placeholder="Din ålder"
+                  min="13"
+                  max="120"
+                />
+              </div>
+              {errors.age && (
+                <p className="text-red-500 text-sm mt-1">{errors.age}</p>
+              )}
+            </div>
+
+            {/* Privacy Consent */}
+            <div className="bg-gray-50 p-4 rounded-xl">
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={privacyAccepted}
+                  onChange={(e) => setPrivacyAccepted(e.target.checked)}
+                  className="mt-1 w-5 h-5 text-[#8B6B47] focus:ring-[#8B6B47] border-gray-300 rounded"
+                />
+                <span className="text-sm text-gray-700">
+                  Jag godkänner att mina uppgifter behandlas enligt{' '}
+                  <Link href="/integritetspolicy" className="text-[#8B6B47] hover:underline">
+                    integritetspolicyn
+                  </Link>
+                </span>
+              </label>
+              {errors.privacy && (
+                <p className="text-red-500 text-sm mt-2">{errors.privacy}</p>
+              )}
+            </div>
+
+            {/* Continue Button */}
+            <motion.button
+              onClick={handleUserInfoSubmit}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="w-full py-4 bg-gradient-to-r from-[#8B6B47] to-[#6B5337] text-white rounded-xl font-medium text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+            >
+              Fortsätt
+            </motion.button>
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  )
+
+  const renderPhoto = () => (
+    <div className="min-h-screen bg-gradient-to-br from-[#FAF8F5] via-white to-[#F5F0E8]">
+      <Header />
+      
+      <div className="container mx-auto px-4 py-8 md:py-16 max-w-4xl">
+        {/* Progress bar */}
+        <div className="mb-8">
+          <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
+            <motion.div
+              initial={{ width: '20%' }}
+              animate={{ width: '40%' }}
+              transition={{ duration: 0.5 }}
+              className="h-full bg-gradient-to-r from-[#8B6B47] to-[#6B5337]"
+            />
+          </div>
+          <p className="text-sm text-gray-600 mt-2">Steg 2 av 3</p>
+        </div>
+
+        {/* Back button */}
+        <button
+          onClick={() => setCurrentStep('userInfo')}
+          className="mb-6 flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+        >
+          <ChevronLeft className="w-5 h-5" />
+          <span>Tillbaka</span>
+        </button>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="text-center mb-8">
+            <h2 className="text-3xl md:text-4xl font-light mb-4 text-gray-900">
+              Ansiktsanalys (valfritt)
+            </h2>
+            <p className="text-lg text-gray-600">
+              Ta eller ladda upp en bild för AI-driven hudanalys
+            </p>
+          </div>
+
+          <FacePhotoAnalyzer 
+            onAnalyze={handlePhotoAnalyzed}
+          />
+          
+          <div className="mt-6 text-center">
+            <button
+              onClick={() => setCurrentStep('questions')}
+              className="text-gray-600 hover:text-gray-900 underline transition-colors"
+            >
+              Hoppa över detta steg
+            </button>
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  )
+
+  const renderQuestions = () => {
+    const question = questions[currentQuestion]
+    if (!question) return null
+
+    const QuestionIcon = question.icon
+
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#FAF8F5] via-white to-[#F5F0E8]">
+        <Header />
+        
+        <div className="container mx-auto px-4 py-8 md:py-16 max-w-2xl">
+          {/* Progress bar */}
+          <div className="mb-8">
+            <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
+              <motion.div
+                initial={{ width: `${40 + (currentQuestion / questions.length) * 40}%` }}
+                animate={{ width: `${40 + ((currentQuestion + 1) / questions.length) * 40}%` }}
+                transition={{ duration: 0.5 }}
+                className="h-full bg-gradient-to-r from-[#8B6B47] to-[#6B5337]"
+              />
+            </div>
+            <p className="text-sm text-gray-600 mt-2">
+              Fråga {currentQuestion + 1} av {questions.length}
+            </p>
+          </div>
+
+          {/* Back button */}
+          <button
+            onClick={handleBack}
+            className="mb-6 flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            <ChevronLeft className="w-5 h-5" />
+            <span>Tillbaka</span>
+          </button>
+
+          <motion.div
+            key={question.id}
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -50 }}
+            transition={{ duration: 0.3 }}
+          >
+            {/* Question */}
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-[#8B6B47]/10 rounded-full mb-4">
+                <QuestionIcon className="w-8 h-8 text-[#8B6B47]" />
+              </div>
+              <h3 
+                ref={questionHeadingRef}
+                tabIndex={-1}
+                className="text-2xl md:text-3xl font-light text-gray-900"
+              >
+                {question.question}
+              </h3>
+            </div>
+
+            {/* Options */}
+            <div className="space-y-3">
+              {question.options.map((option: any) => {
+                const isSelected = question.multiple
+                  ? answers[question.id]?.includes(option.value)
+                  : answers[question.id] === option.value
+
+                return (
+                  <motion.button
+                    key={option.value}
+                    onClick={() => {
+                      if (question.multiple) {
+                        const current = answers[question.id] || []
+                        const updated = current.includes(option.value)
+                          ? current.filter((v: string) => v !== option.value)
+                          : [...current, option.value]
+                        handleAnswer(updated)
+                      } else {
+                        handleAnswer(option.value)
+                      }
+                    }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className={`w-full p-4 md:p-5 rounded-xl border-2 transition-all text-left ${
+                      isSelected
+                        ? 'border-[#8B6B47] bg-[#8B6B47]/10 shadow-md'
+                        : 'border-gray-200 hover:border-gray-300 bg-white'
+                    }`}
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="text-2xl flex-shrink-0">{option.icon}</div>
+                      <div className="flex-1">
+                        <div className="font-medium text-gray-900">{option.label}</div>
+                        {option.description && (
+                          <div className="text-sm text-gray-600 mt-1">{option.description}</div>
+                        )}
+                      </div>
+                      {isSelected && (
+                        <Check className="w-5 h-5 text-[#8B6B47] flex-shrink-0 mt-0.5" />
+                      )}
+                    </div>
+                  </motion.button>
+                )
+              })}
+            </div>
+
+            {/* Skip/Continue for multiple choice */}
+            {question.multiple && (
+              <motion.button
+                onClick={() => handleAnswer(answers[question.id] || [])}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full mt-6 py-4 bg-gradient-to-r from-[#8B6B47] to-[#6B5337] text-white rounded-xl font-medium text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                {(answers[question.id] || []).length > 0 ? 'Fortsätt' : 'Hoppa över'}
+              </motion.button>
+            )}
+          </motion.div>
+        </div>
+      </div>
+    )
+  }
+
+  const renderReview = () => (
+    <div className="min-h-screen bg-gradient-to-br from-[#FAF8F5] via-white to-[#F5F0E8]">
+      <Header />
+      
+      <div className="container mx-auto px-4 py-8 md:py-16 max-w-4xl">
+        {/* Progress bar */}
+        <div className="mb-8">
+          <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
+            <motion.div
+              initial={{ width: '80%' }}
+              animate={{ width: '90%' }}
+              transition={{ duration: 0.5 }}
+              className="h-full bg-gradient-to-r from-[#8B6B47] to-[#6B5337]"
+            />
+          </div>
+          <p className="text-sm text-gray-600 mt-2">Nästan klar!</p>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="text-center mb-8">
+            <h2 className="text-3xl md:text-4xl font-light mb-4 text-gray-900">
+              Granska dina svar
+            </h2>
+            <p className="text-lg text-gray-600">
+              Kontrollera att allt stämmer innan vi analyserar din hudprofil
+            </p>
+          </div>
+
+          {/* Review Grid */}
+          <div className="grid md:grid-cols-2 gap-4 mb-8">
+            {questions.map((question) => {
+              const answer = answers[question.id]
+              const QuestionIcon = question.icon
+              
+              return (
+                <div key={question.id} className="bg-white p-4 rounded-xl shadow-sm">
+                  <div className="flex items-start gap-3">
+                    <QuestionIcon className="w-5 h-5 text-[#8B6B47] flex-shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-700 mb-1">{question.question}</p>
+                      <p className="text-gray-900">
+                        {Array.isArray(answer)
+                          ? answer.map(v => question.options.find((o: any) => o.value === v)?.label).join(', ')
+                          : question.options.find((o: any) => o.value === answer)?.label || 'Inget svar'
+                        }
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4">
+            <button
+              onClick={() => setCurrentStep('questions')}
+              className="flex-1 py-4 border-2 border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors"
+            >
+              Ändra svar
+            </button>
+            <motion.button
+              onClick={submitQuiz}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="flex-1 py-4 bg-gradient-to-r from-[#8B6B47] to-[#6B5337] text-white rounded-xl font-medium text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+            >
+              Analysera min hud
+            </motion.button>
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  )
+
+  const renderLoading = () => (
+    <div className="min-h-screen bg-gradient-to-br from-[#FAF8F5] via-white to-[#F5F0E8]">
+      <Header />
+      <LoadingAnimation progress={loadingProgress} />
+    </div>
+  )
+
+  const renderResults = () => (
+    <>
+      {results && (
+        <ImprovedQuizResults
+          results={results}
+          userInfo={userInfo}
+          imageMetrics={imageMetrics}
+        />
+      )}
+    </>
+  )
 
   return (
     <>
-      <Header />
-      <div className="min-h-screen bg-gradient-to-br from-[#FAF8F5] via-white to-[#F5F3F0]">
-        <AnimatedOrbs />
-      {/* Resume prompt */}
-      {resumePrompt && (
-        <div className="fixed top-0 inset-x-0 z-30 bg-amber-50 border-b border-amber-200 text-amber-900">
-          <div className="container mx-auto px-4 py-3 flex items-center justify-between text-sm">
-            <span>Fortsätt där du slutade?</span>
-            <div className="flex gap-2">
-              <button onClick={resumeFromStorage} className="px-3 py-1 rounded bg-amber-600 text-white">Fortsätt</button>
-              <button onClick={discardStorage} className="px-3 py-1 rounded border border-amber-300">Nej tack</button>
-            </div>
-          </div>
-        </div>
-      )}
-      {/* Background Pattern */}
-      <div className="fixed inset-0 opacity-5">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 20% 80%, #8B6B47 0%, transparent 50%),
-                           radial-gradient(circle at 80% 20%, #FCB237 0%, transparent 50%),
-                           radial-gradient(circle at 40% 40%, #6B5337 0%, transparent 50%)`
-        }} />
-      </div>
-
-      {/* Header */}
-      <div className="fixed top-0 left-0 right-0 z-20 bg-white/80 backdrop-blur-sm border-b border-gray-100">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-4">
-            <Image
-              src="/1753.png"
-              alt="1753 Skincare"
-              width={100}
-              height={33}
-              className="h-8 w-auto"
-            />
-            <div className="hidden md:flex items-center gap-2 text-sm text-gray-600">
-              <Home className="w-4 h-4" />
-              <span>Tillbaka till startsida</span>
-            </div>
-          </Link>
-          {currentStep === 'questions' && (
-            <div className="text-xs md:text-sm text-gray-600 flex items-center gap-3">
-              <span>Fråga {currentQuestion + 1} av {questions.length}</span>
-              <span className="w-1 h-1 rounded-full bg-gray-300" />
-              <span>ETA ~ {etaMinutes}:{etaRemainder.toString().padStart(2,'0')}</span>
-              {miniSummary() && (
-                <>
-                  <span className="w-1 h-1 rounded-full bg-gray-300 hidden md:inline-block" />
-                  <span className="hidden md:inline text-gray-500">{miniSummary()}</span>
-                </>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="relative z-10 pt-24 pb-12 px-4">
-        <div className="container mx-auto max-w-4xl">
-          
-          {/* Welcome Screen */}
-          {currentStep === 'welcome' && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-center"
-            >
-              <CloudShape className="inline-block mb-8">
-                <Sparkles className="w-16 h-16 text-[#8B6B47] mx-auto mb-4" />
-                <h1 className="text-3xl md:text-4xl font-light text-gray-900 mb-4">
-                  Välkommen till din hudresa
-                </h1>
-                <p className="text-gray-600 max-w-md mx-auto">
-                  Få personliga rekommendationer baserade på din unika hud, 
-                  livsstil och behov - helt naturligt och holistiskt.
-                </p>
-                <div className="mt-6 flex flex-wrap items-center justify-center gap-3 text-xs text-gray-600">
-                  <span className="px-3 py-1 rounded-full bg-gray-100">Snabbt: 10–14 frågor</span>
-                  <span className="px-3 py-1 rounded-full bg-gray-100">AI-stödd analys</span>
-                  <span className="px-3 py-1 rounded-full bg-gray-100">Säker och privat</span>
-                </div>
-              </CloudShape>
-
-              <div className="mt-6 flex justify-center">
-                <motion.button
-                  onClick={() => setCurrentStep('userInfo')}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="inline-flex items-center gap-3 px-8 py-4 bg-[#FCB237] text-white rounded-full text-lg font-medium hover:bg-[#E79C1A] transition-colors shadow-lg"
-                >
-                  Börja min hudanalys
-                  <ChevronRight className="w-5 h-5" />
-                </motion.button>
-              </div>
-
-              <div className="mt-8 flex items-center justify-center gap-8 text-sm text-gray-500">
-                <span className="flex items-center gap-2">
-                  <Timer className="w-4 h-4" />
-                  10-14 frågor
-                </span>
-                <span className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4" />
-                  AI-driven analys
-                </span>
-                <span className="flex items-center gap-2">
-                  <Shield className="w-4 h-4" />
-                  100% säker
-                </span>
-              </div>
-            </motion.div>
-          )}
-
-          {/* User Info Screen */}
-          {currentStep === 'userInfo' && (
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-            >
-              {/* Live region for validation messages */}
-              <div className="sr-only" aria-live="polite">
-                {Object.values(errors).join('. ')}
-              </div>
-              <CloudShape className="max-w-2xl mx-auto">
-                <h2 className="text-2xl font-light text-gray-900 mb-6 text-center">
-                  Låt oss lära känna dig
-                </h2>
-
-                <div className="space-y-6">
-                  {/* Email */}
-                  <div>
-                    <label className="flex items-center gap-2 text-gray-700 mb-2" htmlFor="quiz-email">
-                      <Mail className="w-4 h-4" />
-                      E-postadress
-                    </label>
-                    <input
-                      id="quiz-email"
-                      type="email"
-                      value={userInfo.email}
-                      onChange={(e) => setUserInfo({ ...userInfo, email: e.target.value })}
-                      className={`w-full px-4 py-3 rounded-xl border ${
-                        errors.email ? 'border-red-400' : 'border-gray-200'
-                      } focus:outline-none focus:border-[#8B6B47] transition-colors`}
-                      placeholder="din@email.com"
-                      aria-invalid={!!errors.email}
-                      aria-describedby={errors.email ? 'err-email' : undefined}
-                    />
-                    {errors.email && (
-                      <p id="err-email" className="text-red-500 text-sm mt-1">{errors.email}</p>
-                    )}
-                  </div>
-
-                  {/* Name */}
-                  <div>
-                    <label className="flex items-center gap-2 text-gray-700 mb-2" htmlFor="quiz-name">
-                      <User className="w-4 h-4" />
-                      Namn
-                    </label>
-                    <input
-                      id="quiz-name"
-                      type="text"
-                      value={userInfo.name}
-                      onChange={(e) => setUserInfo({ ...userInfo, name: e.target.value })}
-                      className={`w-full px-4 py-3 rounded-xl border ${
-                        errors.name ? 'border-red-400' : 'border-gray-200'
-                      } focus:outline-none focus:border-[#8B6B47] transition-colors`}
-                      placeholder="Ditt namn"
-                      aria-invalid={!!errors.name}
-                      aria-describedby={errors.name ? 'err-name' : undefined}
-                    />
-                    {errors.name && (
-                      <p id="err-name" className="text-red-500 text-sm mt-1">{errors.name}</p>
-                    )}
-                  </div>
-
-                  {/* Gender */}
-                  <div>
-                    <label className="flex items-center gap-2 text-gray-700 mb-2">
-                      <Heart className="w-4 h-4" />
-                      Kön
-                    </label>
-                    <div className="grid grid-cols-3 gap-3" role="radiogroup" aria-label="Välj kön">
-                      {[{ value: 'female', label: 'Kvinna', icon: '👩' }, { value: 'male', label: 'Man', icon: '👨' }, { value: 'other', label: 'Vill ej ange', icon: '🌟' }].map((option) => (
-                        <button
-                          key={option.value}
-                          onClick={() => setUserInfo({ ...userInfo, gender: option.value as any })}
-                          className={`p-3 rounded-xl border transition-all ${
-                            userInfo.gender === option.value
-                              ? 'border-[#8B6B47] bg-[#8B6B47]/10'
-                              : 'border-gray-200 hover:border-[#8B6B47]/50'
-                          }`}
-                          role="radio"
-                          aria-checked={userInfo.gender === option.value}
-                        >
-                          <div className="text-2xl mb-1">{option.icon}</div>
-                          <div className="text-sm">{option.label}</div>
-                        </button>
-                      ))}
-                    </div>
-                    {errors.gender && (
-                      <p className="text-red-500 text-sm mt-1" id="err-gender">{errors.gender}</p>
-                    )}
-                  </div>
-
-                  {/* Age */}
-                  <div>
-                    <label className="flex items-center gap-2 text-gray-700 mb-2" htmlFor="quiz-age">
-                      <Calendar className="w-4 h-4" />
-                      Ålder
-                    </label>
-                    <input
-                      id="quiz-age"
-                      type="number"
-                      value={userInfo.age}
-                      onChange={(e) => setUserInfo({ ...userInfo, age: e.target.value })}
-                      className={`w-full px-4 py-3 rounded-xl border ${
-                        errors.age ? 'border-red-400' : 'border-gray-200'
-                      } focus:outline-none focus:border-[#8B6B47] transition-colors`}
-                      placeholder="Din ålder"
-                      min="15"
-                      max="100"
-                      aria-invalid={!!errors.age}
-                      aria-describedby={errors.age ? 'err-age' : undefined}
-                    />
-                    {errors.age && (
-                      <p id="err-age" className="text-red-500 text-sm mt-1">{errors.age}</p>
-                    )}
-                  </div>
-
-                  {/* Privacy */}
-                  <label className="flex items-start gap-3 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={privacyAccepted}
-                      onChange={(e) => setPrivacyAccepted(e.target.checked)}
-                      className="mt-1 w-4 h-4 text-[#8B6B47] rounded focus:ring-[#8B6B47]"
-                      aria-describedby={errors.privacy ? 'err-privacy' : undefined}
-                    />
-                    <span className="text-sm text-gray-600">
-                      Jag godkänner <Link href="/integritetspolicy" className="text-[#8B6B47] underline">integritetspolicyn</Link> och samtycker till att mina svar sparas för att ge mig personliga rekommendationer
-                    </span>
-                  </label>
-                  {errors.privacy && (
-                    <p id="err-privacy" className="text-red-500 text-sm">{errors.privacy}</p>
-                  )}
-
-                  {/* Submit */}
-                  <motion.button
-                    onClick={handleUserInfoSubmit}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="w-full py-4 bg-[#FCB237] text-white rounded-xl font-medium hover:bg-[#E79C1A] transition-colors"
-                  >
-                    Fortsätt till frågorna
-                  </motion.button>
-                </div>
-              </CloudShape>
-            </motion.div>
-          )}
-
-          {/* Photo upload step */}
-          {currentStep === 'photo' && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-              <CloudShape className="max-w-3xl mx-auto">
-                <h2 className="text-2xl font-light text-gray-900 mb-4 text-center">Valfri fotobaserad analys</h2>
-                <p className="text-sm text-gray-600 text-center mb-6">Ladda upp en selfie i neutralt ljus. Vi analyserar fem zoner (panna, kinder, näsa, haka) lokalt på din enhet och använder måtten i din rekommendation.</p>
-                <FacePhotoAnalyzer onAnalyze={(m) => setImageMetrics(m)} />
-                <div className="mt-6 flex justify-between">
-                  <button onClick={() => setCurrentStep('userInfo')} className="text-gray-600 hover:text-[#8B6B47]">Tillbaka</button>
-                  <div className="flex items-center gap-2">
-                    <button onClick={() => setCurrentStep('questions')} className="px-5 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-50">Hoppa över</button>
-                    <button onClick={() => setCurrentStep('questions')} className="px-6 py-2 bg-[#FCB237] text-white rounded-full hover:bg-[#E79C1A]">Fortsätt</button>
-                  </div>
-                </div>
-              </CloudShape>
-            </motion.div>
-          )}
-
-          {/* Questions */}
-          {currentStep === 'questions' && questions.length > 0 && (
-            <div>
-              {/* Progress Bar */}
-              <div className="mb-4">
-                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                  <motion.div
-                    className="h-full bg-gradient-to-r from-[#8B6B47] to-[#FCB237]"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${progress}%` }}
-                    transition={{ duration: 0.3 }}
-                  />
-                </div>
-              </div>
-              {/* Progress dots */}
-              <div className="mb-6 flex flex-wrap gap-2">
-                {questions.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => i < currentQuestion ? setCurrentQuestion(i) : null}
-                    className={`h-2.5 w-2.5 rounded-full transition-colors ${
-                      i === currentQuestion ? 'bg-[#8B6B47]' : i < currentQuestion ? 'bg-[#8B6B47]/40' : 'bg-gray-200'
-                    }`}
-                    aria-label={`Gå till fråga ${i + 1}`}
-                  />
-                ))}
-              </div>
-
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentQuestion}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                >
-                  <CloudShape className="max-w-3xl mx-auto">
-                    <h3
-                      ref={questionHeadingRef}
-                      tabIndex={-1}
-                      className="text-xl md:text-2xl font-light text-gray-900 mb-2 text-center flex items-center justify-center gap-2 focus:outline-none"
-                    >
-                      {questions[currentQuestion].text}
-                      {questions[currentQuestion].hint && (
-                        <HintPopover text={questions[currentQuestion].hint} />
-                      )}
-                    </h3>
-                    <p className="text-center text-xs text-gray-500 mb-4">Tips: Använd siffrorna 1–9 på tangentbordet för snabbval.</p>
-
-                    <div
-                      className="grid md:grid-cols-2 gap-3"
-                      role={questions[currentQuestion].type === 'single' ? 'radiogroup' : 'listbox'}
-                      aria-multiselectable={questions[currentQuestion].type === 'multiple' ? true : undefined}
-                      aria-activedescendant={activeDescendantId}
-                      onKeyDown={onRadioGroupKeyDown}
-                      tabIndex={0}
-                      aria-label="Svarsalternativ"
-                    >
-                      {questions[currentQuestion].options.map((option: any, idx: number) => {
-                        const isSelected = questions[currentQuestion].type === 'multiple'
-                          ? (answers[questions[currentQuestion].id] || []).includes(option.value)
-                          : answers[questions[currentQuestion].id] === option.value
-                        const optId = `opt-${questions[currentQuestion].id}-${option.value}`
-                        return (
-                          <motion.button
-                            key={option.value}
-                            id={optId}
-                            onClick={() => handleAnswer(questions[currentQuestion].id, option.value)}
-                            whileHover={{ scale: 1.02, rotate: 0.2 }}
-                            whileTap={{ scale: 0.98 }}
-                            className={`group relative p-4 rounded-xl border transition-all text-left overflow-hidden ${
-                              isSelected
-                                ? 'border-[#8B6B47] bg-[#8B6B47]/10 shadow'
-                                : 'border-gray-200 hover:border-[#8B6B47]/50 bg-white'
-                            }`}
-                            role={questions[currentQuestion].type === 'single' ? 'radio' : 'option'}
-                            aria-checked={questions[currentQuestion].type === 'single' ? isSelected : undefined}
-                            aria-selected={questions[currentQuestion].type === 'multiple' ? isSelected : undefined}
-                          >
-                            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-br from-[#8B6B47]/5 to-transparent" />
-                            <div className="flex items-center gap-4 relative">
-                              <span className="text-2xl" aria-hidden>{option.icon}</span>
-                              <div className="flex-1">
-                                <div className="font-medium text-gray-900">
-                                  <span className="mr-2 text-xs text-gray-400">{idx + 1}.</span>
-                                  {option.label}
-                                </div>
-                                {option.description && (
-                                  <div className="text-sm text-gray-600 mt-1">
-                                    {option.description}
-                                  </div>
-                                )}
-                              </div>
-                              {isSelected && (
-                                <Check className="w-5 h-5 text-[#8B6B47]" />
-                              )}
-                            </div>
-                          </motion.button>
-                        )
-                      })}
-                    </div>
-
-                    {/* Navigation */}
-                    <div className="flex justify-between mt-6">
-                      <button
-                        onClick={() => currentQuestion > 0 ? setCurrentQuestion(currentQuestion - 1) : setCurrentStep('userInfo')}
-                        className="flex items-center gap-2 text-gray-600 hover:text-[#8B6B47] transition-colors"
-                      >
-                        <ChevronLeft className="w-4 h-4" />
-                        Tillbaka
-                      </button>
-
-                      {questions[currentQuestion].type === 'multiple' ? (
-                        <button
-                          onClick={handleNextFromMultiple}
-                          disabled={!answers[questions[currentQuestion].id] || answers[questions[currentQuestion].id].length === 0}
-                          className="flex items-center gap-2 px-6 py-2 bg-[#FCB237] text-white rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          {currentQuestion === questions.length - 1 ? 'Granska svar' : 'Nästa'}
-                          <ChevronRight className="w-4 h-4" />
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => {
-                            if (currentQuestion < questions.length - 1) setCurrentQuestion(currentQuestion + 1)
-                            else setCurrentStep('review')
-                          }}
-                          className="hidden md:inline-flex items-center gap-2 px-6 py-2 bg-[#FCB237] text-white rounded-full"
-                        >
-                          {currentQuestion === questions.length - 1 ? 'Granska svar' : 'Nästa'}
-                          <ChevronRight className="w-4 h-4" />
-                        </button>
-                      )}
-                    </div>
-
-                    {/* Save for later */}
-                    <div className="mt-4 text-center">
-                      <button
-                        onClick={() => { try { localStorage.setItem('quizProgress', JSON.stringify({ currentStep, userInfo, privacyAccepted, currentQuestion, answers, questions })) } catch {} }}
-                        className="text-sm text-gray-600 underline hover:text-[#8B6B47]"
-                      >
-                        Spara och fortsätt senare
-                      </button>
-                    </div>
-                  </CloudShape>
-                </motion.div>
-              </AnimatePresence>
-            </div>
-          )}
-
-          {/* Review */}
-          {currentStep === 'review' && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-              <CloudShape className="max-w-3xl mx-auto">
-                <h2 className="text-2xl font-light text-gray-900 mb-4 text-center">Granska dina svar</h2>
-                <div className="space-y-4">
-                  {questions.map((q, idx) => (
-                    <div key={q.id} className="p-4 rounded-xl border border-gray-200">
-                      <div className="text-sm text-gray-500 mb-1">Fråga {idx + 1}</div>
-                      <div className="font-medium text-gray-900 mb-1">{q.text}</div>
-                      <div className="text-sm text-gray-700">
-                        {Array.isArray(answers[q.id])
-                          ? (answers[q.id] || []).join(', ')
-                          : (answers[q.id] ?? '—')}
-                      </div>
-                      <div className="mt-2">
-                        <button onClick={() => { setCurrentStep('questions'); setCurrentQuestion(idx) }} className="text-sm text-[#8B6B47] underline">Ändra</button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Optional photo analysis */}
-                <div className="mt-6">
-                  <FacePhotoAnalyzer onAnalyze={(m) => setImageMetrics(m)} />
-                  {imageMetrics && (
-                    <div className="mt-3 text-sm text-gray-600">
-                      Bilddata bifogas (konfidens {Math.round(imageMetrics.confidence*100)}%).
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex justify-between mt-6">
-                  <button onClick={() => setCurrentStep('questions')} className="flex items-center gap-2 text-gray-600 hover:text-[#8B6B47]">
-                    <ChevronLeft className="w-4 h-4" />
-                    Tillbaka
-                  </button>
-                  <button onClick={handleQuizComplete} className="px-6 py-2 bg-[#FCB237] text-white rounded-full hover:bg-[#E79C1A]">
-                    Bekräfta och visa resultat
-                  </button>
-                </div>
-              </CloudShape>
-            </motion.div>
-          )}
-
-          {/* Loading */}
-          {currentStep === 'loading' && (
-            <LoadingAnimation progress={loadingProgress} />
-          )}
-
-          {/* Results */}
-          {currentStep === 'results' && results && (
-            <ImprovedQuizResults results={results} userInfo={userInfo} imageMetrics={imageMetrics} />
-          )}
-        </div>
-      </div>
-    </div>
+      {currentStep === 'welcome' && renderWelcome()}
+      {currentStep === 'userInfo' && renderUserInfo()}
+      {currentStep === 'photo' && renderPhoto()}
+      {currentStep === 'questions' && renderQuestions()}
+      {currentStep === 'review' && renderReview()}
+      {currentStep === 'loading' && renderLoading()}
+      {currentStep === 'results' && renderResults()}
     </>
   )
 } 

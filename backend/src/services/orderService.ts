@@ -278,6 +278,25 @@ class OrderService {
    */
   private async sendOrderConfirmation(orderData: OrderData, result: OrderProcessResult): Promise<void> {
     try {
+      // Subscribe to newsletter if requested during checkout
+      if (orderData.newsletter && orderData.customer.email) {
+        try {
+          await dripService.subscribeUser({
+            email: orderData.customer.email,
+            first_name: orderData.customer.firstName,
+            last_name: orderData.customer.lastName,
+            custom_fields: {
+              source: 'checkout'
+            },
+            tags: ['Newsletter Signup', 'Checkout Subscription', 'Customer']
+          })
+          logger.info(`Customer subscribed to newsletter during checkout: ${orderData.customer.email}`)
+        } catch (error) {
+          logger.error(`Failed to subscribe customer to newsletter: ${orderData.customer.email}`, error)
+          // Don't fail order processing if newsletter subscription fails
+        }
+      }
+
       // Update customer in Drip with purchase information
       if (orderData.customer.email) {
         await dripService.triggerWorkflow(

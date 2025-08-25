@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
@@ -16,7 +16,14 @@ import {
   AlertCircle,
   Loader2,
   Tag,
-  X
+  X,
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  ChevronRight,
+  Package,
+  ShoppingBag
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -45,10 +52,9 @@ interface DiscountCode {
   id: string
   code: string
   name: string
-  description?: string
-  type: 'percentage' | 'fixed_amount'
+  type: 'percentage' | 'fixed'
   value: number
-  discountAmount: number
+  minAmount?: number
 }
 
 interface AddressSuggestion {
@@ -61,7 +67,8 @@ export default function CheckoutPage() {
   const router = useRouter()
   const { items, total, subtotal, shipping, clearCart } = useCart()
   const [isProcessing, setIsProcessing] = useState(false)
-  const [currentStep, setCurrentStep] = useState(1) // 1: Info, 2: Payment
+  const [currentStep, setCurrentStep] = useState(1) // 1: Info, 2: Shipping, 3: Payment
+  const [isMobile, setIsMobile] = useState(false)
   
   // Discount code state
   const [discountCode, setDiscountCode] = useState('')
@@ -87,8 +94,16 @@ export default function CheckoutPage() {
     paymentMethod: 'card',
     newsletter: false
   })
-  const [rememberInfo, setRememberInfo] = useState(false)
+  
+  // Check if mobile
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
+  // Load saved form data
   useEffect(() => {
     try {
       const consent = localStorage.getItem('cookieConsent')
@@ -99,40 +114,31 @@ export default function CheckoutPage() {
         if (allowStorage) {
           const parsed = JSON.parse(saved)
           setForm((prev) => ({ ...prev, ...parsed }))
-          setRememberInfo(true)
         }
       }
     } catch {}
   }, [])
 
+  // Save form data
   useEffect(() => {
-    if (!rememberInfo) return
     try {
       const consent = localStorage.getItem('cookieConsent')
-      const prefs = consent ? JSON.parse(consent) : null
-      const allowStorage = typeof prefs === 'boolean' ? prefs : Boolean(prefs?.necessary)
-      if (allowStorage) {
-        const { email, firstName, lastName, phone, address, apartment, city, postalCode } = form
-        localStorage.setItem('checkoutInfo', JSON.stringify({ email, firstName, lastName, phone, address, apartment, city, postalCode }))
+      if (consent) {
+        const prefs = JSON.parse(consent)
+        const allowStorage = typeof prefs === 'boolean' ? prefs : Boolean(prefs?.necessary)
+        if (allowStorage) {
+          localStorage.setItem('checkoutInfo', JSON.stringify(form))
+        }
       }
     } catch {}
-  }, [form, rememberInfo])
+  }, [form])
 
-  // Calculate totals with discount
-  const originalTotal = total
-  const discountAmount = appliedDiscount?.discountAmount || 0
-  const finalTotal = Math.max(0, originalTotal - discountAmount)
+  const handleInputChange = (field: keyof CheckoutForm, value: any) => {
+    setForm(prev => ({ ...prev, [field]: value }))
+  }
 
-  // Redirect if cart is empty
-  useEffect(() => {
-    if (items.length === 0 && !isProcessing) {
-      router.push('/cart')
-    }
-  }, [items, router, isProcessing])
-
-  // Validate discount code
-  const validateDiscountCode = async (code: string) => {
-    if (!code.trim()) return
+  const validateDiscountCode = async () => {
+    if (!discountCode.trim()) return
 
     setIsValidatingDiscount(true)
     setDiscountError('')
@@ -140,115 +146,85 @@ export default function CheckoutPage() {
     try {
       const response = await fetch('/api/discounts/validate', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          code: code.trim(),
-          orderTotal: originalTotal
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: discountCode.toUpperCase() })
       })
 
       const data = await response.json()
 
-      if (data.success) {
-        setAppliedDiscount(data.discountCode)
-        setDiscountError('')
-        toast.success(`Rabattkod tillagd! Du sparar ${data.discountCode.discountAmount} kr`)
+      if (data.valid) {
+        setAppliedDiscount(data.discount)
+        toast.success('Rabattkod tillagd!')
       } else {
-        setDiscountError(data.message)
-        setAppliedDiscount(null)
+        setDiscountError(data.message || 'Ogiltig rabattkod')
       }
     } catch (error) {
-      console.error('Error validating discount code:', error)
-      setDiscountError('Ett fel uppstod vid validering av rabattkoden')
-      setAppliedDiscount(null)
+      setDiscountError('Kunde inte validera rabattkoden')
     } finally {
       setIsValidatingDiscount(false)
     }
   }
 
-  // Handle discount code application
-  const handleApplyDiscount = () => {
-    validateDiscountCode(discountCode)
-  }
-
-  // Remove applied discount
-  const handleRemoveDiscount = () => {
+  const removeDiscount = () => {
     setAppliedDiscount(null)
     setDiscountCode('')
     setDiscountError('')
   }
 
-  // Address autocomplete using Swedish postal service API
-  const searchAddressSuggestions = async (query: string) => {
-    if (query.length < 3) {
-      setAddressSuggestions([])
-      return
-    }
-
-    try {
-      const response = await fetch(`/api/address-suggestions?q=${encodeURIComponent(query)}&limit=8`)
-      const data = await response.json()
-
-      if (data.success) {
-        setAddressSuggestions(data.suggestions)
-      } else {
-        setAddressSuggestions([])
-      }
-    } catch (error) {
-      console.error('Error fetching address suggestions:', error)
-      setAddressSuggestions([])
+  const calculateDiscount = () => {
+    if (!appliedDiscount) return 0
+    
+    if (appliedDiscount.type === 'percentage') {
+      return Math.round(subtotal * (appliedDiscount.value / 100))
+    } else {
+      return Math.min(appliedDiscount.value, subtotal)
     }
   }
 
-  // Handle address input change
-  const handleAddressChange = (value: string) => {
-    setForm(prev => ({ ...prev, address: value }))
-    searchAddressSuggestions(value)
-    setShowAddressSuggestions(true)
-  }
+  const finalTotal = total - calculateDiscount()
 
-  // Select address suggestion
-  const selectAddressSuggestion = (suggestion: AddressSuggestion) => {
-    setForm(prev => ({
-      ...prev,
-      address: suggestion.address,
-      city: suggestion.city,
-      postalCode: suggestion.postalCode
-    }))
-    setShowAddressSuggestions(false)
-    setAddressSuggestions([])
-  }
-
-  const handleInputChange = (field: keyof CheckoutForm, value: string | boolean) => {
-    setForm(prev => ({ ...prev, [field]: value }))
-  }
-
-  const [formErrors, setFormErrors] = useState<string[]>([])
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({})
 
   const validateStep1 = () => {
-    const errors: string[] = []
-    if (!form.email) errors.push('E-post krävs')
-    if (!form.firstName) errors.push('Förnamn krävs')
-    if (!form.lastName) errors.push('Efternamn krävs')
-    if (!form.phone) errors.push('Telefon krävs')
-    if (!form.address) errors.push('Adress krävs')
-    if (!form.city) errors.push('Stad krävs')
-    if (!form.postalCode) errors.push('Postnummer krävs')
+    const errors: Record<string, string> = {}
+    
+    if (!form.email) errors.email = 'E-post krävs'
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errors.email = 'Ogiltig e-postadress'
+    
+    if (!form.firstName) errors.firstName = 'Förnamn krävs'
+    if (!form.lastName) errors.lastName = 'Efternamn krävs'
+    if (!form.phone) errors.phone = 'Telefon krävs'
 
-    if (errors.length > 0) {
-      toast.error(errors[0])
+    if (Object.keys(errors).length > 0) {
       setFormErrors(errors)
       return false
     }
-    setFormErrors([])
+    
+    setFormErrors({})
     return true
   }
 
-  const handleContinueToPayment = () => {
-    if (validateStep1()) {
+  const validateStep2 = () => {
+    const errors: Record<string, string> = {}
+    
+    if (!form.address) errors.address = 'Adress krävs'
+    if (!form.city) errors.city = 'Stad krävs'
+    if (!form.postalCode) errors.postalCode = 'Postnummer krävs'
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors)
+      return false
+    }
+    
+    setFormErrors({})
+    return true
+  }
+
+  const handleNextStep = () => {
+    if (currentStep === 1 && validateStep1()) {
       setCurrentStep(2)
+    } else if (currentStep === 2 && validateStep2()) {
+      setCurrentStep(3)
     }
   }
 
@@ -256,7 +232,7 @@ export default function CheckoutPage() {
     setIsProcessing(true)
     
     try {
-      // Simulate payment processing
+      // TODO: Implement real payment processing
       await new Promise(resolve => setTimeout(resolve, 2000))
       
       // Clear cart and redirect to success
@@ -272,13 +248,15 @@ export default function CheckoutPage() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gradient-to-br from-[#FAF8F5] via-white to-[#F5F0E8]">
         <Header />
         <div className="container mx-auto px-4 py-20 text-center">
-          <h1 className="text-2xl font-bold mb-4">Din varukorg är tom</h1>
+          <ShoppingBag className="w-24 h-24 text-gray-300 mx-auto mb-6" />
+          <h1 className="text-3xl font-light mb-4">Din varukorg är tom</h1>
+          <p className="text-gray-600 mb-8">Upptäck våra naturliga hudvårdsprodukter</p>
           <button
             onClick={() => router.push('/products')}
-            className="bg-[#FCB237] text-white px-6 py-3 rounded-full hover:bg-[#E79C1A] transition-colors"
+            className="bg-gradient-to-r from-[#8B6B47] to-[#6B5337] text-white px-8 py-4 rounded-full hover:shadow-lg transition-all"
           >
             Fortsätt handla
           </button>
@@ -289,463 +267,507 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-[#FAF8F5] via-white to-[#F5F0E8]">
       <Header />
       
-      <main className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
-          {/* Back button */}
-          <button
-            onClick={() => router.back()}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-8"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Tillbaka
-          </button>
-
-          {/* Progress indicator */}
-          <div className="flex items-center justify-center mb-8">
-            <div className="flex items-center">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                currentStep >= 1 ? 'bg-[#FCB237] text-white' : 'bg-gray-200'
-              }`}>
-                {currentStep > 1 ? <Check className="w-4 h-4" /> : '1'}
-              </div>
-              <div className={`w-16 h-1 ${currentStep >= 2 ? 'bg-[#FCB237]' : 'bg-gray-200'}`} />
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                currentStep >= 2 ? 'bg-[#FCB237] text-white' : 'bg-gray-200'
-              }`}>
-                2
-              </div>
+      <div className="container mx-auto px-4 py-6 md:py-12 max-w-6xl">
+        {/* Mobile Progress */}
+        <div className="mb-6 md:mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <button
+              onClick={() => currentStep > 1 ? setCurrentStep(currentStep - 1) : router.push('/cart')}
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              <span className="hidden md:inline">Tillbaka</span>
+            </button>
+            
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <span className={currentStep >= 1 ? 'text-[#8B6B47] font-medium' : ''}>Information</span>
+              <ChevronRight className="w-4 h-4" />
+              <span className={currentStep >= 2 ? 'text-[#8B6B47] font-medium' : ''}>Leverans</span>
+              <ChevronRight className="w-4 h-4" />
+              <span className={currentStep >= 3 ? 'text-[#8B6B47] font-medium' : ''}>Betalning</span>
             </div>
           </div>
-
-          {/* Live region for form errors */}
-          <div aria-live="polite" className="sr-only" id="form-errors-live">
-            {formErrors?.join('. ')}
+          
+          {/* Progress bar */}
+          <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
+            <motion.div
+              initial={{ width: '0%' }}
+              animate={{ width: `${(currentStep / 3) * 100}%` }}
+              transition={{ duration: 0.5 }}
+              className="h-full bg-gradient-to-r from-[#8B6B47] to-[#6B5337]"
+            />
           </div>
+        </div>
 
-          <div className="grid lg:grid-cols-2 gap-8">
-            {/* Left column - Form */}
-            <div className="space-y-6">
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Main Form */}
+          <div className="lg:col-span-2">
+            <AnimatePresence mode="wait">
+              {/* Step 1: Contact Information */}
               {currentStep === 1 && (
                 <motion.div
-                  initial={{ opacity: 0, x: -20 }}
+                  key="step1"
+                  initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="bg-white rounded-lg shadow-md p-6"
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="bg-white rounded-2xl shadow-sm p-6 md:p-8"
                 >
-                  <h2 className="text-xl font-semibold mb-6">Leveransinformation</h2>
-                  
-                  {/* Personal Info */}
-                  <div className="space-y-4 mb-6">
+                  <h2 className="text-2xl font-light mb-6 flex items-center gap-3">
+                    <User className="w-6 h-6 text-[#8B6B47]" />
+                    Kontaktinformation
+                  </h2>
+
+                  <div className="space-y-4">
+                    {/* Email */}
                     <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                        E-postadress *
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        E-postadress
                       </label>
-                      <input
-                        id="email"
-                        type="email"
-                        value={form.email}
-                        onChange={(e) => handleInputChange('email', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FCB237]"
-                        required
-                        aria-invalid={formErrors?.includes('E-post krävs')}
-                        aria-describedby={formErrors?.includes('E-post krävs') ? 'email-error' : undefined}
-                      />
-                      {formErrors?.includes('E-post krävs') && (
-                        <p id="email-error" className="mt-1 text-sm text-red-600">E-post krävs</p>
+                      <div className="relative">
+                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <input
+                          type="email"
+                          value={form.email}
+                          onChange={(e) => handleInputChange('email', e.target.value)}
+                          className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-[#8B6B47] focus:border-transparent outline-none transition-all ${
+                            formErrors.email ? 'border-red-500' : 'border-gray-300'
+                          }`}
+                          placeholder="din@email.com"
+                        />
+                      </div>
+                      {formErrors.email && (
+                        <p className="text-red-500 text-sm mt-1">{formErrors.email}</p>
                       )}
                     </div>
-                    
-                    <div className="grid grid-cols-2 gap-4">
+
+                    {/* Name fields */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
-                          Förnamn *
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Förnamn
                         </label>
                         <input
-                          id="firstName"
                           type="text"
                           value={form.firstName}
                           onChange={(e) => handleInputChange('firstName', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FCB237]"
-                          required
-                          aria-invalid={formErrors?.includes('Förnamn krävs')}
-                          aria-describedby={formErrors?.includes('Förnamn krävs') ? 'firstName-error' : undefined}
+                          className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-[#8B6B47] focus:border-transparent outline-none transition-all ${
+                            formErrors.firstName ? 'border-red-500' : 'border-gray-300'
+                          }`}
                         />
-                        {formErrors?.includes('Förnamn krävs') && (
-                          <p id="firstName-error" className="mt-1 text-sm text-red-600">Förnamn krävs</p>
+                        {formErrors.firstName && (
+                          <p className="text-red-500 text-sm mt-1">{formErrors.firstName}</p>
                         )}
                       </div>
+                      
                       <div>
-                        <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
-                          Efternamn *
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Efternamn
                         </label>
                         <input
-                          id="lastName"
                           type="text"
                           value={form.lastName}
                           onChange={(e) => handleInputChange('lastName', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FCB237]"
-                          required
-                          aria-invalid={formErrors?.includes('Efternamn krävs')}
-                          aria-describedby={formErrors?.includes('Efternamn krävs') ? 'lastName-error' : undefined}
+                          className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-[#8B6B47] focus:border-transparent outline-none transition-all ${
+                            formErrors.lastName ? 'border-red-500' : 'border-gray-300'
+                          }`}
                         />
-                        {formErrors?.includes('Efternamn krävs') && (
-                          <p id="lastName-error" className="mt-1 text-sm text-red-600">Efternamn krävs</p>
+                        {formErrors.lastName && (
+                          <p className="text-red-500 text-sm mt-1">{formErrors.lastName}</p>
                         )}
                       </div>
                     </div>
-                    
+
+                    {/* Phone */}
                     <div>
-                      <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                        Telefonnummer *
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Telefon
                       </label>
-                      <input
-                        id="phone"
-                        type="tel"
-                        inputMode="tel"
-                        pattern="[0-9 +()-]{6,}"
-                        value={form.phone}
-                        onChange={(e) => handleInputChange('phone', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FCB237]"
-                        required
-                        aria-invalid={formErrors?.includes('Telefon krävs')}
-                        aria-describedby={formErrors?.includes('Telefon krävs') ? 'phone-error' : undefined}
-                      />
-                      {formErrors?.includes('Telefon krävs') && (
-                        <p id="phone-error" className="mt-1 text-sm text-red-600">Telefon krävs</p>
+                      <div className="relative">
+                        <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <input
+                          type="tel"
+                          value={form.phone}
+                          onChange={(e) => handleInputChange('phone', e.target.value)}
+                          className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-[#8B6B47] focus:border-transparent outline-none transition-all ${
+                            formErrors.phone ? 'border-red-500' : 'border-gray-300'
+                          }`}
+                          placeholder="07X-XXX XX XX"
+                        />
+                      </div>
+                      {formErrors.phone && (
+                        <p className="text-red-500 text-sm mt-1">{formErrors.phone}</p>
                       )}
                     </div>
-                  </div>
 
-                  {/* Shipping Address with Autocomplete */}
-                  <div className="space-y-4 mb-6">
-                    <h3 className="font-medium text-gray-900">Leveransadress</h3>
-                    
-                    <div className="relative">
-                      <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
-                        Adress *
+                    {/* Newsletter */}
+                    <div className="pt-4">
+                      <label className="flex items-start gap-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={form.newsletter}
+                          onChange={(e) => handleInputChange('newsletter', e.target.checked)}
+                          className="mt-1 w-5 h-5 text-[#8B6B47] focus:ring-[#8B6B47] border-gray-300 rounded"
+                        />
+                        <span className="text-sm text-gray-700">
+                          Ja, jag vill gärna ta del av utbildande information och erbjudanden via e-post
+                        </span>
+                      </label>
+                    </div>
+
+                    {/* Continue button */}
+                    <motion.button
+                      onClick={handleNextStep}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="w-full py-4 bg-gradient-to-r from-[#8B6B47] to-[#6B5337] text-white rounded-xl font-medium text-lg shadow-lg hover:shadow-xl transition-all duration-300 mt-6"
+                    >
+                      Fortsätt till leverans
+                    </motion.button>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Step 2: Shipping Information */}
+              {currentStep === 2 && (
+                <motion.div
+                  key="step2"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="bg-white rounded-2xl shadow-sm p-6 md:p-8"
+                >
+                  <h2 className="text-2xl font-light mb-6 flex items-center gap-3">
+                    <MapPin className="w-6 h-6 text-[#8B6B47]" />
+                    Leveransadress
+                  </h2>
+
+                  <div className="space-y-4">
+                    {/* Address */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Adress
                       </label>
                       <input
-                        id="address"
-                        ref={addressInputRef}
                         type="text"
                         value={form.address}
-                        onChange={(e) => handleAddressChange(e.target.value)}
-                        onFocus={() => setShowAddressSuggestions(true)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FCB237]"
-                        placeholder="Börja skriv din adress..."
-                        required
-                        aria-invalid={formErrors?.includes('Adress krävs')}
-                        aria-describedby={formErrors?.includes('Adress krävs') ? 'address-error' : undefined}
-                        aria-autocomplete="list"
-                        aria-controls="address-suggestions"
+                        onChange={(e) => handleInputChange('address', e.target.value)}
+                        className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-[#8B6B47] focus:border-transparent outline-none transition-all ${
+                          formErrors.address ? 'border-red-500' : 'border-gray-300'
+                        }`}
+                        placeholder="Gatuadress"
                       />
-                      {formErrors?.includes('Adress krävs') && (
-                        <p id="address-error" className="mt-1 text-sm text-red-600">Adress krävs</p>
-                      )}
-                      
-                      {/* Address Suggestions */}
-                      {showAddressSuggestions && addressSuggestions.length > 0 && (
-                        <div id="address-suggestions" className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto" role="listbox">
-                          {addressSuggestions.map((suggestion, index) => (
-                            <button
-                              key={index}
-                              type="button"
-                              onClick={() => selectAddressSuggestion(suggestion)}
-                              className="w-full px-4 py-2 text-left hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
-                              role="option"
-                            >
-                              <div className="font-medium">{suggestion.address}</div>
-                              <div className="text-sm text-gray-500">
-                                {suggestion.postalCode} {suggestion.city}
-                              </div>
-                            </button>
-                          ))}
-                        </div>
+                      {formErrors.address && (
+                        <p className="text-red-500 text-sm mt-1">{formErrors.address}</p>
                       )}
                     </div>
-                    
+
+                    {/* Apartment */}
                     <div>
-                      <label htmlFor="apartment" className="block text-sm font-medium text-gray-700 mb-1">
-                        Lägenhet, svit, etc. (valfritt)
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Lägenhet, svit etc. (valfritt)
                       </label>
                       <input
-                        id="apartment"
                         type="text"
                         value={form.apartment}
                         onChange={(e) => handleInputChange('apartment', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FCB237]"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#8B6B47] focus:border-transparent outline-none transition-all"
                       />
                     </div>
-                    
-                    <div className="grid grid-cols-2 gap-4">
+
+                    {/* City and Postal Code */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">
-                          Stad *
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Postnummer
                         </label>
                         <input
-                          id="city"
+                          type="text"
+                          value={form.postalCode}
+                          onChange={(e) => handleInputChange('postalCode', e.target.value)}
+                          className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-[#8B6B47] focus:border-transparent outline-none transition-all ${
+                            formErrors.postalCode ? 'border-red-500' : 'border-gray-300'
+                          }`}
+                          placeholder="123 45"
+                        />
+                        {formErrors.postalCode && (
+                          <p className="text-red-500 text-sm mt-1">{formErrors.postalCode}</p>
+                        )}
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Stad
+                        </label>
+                        <input
                           type="text"
                           value={form.city}
                           onChange={(e) => handleInputChange('city', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FCB237]"
-                          required
-                          aria-invalid={formErrors?.includes('Stad krävs')}
-                          aria-describedby={formErrors?.includes('Stad krävs') ? 'city-error' : undefined}
+                          className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-[#8B6B47] focus:border-transparent outline-none transition-all ${
+                            formErrors.city ? 'border-red-500' : 'border-gray-300'
+                          }`}
                         />
-                        {formErrors?.includes('Stad krävs') && (
-                          <p id="city-error" className="mt-1 text-sm text-red-600">Stad krävs</p>
-                        )}
-                      </div>
-                      <div>
-                        <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700 mb-1">
-                          Postnummer *
-                        </label>
-                        <input
-                          id="postalCode"
-                          type="text"
-                          inputMode="numeric"
-                          pattern="[0-9]{3}[ ]?[0-9]{2}"
-                          value={form.postalCode}
-                          onChange={(e) => handleInputChange('postalCode', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FCB237]"
-                          required
-                          aria-invalid={formErrors?.includes('Postnummer krävs')}
-                          aria-describedby={formErrors?.includes('Postnummer krävs') ? 'postalCode-error' : undefined}
-                        />
-                        {formErrors?.includes('Postnummer krävs') && (
-                          <p id="postalCode-error" className="mt-1 text-sm text-red-600">Postnummer krävs</p>
+                        {formErrors.city && (
+                          <p className="text-red-500 text-sm mt-1">{formErrors.city}</p>
                         )}
                       </div>
                     </div>
-                  </div>
 
-                  {/* Newsletter */}
-                  <div className="mb-6">
-                    <label className="flex items-start gap-3">
-                      <input
-                        type="checkbox"
-                        checked={form.newsletter}
-                        onChange={(e) => handleInputChange('newsletter', e.target.checked)}
-                        className="mt-1 h-4 w-4 text-[#FCB237] focus:ring-[#FCB237] border-gray-300 rounded"
-                      />
-                      <span className="text-sm text-gray-700">
-                        Ja, jag vill gärna ta utbildande information och erbjudanden via e-post
-                      </span>
-                    </label>
-                  </div>
+                    {/* Country */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Land
+                      </label>
+                      <select
+                        value={form.country}
+                        onChange={(e) => handleInputChange('country', e.target.value)}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#8B6B47] focus:border-transparent outline-none transition-all"
+                      >
+                        <option value="Sverige">Sverige</option>
+                        <option value="Norge">Norge</option>
+                        <option value="Danmark">Danmark</option>
+                        <option value="Finland">Finland</option>
+                      </select>
+                    </div>
 
-                  {/* Remember info */}
-                  <div className="mb-6">
-                    <label className="flex items-start gap-3">
-                      <input
-                        type="checkbox"
-                        checked={rememberInfo}
-                        onChange={(e) => setRememberInfo(e.target.checked)}
-                        className="mt-1 h-4 w-4 text-[#FCB237] focus:ring-[#FCB237] border-gray-300 rounded"
-                      />
-                      <span className="text-sm text-gray-700">
-                        Spara mina uppgifter på den här enheten
-                      </span>
-                    </label>
-                  </div>
+                    {/* Shipping method info */}
+                    <div className="bg-[#FAF8F5] rounded-xl p-4 mt-6">
+                      <div className="flex items-center gap-3 text-[#8B6B47]">
+                        <Package className="w-5 h-5" />
+                        <span className="font-medium">Standard leverans</span>
+                      </div>
+                      <p className="text-sm text-gray-600 mt-2">
+                        Leverans inom 2-4 arbetsdagar. Fri frakt över 500 kr.
+                      </p>
+                    </div>
 
-                  <button
-                    onClick={handleContinueToPayment}
-                    className="w-full bg-[#FCB237] text-white py-3 rounded-full font-medium hover:bg-[#E79C1A] transition-colors"
-                  >
-                    Fortsätt till betalning
-                  </button>
+                    {/* Continue button */}
+                    <motion.button
+                      onClick={handleNextStep}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="w-full py-4 bg-gradient-to-r from-[#8B6B47] to-[#6B5337] text-white rounded-xl font-medium text-lg shadow-lg hover:shadow-xl transition-all duration-300 mt-6"
+                    >
+                      Fortsätt till betalning
+                    </motion.button>
+                  </div>
                 </motion.div>
               )}
 
-              {currentStep === 2 && (
+              {/* Step 3: Payment */}
+              {currentStep === 3 && (
                 <motion.div
-                  initial={{ opacity: 0, x: -20 }}
+                  key="step3"
+                  initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="bg-white rounded-lg shadow-md p-6"
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="bg-white rounded-2xl shadow-sm p-6 md:p-8"
                 >
-                  <h2 className="text-xl font-semibold mb-6">Betalningsmetod</h2>
-                  
-                  {/* Payment methods */}
-                  <div className="space-y-4 mb-6">
-                    <label className="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
-                      <input
-                        type="radio"
-                        name="paymentMethod"
-                        value="card"
-                        checked={form.paymentMethod === 'card'}
-                        onChange={(e) => handleInputChange('paymentMethod', e.target.value as 'card' | 'swish')}
-                        className="mr-3"
-                      />
-                      <CreditCard className="w-5 h-5 mr-3 text-gray-600" />
-                      <span>Kort (Visa, Mastercard)</span>
-                    </label>
-                    
-                    <label className="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
-                      <input
-                        type="radio"
-                        name="paymentMethod"
-                        value="swish"
-                        checked={form.paymentMethod === 'swish'}
-                        onChange={(e) => handleInputChange('paymentMethod', e.target.value as 'card' | 'swish')}
-                        className="mr-3"
-                      />
-                      <div className="w-5 h-5 mr-3 bg-[#00BFA5] rounded-sm flex items-center justify-center">
-                        <span className="text-white text-xs font-bold">S</span>
-                      </div>
-                      <span>Swish</span>
-                    </label>
-                  </div>
+                  <h2 className="text-2xl font-light mb-6 flex items-center gap-3">
+                    <CreditCard className="w-6 h-6 text-[#8B6B47]" />
+                    Betalning
+                  </h2>
 
-                  <div className="flex gap-4">
-                    <button
-                      onClick={() => setCurrentStep(1)}
-                      className="flex-1 border border-gray-300 text-gray-700 py-3 rounded-full font-medium hover:bg-gray-50 transition-colors"
-                    >
-                      Tillbaka
-                    </button>
-                    
-                    <button
-                      onClick={handleSubmitOrder}
-                      disabled={isProcessing}
-                      className="flex-1 bg-[#FCB237] text-white py-3 rounded-full font-medium hover:bg-[#E79C1A] transition-colors disabled:opacity-50 flex items-center justify-center"
-                    >
-                      {isProcessing ? (
-                        <>
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          Bearbetar...
-                        </>
-                      ) : (
-                        <>
-                          <Lock className="w-4 h-4 mr-2" />
-                          Slutför köp
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-            </div>
-
-            {/* Right column - Order summary */}
-            <div className="lg:sticky lg:top-8 h-fit">
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <h2 className="text-xl font-semibold mb-6">Ordersammanfattning</h2>
-                
-                {/* Cart items */}
-                <div className="space-y-4 mb-6">
-                  {items.map((item) => (
-                    <div key={`${item.productId}-${item.variantId || 'default'}`} className="flex gap-4">
-                      <div className="relative w-16 h-16 bg-gray-100 rounded-lg overflow-hidden">
-                        {item.product.images && item.product.images[0] && (
-                          <Image
-                            src={item.product.images[0].url || item.product.images[0]}
-                            alt={item.product.name}
-                            fill
-                            className="object-cover"
-                          />
-                        )}
-                        <div className="absolute -top-2 -right-2 bg-gray-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                          {item.quantity}
-                        </div>
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-medium text-sm">{item.product.name}</h3>
-                        <p className="text-gray-600 text-sm">{item.price} kr</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-medium">{item.price * item.quantity} kr</p>
+                  <div className="space-y-4">
+                    {/* Payment method selection */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-3">
+                        Välj betalningsmetod
+                      </label>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <button
+                          onClick={() => handleInputChange('paymentMethod', 'card')}
+                          className={`p-4 rounded-xl border-2 transition-all ${
+                            form.paymentMethod === 'card'
+                              ? 'border-[#8B6B47] bg-[#8B6B47]/10'
+                              : 'border-gray-200 hover:border-gray-300'
+                          }`}
+                        >
+                          <CreditCard className="w-8 h-8 mx-auto mb-2 text-[#8B6B47]" />
+                          <div className="font-medium">Kort</div>
+                          <div className="text-sm text-gray-600 mt-1">Visa, Mastercard, etc.</div>
+                        </button>
+                        
+                        <button
+                          onClick={() => handleInputChange('paymentMethod', 'swish')}
+                          className={`p-4 rounded-xl border-2 transition-all ${
+                            form.paymentMethod === 'swish'
+                              ? 'border-[#8B6B47] bg-[#8B6B47]/10'
+                              : 'border-gray-200 hover:border-gray-300'
+                          }`}
+                        >
+                          <div className="w-8 h-8 mx-auto mb-2 bg-[#00C863] rounded-lg flex items-center justify-center text-white font-bold">
+                            S
+                          </div>
+                          <div className="font-medium">Swish</div>
+                          <div className="text-sm text-gray-600 mt-1">Betala med mobilen</div>
+                        </button>
                       </div>
                     </div>
-                  ))}
-                </div>
 
-                {/* Discount Code Section */}
-                <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-                  <h3 className="font-medium mb-3 flex items-center gap-2">
-                    <Tag className="w-4 h-4" />
-                    Rabattkod
-                  </h3>
-                  
-                  {appliedDiscount ? (
-                    <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-md">
+                    {/* Security info */}
+                    <div className="bg-green-50 rounded-xl p-4 flex items-start gap-3">
+                      <Shield className="w-5 h-5 text-green-600 mt-0.5" />
                       <div>
-                        <span className="font-medium text-green-800">{appliedDiscount.code}</span>
-                        <p className="text-sm text-green-600">
-                          {appliedDiscount.description || appliedDiscount.name}
+                        <p className="text-sm font-medium text-green-900">Säker betalning</p>
+                        <p className="text-sm text-green-700 mt-1">
+                          Din betalningsinformation är krypterad och säker
                         </p>
                       </div>
-                      <button
-                        onClick={handleRemoveDiscount}
-                        className="text-green-600 hover:text-green-800"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
                     </div>
-                  ) : (
-                    <div className="flex gap-2">
-                      <label htmlFor="discountCode" className="sr-only">Rabattkod</label>
-                      <input
-                        id="discountCode"
-                        type="text"
-                        value={discountCode}
-                        onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
-                        placeholder="Ange rabattkod"
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#FCB237]"
-                        aria-invalid={Boolean(discountError)}
-                        aria-describedby={discountError ? 'discount-error' : undefined}
+
+                    {/* Place order button */}
+                    <motion.button
+                      onClick={handleSubmitOrder}
+                      disabled={isProcessing}
+                      whileHover={{ scale: isProcessing ? 1 : 1.02 }}
+                      whileTap={{ scale: isProcessing ? 1 : 0.98 }}
+                      className="w-full py-4 bg-gradient-to-r from-[#FCB237] to-[#E79C1A] text-white rounded-xl font-medium text-lg shadow-lg hover:shadow-xl transition-all duration-300 mt-6 disabled:opacity-75 disabled:cursor-not-allowed"
+                    >
+                      {isProcessing ? (
+                        <span className="flex items-center justify-center gap-3">
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          Behandlar beställning...
+                        </span>
+                      ) : (
+                        <span className="flex items-center justify-center gap-3">
+                          <Lock className="w-5 h-5" />
+                          Slutför köp ({finalTotal} kr)
+                        </span>
+                      )}
+                    </motion.button>
+
+                    {/* Terms */}
+                    <p className="text-xs text-gray-500 text-center mt-4">
+                      Genom att slutföra köpet godkänner du våra{' '}
+                      <a href="/villkor" className="text-[#8B6B47] hover:underline">köpvillkor</a>
+                      {' '}och{' '}
+                      <a href="/integritetspolicy" className="text-[#8B6B47] hover:underline">integritetspolicy</a>
+                    </p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Order Summary (Sidebar) */}
+          <div className="lg:sticky lg:top-24 h-fit">
+            <div className="bg-white rounded-2xl shadow-sm p-6">
+              <h3 className="text-lg font-medium mb-4">Ordersammanfattning</h3>
+              
+              {/* Items */}
+              <div className="space-y-3 mb-6">
+                {items.map((item) => (
+                  <div key={`${item.productId}-${item.variantId || 'default'}`} className="flex items-center gap-3">
+                    <div className="relative">
+                      <Image
+                        src={item.product.images?.[0]?.url || '/placeholder.jpg'}
+                        alt={item.product.name}
+                        width={60}
+                        height={60}
+                        className="rounded-lg object-cover"
                       />
-                      <button
-                        onClick={handleApplyDiscount}
-                        className="px-4 py-2 bg-[#FCB237] text-white rounded-md text-sm hover:bg-[#E79C1A] disabled:opacity-50"
-                        disabled={isValidatingDiscount}
-                        aria-busy={isValidatingDiscount}
-                      >
-                        {isValidatingDiscount ? 'Kontrollerar…' : 'Lägg till'}
-                      </button>
+                      <span className="absolute -top-2 -right-2 w-5 h-5 bg-[#8B6B47] text-white text-xs rounded-full flex items-center justify-center">
+                        {item.quantity}
+                      </span>
                     </div>
-                  )}
-                  {discountError && (
-                    <p id="discount-error" className="mt-2 text-sm text-red-600" role="alert">{discountError}</p>
+                    <div className="flex-1">
+                      <h4 className="text-sm font-medium">{item.product.name}</h4>
+                      <p className="text-sm text-gray-600">{item.price} kr</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Discount code */}
+              <div className="mb-6">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={discountCode}
+                    onChange={(e) => setDiscountCode(e.target.value)}
+                    placeholder="Rabattkod"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#8B6B47] focus:border-transparent outline-none"
+                    disabled={!!appliedDiscount}
+                  />
+                  {appliedDiscount ? (
+                    <button
+                      onClick={removeDiscount}
+                      className="px-4 py-2 bg-red-100 text-red-600 rounded-lg text-sm hover:bg-red-200 transition-colors"
+                    >
+                      Ta bort
+                    </button>
+                  ) : (
+                    <button
+                      onClick={validateDiscountCode}
+                      disabled={isValidatingDiscount || !discountCode.trim()}
+                      className="px-4 py-2 bg-[#8B6B47] text-white rounded-lg text-sm hover:bg-[#6B5337] transition-colors disabled:opacity-50"
+                    >
+                      {isValidatingDiscount ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        'Använd'
+                      )}
+                    </button>
                   )}
                 </div>
+                {discountError && (
+                  <p className="text-red-500 text-xs mt-1">{discountError}</p>
+                )}
+                {appliedDiscount && (
+                  <p className="text-green-600 text-xs mt-1 flex items-center gap-1">
+                    <Check className="w-3 h-3" />
+                    {appliedDiscount.name} tillagd
+                  </p>
+                )}
+              </div>
 
-                {/* Order totals */}
-                <div className="space-y-2 border-t pt-4">
-                  <div className="flex justify-between">
-                    <span>Delsumma</span>
-                    <span>{subtotal} kr</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Frakt</span>
-                    <span>{shipping === 0 ? 'Gratis' : `${shipping} kr`}</span>
-                  </div>
-                  {appliedDiscount && (
-                    <div className="flex justify-between text-green-600">
-                      <span>Rabatt ({appliedDiscount.code})</span>
-                      <span>-{discountAmount} kr</span>
-                    </div>
-                  )}
-                  <div className="flex justify-between text-lg font-semibold border-t pt-2">
-                    <span>Totalt</span>
-                    <span>{finalTotal} kr</span>
-                  </div>
+              {/* Totals */}
+              <div className="space-y-2 pt-4 border-t">
+                <div className="flex justify-between text-sm">
+                  <span>Delsumma</span>
+                  <span>{subtotal} kr</span>
                 </div>
-
-                {/* Security info */}
-                <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <Shield className="w-4 h-4" />
-                    <span>Säker betalning med SSL-kryptering</span>
+                {appliedDiscount && (
+                  <div className="flex justify-between text-sm text-green-600">
+                    <span>Rabatt</span>
+                    <span>-{calculateDiscount()} kr</span>
                   </div>
+                )}
+                <div className="flex justify-between text-sm">
+                  <span>Frakt</span>
+                  <span>{shipping === 0 ? 'Gratis' : `${shipping} kr`}</span>
+                </div>
+                <div className="flex justify-between font-medium text-lg pt-2 border-t">
+                  <span>Totalt</span>
+                  <span>{finalTotal} kr</span>
+                </div>
+              </div>
+
+              {/* Trust badges */}
+              <div className="mt-6 pt-6 border-t space-y-3">
+                <div className="flex items-center gap-3 text-sm text-gray-600">
+                  <Shield className="w-4 h-4" />
+                  <span>Säker betalning</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm text-gray-600">
+                  <Package className="w-4 h-4" />
+                  <span>Fri frakt över 500 kr</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm text-gray-600">
+                  <Check className="w-4 h-4" />
+                  <span>30 dagars öppet köp</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </main>
+      </div>
       
       <Footer />
     </div>

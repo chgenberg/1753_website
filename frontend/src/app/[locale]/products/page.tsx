@@ -10,6 +10,7 @@ import { useCart } from '@/contexts/CartContext'
 import { Filter, ChevronDown, ShoppingBag, Star, Heart, Eye, Sparkles } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { ProductImageDisplay } from '@/components/products/ProductImageDisplay'
+import NewsletterSection from '@/components/sections/NewsletterSection'
 
 interface Product {
   id: string
@@ -360,15 +361,7 @@ export default function ProductsPage() {
             )}
           </AnimatePresence>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="mt-16 bg-gradient-to-r from-[#FCB237] to-[#E79C1A] rounded-2xl p-8 text-center text-white">
-            <Sparkles className="w-12 h-12 mx-auto mb-4 text-white/80" />
-            <h3 className="text-2xl font-bold mb-2">{t('productsPage.newsletter.title')}</h3>
-            <p className="text-white/80 mb-6">{t('productsPage.newsletter.description')}</p>
-            <div className="max-w-md mx-auto flex gap-4">
-              <input type="email" placeholder={t('productsPage.newsletter.placeholderEmail')} className="flex-1 px-4 py-3 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white" />
-              <button className="bg-white text-[#FCB237] px-6 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors">{t('productsPage.newsletter.subscribe')}</button>
-            </div>
-          </motion.div>
+          <NewsletterSection variant="minimal" className="mt-16" />
 
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.2 }} className="mt-8 text-center">
             <Link href="/quiz" className="inline-flex items-center gap-2 bg-white border-2 border-[#FCB237] text-[#FCB237] px-8 py-4 rounded-xl font-medium hover:bg-[#FCB237] hover:text-white transition-all duration-300 shadow-lg">

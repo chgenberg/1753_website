@@ -18,6 +18,7 @@ import databaseRoutes from './routes/database'
 import discountRoutes from './routes/discounts'
 import healthRoutes from './routes/health'
 import knowledgeRoutes from './routes/knowledge'
+import newsletterRoutes from './routes/newsletter'
 import orderRoutes from './routes/orders'
 import performanceRoutes from './routes/performance'
 import productRoutes from './routes/products'
@@ -110,6 +111,7 @@ app.use('/api/database', databaseRoutes)
 app.use('/api/discounts', discountRoutes)
 app.use('/api/health', healthRoutes)
 app.use('/api/knowledge', knowledgeRoutes)
+app.use('/api/newsletter', newsletterRoutes)
 app.use('/api/performance', performanceRoutes)
 app.use('/api/products', productRoutes)
 app.use('/api/quiz', quizRoutes)

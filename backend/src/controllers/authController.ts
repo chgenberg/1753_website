@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt'
 import * as jwt from 'jsonwebtoken'
 import { prisma } from '../lib/prisma'
 import { logger } from '../utils/logger'
+import { dripService } from '../services/dripService'
 
 // Generate simple token (replace with proper JWT later)
 const generateToken = (userId: string): string => {
@@ -74,6 +75,27 @@ export const register = async (req: Request, res: Response) => {
           photoType: 'before'
         }
       })
+    }
+
+    // Subscribe to Drip if newsletter is selected
+    if (newsletter) {
+      try {
+        await dripService.subscribeUser({
+          email: email.toLowerCase(),
+          first_name: firstName,
+          last_name: lastName,
+          custom_fields: {
+            skin_type: skinType,
+            skin_concerns: skinConcerns,
+            source: 'user_registration'
+          },
+          tags: ['New User', 'Newsletter Signup', 'User Registration']
+        })
+        logger.info(`User subscribed to Drip newsletter: ${email}`)
+      } catch (error) {
+        logger.error(`Failed to subscribe user to Drip: ${email}`, error)
+        // Don't fail registration if Drip subscription fails
+      }
     }
 
     // Generate token
