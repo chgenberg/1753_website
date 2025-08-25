@@ -45,13 +45,9 @@ export function Header() {
   const menuItems = [
     { 
       href: '/products', 
-      label: 'PRODUKTER',
-      children: [
-        { href: '/products?category=skincare', label: 'Ansiktsvård' },
-        { href: '/products?category=supplements', label: 'Kosttillskott' },
-      ]
+      label: 'PRODUKTER'
     },
-    { href: '/quiz', label: 'HUD-QUIZ' },
+    { href: '/quiz', label: 'HUDANALYS' },
     { 
       href: '/om-oss', 
       label: 'OM OSS',

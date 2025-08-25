@@ -136,7 +136,10 @@ export const CartDrawer = () => {
                                 <div className="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100">
                                   {item.product.images && item.product.images[0] && (
                                     <Image
-                                      src={item.product.images[0].url}
+                                      src={typeof item.product.images[0] === 'string' 
+                                        ? item.product.images[0] 
+                                        : item.product.images[0].url
+                                      }
                                       alt={item.product.name}
                                       fill
                                       className="object-cover"

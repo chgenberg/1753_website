@@ -13,6 +13,7 @@ import ImprovedQuizResults from '@/components/quiz/ImprovedQuizResults'
 import { LoadingAnimation } from '@/components/quiz/LoadingAnimation'
 import FacePhotoAnalyzer, { ImageMetricsResult } from '@/components/quiz/FacePhotoAnalyzer'
 import confetti from 'canvas-confetti'
+import { Header } from '@/components/layout/Header'
 
 // Soft cloud shape component
 const CloudShape = ({ children, className = "" }: { children: React.ReactNode, className?: string }) => (
@@ -551,8 +552,10 @@ export default function QuizPage() {
   const etaRemainder = etaSeconds % 60
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#FAF8F5] via-white to-[#F5F3F0]">
-      <AnimatedOrbs />
+    <>
+      <Header />
+      <div className="min-h-screen bg-gradient-to-br from-[#FAF8F5] via-white to-[#F5F3F0]">
+        <AnimatedOrbs />
       {/* Resume prompt */}
       {resumePrompt && (
         <div className="fixed top-0 inset-x-0 z-30 bg-amber-50 border-b border-amber-200 text-amber-900">
@@ -1033,5 +1036,6 @@ export default function QuizPage() {
         </div>
       </div>
     </div>
+    </>
   )
 } 
