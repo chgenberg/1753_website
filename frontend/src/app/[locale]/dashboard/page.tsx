@@ -1,604 +1,394 @@
-'use client';
+'use client'
 
 import React, { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '@/contexts/AuthContext'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
+import Link from 'next/link'
+import Image from 'next/image'
 import { 
-  TrendingUp, 
-  Calendar, 
+  ShoppingBag, 
   BookOpen, 
-  Play, 
-  Lightbulb, 
-  Target,
-  Award,
-  Camera,
-  Plus,
-  Star,
+  PlayCircle, 
+  Sparkles,
+  X,
+  RefreshCw,
   ArrowRight,
-  Droplets,
-  Sun,
-  Moon,
-  Thermometer,
-  ShoppingBag,
-  Check
+  Package,
+  Calendar,
+  ChevronRight
 } from 'lucide-react'
-import { Line } from 'react-chartjs-2'
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js'
 import { useCart } from '@/contexts/CartContext'
+import { useRouter } from 'next/navigation'
+import type { Product } from '@/types'
 
-// Register Chart.js components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-)
+interface Order {
+  id: string
+  orderNumber: string
+  date: string
+  status: string
+  total: number
+  items: Array<{
+    id: string
+    name: string
+    quantity: number
+    price: number
+    image: string
+  }>
+}
 
-interface ProgressData {
-  overview: {
-    totalEntries: number
-    averageSkinCondition: number
-    improvement: number
-    currentCondition: number
-    daysTracking: number
+// Mock data - replace with API call
+const mockOrders: Order[] = [
+  {
+    id: '1',
+    orderNumber: 'ORD-2024-001',
+    date: '2024-08-20',
+    status: 'Levererad',
+    total: 1299,
+    items: [
+      { id: '1', name: 'DUO-kit', quantity: 1, price: 899, image: '/products_2025/DUO.png' },
+      { id: '2', name: 'TA-DA', quantity: 1, price: 400, image: '/products_2025/TA-DA.png' }
+    ]
+  },
+  {
+    id: '2',
+    orderNumber: 'ORD-2024-002',
+    date: '2024-07-15',
+    status: 'Levererad',
+    total: 599,
+    items: [
+      { id: '3', name: 'The ONE Facial Oil', quantity: 1, price: 599, image: '/products_2025/The_ONE_bottle.png' }
+    ]
   }
-  progressData: Array<{
-    week: string
-    averageSkinCondition: number
-    averageMood: number
-    entryCount: number
-  }>
-  suggestions: Array<{
-    id: string
-    type: string
-    title: string
-    description: string
-    urgency: string
-    category: string
-    isRead: boolean
-  }>
-  recentEntries: Array<{
-    id: string
-    date: string
-    skinCondition: number
-    mood?: number
-    notes?: string
-  }>
-}
-
-type ProductLite = {
-  id: string
-  slug: string
-  name: string
-  price: number
-  images?: string[]
-}
-
-type UserProfile = {
-  id: string
-  firstName?: string
-  lastName?: string
-  email: string
-  skinType?: string | null
-  skinConcerns?: string[] | null
-  orders?: Array<{ id: string; createdAt: string; total: number; status?: string }>
-}
+]
 
 export default function DashboardPage() {
-  const { user, isAuthenticated, isLoading } = useAuth()
+  const { user } = useAuth()
   const { addToCart } = useCart()
-  const [progressData, setProgressData] = useState<ProgressData | null>(null)
-  const [isLoadingData, setIsLoadingData] = useState(true)
-  const [activeTab, setActiveTab] = useState('overview')
-  const [profile, setProfile] = useState<UserProfile | null>(null)
-  const [featured, setFeatured] = useState<ProductLite[]>([])
-  const [routineDone, setRoutineDone] = useState<Record<string, boolean>>({})
+  const router = useRouter()
+  const [activeTab, setActiveTab] = useState<'orders' | 'knowledge' | 'videos' | 'quiz'>('orders')
+  const [showVideoModal, setShowVideoModal] = useState(false)
+  const [orders, setOrders] = useState<Order[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (!isAuthenticated) return
-    fetchAll()
-  }, [isAuthenticated])
-
-  const fetchAll = async () => {
-    try {
-      setIsLoadingData(true)
-      const token = localStorage.getItem('authToken') || ''
-      const api = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002'
-      const locale = (typeof window !== 'undefined' ? window.location.pathname.split('/')[1] : 'sv') || 'sv'
-
-      // Parallel requests
-      const [progressRes, profileRes, productsRes] = await Promise.all([
-        fetch(`${api}/api/progress/overview`, { headers: { Authorization: `Bearer ${token}` } }),
-        fetch(`${api}/api/auth/profile`, { headers: { Authorization: `Bearer ${token}` } }),
-        fetch(`${api}/api/products?featured=true&limit=8&locale=${encodeURIComponent(locale)}`),
-      ])
-
-      if (progressRes.ok) {
-        const d = await progressRes.json(); setProgressData(d.data)
+    // Fetch user orders from API
+    const fetchOrders = async () => {
+      try {
+        // TODO: Replace with actual API call
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        setOrders(mockOrders)
+      } catch (error) {
+        console.error('Failed to fetch orders:', error)
+      } finally {
+        setLoading(false)
       }
-      if (profileRes.ok) {
-        const p = await profileRes.json(); setProfile(p.data)
-      }
-      if (productsRes.ok) {
-        const pr = await productsRes.json(); const arr = Array.isArray(pr) ? pr : (pr.data || pr.products || [])
-        setFeatured(arr)
-      }
-
-      // Load routine done map
-      const key = `routine_done_${new Date().toISOString().slice(0,10)}`
-      const stored = localStorage.getItem(key)
-      if (stored) setRoutineDone(JSON.parse(stored))
-      else setRoutineDone({})
-
-    } catch (e) {
-      console.error(e)
-    } finally {
-      setIsLoadingData(false)
     }
+
+    fetchOrders()
+  }, [])
+
+  const handleReorderAll = async (order: Order) => {
+    // For reordering, we'll need to fetch the actual products from API
+    // For now, just navigate to cart with a message
+    router.push('/cart')
   }
 
-  const markStepDone = (id: string, val: boolean) => {
-    const key = `routine_done_${new Date().toISOString().slice(0,10)}`
-    setRoutineDone(prev => {
-      const next = { ...prev, [id]: val }
-      try { localStorage.setItem(key, JSON.stringify(next)) } catch {}
-      return next
-    })
-  }
+  const tabs = [
+    { id: 'orders', label: 'Mina ordrar', icon: ShoppingBag },
+    { id: 'knowledge', label: 'Kunskapscentral', icon: BookOpen },
+    { id: 'videos', label: 'Videoguider', icon: PlayCircle },
+    { id: 'quiz', label: 'Hudanalys', icon: Sparkles }
+  ]
 
-  const getRoutine = () => {
-    // Simple routine based on skin type/concerns, fallback to featured
-    const st = (profile?.skinType || '').toLowerCase()
-    const isOily = st.includes('oily') || (profile?.skinConcerns || []).includes('oiliness')
-    const isDry = st.includes('dry') || (profile?.skinConcerns || []).includes('dryness')
+  const videos = [
+    { id: '1', title: 'Morgonrutin med DUO-kit', thumbnail: '/products_2025/DUO.png', duration: '5:23' },
+    { id: '2', title: 'Applicera The ONE', thumbnail: '/products_2025/The_ONE_bottle.png', duration: '3:45' },
+    { id: '3', title: 'TA-DA för perfekt finish', thumbnail: '/products_2025/TA-DA.png', duration: '4:12' },
+    { id: '4', title: 'Makeup Remover tekniken', thumbnail: '/products_2025/MakeupRemover_bottle.png', duration: '2:30' }
+  ]
 
-    const pick = (slugHints: string[]) => featured.find(p => slugHints.some(h => (p.slug || '').toLowerCase().includes(h)))
-    const cleanser = pick(['clean', 'rens', 'wash']) || featured[0]
-    const serum = pick(['serum', 'active']) || featured[1]
-    const oilOrMoist = isOily ? (pick(['gel', 'light']) || featured[2]) : (pick(['oil', 'cream', 'moist']) || featured[2])
-    const spf = pick(['spf', 'sun', 'uv']) || featured[3]
-
-    const steps = [
-      { id: 'am_cleanser', title: 'Rengöring (AM)', product: cleanser },
-      { id: 'am_serum', title: 'Serum (AM)', product: serum },
-      { id: 'am_moist', title: 'Fukt/Olja (AM)', product: oilOrMoist },
-      { id: 'am_spf', title: 'SPF (AM)', product: spf },
-      { id: 'pm_cleanser', title: 'Rengöring (PM)', product: cleanser },
-      { id: 'pm_serum', title: 'Serum (PM)', product: serum },
-      { id: 'pm_moist', title: 'Fukt/Olja (PM)', product: oilOrMoist },
-    ]
-    return steps.filter(s => !!s.product)
-  }
-
-  const addRoutineToCart = () => {
-    const steps = getRoutine()
-    steps.forEach(s => { if (s.product) addToCart(s.product as any, 1) })
-  }
-
-  if (isLoading || isLoadingData) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500"></div>
-      </div>
-    )
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p>Du måste vara inloggad för att se din dashboard.</p>
-      </div>
-    )
-  }
-
-  // Chart data for skin condition progress
-  const chartData = {
-    labels: progressData?.progressData.map(d => d.week) || [],
-    datasets: [
-      {
-        label: 'Hudkondition',
-        data: progressData?.progressData.map(d => d.averageSkinCondition) || [],
-        borderColor: 'rgb(251, 191, 36)',
-        backgroundColor: 'rgba(251, 191, 36, 0.1)',
-        tension: 0.4,
-      },
-      {
-        label: 'Humör',
-        data: progressData?.progressData.map(d => d.averageMood) || [],
-        borderColor: 'rgb(34, 197, 94)',
-        backgroundColor: 'rgba(34, 197, 94, 0.1)',
-        tension: 0.4,
-      }
-    ],
-  }
-
-  const chartOptions = {
-    responsive: true,
-    plugins: {
-      legend: { position: 'top' as const },
-      title: { display: true, text: 'Din Hudresa över Tid' },
-    },
-    scales: { y: { beginAtZero: true, max: 10 } },
-  }
-
-  const routine = getRoutine()
- 
-  const lastQuizDate = (() => {
-    const d = (profile as any)?.skinJourneyEntries?.[0]?.createdAt
-    return d ? new Date(d) : null
-  })()
-  const daysSinceQuiz = lastQuizDate ? Math.floor((Date.now() - lastQuizDate.getTime()) / (1000*60*60*24)) : null
- 
-  // naive buy-again suggestion: use latest order if available and featured list to find matches by slug
-  const buyAgainItems = (() => {
-    const latest = profile?.orders?.[0] as any
-    const items: Array<{ name: string; productId?: string; variantId?: string }> = latest?.items || []
-    if (!items?.length) return featured.slice(0,3).map(p => ({ name: p.name, productId: p.id }))
-    return items.slice(0,5)
-  })()
-  
   return (
-    <div className="min-h-screen bg-gray-50">
+    <>
       <Header />
-      <main className="pt-20 pb-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Welcome Header */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Välkommen tillbaka, {profile?.firstName || user?.firstName}! 👋</h1>
-            <p className="text-gray-600">Din personliga hudresa och rekommendationer</p>
-            {daysSinceQuiz == null || daysSinceQuiz > 60 ? (
-              <div className="mt-3 inline-flex items-center gap-2 px-3 py-2 rounded-full bg-amber-50 text-amber-800 text-sm">
-                Din profil kan vara inaktuell – <a href="/sv/quiz" className="underline">återtesta quizet</a>
-              </div>
-            ) : null}
-          </motion.div>
-
-          {/* Quick Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="bg-white rounded-xl p-6 shadow-sm"
-            >
-              <div className="flex items-center">
-                <div className="p-3 bg-[#E5DDD5] rounded-lg">
-                  <TrendingUp className="w-6 h-6 text-[#FCB237]" />
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm text-gray-500">Nuvarande Kondition</p>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {progressData?.overview.currentCondition || 0}/10
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="bg-white rounded-xl p-6 shadow-sm"
-            >
-              <div className="flex items-center">
-                <div className="p-3 bg-blue-100 rounded-lg">
-                  <Calendar className="w-6 h-6 text-blue-600" />
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm text-gray-500">Dagar Tracking</p>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {progressData?.overview.daysTracking || 0}
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="bg-white rounded-xl p-6 shadow-sm"
-            >
-              <div className="flex items-center">
-                <div className="p-3 bg-amber-100 rounded-lg">
-                  <Target className="w-6 h-6 text-amber-600" />
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm text-gray-500">Förbättring</p>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {(progressData?.overview.improvement || 0) > 0 ? '+' : ''}{progressData?.overview.improvement || 0}
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="bg-white rounded-xl p-6 shadow-sm"
-            >
-              <div className="flex items-center">
-                <div className="p-3 bg-purple-100 rounded-lg">
-                  <Lightbulb className="w-6 h-6 text-purple-600" />
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm text-gray-500">Nya Förslag</p>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {progressData?.suggestions.filter(s => !s.isRead).length || 0}
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-
-          {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left Column - Progress Chart + Routine */}
-            <div className="lg:col-span-2">
-              {/* Routine Section */}
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="bg-white rounded-xl p-6 shadow-sm mb-8">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-bold text-gray-900">Din rutin</h2>
-                  <button onClick={addRoutineToCart} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#FCB237] text-white hover:bg-[#E79C1A]">
-                    <ShoppingBag className="w-4 h-4" /> Lägg allt i varukorgen
-                  </button>
-                </div>
-                {routine.length ? (
-                  <div className="grid sm:grid-cols-2 gap-3">
-                    {routine.map(step => (
-                      <label key={step.id} className="flex items-center gap-3 p-3 border rounded-lg hover:border-[#FCB237]/50">
-                        <input type="checkbox" checked={!!routineDone[step.id]} onChange={e => markStepDone(step.id, e.target.checked)} className="w-4 h-4" />
-                        <div className="flex-1">
-                          <div className="font-medium text-gray-900">{step.title}</div>
-                          <div className="text-sm text-gray-600">{step.product?.name || 'Produkt'}</div>
-                        </div>
-                        {step.product?.images?.[0] && (
-                          <div className="relative w-10 h-10">
-                            {/* Use next/image for optimization; sizes are fixed */}
-                            {(() => {
-                              const Img = require('next/image').default
-                              return (
-                                <Img
-                                  src={step.product!.images![0]}
-                                  alt={step.product!.name}
-                                  fill
-                                  sizes="40px"
-                                  className="object-cover rounded"
-                                />
-                              )
-                            })()}
-                          </div>
-                        )}
-                      </label>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-600">Vi laddar din rutin…</p>
-                )}
-              </motion.div>
-
-              {/* Existing Progress Chart */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                className="bg-white rounded-xl p-6 shadow-sm mb-8"
-              >
-                <h2 className="text-xl font-bold text-gray-900 mb-6">Din Progress</h2>
-                {progressData?.progressData.length ? (
-                  <Line data={chartData} options={chartOptions} />
-                ) : (
-                  <div className="text-center py-12">
-                    <p className="text-gray-500 mb-4">Ingen progressdata än</p>
-                    <button className="inline-flex items-center px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors">
-                      <Plus className="w-4 h-4 mr-2" />
-                      Lägg till första inlägget
-                    </button>
-                  </div>
-                )}
-              </motion.div>
-
-              {/* Recent Activity */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
-                className="bg-white rounded-xl p-6 shadow-sm"
-              >
-                <h2 className="text-xl font-bold text-gray-900 mb-6">Senaste Aktivitet</h2>
-                {progressData?.recentEntries.length ? (
-                  <div className="space-y-4">
-                    {progressData.recentEntries.slice(0, 5).map((entry, index) => (
-                      <div key={entry.id} className="flex items-center p-4 bg-gray-50 rounded-lg">
-                        <div className="p-2 bg-blue-100 rounded-lg">
-                          <Calendar className="w-4 h-4 text-blue-600" />
-                        </div>
-                        <div className="ml-4 flex-1">
-                          <p className="font-medium text-gray-900">
-                            Hudkondition: {entry.skinCondition}/10
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            {new Date(entry.date).toLocaleDateString('sv-SE')}
-                          </p>
-                          {entry.notes && (
-                            <p className="text-sm text-gray-600 mt-1">{entry.notes}</p>
-                          )}
-                        </div>
-                        {entry.mood && (
-                          <div className="flex items-center">
-                            <Star className="w-4 h-4 text-yellow-500 mr-1" />
-                            <span className="text-sm text-gray-600">{entry.mood}/10</span>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-500">Inga inlägg än</p>
-                )}
-              </motion.div>
-            </div>
-
-            {/* Right Column - Orders + Suggestions + Quick Actions */}
-            <div className="space-y-8">
-              {/* Orders */}
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white rounded-xl p-6 shadow-sm">
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Mina ordrar</h2>
-                {profile?.orders?.length ? (
-                  <div className="space-y-3">
-                    {profile!.orders!.slice(0,5).map(o => (
-                      <div key={o.id} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div>
-                          <div className="font-medium text-gray-900">#{o.id.slice(0,6)}…</div>
-                          <div className="text-xs text-gray-600">{new Date(o.createdAt).toLocaleDateString('sv-SE')}</div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-gray-900 font-medium">{Math.round((o.total || 0))} kr</div>
-                          <div className="text-xs text-gray-500">{o.status || '—'}</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-600">Inga ordrar ännu</p>
-                )}
-              </motion.div>
-
-              {/* Buy again */}
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="bg-white rounded-xl p-6 shadow-sm">
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Köp igen</h2>
-                {buyAgainItems.length ? (
-                  <div className="space-y-3">
-                    {buyAgainItems.map((it, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div className="text-gray-900">{it.name}</div>
-                        <button
-                          onClick={() => {
-                            const match = featured.find(p => p.id === (it as any).productId || p.name === it.name)
-                            if (match) addToCart(match as any, 1)
-                          }}
-                          className="px-3 py-1.5 rounded-full bg-[#FCB237] text-white text-sm"
-                        >
-                          Lägg i varukorgen
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-600">Inget att köpa igen ännu</p>
-                )}
-              </motion.div>
-
-              {/* Personalized Suggestions */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7 }}
-                className="bg-white rounded-xl p-6 shadow-sm"
-              >
-                <h2 className="text-xl font-bold text-gray-900 mb-6">Personliga Förslag</h2>
-                {progressData?.suggestions.length ? (
-                  <div className="space-y-4">
-                    {progressData.suggestions.slice(0, 3).map((suggestion) => (
-                      <div key={suggestion.id} className="p-4 border border-gray-200 rounded-lg">
-                        <div className="flex items-start justify-between mb-2">
-                          <h3 className="font-medium text-gray-900">{suggestion.title}</h3>
-                          <span className={`px-2 py-1 text-xs rounded-full ${
-                            suggestion.urgency === 'high' ? 'bg-red-100 text-red-800' :
-                            suggestion.urgency === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                            'bg-[#E5DDD5] text-[#2A1A14]'
-                          }`}>
-                            {suggestion.urgency}
-                          </span>
-                        </div>
-                        <p className="text-sm text-gray-600 mb-3">{suggestion.description}</p>
-                        <button className="text-amber-600 hover:text-amber-700 text-sm font-medium flex items-center">
-                          Visa mer <ArrowRight className="w-3 h-3 ml-1" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-500">Inga förslag än</p>
-                )}
-              </motion.div>
-
-              {/* Quick Actions */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8 }}
-                className="bg-white rounded-xl p-6 shadow-sm"
-              >
-                <h2 className="text-xl font-bold text-gray-900 mb-6">Snabbåtgärder</h2>
-                <div className="space-y-3">
-                  <button className="w-full flex items-center p-3 text-left hover:bg-gray-50 rounded-lg transition-colors">
-                    <Camera className="w-5 h-5 text-blue-600 mr-3" />
-                    <span className="text-gray-900">Lägg till hudreseinlägg</span>
-                  </button>
-                  
-                  <button className="w-full flex items-center p-3 text-left hover:bg-gray-50 rounded-lg transition-colors">
-                    <BookOpen className="w-5 h-5 text-[#FCB237] mr-3" />
-                    <span className="text-gray-900">Utforska kunskapscentral</span>
-                  </button>
-                  
-                  <button className="w-full flex items-center p-3 text-left hover:bg-gray-50 rounded-lg transition-colors">
-                    <Play className="w-5 h-5 text-purple-600 mr-3" />
-                    <span className="text-gray-900">Titta på videoguider</span>
-                  </button>
-                  
-                  <button className="w-full flex items-center p-3 text-left hover:bg-gray-50 rounded-lg transition-colors">
-                    <Droplets className="w-5 h-5 text-cyan-600 mr-3" />
-                    <span className="text-gray-900">Ingredienslexikon</span>
-                  </button>
-                </div>
-              </motion.div>
-
-              {/* Today's Weather Impact */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9 }}
-                className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl p-6 text-white"
-              >
-                <h3 className="font-bold mb-3 flex items-center">
-                  <Sun className="w-5 h-5 mr-2" />
-                  Dagens Väder & Hudtips
-                </h3>
-                <p className="text-blue-100 text-sm mb-3">
-                  Soligt och 22°C. Perfekt väder för en lätt morgonrutin.
-                </p>
-                <div className="space-y-2">
-                  <div className="flex items-center text-sm">
-                    <Thermometer className="w-4 h-4 mr-2" />
-                    <span>Använd lätt fuktcream</span>
-                  </div>
-                  <div className="flex items-center text-sm">
-                    <Sun className="w-4 h-4 mr-2" />
-                    <span>Glöm inte SPF!</span>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
+      <div className="min-h-screen bg-[#FAFAFA]">
+        {/* Hero Section */}
+        <div className="bg-white border-b">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <h1 className="text-3xl font-light tracking-wider text-gray-900">
+              Välkommen tillbaka{user?.email ? `, ${user.email.split('@')[0]}` : ''}
+            </h1>
+            <p className="mt-2 text-gray-600 font-light">
+              Hantera dina ordrar och utforska vårt kunskapscentrum
+            </p>
           </div>
         </div>
-      </main>
+
+        {/* Tabs */}
+        <div className="bg-white border-b sticky top-0 z-10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <nav className="flex space-x-8" aria-label="Tabs">
+              {tabs.map((tab) => {
+                const Icon = tab.icon
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as any)}
+                    className={`
+                      py-4 px-1 border-b-2 font-light text-sm tracking-wider
+                      flex items-center gap-2 transition-colors
+                      ${activeTab === tab.id
+                        ? 'border-[#FCB237] text-gray-900'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      }
+                    `}
+                  >
+                    <Icon className="w-4 h-4" />
+                    {tab.label}
+                  </button>
+                )
+              })}
+            </nav>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <AnimatePresence mode="wait">
+            {/* Orders Tab */}
+            {activeTab === 'orders' && (
+              <motion.div
+                key="orders"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.2 }}
+              >
+                {loading ? (
+                  <div className="flex items-center justify-center py-12">
+                    <RefreshCw className="w-6 h-6 animate-spin text-gray-400" />
+                  </div>
+                ) : orders.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Package className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-500 font-light">Inga ordrar ännu</p>
+                    <Link 
+                      href="/products"
+                      className="mt-4 inline-flex items-center gap-2 text-[#FCB237] hover:text-[#E8A230] font-light"
+                    >
+                      Börja handla <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    {orders.map((order) => (
+                      <motion.div
+                        key={order.id}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden"
+                      >
+                        {/* Order Header */}
+                        <div className="p-6 border-b border-gray-100">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm text-gray-500 font-light">
+                                Order #{order.orderNumber}
+                              </p>
+                              <p className="text-xs text-gray-400 mt-1 flex items-center gap-1">
+                                <Calendar className="w-3 h-3" />
+                                {new Date(order.date).toLocaleDateString('sv-SE')}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-sm text-green-600 font-light">{order.status}</p>
+                              <p className="text-lg font-light mt-1">{order.total} kr</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Order Items */}
+                        <div className="p-6">
+                          <div className="space-y-4">
+                            {order.items.map((item) => (
+                              <div key={item.id} className="flex items-center gap-4">
+                                <div className="relative w-16 h-16 bg-gray-50 rounded-lg overflow-hidden">
+                                  <Image
+                                    src={item.image}
+                                    alt={item.name}
+                                    fill
+                                    className="object-contain p-2"
+                                  />
+                                </div>
+                                <div className="flex-1">
+                                  <p className="text-sm font-light">{item.name}</p>
+                                  <p className="text-xs text-gray-500">
+                                    {item.quantity} x {item.price} kr
+                                  </p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* Reorder Button */}
+                          <button
+                            onClick={() => handleReorderAll(order)}
+                            className="mt-6 w-full bg-[#FCB237] text-white py-3 px-6 rounded-lg
+                                     font-light tracking-wider hover:bg-[#E8A230] transition-colors
+                                     flex items-center justify-center gap-2"
+                          >
+                            <RefreshCw className="w-4 h-4" />
+                            Beställ allt igen
+                          </button>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+              </motion.div>
+            )}
+
+            {/* Knowledge Tab */}
+            {activeTab === 'knowledge' && (
+              <motion.div
+                key="knowledge"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.2 }}
+                className="text-center py-12"
+              >
+                <BookOpen className="w-16 h-16 text-[#FCB237] mx-auto mb-6" />
+                <h2 className="text-2xl font-light tracking-wider mb-4">
+                  Utforska vårt kunskapscentrum
+                </h2>
+                <p className="text-gray-600 font-light mb-8 max-w-2xl mx-auto">
+                  Fördjupa dig i hudvårdens vetenskap och lär dig mer om våra ingredienser,
+                  funktionella råvaror och expertråd för din hudtyp.
+                </p>
+                <Link
+                  href="/kunskap"
+                  className="inline-flex items-center gap-2 bg-[#FCB237] text-white px-8 py-3 
+                           rounded-lg font-light tracking-wider hover:bg-[#E8A230] transition-colors"
+                >
+                  Gå till kunskapscentral
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </motion.div>
+            )}
+
+            {/* Videos Tab */}
+            {activeTab === 'videos' && (
+              <motion.div
+                key="videos"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.2 }}
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {videos.map((video) => (
+                    <motion.button
+                      key={video.id}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setShowVideoModal(true)}
+                      className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden
+                               hover:shadow-md transition-shadow text-left"
+                    >
+                      <div className="relative aspect-video bg-gray-50">
+                        <Image
+                          src={video.thumbnail}
+                          alt={video.title}
+                          fill
+                          className="object-contain p-4"
+                        />
+                        <div className="absolute inset-0 bg-black/20 flex items-center justify-center
+                                      opacity-0 hover:opacity-100 transition-opacity">
+                          <PlayCircle className="w-12 h-12 text-white" />
+                        </div>
+                        <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs
+                                      px-2 py-1 rounded">
+                          {video.duration}
+                        </div>
+                      </div>
+                      <div className="p-4">
+                        <h3 className="font-light text-sm">{video.title}</h3>
+                      </div>
+                    </motion.button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* Quiz Tab */}
+            {activeTab === 'quiz' && (
+              <motion.div
+                key="quiz"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.2 }}
+                className="text-center py-12"
+              >
+                <Sparkles className="w-16 h-16 text-[#FCB237] mx-auto mb-6" />
+                <h2 className="text-2xl font-light tracking-wider mb-4">
+                  Personlig hudanalys
+                </h2>
+                <p className="text-gray-600 font-light mb-8 max-w-2xl mx-auto">
+                  Få en skräddarsydd hudvårdsrutin baserad på din unika hudtyp och behov.
+                  Vår expertanalys tar bara några minuter.
+                </p>
+                <Link
+                  href="/quiz"
+                  className="inline-flex items-center gap-2 bg-[#FCB237] text-white px-8 py-3 
+                           rounded-lg font-light tracking-wider hover:bg-[#E8A230] transition-colors"
+                >
+                  Starta hudanalys
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+
+      {/* Video Modal */}
+      <AnimatePresence>
+        {showVideoModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+            onClick={() => setShowVideoModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-lg overflow-hidden max-w-4xl w-full"
+            >
+              <div className="flex items-center justify-between p-4 border-b">
+                <h3 className="font-light tracking-wider">Applicera produkter som ett proffs</h3>
+                <button
+                  onClick={() => setShowVideoModal(false)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="aspect-video bg-black flex items-center justify-center">
+                <p className="text-white font-light">Video kommer snart...</p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <Footer />
-    </div>
+    </>
   )
 } 
