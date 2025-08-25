@@ -229,7 +229,10 @@ export function GallerySection() {
               className="relative group cursor-pointer"
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
-              onClick={() => setSelectedImage(image)}
+              onClick={() => {
+                console.log('Gallery image clicked:', image);
+                setSelectedImage(image);
+              }}
             >
               <div className="relative h-80 rounded-2xl overflow-hidden shadow-lg">
                 {/* Desktop Image */}
@@ -319,6 +322,9 @@ export function GallerySection() {
                     alt={selectedImage.title}
                     fill
                     className="object-cover md:object-contain rounded-l-none md:rounded-l-2xl"
+                    onError={(e) => {
+                      console.error('Image failed to load:', selectedImage.desktop);
+                    }}
                   />
                   {/* Image overlay with title */}
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4 md:p-6">
