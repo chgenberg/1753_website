@@ -1,8 +1,0 @@
-[build]
-builder = "nixpacks"
-
-[deploy]
-startCommand = "php -S 0.0.0.0:$PORT index.php"
-
-[variables]
-PORT = "8080" 
