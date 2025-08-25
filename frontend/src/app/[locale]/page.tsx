@@ -36,7 +36,6 @@ export default function HomePage() {
     <>
       <main>
         <HeroSection />
-        <Header />
         <SafeProductsSection />
         <SafeReviewsCarousel />
         <EbookSection />
