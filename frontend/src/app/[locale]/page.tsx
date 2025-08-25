@@ -1,3 +1,4 @@
+import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { HeroSection } from '@/components/sections/HeroSection'
 import { SafeProductsSection } from '@/components/sections/SafeProductsSection'
@@ -35,6 +36,7 @@ export default function HomePage() {
     <>
       <main>
         <HeroSection />
+        <Header />
         <SafeProductsSection />
         <SafeReviewsCarousel />
         <EbookSection />

@@ -1,677 +1,245 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { CartDrawer } from '@/components/cart/CartDrawer'
 import { useCart } from '@/contexts/CartContext'
 import { useAuth } from '@/contexts/AuthContext'
 import { 
-  ShoppingBag, User, ChevronDown, LogOut,
-  Sparkles, Leaf, ShieldCheck, Package,
-  BookOpen, Phone, Info, Home, Menu, X, PenTool, MapPin, Globe,
-  Heart, Star, ArrowRight, Brain, FlaskConical
+  ShoppingBag, User, X
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
-const TopBarMessages = ({ t }: { t: (k: string) => string }) => ([
-  { icon: <Sparkles className="w-4 h-4" />, text: t('headerTopBar.freeShipping') },
-  { icon: <Leaf className="w-4 h-4" />, text: t('headerTopBar.naturalIngredients') },
-  { icon: <ShieldCheck className="w-4 h-4" />, text: t('headerTopBar.openPurchase') },
-])
-
-// Define types for menu structure
-type MenuItem = {
-  id: string
-  label: string
-  href?: string
-  icon: any
-  simple?: boolean
-  featured?: boolean
-  children?: {
-    label: string
-    href: string
-    icon: any
-    description: string
-    featured?: boolean
-    svOnly?: boolean
-  }[]
-}
-
-// Define menu structure with mother/child relationships
-const menuStructure: MenuItem[] = [
-  {
-    id: 'products',
-    label: 'navigation.products',
-    href: '/products?category=skincare',
-    icon: Package,
-    simple: true
-  },
-  {
-    id: 'about',
-    label: 'navigation.about',
-    icon: Info,
-    children: [
-      {
-        label: 'navigation.about',
-        href: '/om-oss',
-        icon: Info,
-        description: 'Vår historia och värderingar'
-      },
-      {
-        label: 'Återförsäljare',
-        href: '/om-oss/aterforsaljare',
-        icon: MapPin,
-        description: 'Hitta 1753 nära dig',
-        svOnly: true
-      },
-      {
-        label: 'Q&A',
-        href: '/om-oss/faq',
-        icon: Brain,
-        description: 'Vanliga frågor och svar'
-      },
-      {
-        label: 'Våra ingredienser',
-        href: '/om-oss/ingredienser',
-        icon: FlaskConical,
-        description: 'Naturens kraftfulla råvaror'
-      }
-    ]
-  },
-  {
-    id: 'knowledge',
-    label: 'navigation.knowledge',
-    icon: BookOpen,
-    children: [
-      {
-        label: 'navigation.blog',
-        href: '/blogg',
-        icon: BookOpen,
-        description: 'Artiklar om hudvård & välmående'
-      },
-      {
-        label: 'E-bok: Weed Your Skin',
-        href: '/kunskap/e-bok',
-        icon: Star,
-        description: 'Din guide till naturlig hudvård',
-        featured: true
-      },
-      {
-        label: 'Quiz.title',
-        href: '/quiz',
-        icon: Brain,
-        description: 'Hitta din perfekta rutin'
-      },
-      {
-        label: 'Funktionella råvaror',
-        href: '/kunskap/funktionella-ravaror',
-        icon: Leaf,
-        description: 'Lär dig om våra ingredienser'
-      }
-    ]
-  },
-  {
-    id: 'contact',
-    label: 'navigation.contact',
-    href: '/kontakt',
-    icon: Phone,
-    simple: true
-  }
-]
-
 export function Header() {
   const t = useTranslations()
-  const router = useRouter()
-  const [isScrolled, setIsScrolled] = useState(false)
-  const [currentMessageIndex, setCurrentMessageIndex] = useState(0)
-  const [showUserDropdown, setShowUserDropdown] = useState(false)
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isLangOpen, setIsLangOpen] = useState(false)
   const pathname = usePathname()
-  const { cartCount, openCart } = useCart()
   const { user, logout } = useAuth()
-  const langRef = useRef<HTMLDivElement | null>(null)
-  const menuRef = useRef<HTMLDivElement | null>(null)
-  const headerRef = useRef<HTMLElement | null>(null)
-  const [headerHeight, setHeaderHeight] = useState<number>(0)
-  const topBarRef = useRef<HTMLDivElement | null>(null)
-  const [topBarHeight, setTopBarHeight] = useState<number>(0)
-  const dropdownTimeoutRef = useRef<NodeJS.Timeout | null>(null)
- 
+  const { cartCount, openCart } = useCart()
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+
+  // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10)
-      // Close dropdowns on scroll for safety
-      setIsLangOpen(false)
-      setActiveDropdown(null)
+      setScrolled(window.scrollY > 10)
     }
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
- 
+
+  // Prevent body scroll when menu is open
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentMessageIndex((prev) => (prev + 1) % TopBarMessages({ t }).length)
-    }, 4000)
-    return () => clearInterval(interval)
-  }, [])
- 
-  // Measure header & top bar height to offset the drawer below them
-  useEffect(() => {
-    const measure = () => {
-      setHeaderHeight(headerRef.current?.offsetHeight || 0)
-      setTopBarHeight(topBarRef.current?.offsetHeight || 0)
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
     }
-    measure()
-    const ro = new ResizeObserver(measure)
-    if (headerRef.current) ro.observe(headerRef.current)
-    if (topBarRef.current) ro.observe(topBarRef.current)
-    window.addEventListener('resize', measure)
     return () => {
-      window.removeEventListener('resize', measure)
-      ro.disconnect()
+      document.body.style.overflow = 'unset'
     }
-  }, [])
- 
-  // Close language dropdown on outside click / ESC / route change
-  useEffect(() => {
-    const onDocClick = (e: MouseEvent) => {
-      if (langRef.current && !langRef.current.contains(e.target as Node)) {
-        setIsLangOpen(false)
-      }
-    }
-    const onKey = (e: KeyboardEvent) => { 
-      if (e.key === 'Escape') { setIsLangOpen(false); setIsMobileMenuOpen(false) }
-    }
-    document.addEventListener('mousedown', onDocClick)
-    window.addEventListener('keydown', onKey)
-    return () => { document.removeEventListener('mousedown', onDocClick); window.removeEventListener('keydown', onKey) }
-  }, [])
- 
-  useEffect(() => {
-    // When route changes, make sure all menus close
-    setIsLangOpen(false)
-    setActiveDropdown(null)
-    setIsMobileMenuOpen(false)
-  }, [pathname])
- 
-  const handleLogout = async () => {
-    await logout()
-    setShowUserDropdown(false)
-  }
+  }, [isMenuOpen])
 
-  const isActive = (href: string) => {
-    if (href === '/') {
-      return pathname === '/' || pathname === '/sv'
-    }
-    return pathname.includes(href)
-  }
+  const menuItems = [
+    { 
+      href: '/products', 
+      label: 'PRODUKTER',
+      children: [
+        { href: '/products?category=skincare', label: 'Ansiktsvård' },
+        { href: '/products?category=supplements', label: 'Kosttillskott' },
+      ]
+    },
+    { href: '/quiz', label: 'HUD-QUIZ' },
+    { 
+      href: '/om-oss', 
+      label: 'OM OSS',
+      children: [
+        { href: '/om-oss/ingredienser', label: 'Ingredienser' },
+        { href: '/om-oss/faq', label: 'Vanliga frågor' },
+        { href: '/om-oss/aterforsaljare', label: 'Återförsäljare' },
+      ]
+    },
+    { 
+      href: '/kunskap', 
+      label: 'KUNSKAP',
+      children: [
+        { href: '/kunskap/e-bok', label: 'E-bok' },
+        { href: '/kunskap/funktionella-ravaror', label: 'Funktionella råvaror' },
+        { href: '/blogg', label: 'Blogg' },
+      ]
+    },
+    { href: '/kontakt', label: 'KONTAKT' },
+  ]
 
-  const buildLocaleHref = (locale: string) => {
-    // Ensure path starts with /{locale}
-    const parts = pathname.split('/')
-    if (parts.length > 1) {
-      if (['sv', 'en', 'es', 'de', 'fr'].includes(parts[1])) {
-        parts[1] = locale
-        return parts.join('/') || `/${locale}`
-      }
-    }
-    return `/${locale}${pathname.startsWith('/') ? '' : '/'}${pathname}`
-  }
-
-  const currentLocale = (pathname.split('/')[1] || 'sv') as string
-  const localize = (href: string) => {
-    if (!href.startsWith('/')) return href
-    const seg1 = href.split('/')[1]
-    if (['sv','en','es','de','fr'].includes(seg1)) return href
-    return `/${currentLocale}${href}`
-  }
-
-  const isSv = (pathname.split('/')[1] || 'sv') === 'sv'
-
-  // Handle dropdown hover with delay
-  const handleMouseEnter = (id: string) => {
-    if (dropdownTimeoutRef.current) {
-      clearTimeout(dropdownTimeoutRef.current)
-    }
-    setActiveDropdown(id)
-  }
-
-  const handleMouseLeave = () => {
-    dropdownTimeoutRef.current = setTimeout(() => {
-      setActiveDropdown(null)
-    }, 300)
-  }
-
-  const handleMenuKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>, id: string) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault()
-      setActiveDropdown(prev => (prev === id ? null : id))
-    } else if (e.key === 'ArrowDown') {
-      e.preventDefault()
-      setActiveDropdown(id)
-    } else if (e.key === 'Escape') {
-      setActiveDropdown(null)
-    }
-  }
- 
   return (
     <>
-      {/* Restored Top Bar */}
-      <div ref={topBarRef} className="fixed top-0 left-0 right-0 bg-[#FCB237] text-white text-xs sm:text-sm py-2 z-50">
-        <div className="container mx-auto px-4">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentMessageIndex}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              transition={{ duration: 0.3 }}
-              className="flex items-center justify-center gap-2"
-            >
-              {TopBarMessages({ t })[currentMessageIndex].icon}
-              <span className="font-medium tracking-wider">
-                {t('headerTopBar.bannerPrefix')} • {TopBarMessages({ t })[currentMessageIndex].text}
-              </span>
-            </motion.div>
-          </AnimatePresence>
-        </div>
-      </div>
-       
-      {/* Main Header - full white background */}
-      <header ref={headerRef} className={`fixed left-0 right-0 z-40 bg-white border-b border-gray-100 transition-all duration-300 ${
-        isScrolled ? 'shadow-lg' : 'shadow-md'
-      }`} style={{ top: topBarHeight + 4 }}>
-        <div className="container mx-auto px-4">
-          {/* Mobile: Logo centered, hamburger left, actions right */}
-          <div className="flex lg:hidden items-center justify-between py-6">
-            {/* Hamburger */}
+      {/* Header */}
+      <nav className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
+        scrolled ? 'bg-white shadow-md' : 'bg-white'
+      }`}>
+        <div className="flex items-center justify-between p-6 md:p-8">
+          {/* Logo */}
+          <Link href="/" className="block">
+            <Image
+              src="/1753.png"
+              alt="1753 Skincare"
+              width={150}
+              height={60}
+              className="h-12 md:h-16 w-auto"
+              priority
+            />
+          </Link>
+
+          {/* Right side icons */}
+          <div className="flex items-center gap-4">
+            {/* Cart Icon */}
             <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              aria-label="Öppna meny"
+              onClick={openCart}
+              className="relative p-2 hover:opacity-70 transition-opacity"
             >
-              {isMobileMenuOpen ? (
-                <X className="w-6 h-6" />
-              ) : (
-                <Menu className="w-6 h-6" />
+              <ShoppingBag className="w-6 h-6 text-black" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-[#FCB237] text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                  {cartCount}
+                </span>
               )}
             </button>
 
-            {/* Logo */}
-            <Link href={localize('/')} className="absolute left-1/2 -translate-x-1/2">
-              <Image
-                src="/1753.png"
-                alt="1753 Skincare"
-                width={200}
-                height={70}
-                className="h-16 w-auto"
-                priority
-              />
+            {/* Profile Icon */}
+            <Link
+              href={user ? '/dashboard' : '/auth/login'}
+              className="p-2 hover:opacity-70 transition-opacity"
+            >
+              <User className="w-6 h-6 text-black" />
             </Link>
 
-            {/* Mobile actions */}
-            <div className="flex items-center gap-2">
-              {/* Cart */}
-              <button
-                onClick={openCart}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors relative"
-                aria-label="Varukorg"
-              >
-                <ShoppingBag className="w-5 h-5" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-[#FCB237] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
-                    {cartCount}
-                  </span>
-                )}
-              </button>
-            </div>
-          </div>
-
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center justify-between py-4">
-            {/* Logo */}
-            <Link href={localize('/')} className="mr-12">
-              <Image
-                src="/1753.png"
-                alt="1753 Skincare"
-                width={180}
-                height={63}
-                className="h-14 w-auto"
-                priority
-              />
-            </Link>
-
-            {/* Desktop Menu */}
-            <nav className="flex-1">
-              <ul className="flex items-center gap-8">
-                {menuStructure.map((item) => {
-                  const Icon = item.icon
-                  const isSimple = item.simple
-                  const hasChildren = item.children && item.children.length > 0
-                  const isItemActive = item.href ? isActive(item.href) : item.children?.some(child => isActive(child.href))
-                  
-                  // Filter out svOnly items if not Swedish
-                  const filteredChildren = item.children?.filter(child => 
-                    !child.svOnly || (child.svOnly && isSv)
-                  )
-
-                  return (
-                    <li 
-                      key={item.id}
-                      className="relative"
-                      onMouseEnter={() => hasChildren ? handleMouseEnter(item.id) : undefined}
-                      onMouseLeave={handleMouseLeave}
-                    >
-                      {isSimple ? (
-                        <Link
-                          href={localize(item.href!)}
-                          className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-all rounded-lg hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 ${
-                            isItemActive ? 'text-primary-700' : 'text-gray-700 hover:text-primary-700'
-                          }`}
-                        >
-                          <Icon className="w-4 h-4" />
-                          {t(item.label)}
-                        </Link>
-                      ) : (
-                        <>
-                          <button
-                            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-all rounded-lg hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 ${
-                              isItemActive ? 'text-primary-700' : 'text-gray-700 hover:text-primary-700'
-                            } ${item.featured ? 'bg-[#FCB237]/10 hover:bg-[#FCB237]/20' : ''}`}
-                            aria-haspopup="menu"
-                            aria-expanded={activeDropdown === item.id}
-                            aria-controls={`menu-${item.id}`}
-                            onKeyDown={(e) => handleMenuKeyDown(e, item.id)}
-                          >
-                            <Icon className="w-4 h-4" />
-                            {t(item.label)}
-                            {hasChildren && (
-                              <ChevronDown className={`w-3 h-3 transition-transform ${
-                                activeDropdown === item.id ? 'rotate-180' : ''
-                              }`} />
-                            )}
-                          </button>
-
-                          {/* Dropdown Menu */}
-                          <AnimatePresence>
-                            {activeDropdown === item.id && filteredChildren && (
-                              <motion.div
-                                initial={{ opacity: 0, y: -10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -10 }}
-                                transition={{ duration: 0.2 }}
-                                id={`menu-${item.id}`}
-                                role="menu"
-                                className="absolute top-full left-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden"
-                              >
-                                <div className="p-2">
-                                  {filteredChildren.map((child, index) => {
-                                    const ChildIcon = child.icon
-                                    return (
-                                      <Link
-                                        key={index}
-                                        href={localize(child.href)}
-                                        className={`flex items-start gap-3 px-4 py-3 rounded-lg transition-all hover:bg-gray-50 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 ${
-                                          child.featured ? 'bg-gradient-to-r from-[#FCB237]/5 to-[#FCB237]/10 hover:from-[#FCB237]/10 hover:to-[#FCB237]/15' : ''
-                                        }`}
-                                        role="menuitem"
-                                      >
-                                        <div className={`p-2 rounded-lg ${
-                                          child.featured ? 'bg-[#FCB237]/20' : 'bg-gray-100 group-hover:bg-[#FCB237]/10'
-                                        }`}>
-                                          <ChildIcon className={`w-4 h-4 ${
-                                            child.featured ? 'text-[#FCB237]' : 'text-gray-600 group-hover:text-primary-700'
-                                          }`} />
-                                        </div>
-                                        <div className="flex-1">
-                                          <h4 className="text-sm font-medium text-gray-900 group-hover:text-primary-700 flex items-center gap-2">
-                                            {child.label.includes('.') ? t(child.label) : child.label}
-                                            {child.featured && (
-                                              <span className="text-xs bg-[#FCB237] text-white px-2 py-0.5 rounded-full">Ny!</span>
-                                            )}
-                                          </h4>
-                                          {child.description && (
-                                            <p className="text-xs text-gray-500 mt-0.5">{(child.description as string).includes('.') ? t(child.description as string) : (child.description as string)}</p>
-                                          )}
-                                        </div>
-                                        <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-primary-700 transition-transform group-hover:translate-x-1" />
-                                      </Link>
-                                    )
-                                  })}
-                                </div>
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-                        </>
-                      )}
-                    </li>
-                  )
-                })}
-              </ul>
-            </nav>
-
-            {/* Desktop Actions */}
-            <div className="flex items-center gap-4 ml-8">
-              {/* Locale Switcher */}
-              <div ref={langRef} className="relative">
-                <button
-                  className="px-3 py-2 text-sm rounded-lg hover:bg-gray-100 border border-gray-200 flex items-center gap-2"
-                  aria-haspopup="listbox"
-                  aria-label="Byt språk"
-                  aria-expanded={isLangOpen}
-                  onClick={() => setIsLangOpen((o) => !o)}
+            {/* Hamburger Menu */}
+            <button 
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="p-2 hover:opacity-70 transition-opacity"
+            >
+              {isMenuOpen ? (
+                <X className="w-6 h-6 text-black" />
+              ) : (
+                <svg
+                  className="w-6 h-6 text-black"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  <Globe className="w-4 h-4 text-gray-600" />
-                  <span className="uppercase">{pathname.split('/')[1] || 'sv'}</span>
-                  <ChevronDown className="w-3 h-3 text-gray-500" />
-                </button>
-                {isLangOpen && (
-                  <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
-                    {[
-                      { code: 'sv', label: 'Svenska' },
-                      { code: 'en', label: 'English' },
-                      { code: 'es', label: 'Español' },
-                      { code: 'de', label: 'Deutsch' },
-                      { code: 'fr', label: 'Français' }
-                    ].map(({code, label}) => {
-                      const href = buildLocaleHref(code)
-                      const isActiveLoc = pathname.startsWith(`/${code}`)
-                      return (
-                        <button
-                          key={code}
-                          onClick={() => { setIsLangOpen(false); router.push(buildLocaleHref(code)) }}
-                          className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-50 ${isActiveLoc ? 'text-[#FCB237] font-medium' : 'text-gray-700'}`}
-                          role="option"
-                          aria-selected={isActiveLoc}
-                        >
-                          {label}
-                        </button>
-                      )
-                    })}
-                  </div>
-                )}
-              </div>
-
-              {/* User Account */}
-              <div className="relative">
-                {user ? (
-                  <button
-                    onClick={() => setShowUserDropdown(!showUserDropdown)}
-                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-2"
-                  >
-                    <User className="w-5 h-5" />
-                    <span className="text-sm">
-                      {user.firstName || t('navigation.account')}
-                    </span>
-                  </button>
-                ) : (
-                  <Link
-                    href={localize('/auth/login')}
-                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-2"
-                  >
-                    <Sparkles className="w-5 h-5 text-[#FCB237]" />
-                    <User className="w-5 h-5" />
-                    <span className="text-sm">{t('navigation.login')}</span>
-                  </Link>
-                )}
-
-                {/* User Dropdown */}
-                <AnimatePresence>
-                  {showUserDropdown && user && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 border border-gray-200"
-                    >
-                      <Link
-                        href={localize('/dashboard')}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={() => setShowUserDropdown(false)}
-                      >
-                        {t('account.profile')}
-                      </Link>
-                      <Link
-                        href={localize('/dashboard')}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={() => setShowUserDropdown(false)}
-                      >
-                        {t('account.orders')}
-                      </Link>
-                      <hr className="my-2" />
-                      <button
-                        onClick={handleLogout}
-                        className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
-                      >
-                        <LogOut className="w-4 h-4" />
-                        {t('navigation.logout')}
-                      </button>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              {/* Cart */}
-              <button
-                onClick={openCart}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors relative"
-                aria-label="Varukorg"
-              >
-                <ShoppingBag className="w-5 h-5" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-[#FCB237] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
-                    {cartCount}
-                  </span>
-                )}
-              </button>
-            </div>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                </svg>
+              )}
+            </button>
           </div>
-
-          {/* Left Drawer Menu (mobile only) */}
-          <AnimatePresence>
-            {isMobileMenuOpen && (
-              <div className="lg:hidden fixed left-0 right-0 bottom-0 z-[60]" style={{ top: topBarHeight + headerHeight + 4 }}>
-                {/* Backdrop */}
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="absolute inset-0 bg-black/20 backdrop-blur-[2px]"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                />
-                {/* Drawer */}
-                <motion.aside
-                  ref={menuRef}
-                  initial={{ x: -420, opacity: 1 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  exit={{ x: -420, opacity: 1 }}
-                  transition={{ type: 'spring', stiffness: 260, damping: 30 }}
-                  className="absolute left-0 top-0 h-full w-[86%] max-w-[420px] bg-white shadow-2xl"
-                  role="dialog"
-                  aria-modal
-                >
-                  <div className="px-4 py-6 h-full flex flex-col">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-500">Meny</span>
-                      <button aria-label="Stäng meny" onClick={() => setIsMobileMenuOpen(false)} className="p-2 rounded hover:bg-gray-100">
-                        <X className="w-6 h-6" />
-                      </button>
-                    </div>
-                    <div className="mt-6 grid gap-3 w-full">
-                      <Link href={localize('/')} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-5 py-4 rounded-xl border hover:border-[#FCB237] hover:bg-[#FCB237]/5 transition-colors">
-                        <span className="flex items-center gap-3 text-lg"><Home className="w-5 h-5" />{t('navigation.home')}</span>
-                        <ChevronDown className="w-4 h-4 rotate-[-90deg]" />
-                      </Link>
-                      <Link href={localize('/products')} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-5 py-4 rounded-xl border hover:border-[#FCB237] hover:bg-[#FCB237]/5 transition-colors">
-                        <span className="flex items-center gap-3 text-lg"><Package className="w-5 h-5" />{t('navigation.products')}</span>
-                        <ChevronDown className="w-4 h-4 rotate-[-90deg]" />
-                      </Link>
-                      <div className="px-5 py-4 rounded-xl border">
-                        <div className="flex items-center justify-between">
-                          <span className="flex items-center gap-3 text-lg"><Info className="w-5 h-5" />{t('navigation.about')}</span>
-                        </div>
-                        <div className="mt-3 grid gap-2 pl-8 text-gray-700">
-                          <Link href={localize('/om-oss')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#FCB237]">{t('navigation.about')}</Link>
-                          {isSv && (
-                            <Link href={localize('/om-oss/aterforsaljare')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#FCB237]">Återförsäljare</Link>
-                          )}
-                          <Link href={localize('/om-oss/faq')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#FCB237]">Q&A</Link>
-                        </div>
-                      </div>
-                      <div className="px-5 py-4 rounded-xl border">
-                        <div className="flex items-center justify-between">
-                          <span className="flex items-center gap-3 text-lg"><BookOpen className="w-5 h-5" />{t('navigation.knowledge')}</span>
-                        </div>
-                        <div className="mt-3 grid gap-2 pl-8 text-gray-700">
-                          <Link href={localize('/blogg')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#FCB237]">{t('navigation.blog')}</Link>
-                          <Link href={localize('/kunskap/e-bok')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#FCB237]">E-bok: Weed Your Skin</Link>
-                          <Link href={localize('/quiz')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#FCB237]">{t('Quiz.title')}</Link>
-                          <Link href={localize('/om-oss/ingredienser')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#FCB237]">Våra ingredienser</Link>
-                          <Link href={localize('/kunskap/funktionella-ravaror')} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#FCB237]">Funktionella råvaror</Link>
-                        </div>
-                      </div>
-                      <Link href={localize('/kontakt')} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-between px-5 py-4 rounded-xl border hover:border-[#FCB237] hover:bg-[#FCB237]/5 transition-colors">
-                        <span className="flex items-center gap-3 text-lg"><Phone className="w-5 h-5" />{t('navigation.contact')}</span>
-                        <ChevronDown className="w-4 h-4 rotate-[-90deg]" />
-                      </Link>
-                    </div>
-                    <div className="mt-auto text-center text-xs text-gray-500 py-4">© 1753 Skincare</div>
-                  </div>
-                </motion.aside>
-              </div>
-            )}
-          </AnimatePresence>
         </div>
-      </header>
+      </nav>
 
-      {/* Spacer adjusted for taller header */}
-      <div style={{ height: topBarHeight + headerHeight + 4 }} />
+      {/* Spacer to prevent content from going under fixed header */}
+      <div className="h-20 md:h-24" />
+
+      {/* Slide-in Menu from Right */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <>
+            {/* Background overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+              onClick={() => setIsMenuOpen(false)}
+            />
+            
+            {/* Menu panel */}
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'tween', duration: 0.3 }}
+              className="fixed right-0 top-0 h-full w-80 md:w-96 bg-white z-50 overflow-y-auto"
+            >
+              {/* Close button */}
+              <button
+                onClick={() => setIsMenuOpen(false)}
+                className="absolute top-6 right-6 md:top-8 md:right-8 p-2 hover:opacity-60 transition-opacity"
+              >
+                <X className="w-6 h-6 text-black" />
+              </button>
+
+              {/* Menu items */}
+              <nav className="pt-20 px-8 md:px-12 pb-8">
+                {menuItems.map((item, index) => (
+                  <div key={item.href} className="mb-8">
+                    <motion.div
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, delay: 0.1 + index * 0.05 }}
+                    >
+                      <Link
+                        href={item.href}
+                        onClick={() => !item.children && setIsMenuOpen(false)}
+                        className="block text-lg font-light tracking-wider text-black hover:opacity-60 transition-opacity mb-4"
+                      >
+                        {item.label}
+                      </Link>
+                      
+                      {/* Child items */}
+                      {item.children && (
+                        <div className="ml-4 space-y-3">
+                          {item.children.map((child) => (
+                            <Link
+                              key={child.href}
+                              href={child.href}
+                              onClick={() => setIsMenuOpen(false)}
+                              className="block text-sm font-light text-gray-600 hover:text-black transition-colors"
+                            >
+                              {child.label}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </motion.div>
+                  </div>
+                ))}
+
+                {/* User menu items at bottom */}
+                {user && (
+                  <div className="mt-12 pt-8 border-t border-gray-200">
+                    <Link
+                      href="/dashboard"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="block text-sm font-light text-gray-600 hover:text-black transition-colors mb-3"
+                    >
+                      Min profil
+                    </Link>
+                    <button
+                      onClick={() => {
+                        logout()
+                        setIsMenuOpen(false)
+                      }}
+                      className="block text-sm font-light text-gray-600 hover:text-black transition-colors"
+                    >
+                      Logga ut
+                    </button>
+                  </div>
+                )}
+              </nav>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* Cart Drawer */}
       <CartDrawer />
-
-      {/* Overlay for dropdown menus */}
-      {(showUserDropdown) && (
-        <div 
-          className="fixed inset-0 z-30" 
-          onClick={() => {
-            setShowUserDropdown(false)
-          }}
-        />
-      )}
-      {isLangOpen && (
-        <div
-          className="fixed inset-0 z-20 md:hidden"
-          onClick={() => setIsLangOpen(false)}
-          aria-hidden
-        />
-      )}
     </>
   )
 } 
