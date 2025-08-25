@@ -125,7 +125,7 @@ export function HeroSection() {
       </nav>
 
       {/* Minimalist Text */}
-      <div className="absolute inset-0 z-10 flex items-center justify-center">
+      <div className="absolute inset-x-0 top-1/3 md:top-1/4 z-10 flex items-center justify-center">
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
