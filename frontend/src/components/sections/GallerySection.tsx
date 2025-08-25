@@ -8,8 +8,8 @@ import { X } from 'lucide-react'
 const galleryImages = [
   {
     id: 1,
-    desktop: '/Porträtt_hemsidan/kapitel-4-desktop.png',
-    mobile: '/Porträtt_hemsidan/kapitel-4.png',
+    desktop: '/Porträtt_hemsidan/Omslag_2025_desktop.png',
+    mobile: '/Porträtt_hemsidan/Omslag_2025_mobile.png',
     title: 'Naturlig skönhet',
     description: 'Ren och tidlös elegans',
     detailedDescription: `
@@ -62,8 +62,8 @@ const galleryImages = [
   },
   {
     id: 3,
-    desktop: '/Porträtt_hemsidan/kapitel-5-desktop.png',
-    mobile: '/Porträtt_hemsidan/kapitel-5.png',
+    desktop: '/Porträtt_hemsidan/Ingredienser-desktop.png',
+    mobile: '/Porträtt_hemsidan/Ingredienser.png',
     title: 'Harmoni',
     description: 'I balans med naturen',
     detailedDescription: `
@@ -92,8 +92,8 @@ const galleryImages = [
   },
   {
     id: 4,
-    desktop: '/Porträtt_hemsidan/kapitel-7-desktop.png',
-    mobile: '/Porträtt_hemsidan/kapitel-7.png',
+    desktop: '/Porträtt_hemsidan/kapitel-10-desktop.png',
+    mobile: '/Porträtt_hemsidan/kapitel-10.png',
     title: 'Vetenskap',
     description: 'Forskning möter tradition',
     detailedDescription: `
@@ -190,6 +190,74 @@ const galleryImages = [
       Hudvård är mer än produkter - det är en ritual av självomhändertagande. Vi uppmuntrar dig att ta dig tid, vara närvarande och njuta av stunden när du vårdar din hud.</p>
       
       <p>Genom att hedra traditionen medan vi omfamnar framtiden, skapar vi hudvård som står tidens test.</p>
+    `
+  },
+  {
+    id: 5,
+    desktop: '/Porträtt_hemsidan/kapitel-11-desktop.png',
+    mobile: '/Porträtt_hemsidan/kapitel-11.png',
+    title: 'Innovation',
+    description: 'Framtidens hudvård',
+    detailedDescription: `
+      <h3>Innovation - Banbrytande hudvårdsteknologi</h3>
+      
+      <p>Innovation driver oss framåt. Vi är inte nöjda med status quo - vi vill ständigt utveckla och förbättra hur hudvård kan fungera i harmoni med kroppen.</p>
+      
+      <p><strong>Vår unika extraktionsprocess</strong><br/>
+      Vi använder en patenterad CO2-extraktion som bevarar alla aktiva komponenter utan att använda skadliga lösningsmedel. Detta ger:</p>
+      
+      <ul>
+        <li>Högre koncentration av aktiva ämnen</li>
+        <li>Bättre biotillgänglighet</li>
+        <li>Renare slutprodukt</li>
+        <li>Bevarade terpener och flavonoider</li>
+      </ul>
+      
+      <p><strong>Framtidens ingredienser</strong><br/>
+      Vi forskar konstant på nya sätt att förbättra våra formler:</p>
+      
+      <ul>
+        <li>Nanoteknik för djupare penetration</li>
+        <li>Tidsreglerad frisättning av aktiva ämnen</li>
+        <li>Personaliserade formler baserade på hudanalys</li>
+        <li>Biokompatibla leveranssystem</li>
+      </ul>
+      
+      <p>Innovation handlar inte bara om teknik - det handlar om att skapa produkter som verkligen gör skillnad i människors liv.</p>
+    `
+  },
+  {
+    id: 6,
+    desktop: '/Porträtt_hemsidan/kapitel-12-desktop.png',
+    mobile: '/Porträtt_hemsidan/kapitel-12.png',
+    title: 'Hållbarhet',
+    description: 'Ansvar för framtiden',
+    detailedDescription: `
+      <h3>Hållbarhet - Vårt ansvar för planeten</h3>
+      
+      <p>Hållbarhet är inte bara ett trendord för oss - det är en grundläggande del av vår identitet. Vi tror att vacker hud inte ska komma på bekostnad av vår planet.</p>
+      
+      <p><strong>Miljövänliga ingredienser</strong><br/>
+      Alla våra råvaror är:</p>
+      
+      <ul>
+        <li>Ekologiskt odlade utan bekämpningsmedel</li>
+        <li>Skördade på ett hållbart sätt</li>
+        <li>Lokalt producerade när det är möjligt</li>
+        <li>Fria från syntetiska tillsatser</li>
+      </ul>
+      
+      <p><strong>Ansvarsfull förpackning</strong><br/>
+      Vi arbetar kontinuerligt för att minska vårt miljöavtryck:</p>
+      
+      <ul>
+        <li>Återvinningsbara glasflaskor</li>
+        <li>Minimalt med förpackningsmaterial</li>
+        <li>Plastfria alternativ där det är möjligt</li>
+        <li>Refill-program för återkommande kunder</li>
+      </ul>
+      
+      <p>Varje köp stödjer inte bara din hudhälsa, utan också en mer hållbar framtid för alla.</p>
     `
   }
 ]
