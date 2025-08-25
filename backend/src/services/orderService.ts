@@ -2,6 +2,7 @@ import { logger } from '../utils/logger'
 import { vivaWalletService } from './vivaWalletService'
 import { fortnoxService } from './fortnoxService'
 import { ongoingService } from './ongoingService'
+import { sybkaService } from './sybkaService'
 import { dripService } from './dripService'
 
 interface OrderData {
@@ -150,10 +151,10 @@ class OrderService {
         return result
       }
 
-      // Process order in parallel to both systems
-      const [fortnoxResult, ongoingResult] = await Promise.allSettled([
+      // Process order in parallel: Fortnox first, then Sybka+ (which handles Ongoing)
+      const [fortnoxResult, sybkaResult] = await Promise.allSettled([
         this.processFortnoxOrder(orderData),
-        this.processOngoingOrder(orderData)
+        this.processSybkaOrder(orderData, paymentResult.transactionId)
       ])
 
       // Handle Fortnox result
@@ -165,13 +166,13 @@ class OrderService {
         logger.error('Fortnox processing failed:', fortnoxResult.reason)
       }
 
-      // Handle Ongoing result
-      if (ongoingResult.status === 'fulfilled') {
-        result.ongoingOrderNumber = ongoingResult.value.orderNumber
-        logger.info(`Ongoing order created: ${result.ongoingOrderNumber}`)
+      // Handle Sybka+ result
+      if (sybkaResult.status === 'fulfilled') {
+        result.ongoingOrderNumber = sybkaResult.value.order_id
+        logger.info(`Sybka+ order created: ${result.ongoingOrderNumber}`)
       } else {
-        result.warnings.push(`Ongoing integration failed: ${ongoingResult.reason}`)
-        logger.error('Ongoing processing failed:', ongoingResult.reason)
+        result.warnings.push(`Sybka+ integration failed: ${sybkaResult.reason}`)
+        logger.error('Sybka+ processing failed:', sybkaResult.reason)
       }
 
       // Update order status in database
@@ -218,7 +219,41 @@ class OrderService {
   }
 
   /**
-   * Process order in Ongoing WMS
+   * Process order in Sybka+ (which handles Ongoing fulfillment)
+   */
+  private async processSybkaOrder(orderData: OrderData, transactionId: string): Promise<{ order_id: string }> {
+    const sybkaOrderData = {
+      shop_order_id: orderData.orderId,
+      currency: orderData.currency || 'SEK',
+      grand_total: orderData.total,
+      shipping_firstname: orderData.customer.firstName,
+      shipping_lastname: orderData.customer.lastName,
+      shipping_street: `${orderData.customer.address}${orderData.customer.apartment ? ', ' + orderData.customer.apartment : ''}`,
+      shipping_postcode: orderData.customer.postalCode,
+      shipping_city: orderData.customer.city,
+      shipping_country: orderData.customer.country,
+      shipping_email: orderData.customer.email,
+      order_rows: orderData.items.map(item => ({
+        sku: item.sku || item.productId,
+        name: item.name,
+        qty_ordered: item.quantity,
+        price: item.price
+      })),
+      payment_gateway: 'vivawallet',
+      transaction_id: transactionId
+    }
+
+    const result = await sybkaService.createOrder(sybkaOrderData)
+    
+    if (!result.success) {
+      throw new Error(result.error || 'Sybka+ order creation failed')
+    }
+
+    return { order_id: result.order_id || '' }
+  }
+
+  /**
+   * Process order in Ongoing WMS (legacy - now handled by Sybka+)
    */
   private async processOngoingOrder(orderData: OrderData): Promise<{ customerNumber: string; orderNumber: string }> {
     return await ongoingService.processOrder({
@@ -361,17 +396,20 @@ class OrderService {
   async testIntegrations(): Promise<{
     vivaWallet: boolean
     fortnox: boolean
+    sybka: boolean
     ongoing: boolean
   }> {
-    const [viva, fortnox, ongoing] = await Promise.allSettled([
+    const [viva, fortnox, sybka, ongoing] = await Promise.allSettled([
       vivaWalletService.testConnection(),
       fortnoxService.testConnection(),
+      sybkaService.testConnection(),
       ongoingService.testConnection()
     ])
 
     return {
       vivaWallet: viva.status === 'fulfilled' ? viva.value : false,
       fortnox: fortnox.status === 'fulfilled' ? fortnox.value : false,
+      sybka: sybka.status === 'fulfilled' ? sybka.value : false,
       ongoing: ongoing.status === 'fulfilled' ? ongoing.value : false
     }
   }
