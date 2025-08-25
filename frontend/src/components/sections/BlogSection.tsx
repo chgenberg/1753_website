@@ -161,7 +161,7 @@ export function BlogSection() {
                     <div className="flex items-center gap-4 text-sm text-[var(--color-gray-500)] mb-3">
                       <span className="flex items-center gap-1">
                         <Calendar className="w-4 h-4" />
-                        {new Date(post.date).toLocaleDateString('sv-SE', {
+                        {new Date(post.publishedAt || post.date || post.createdAt).toLocaleDateString('sv-SE', {
                           year: 'numeric',
                           month: 'short',
                           day: 'numeric'

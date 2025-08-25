@@ -49,7 +49,14 @@ router.get('/', async (req, res) => {
       posts = posts.map((p) => overlayBlog(p, byId[p.id] || null))
     }
 
-    res.json(posts);
+    // Add compatibility fields for frontend
+    const postsWithCompatibility = posts.map(post => ({
+      ...post,
+      date: post.publishedAt, // Add date field for backward compatibility
+      readingTime: `${Math.ceil((post.content?.length || 0) / 1000)} min` // Estimate reading time
+    }));
+
+    res.json(postsWithCompatibility);
   } catch (error) {
     res.status(500).json({ error: 'Kunde inte hämta blogginlägg' });
   }
@@ -63,14 +70,22 @@ router.get('/:slug', async (req, res) => {
       where: { slug: req.params.slug, published: true },
     });
     if (post) {
+      let finalPost = post;
       if (locale !== 'sv') {
         const t = await prisma.blogPostTranslation.findUnique({
           where: { postId_locale: { postId: post.id, locale } }
         })
-        const overlaid = overlayBlog(post, t)
-        return res.json(overlaid)
+        finalPost = overlayBlog(post, t)
       }
-      return res.json(post);
+      
+      // Add compatibility fields
+      const postWithCompatibility = {
+        ...finalPost,
+        date: finalPost.publishedAt,
+        readingTime: `${Math.ceil((finalPost.content?.length || 0) / 1000)} min`
+      };
+      
+      return res.json(postWithCompatibility);
     } else {
       res.status(404).json({ error: 'Blogginlägg hittades inte' });
     }

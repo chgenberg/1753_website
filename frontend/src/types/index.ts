@@ -267,6 +267,8 @@ export interface BlogPost {
   tags: string[]
   published: boolean
   publishedAt: string
+  date?: string // For backward compatibility
+  readingTime?: string // For reading time display
   seo: {
     title: string
     description: string
