@@ -318,27 +318,50 @@ export default function QuizPage() {
         })
       })
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
       const data = await response.json()
+      console.log('Quiz API response:', data)
       
-      if (data.results) {
-        setResults(data.results)
+      // The API returns the results directly, not wrapped in a results property
+      if (data && (data.summary || data.skinScore || data.holisticScore)) {
+        setResults(data)
         
         // Save quiz data
-        await fetch('/api/quiz/save', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            userInfo,
-            answers,
-            results: data.results,
-            timestamp: new Date().toISOString()
+        try {
+          await fetch('/api/quiz/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              userInfo,
+              answers,
+              results: data,
+              timestamp: new Date().toISOString()
+            })
           })
-        })
+        } catch (saveError) {
+          console.warn('Failed to save quiz data:', saveError)
+          // Don't fail the whole process if saving fails
+        }
 
         localStorage.removeItem('quizProgress')
+      } else {
+        console.error('Invalid API response structure:', data)
+        throw new Error('Invalid response from quiz API')
       }
     } catch (error) {
       console.error('Quiz submission error:', error)
+      // Set a fallback result so user doesn't see blank page
+      setResults({
+        summary: {
+          greeting: `Hej ${userInfo.name}!`,
+          skinAnalysis: "Vi kunde inte generera en fullständig analys just nu, men baserat på dina svar rekommenderar vi att du kontaktar oss för personlig rådgivning.",
+          holisticScore: 70
+        },
+        error: true
+      })
     } finally {
       clearInterval(timer)
       setLoadingProgress(100)
@@ -896,17 +919,35 @@ export default function QuizPage() {
     </div>
   )
 
-  const renderResults = () => (
-    <>
-      {results && (
-        <ImprovedQuizResults
-          results={results}
-          userInfo={userInfo}
-          imageMetrics={imageMetrics}
-        />
-      )}
-    </>
-  )
+  const renderResults = () => {
+    console.log('Rendering results:', { results, currentStep });
+    
+    if (!results) {
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-[#FAF8F5] via-white to-[#F5F0E8] flex items-center justify-center">
+          <Header />
+          <div className="text-center">
+            <h2 className="text-2xl font-light mb-4">Något gick fel</h2>
+            <p className="text-gray-600 mb-6">Vi kunde inte generera dina resultat. Försök igen.</p>
+            <button
+              onClick={restartQuiz}
+              className="px-6 py-3 bg-gradient-to-r from-[#8B6B47] to-[#6B5337] text-white rounded-xl hover:shadow-lg transition-all"
+            >
+              Starta om quiz
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <ImprovedQuizResults
+        results={results}
+        userInfo={userInfo}
+        imageMetrics={imageMetrics}
+      />
+    );
+  }
 
   return (
     <>
