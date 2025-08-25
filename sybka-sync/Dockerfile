@@ -6,8 +6,8 @@ WORKDIR /app
 # Copy PHP files
 COPY . .
 
-# Expose port
+# Expose default port (Railway sätter PORT dynamiskt ändå)
 EXPOSE 8080
 
-# Start PHP built-in server
-CMD ["php", "-S", "0.0.0.0:8080", "index.php"] 
+# Start PHP built-in server och bind till $PORT
+CMD ["sh", "-c", "php -S 0.0.0.0:${PORT:-8080} index.php"] 
