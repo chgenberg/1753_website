@@ -34,11 +34,34 @@ export function HeroSection() {
   }, [isMenuOpen])
 
   const menuItems = [
-    { href: '/products', label: t('navigation.products') },
-    { href: '/quiz', label: t('navigation.quiz') },
-    { href: '/om-oss', label: t('navigation.about') },
-    { href: '/kunskap', label: t('navigation.knowledge') },
-    { href: '/kontakt', label: t('navigation.contact') },
+    { 
+      href: '/products', 
+      label: 'PRODUKTER',
+      children: [
+        { href: '/products?category=skincare', label: 'Ansiktsvård' },
+        { href: '/products?category=supplements', label: 'Kosttillskott' },
+      ]
+    },
+    { href: '/quiz', label: 'HUD-QUIZ' },
+    { 
+      href: '/om-oss', 
+      label: 'OM OSS',
+      children: [
+        { href: '/om-oss/ingredienser', label: 'Ingredienser' },
+        { href: '/om-oss/faq', label: 'Vanliga frågor' },
+        { href: '/om-oss/aterforsaljare', label: 'Återförsäljare' },
+      ]
+    },
+    { 
+      href: '/kunskap', 
+      label: 'KUNSKAP',
+      children: [
+        { href: '/kunskap/e-bok', label: 'E-bok' },
+        { href: '/kunskap/funktionella-ravaror', label: 'Funktionella råvaror' },
+        { href: '/blogg', label: 'Blogg' },
+      ]
+    },
+    { href: '/kontakt', label: 'KONTAKT' },
   ]
 
   return (
@@ -101,6 +124,23 @@ export function HeroSection() {
         </div>
       </nav>
 
+      {/* Minimalist Text */}
+      <div className="absolute inset-0 z-10 flex items-center justify-center">
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.5 }}
+          className="text-white text-center px-6 md:px-8 max-w-4xl"
+        >
+          <span className="block text-sm md:text-base font-light tracking-[0.3em] uppercase">
+            Hudvårdsindustrin har sin sanning.
+          </span>
+          <span className="block text-sm md:text-base font-light tracking-[0.3em] uppercase mt-2">
+            Vi har en annan.
+          </span>
+        </motion.h1>
+      </div>
+
       {/* Slide-in Menu from Right */}
       <AnimatePresence>
         {isMenuOpen && (
@@ -121,33 +161,50 @@ export function HeroSection() {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'tween', duration: 0.3 }}
-              className="fixed right-0 top-0 h-full w-80 md:w-96 bg-black/90 backdrop-blur-md z-50 p-8 md:p-12"
+              className="fixed right-0 top-0 h-full w-80 md:w-96 bg-white z-50 overflow-y-auto"
             >
               {/* Close button */}
               <button
                 onClick={() => setIsMenuOpen(false)}
-                className="absolute top-6 right-6 md:top-8 md:right-8 p-2 hover:opacity-80 transition-opacity"
+                className="absolute top-6 right-6 md:top-8 md:right-8 p-2 hover:opacity-60 transition-opacity"
               >
-                <X className="w-6 h-6 md:w-8 md:h-8 text-white" />
+                <X className="w-6 h-6 text-black" />
               </button>
 
               {/* Menu items */}
-              <nav className="mt-20">
+              <nav className="pt-20 px-8 md:px-12 pb-8">
                 {menuItems.map((item, index) => (
-                  <motion.div
-                    key={item.href}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3, delay: 0.1 + index * 0.05 }}
-                  >
-                    <Link
-                      href={item.href}
-                      onClick={() => setIsMenuOpen(false)}
-                      className="block text-2xl md:text-3xl text-white font-light py-4 hover:opacity-70 transition-opacity"
+                  <div key={item.href} className="mb-8">
+                    <motion.div
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, delay: 0.1 + index * 0.05 }}
                     >
-                      {item.label}
-                    </Link>
-                  </motion.div>
+                      <Link
+                        href={item.href}
+                        onClick={() => !item.children && setIsMenuOpen(false)}
+                        className="block text-lg font-light tracking-wider text-black hover:opacity-60 transition-opacity mb-4"
+                      >
+                        {item.label}
+                      </Link>
+                      
+                      {/* Child items */}
+                      {item.children && (
+                        <div className="ml-4 space-y-3">
+                          {item.children.map((child) => (
+                            <Link
+                              key={child.href}
+                              href={child.href}
+                              onClick={() => setIsMenuOpen(false)}
+                              className="block text-sm font-light text-gray-600 hover:text-black transition-colors"
+                            >
+                              {child.label}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </motion.div>
+                  </div>
                 ))}
               </nav>
             </motion.div>
