@@ -22,7 +22,9 @@
     "prisma:generate": "prisma generate",
     "prisma:studio": "prisma studio",
     "translate:db": "ts-node --transpile-only src/scripts/translate-db.ts",
-    "seed:raw-materials": "ts-node --transpile-only src/scripts/seedRawMaterials.ts"
+    "seed:raw-materials": "ts-node --transpile-only src/scripts/seedRawMaterials.ts",
+    "generate:images": "ts-node --transpile-only scripts/generateRawMaterialImages.ts",
+    "generate:image": "ts-node --transpile-only scripts/generateRawMaterialImages.ts -- --single"
   },
   "dependencies": {
     "@prisma/client": "^6.12.0",

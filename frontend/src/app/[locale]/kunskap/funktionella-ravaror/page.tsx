@@ -232,6 +232,38 @@ export default function FunctionalRawMaterialsPage() {
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex items-start gap-4 flex-1">
+                          {/* Image */}
+                          <div className="flex-shrink-0">
+                            {material.thumbnail ? (
+                              <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-100">
+                                <Image
+                                  src={material.thumbnail}
+                                  alt={material.swedishName}
+                                  width={64}
+                                  height={64}
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    // Fallback to gradient if image fails to load
+                                    const target = e.target as HTMLElement
+                                    target.style.display = 'none'
+                                    if (target.nextSibling) {
+                                      (target.nextSibling as HTMLElement).style.display = 'flex'
+                                    }
+                                  }}
+                                />
+                                <div 
+                                  className="w-full h-full bg-gradient-to-br from-amber-400 to-orange-500 items-center justify-center text-white text-xs font-medium hidden"
+                                >
+                                  {material.swedishName.charAt(0).toUpperCase()}
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-lg font-medium">
+                                {material.swedishName.charAt(0).toUpperCase()}
+                              </div>
+                            )}
+                          </div>
+                          
                           <div className="flex-1">
                             <div className="flex items-center gap-3 mb-1">
                               <h3 className="text-lg font-semibold text-gray-900">
