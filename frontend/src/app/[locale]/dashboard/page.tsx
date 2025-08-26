@@ -115,43 +115,43 @@ export default function DashboardPage() {
   ]
 
   const videos = [
-    { id: '1', title: 'Morgonrutin med DUO-kit', thumbnail: '/products_2025/DUO.png', duration: '5:23' },
-    { id: '2', title: 'Applicera The ONE', thumbnail: '/products_2025/The_ONE_bottle.png', duration: '3:45' },
-    { id: '3', title: 'TA-DA för perfekt finish', thumbnail: '/products_2025/TA-DA.png', duration: '4:12' },
-    { id: '4', title: 'Makeup Remover tekniken', thumbnail: '/products_2025/MakeupRemover_bottle.png', duration: '2:30' }
+    { id: '1', title: 'MORGONRUTIN MED DUO-KIT', thumbnail: '/products_2025/DUO.png', duration: '5:23' },
+    { id: '2', title: 'APPLICERA THE ONE', thumbnail: '/products_2025/The_ONE_bottle.png', duration: '3:45' },
+    { id: '3', title: 'TA-DA FÖR PERFEKT FINISH', thumbnail: '/products_2025/TA-DA.png', duration: '4:12' },
+    { id: '4', title: 'MAKEUP REMOVER TEKNIKEN', thumbnail: '/products_2025/MakeupRemover_bottle.png', duration: '2:30' }
   ]
 
   const dashboardActions = [
     {
       id: 'orders',
-      title: 'Mina ordrar',
+      title: 'MINA ORDRAR',
       description: 'Se och hantera dina beställningar',
       icon: ShoppingBag,
-      bgColor: 'from-amber-400 to-orange-500',
+      bgColor: 'from-[#FCB237] to-[#e79c1a]',
       action: () => setActiveTab('orders')
     },
     {
       id: 'knowledge',
-      title: 'Kunskapscentral',
+      title: 'KUNSKAPSCENTRAL',
       description: 'Utforska våra guider och tips',
       icon: BookOpen,
-      bgColor: 'from-emerald-400 to-green-500',
+      bgColor: 'from-[#4CAF50] to-[#45a049]',
       action: () => setActiveTab('knowledge')
     },
     {
       id: 'videos',
-      title: 'Videoguider',
+      title: 'VIDEOGUIDER',
       description: 'Se instruktionsvideor',
       icon: PlayCircle,
-      bgColor: 'from-purple-400 to-pink-500',
+      bgColor: 'from-[#E91E63] to-[#C2185B]',
       action: () => setActiveTab('videos')
     },
     {
       id: 'quiz',
-      title: 'Hudanalys',
+      title: 'HUDANALYS',
       description: 'Gör om din hudanalys',
       icon: Sparkles,
-      bgColor: 'from-blue-400 to-indigo-500',
+      bgColor: 'from-[#2196F3] to-[#1976D2]',
       action: () => router.push('/quiz')
     }
   ]
@@ -167,14 +167,14 @@ export default function DashboardPage() {
               src={isMobile ? '/background/inlogg_mobile.png' : '/background/inlogg.png'}
               alt="Dashboard Background"
               fill
-              className="object-cover"
+              className="object-cover object-center"
               priority
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/30" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
           </div>
 
           {/* Content */}
-          <div className="relative min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8">
+          <div className="relative min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 pt-24">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -251,7 +251,7 @@ export default function DashboardPage() {
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-[#FAFAFA]">
+      <div className="min-h-screen bg-[#FAFAFA] pt-20">
         {/* Back to overview button */}
         <div className="bg-white border-b">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -266,7 +266,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Tabs */}
-        <div className="bg-white border-b sticky top-0 z-10">
+        <div className="bg-white border-b sticky top-20 z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex space-x-8 overflow-x-auto">
               {tabs.filter(tab => tab.id !== 'overview').map((tab) => {
@@ -399,25 +399,28 @@ export default function DashboardPage() {
                 className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
               >
                 {[
-                  { title: 'CBD & CBG Guide', description: 'Lär dig mer om cannabinoider', link: '/kunskap' },
-                  { title: 'Hudvårdsrutiner', description: 'Skapa din perfekta rutin', link: '/kunskap' },
-                  { title: 'Ingredienslexikon', description: 'Förstå våra ingredienser', link: '/om-oss/ingredienser' },
-                  { title: 'FAQ', description: 'Vanliga frågor och svar', link: '/om-oss/faq' },
-                  { title: 'E-bok', description: 'Ladda ner vår gratisbok', link: '/kunskap/e-bok' },
-                  { title: 'Blogg', description: 'Senaste nyheterna', link: '/blogg' }
+                  { title: 'CBD & CBG GUIDE', description: 'Lär dig mer om cannabinoider', link: '/kunskap', color: 'from-[#FCB237] to-[#e79c1a]' },
+                  { title: 'HUDVÅRDSRUTINER', description: 'Skapa din perfekta rutin', link: '/kunskap', color: 'from-[#4CAF50] to-[#45a049]' },
+                  { title: 'INGREDIENSLEXIKON', description: 'Förstå våra ingredienser', link: '/om-oss/ingredienser', color: 'from-[#E91E63] to-[#C2185B]' },
+                  { title: 'FAQ', description: 'Vanliga frågor och svar', link: '/om-oss/faq', color: 'from-[#2196F3] to-[#1976D2]' },
+                  { title: 'E-BOK', description: 'Ladda ner vår gratisbok', link: '/kunskap/e-bok', color: 'from-[#9C27B0] to-[#7B1FA2]' },
+                  { title: 'BLOGG', description: 'Senaste nyheterna', link: '/blogg', color: 'from-[#FF9800] to-[#F57C00]' }
                 ].map((item, index) => (
                   <Link
                     key={index}
                     href={item.link}
-                    className="group bg-white border rounded-lg p-6 hover:shadow-lg transition-all"
+                    className="group relative bg-white border rounded-xl overflow-hidden hover:shadow-xl transition-all transform hover:-translate-y-1"
                   >
-                    <h3 className="text-lg font-medium text-gray-900 mb-2 group-hover:text-[#FCB237] transition-colors">
-                      {item.title}
-                    </h3>
-                    <p className="text-gray-600 text-sm">{item.description}</p>
-                    <div className="mt-4 flex items-center text-[#FCB237] text-sm font-medium">
-                      Läs mer
-                      <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                    <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-10 transition-opacity`} />
+                    <div className="relative p-6">
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">
+                        {item.title}
+                      </h3>
+                      <p className="text-gray-600 text-sm mb-4">{item.description}</p>
+                      <div className="flex items-center text-[#FCB237] text-sm font-medium">
+                        Läs mer
+                        <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                      </div>
                     </div>
                   </Link>
                 ))}
@@ -437,7 +440,7 @@ export default function DashboardPage() {
                   <button
                     key={video.id}
                     onClick={() => setShowVideoModal(true)}
-                    className="group bg-white border rounded-lg overflow-hidden hover:shadow-lg transition-all"
+                    className="group bg-white border rounded-xl overflow-hidden hover:shadow-xl transition-all transform hover:-translate-y-1"
                   >
                     <div className="relative h-48 bg-gray-100">
                       <Image
