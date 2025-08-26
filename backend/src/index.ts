@@ -27,6 +27,7 @@ import rawMaterialsRoutes from './routes/rawMaterials'
 import retailersRoutes from './routes/retailers'
 import reviewRoutes from './routes/reviews'
 import subscriptionRoutes from './routes/subscriptions'
+import ongoingRoutes from './routes/ongoing'
 // Initialize
 const app = express()
 const PORT = parseInt(process.env.PORT || '5002')
@@ -120,6 +121,7 @@ app.use('/api/raw-materials', rawMaterialsRoutes)
 app.use('/api/retailers', retailersRoutes)
 app.use('/api/reviews', reviewRoutes)
 app.use('/api/subscriptions', subscriptionRoutes)
+app.use('/api/ongoing', ongoingRoutes)
 
 // Debug middleware for orders route (only in development)
 if (process.env.NODE_ENV === 'development') {
