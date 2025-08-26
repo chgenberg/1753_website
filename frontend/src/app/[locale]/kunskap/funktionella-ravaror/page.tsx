@@ -226,7 +226,7 @@ export default function FunctionalRawMaterialsPage() {
                   alt="1753 Skincare"
                   width={240}
                   height={96}
-                  className="h-20 md:h-24 w-auto"
+                  className="h-16 md:h-24 w-auto"
                   priority
                 />
               </Link>
@@ -248,34 +248,34 @@ export default function FunctionalRawMaterialsPage() {
               </div>
 
               {/* Right Navigation Icons */}
-              <div className="flex items-center gap-4">
-                {/* Account Icon */}
-                <Link 
-                  href={user ? `/${currentLocale}/konto` : `/${currentLocale}/auth/login`}
-                  className="text-white hover:text-amber-200 transition-colors p-2"
-                >
-                  <User className="w-7 h-7" />
-                </Link>
-
+              <div className="flex items-center gap-2">
                 {/* Cart Icon */}
                 <button 
                   onClick={openCart} 
-                  className="relative text-white hover:text-amber-200 transition-colors p-2"
+                  className="relative p-2 hover:opacity-70 transition-opacity"
                 >
-                  <ShoppingBag className="w-7 h-7" />
+                  <ShoppingBag className="w-6 h-6 text-white" />
                   {cartCount > 0 && (
-                    <span className="absolute top-0 right-0 bg-amber-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-semibold">
+                    <span className="absolute -top-1 -right-1 bg-[#FCB237] text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
                       {cartCount}
                     </span>
                   )}
                 </button>
 
+                {/* Account Icon */}
+                <Link 
+                  href={user ? `/${currentLocale}/dashboard` : `/${currentLocale}/auth/login`}
+                  className="p-2 hover:opacity-70 transition-opacity"
+                >
+                  <User className="w-6 h-6 text-white" />
+                </Link>
+
                 {/* Mobile Menu Button */}
                 <button 
                   onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                  className="md:hidden text-white hover:text-amber-200 transition-colors p-2"
+                  className="p-2 hover:opacity-70 transition-opacity"
                 >
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                   </svg>
                 </button>
