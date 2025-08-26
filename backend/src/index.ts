@@ -28,6 +28,7 @@ import retailersRoutes from './routes/retailers'
 import reviewRoutes from './routes/reviews'
 import subscriptionRoutes from './routes/subscriptions'
 import ongoingRoutes from './routes/ongoing'
+import webhookRoutes from './routes/webhooks'
 // Initialize
 const app = express()
 const PORT = parseInt(process.env.PORT || '5002')
@@ -122,6 +123,7 @@ app.use('/api/retailers', retailersRoutes)
 app.use('/api/reviews', reviewRoutes)
 app.use('/api/subscriptions', subscriptionRoutes)
 app.use('/api/ongoing', ongoingRoutes)
+app.use('/api/webhooks', webhookRoutes)
 
 // Debug middleware for orders route (only in development)
 if (process.env.NODE_ENV === 'development') {
