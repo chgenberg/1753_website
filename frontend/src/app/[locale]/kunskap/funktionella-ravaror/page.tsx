@@ -188,11 +188,12 @@ export default function FunctionalRawMaterialsPage() {
       return newSet
     })
   }
-  return (
+    return (
     <>
+      {/* Full-screen Hero Section without regular header */}
       <div className="min-h-screen bg-gray-50">
-        {/* Hero Section with Background Image */}
-        <section className="relative h-screen min-h-[600px] overflow-hidden">
+        {/* Hero Section with Background Image - Full Height */}
+        <section className="relative h-screen overflow-hidden">
           {/* Background Image with fallback */}
           <div className="absolute inset-0 z-0 bg-gradient-to-br from-green-900 via-green-800 to-green-700">
             <Image
@@ -208,23 +209,23 @@ export default function FunctionalRawMaterialsPage() {
               onError={(e) => {
                 console.error('Image failed to load:', e);
               }}
-
+              
             />
             {/* Gradient overlay for better text readability */}
             <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/30" />
           </div>
 
-          {/* White Navigation on top of hero */}
-          <nav className="absolute top-0 left-0 right-0 z-20 p-6 md:p-8">
+          {/* White Navigation on top of hero - positioned at very top */}
+          <nav className="absolute top-0 left-0 right-0 z-20 p-4 md:p-6">
             <div className="flex items-center justify-between">
               {/* Logo */}
               <Link href={`/${currentLocale}`} className="block">
                 <Image
                   src="/1753_white.png"
                   alt="1753 Skincare"
-                  width={200}
-                  height={80}
-                  className="h-16 md:h-24 w-auto"
+                  width={160}
+                  height={64}
+                  className="h-12 md:h-16 w-auto"
                   priority
                 />
               </Link>
@@ -250,6 +251,13 @@ export default function FunctionalRawMaterialsPage() {
                       {cartCount}
                     </span>
                   )}
+                </button>
+
+                {/* Mobile Menu Button */}
+                <button className="md:hidden text-white hover:text-amber-200 transition-colors">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
                 </button>
               </div>
             </div>
@@ -281,7 +289,7 @@ export default function FunctionalRawMaterialsPage() {
           </div>
         </section>
 
-        {/* Regular Header for the rest of the page */}
+        {/* Navigation Header for content sections */}
         <Header />
 
         {/* Introduction Section */}
