@@ -192,9 +192,14 @@ export default function FunctionalRawMaterialsPage() {
     <>
       <div className="min-h-screen bg-gray-50">
         {/* Hero Section with Background Image */}
-        <section className="relative min-h-screen overflow-hidden">
-          {/* Background Image */}
-          <div className="absolute inset-0 z-0">
+        <section className="relative h-screen min-h-[600px] overflow-hidden">
+          {/* Debug info - remove in production */}
+          <div className="absolute top-0 left-0 z-50 bg-red-500 text-white p-2 text-xs">
+            Debug: Hero section loaded
+          </div>
+          
+          {/* Background Image with fallback */}
+          <div className="absolute inset-0 z-0 bg-gradient-to-br from-green-900 via-green-800 to-green-700">
             <Image
               src={isMobile 
                 ? "/background/herbs_mobile.png"
@@ -205,6 +210,12 @@ export default function FunctionalRawMaterialsPage() {
               priority
               sizes="100vw"
               className="object-cover"
+              onError={(e) => {
+                console.error('Image failed to load:', e);
+              }}
+              onLoad={() => {
+                console.log('Image loaded successfully');
+              }}
             />
             {/* Gradient overlay for better text readability */}
             <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/30" />
@@ -253,12 +264,13 @@ export default function FunctionalRawMaterialsPage() {
 
           {/* Hero Content */}
           <div className="relative z-10 h-full flex flex-col items-center justify-center px-4">
-            <div className="max-w-4xl mx-auto text-center text-white">
+            <div className="max-w-4xl mx-auto text-center">
               <motion.h1 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light leading-tight tracking-wide"
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light leading-tight tracking-wide text-white drop-shadow-lg"
+                style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}
               >
                 FUNKTIONELLA RÅVAROR FÖR HUDHÄLSA
               </motion.h1>
