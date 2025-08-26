@@ -24,7 +24,8 @@
     "translate:db": "ts-node --transpile-only src/scripts/translate-db.ts",
     "seed:raw-materials": "ts-node --transpile-only src/scripts/seedRawMaterials.ts",
     "generate:images": "ts-node --transpile-only scripts/generateRawMaterialImages.ts",
-    "generate:image": "ts-node --transpile-only scripts/generateRawMaterialImages.ts -- --single"
+    "generate:image": "ts-node --transpile-only scripts/generateRawMaterialImages.ts -- --single",
+    "test:ongoing": "ts-node --transpile-only scripts/testOngoingConnection.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.12.0",
