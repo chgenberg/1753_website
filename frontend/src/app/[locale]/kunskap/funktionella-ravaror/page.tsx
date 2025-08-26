@@ -5,9 +5,12 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { ChevronDown, ChevronUp, ChevronRight } from 'lucide-react'
+import { ChevronDown, ChevronUp, ChevronRight, ShoppingBag, User } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { usePathname } from 'next/navigation'
+import { useCart } from '@/contexts/CartContext'
+import { useAuth } from '@/contexts/AuthContext'
+import { CartDrawer } from '@/components/cart/CartDrawer'
 
 interface RawMaterial {
   id: string
@@ -126,11 +129,23 @@ export default function FunctionalRawMaterialsPage() {
   const [rawMaterials, setRawMaterials] = useState<RawMaterial[]>(fallbackRawMaterials)
   const [loading, setLoading] = useState(true)
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set())
+  const [isMobile, setIsMobile] = useState(false)
   const pathname = usePathname()
   const currentLocale = (pathname.split('/')[1] || 'sv') as string
+  const { cartCount, openCart } = useCart()
+  const { user } = useAuth()
 
   useEffect(() => {
     fetchRawMaterials()
+  }, [])
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
   const fetchRawMaterials = async () => {
@@ -175,27 +190,96 @@ export default function FunctionalRawMaterialsPage() {
   }
   return (
     <>
-      <Header />
-      <div className="min-h-screen bg-gray-50 pt-24">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-b from-amber-50 to-white py-16 md:py-20">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-light text-gray-900 mb-6 break-words">
-              Funktionella Råvaror för Hudhälsa
-            </h1>
-            <p className="text-base sm:text-lg text-gray-600 mb-8 break-words px-2">
-              Upptäck kraften i naturens råvaror som arbetar via gut-skin-axeln för att 
-              förbättra din hudhälsa inifrån och ut. Baserat på vetenskaplig forskning.
-            </p>
-            
-
+      <div className="min-h-screen bg-gray-50">
+        {/* Hero Section with Background Image */}
+        <section className="relative h-[60vh] md:h-[70vh] overflow-hidden">
+          {/* Background Image */}
+          <div className="absolute inset-0 z-0">
+            <Image
+              src={isMobile 
+                ? "/background/herbs_mobile.png"
+                : "/background/herbs_desktop.png"
+              }
+              alt="Funktionella råvaror bakgrund"
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover"
+            />
+            {/* Gradient overlay for better text readability */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/40" />
           </div>
-        </div>
-      </section>
 
-      {/* Raw Materials Grid */}
-      <section className="py-16">
+          {/* White Navigation on top of hero */}
+          <nav className="absolute top-0 left-0 right-0 z-20 p-6 md:p-8">
+            <div className="flex items-center justify-between">
+              {/* Logo */}
+              <Link href={`/${currentLocale}`} className="block">
+                <Image
+                  src="/1753_white.png"
+                  alt="1753 Skincare"
+                  width={200}
+                  height={80}
+                  className="h-12 md:h-16 w-auto"
+                  priority
+                />
+              </Link>
+
+              {/* Right Navigation Icons */}
+              <div className="flex items-center gap-4">
+                {/* Account Icon */}
+                <Link 
+                  href={user ? `/${currentLocale}/konto` : `/${currentLocale}/auth/login`}
+                  className="text-white hover:text-amber-200 transition-colors"
+                >
+                  <User className="w-6 h-6" />
+                </Link>
+
+                {/* Cart Icon */}
+                <button 
+                  onClick={openCart} 
+                  className="relative text-white hover:text-amber-200 transition-colors"
+                >
+                  <ShoppingBag className="w-6 h-6" />
+                  {cartCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-amber-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                      {cartCount}
+                    </span>
+                  )}
+                </button>
+              </div>
+            </div>
+          </nav>
+
+          {/* Hero Content */}
+          <div className="relative z-10 h-full flex items-center justify-center px-4">
+            <div className="max-w-4xl mx-auto text-center text-white">
+              <motion.h1 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+                className="text-4xl sm:text-5xl md:text-6xl font-light mb-6"
+              >
+                Funktionella Råvaror för Hudhälsa
+              </motion.h1>
+              <motion.p 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="text-lg sm:text-xl mb-8 max-w-2xl mx-auto"
+              >
+                Upptäck kraften i naturens råvaror som arbetar via gut-skin-axeln för att 
+                förbättra din hudhälsa inifrån och ut.
+              </motion.p>
+            </div>
+          </div>
+        </section>
+
+        {/* Regular Header for the rest of the page */}
+        <Header />
+
+        {/* Raw Materials Grid */}
+        <section className="py-16 pt-24">
         <div className="container mx-auto px-4">
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -364,6 +448,7 @@ export default function FunctionalRawMaterialsPage() {
       </section>
     </div>
     <Footer />
+    <CartDrawer />
   </>
   )
 } 
