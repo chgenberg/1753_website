@@ -73,21 +73,30 @@ export class VivaWalletService {
     allowRecurring?: boolean
   }): Promise<CreateOrderResponse> {
     try {
-      const orderData: CreateOrderRequest = {
-        amount: Math.round(params.amount * 100), // Convert to cents
-        currency: params.currency,
-        customerTrns: params.description,
-        customer: {
-          email: params.customerEmail,
-          fullName: params.customerName,
-          phone: params.customerPhone
+      const orderData = {
+        Amount: Math.round(params.amount * 100), // Convert to cents
+        CustomerTrns: params.description,
+        Customer: {
+          Email: params.customerEmail,
+          FullName: params.customerName,
+          Phone: params.customerPhone,
+          CountryCode: 'SE',
+          RequestLang: 'sv-SE'
         },
-        paymentTimeout: 300, // 5 minutes
-        allowRecurring: params.allowRecurring || true
+        PaymentTimeout: 300,
+        Preauth: false,
+        AllowRecurring: params.allowRecurring || false,
+        MaxInstallments: 1,
+        PaymentNotification: true,
+        DisableExactAmount: false,
+        DisableCash: true,
+        DisableWallet: false,
+        SourceCode: this.config.sourceCode,
+        MerchantTrns: `Order-${Date.now()}`
       }
 
       const response = await axios.post(
-        `${this.config.baseUrl}/checkout/v2/orders`,
+        `${this.config.baseUrl}/api/orders`,
         orderData,
         {
           auth: {
