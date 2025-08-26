@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import { MapPin, Phone, Globe, Search } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import type { CityPoint } from '@/components/maps/RetailersLeafletMap'
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 
 const RetailersLeafletMap: any = dynamic(() => import('@/components/maps/RetailersLeafletMap'), { ssr: false })
 
@@ -73,8 +73,8 @@ const CITY_COORDS: Record<string, { lat: number; lon: number }> = {
   'Saltsjöqvarn': { lat: 59.31, lon: 18.12 },
 }
 
-// Minimal visningsdata (kan bytas mot API/databas senare)
-const retailers: Retailer[] = [
+// Fallback data if API fails
+const fallbackRetailers: Retailer[] = [
   { name: 'Skincare Studio City', address: 'Storgatan 1', postalCode: '111 22', city: 'Stockholm', phone: '08-123456', website: 'https://example.com' },
   { name: 'Hudhälsa Mölndal', address: 'Kvarnbygatan 2', postalCode: '431 34', city: 'Mölndal' },
   { name: 'Växjö Hud & Hälsa', address: 'Kungsgatan 12', postalCode: '352 30', city: 'Växjö' },
@@ -165,11 +165,31 @@ function SwedenMap({ items }: { items: Retailer[] }) {
                         </button>
                         <span className="px-2 py-0.5 text-xs rounded-full bg-[#FCB237]/10 text-[#FCB237]">{city.retailers.length}</span>
                       </div>
-                      <ul className="text-sm text-gray-700 space-y-1">
+                      <ul className="text-sm text-gray-700 space-y-2">
                         {city.retailers.map((r, idx) => (
-                          <li key={idx} className="flex items-center justify-between">
-                            <span className="font-medium">{r.name}</span>
-                            <span className="text-gray-500">{r.address}, {r.postalCode}</span>
+                          <li key={idx} className="border-l-2 border-[#FCB237]/20 pl-3">
+                            <div className="font-medium text-gray-900">{r.name}</div>
+                            <div className="text-gray-600 flex items-center gap-1 mt-1">
+                              <MapPin className="w-3 h-3" />
+                              {r.address}, {r.postalCode}
+                            </div>
+                            {r.phone && (
+                              <div className="text-gray-600 flex items-center gap-1 mt-1">
+                                <Phone className="w-3 h-3" />
+                                {r.phone}
+                              </div>
+                            )}
+                            {r.website && (
+                              <div className="text-gray-600 flex items-center gap-1 mt-1">
+                                <Globe className="w-3 h-3" />
+                                <a href={r.website.startsWith('http') ? r.website : `https://${r.website}`} 
+                                   target="_blank" 
+                                   rel="noopener noreferrer" 
+                                   className="text-[#FCB237] hover:underline truncate">
+                                  Hemsida
+                                </a>
+                              </div>
+                            )}
                           </li>
                         ))}
                       </ul>
@@ -187,12 +207,68 @@ function SwedenMap({ items }: { items: Retailer[] }) {
 
 export default function ClientRetailersPage() {
   const [searchTerm, setSearchTerm] = useState('')
-  const retailersByCity = useMemo(() => ({} as Record<string, Retailer[]>), [])
-  const allRetailers = useMemo(() => Object.values(retailersByCity).flat(), [retailersByCity])
+  const [retailers, setRetailers] = useState<Retailer[]>(fallbackRetailers)
+  const [loading, setLoading] = useState(true)
+
+  // Fetch retailers from API
+  useEffect(() => {
+    async function fetchRetailers() {
+      try {
+        setLoading(true)
+        const response = await fetch('/api/retailers')
+        if (response.ok) {
+          const data = await response.json()
+          if (data.success && Array.isArray(data.data)) {
+            setRetailers(data.data)
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching retailers:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchRetailers()
+  }, [])
+
+  // Filter retailers based on search term
+  const filteredRetailers = useMemo(() => {
+    if (!searchTerm.trim()) return retailers
+    const term = searchTerm.toLowerCase()
+    return retailers.filter(retailer => 
+      retailer.name.toLowerCase().includes(term) ||
+      retailer.city.toLowerCase().includes(term) ||
+      retailer.address.toLowerCase().includes(term)
+    )
+  }, [retailers, searchTerm])
+
+  if (loading) {
+    return (
+      <main className="pt-20">
+        <section className="bg-white py-8">
+          <div className="container mx-auto px-4">
+            <div className="animate-pulse">
+              <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
+              <div className="h-[520px] bg-gray-200 rounded-2xl mb-8"></div>
+              <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
+              <div className="grid md:grid-cols-2 gap-6">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="border rounded-lg p-3">
+                    <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
+                    <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    )
+  }
 
   return (
     <main className="pt-20">
-      <SwedenMap items={allRetailers.length ? allRetailers : retailers} />
+      <SwedenMap items={filteredRetailers} />
       <section className="relative bg-gradient-to-br from-[#F5F3F0] to-[#F5F3F0] py-20">
         <div className="container mx-auto px-4 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
@@ -200,8 +276,19 @@ export default function ClientRetailersPage() {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">Vi har handplockat ett antal återförsäljare som har ett genuint intresse av att hjälpa människor att uppnå en fantastisk hudhälsa.</p>
             <div className="max-w-md mx-auto relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input type="text" placeholder="Sök stad eller återförsäljare..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F5F3F0]0" />
+              <input 
+                type="text" 
+                placeholder="Sök stad eller återförsäljare..." 
+                value={searchTerm} 
+                onChange={(e) => setSearchTerm(e.target.value)} 
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FCB237] focus:border-[#FCB237]" 
+              />
             </div>
+            {searchTerm && (
+              <div className="mt-4 text-sm text-gray-600">
+                Visar {filteredRetailers.length} av {retailers.length} återförsäljare
+              </div>
+            )}
           </motion.div>
         </div>
       </section>
