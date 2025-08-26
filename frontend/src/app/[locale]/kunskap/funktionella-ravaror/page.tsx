@@ -317,10 +317,11 @@ export default function FunctionalRawMaterialsPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light leading-tight tracking-wide text-white drop-shadow-lg"
-                style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}
+                className="text-white text-center px-6 md:px-8 max-w-4xl"
               >
-                FUNKTIONELLA RÅVAROR FÖR HUDHÄLSA
+                <span className="block text-sm md:text-base font-light tracking-[0.3em] uppercase">
+                  FUNKTIONELLA RÅVAROR FÖR HUDHÄLSA
+                </span>
               </motion.h1>
             </div>
             
