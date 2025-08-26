@@ -5,6 +5,15 @@ import { subscriptionService } from '../services/subscriptionService'
 const router = Router()
 
 /**
+ * Viva Wallet webhook validation endpoint (GET)
+ * GET /api/webhooks/viva-wallet
+ */
+router.get('/viva-wallet', (req, res) => {
+  logger.info('Received Viva Wallet webhook validation request (GET)')
+  res.status(200).send('OK')
+})
+
+/**
  * Viva Wallet webhook endpoint
  * POST /api/webhooks/viva-wallet
  */
