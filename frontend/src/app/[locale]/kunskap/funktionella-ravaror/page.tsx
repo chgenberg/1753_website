@@ -192,7 +192,7 @@ export default function FunctionalRawMaterialsPage() {
     <>
       <div className="min-h-screen bg-gray-50">
         {/* Hero Section with Background Image */}
-        <section className="relative h-[60vh] md:h-[70vh] overflow-hidden">
+        <section className="relative min-h-screen overflow-hidden">
           {/* Background Image */}
           <div className="absolute inset-0 z-0">
             <Image
@@ -207,7 +207,7 @@ export default function FunctionalRawMaterialsPage() {
               className="object-cover"
             />
             {/* Gradient overlay for better text readability */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/40" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/30" />
           </div>
 
           {/* White Navigation on top of hero */}
@@ -252,34 +252,47 @@ export default function FunctionalRawMaterialsPage() {
           </nav>
 
           {/* Hero Content */}
-          <div className="relative z-10 h-full flex items-center justify-center px-4">
+          <div className="relative z-10 h-full flex flex-col items-center justify-center px-4">
             <div className="max-w-4xl mx-auto text-center text-white">
               <motion.h1 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
-                className="text-4xl sm:text-5xl md:text-6xl font-light mb-6"
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light leading-tight tracking-wide"
               >
-                Funktionella Råvaror för Hudhälsa
+                FUNKTIONELLA RÅVAROR FÖR HUDHÄLSA
               </motion.h1>
-              <motion.p 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-                className="text-lg sm:text-xl mb-8 max-w-2xl mx-auto"
-              >
-                Upptäck kraften i naturens råvaror som arbetar via gut-skin-axeln för att 
-                förbättra din hudhälsa inifrån och ut.
-              </motion.p>
             </div>
+            
+            {/* Scroll Arrow */}
+            <motion.div 
+              className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.5, repeat: Infinity, repeatType: "reverse" }}
+            >
+              <ChevronDown className="w-8 h-8 text-white/80" />
+            </motion.div>
           </div>
         </section>
 
         {/* Regular Header for the rest of the page */}
         <Header />
 
+        {/* Introduction Section */}
+        <section className="py-12 md:py-16 bg-white">
+          <div className="container mx-auto px-4">
+            <div className="max-w-3xl mx-auto text-center">
+              <p className="text-lg md:text-xl text-gray-700 leading-relaxed">
+                Upptäck kraften i naturens råvaror som arbetar via gut-skin-axeln för att 
+                förbättra din hudhälsa inifrån och ut.
+              </p>
+            </div>
+          </div>
+        </section>
+
         {/* Raw Materials Grid */}
-        <section className="py-16 pt-24">
+        <section className="py-12 md:py-16">
         <div className="container mx-auto px-4">
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -38,6 +38,10 @@ export function HeroSection() {
 
   const menuItems = [
     { 
+      href: '/', 
+      label: 'HEM'
+    },
+    { 
       href: '/products', 
       label: 'PRODUKTER'
     },

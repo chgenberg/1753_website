@@ -44,6 +44,10 @@ export function Header() {
 
   const menuItems = [
     { 
+      href: '/', 
+      label: 'HEM'
+    },
+    { 
       href: '/products', 
       label: 'PRODUKTER'
     },
