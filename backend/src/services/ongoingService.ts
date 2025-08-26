@@ -74,8 +74,6 @@ interface OngoingApiResponse<T> {
 
 class OngoingService {
   private credentials: OngoingCredentials
-  private authToken: string | null = null
-  private tokenExpiry: Date | null = null
 
   constructor() {
     this.credentials = {
@@ -91,50 +89,21 @@ class OngoingService {
   }
 
   /**
-   * Get authentication token
+   * Get Basic Auth header for Ongoing WMS
+   * Ongoing WMS uses Basic Authentication, not token-based auth
    */
-  private async getAuthToken(): Promise<string> {
-    if (this.authToken && this.tokenExpiry && new Date() < this.tokenExpiry) {
-      return this.authToken
-    }
-
-    try {
-      const response = await axios.post(
-        `${this.credentials.baseUrl}/api/v1/authenticate`,
-        {
-          UserName: this.credentials.username,
-          Password: this.credentials.password,
-          GoodsOwnerId: this.credentials.goodsOwnerId
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
-      )
-
-      if (response.data.Success) {
-        this.authToken = response.data.Data.Token
-        // Tokens typically expire in 24 hours, set expiry to 23 hours for safety
-        this.tokenExpiry = new Date(Date.now() + (23 * 60 * 60 * 1000))
-        return this.authToken
-      } else {
-        throw new Error(response.data.Message || 'Authentication failed')
-      }
-
-    } catch (error: any) {
-      logger.error('Failed to authenticate with Ongoing WMS:', error.response?.data || error.message)
-      throw new Error('Ongoing WMS authentication failed')
-    }
+  private getBasicAuthHeader(): string {
+    const credentials = `${this.credentials.username}:${this.credentials.password}`
+    const encoded = Buffer.from(credentials).toString('base64')
+    return `Basic ${encoded}`
   }
 
   /**
    * Get default headers for API requests
    */
-  private async getHeaders() {
-    const token = await this.getAuthToken()
+  private getHeaders() {
     return {
-      'Authorization': `Bearer ${token}`,
+      'Authorization': this.getBasicAuthHeader(),
       'Content-Type': 'application/json'
     }
   }
@@ -491,10 +460,49 @@ class OngoingService {
    */
   async testConnection(): Promise<boolean> {
     try {
-      await this.getAuthToken()
-      return true
-    } catch (error) {
-      logger.error('Ongoing WMS connection test failed:', error)
+      logger.info('Testing Ongoing WMS SOAP API connection', {
+        baseUrl: this.credentials.baseUrl,
+        username: this.credentials.username,
+        goodsOwnerId: this.credentials.goodsOwnerId
+      })
+
+      // Test SOAP API endpoint accessibility
+      const soapUrl = `${this.credentials.baseUrl}/service.asmx`
+      
+      const response = await axios.get(soapUrl, {
+        headers: this.getHeaders(),
+        timeout: 10000,
+        validateStatus: (status) => status < 500
+      })
+      
+      logger.info('SOAP API response received', {
+        status: response.status,
+        statusText: response.statusText,
+        contentType: response.headers['content-type'],
+        isSOAPService: response.data?.includes('Service Web Service')
+      })
+      
+      if (response.status === 200 && response.data?.includes('Service Web Service')) {
+        logger.info('Ongoing WMS SOAP API connection test successful!')
+        return true
+      } else if (response.status === 401) {
+        logger.error('Authentication failed - check credentials')
+        return false
+      } else if (response.status === 403) {
+        logger.error('Access forbidden - check permissions')
+        return false
+      } else {
+        logger.error(`Unexpected response: ${response.status}`)
+        return false
+      }
+      
+    } catch (error: any) {
+      logger.error('Ongoing WMS connection test failed', {
+        error: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        code: error.code
+      })
       return false
     }
   }
