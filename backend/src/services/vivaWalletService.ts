@@ -87,7 +87,7 @@ export class VivaWalletService {
       }
 
       const response = await axios.post(
-        `${this.config.baseUrl}/api/orders`,
+        `${this.config.baseUrl}/checkout/v2/orders`,
         orderData,
         {
           auth: {
