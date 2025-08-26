@@ -280,20 +280,41 @@ export default function FunctionalRawMaterialsPage() {
         <Header />
 
         {/* Introduction Section */}
-        <section className="py-12 md:py-16 bg-white">
+        <section className="py-16 md:py-24 bg-gradient-to-b from-amber-50 to-white">
           <div className="container mx-auto px-4">
-            <div className="max-w-3xl mx-auto text-center">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="max-w-4xl mx-auto text-center"
+            >
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-light text-gray-900 mb-6 tracking-wide">
+                GUT-SKIN-AXELN
+              </h2>
               <p className="text-lg md:text-xl text-gray-700 leading-relaxed">
                 Upptäck kraften i naturens råvaror som arbetar via gut-skin-axeln för att 
                 förbättra din hudhälsa inifrån och ut.
               </p>
-            </div>
+            </motion.div>
           </div>
         </section>
 
         {/* Raw Materials Grid */}
-        <section className="py-12 md:py-16">
+        <section className="py-16 md:py-24 bg-gray-50">
         <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-3xl md:text-4xl font-light text-gray-900 mb-4">
+              Naturens Kraftfulla Råvaror
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Utforska vårt urval av funktionella råvaror som stödjer din hud inifrån
+            </p>
+          </motion.div>
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(6)].map((_, i) => (
@@ -321,23 +342,27 @@ export default function FunctionalRawMaterialsPage() {
                   <motion.div
                     key={material.id}
                     layout
-                    className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: rawMaterials.indexOf(material) * 0.1 }}
+                    className="bg-white rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden"
                   >
                     <button
                       onClick={() => toggleExpanded(material.id)}
-                      className="w-full p-4 sm:p-6 text-left focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 rounded-2xl"
+                      className="w-full p-6 sm:p-8 text-left focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex items-start gap-3 sm:gap-4 flex-1">
                           {/* Image */}
                           <div className="flex-shrink-0">
                             {material.thumbnail ? (
-                              <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-100">
+                              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden bg-gradient-to-br from-amber-100 to-amber-200 shadow-md">
                                 <Image
                                   src={material.thumbnail}
                                   alt={material.swedishName}
-                                  width={64}
-                                  height={64}
+                                  width={96}
+                                  height={96}
                                   className="w-full h-full object-cover"
                                   onError={(e) => {
                                     // Fallback to gradient if image fails to load
@@ -362,27 +387,29 @@ export default function FunctionalRawMaterialsPage() {
                           </div>
                           
                           <div className="flex-1 min-w-0">
-                            <div className="flex flex-wrap items-center gap-2 mb-1">
-                              <h3 className="text-lg font-semibold text-gray-900 break-words">
+                            <div className="flex flex-wrap items-center gap-3 mb-2">
+                              <h3 className="text-xl sm:text-2xl font-light text-gray-900 break-words tracking-wide">
                                 {material.swedishName}
                               </h3>
-                              <span className="text-sm text-gray-500 whitespace-nowrap">
+                              <span className="px-3 py-1 text-xs font-medium text-amber-700 bg-amber-100 rounded-full whitespace-nowrap">
                                 {material.origin}
                               </span>
                             </div>
-                            <p className="text-gray-600 break-words">
+                            <p className="text-gray-600 leading-relaxed break-words">
                               {material.description}
                             </p>
                           </div>
                         </div>
                         
-                        <div className="ml-4 flex-shrink-0">
-                          {isExpanded ? (
-                            <ChevronUp className="w-5 h-5 text-gray-400" />
-                          ) : (
-                            <ChevronDown className="w-5 h-5 text-gray-400" />
-                          )}
-                        </div>
+                        <motion.div 
+                          className="ml-4 flex-shrink-0"
+                          animate={{ rotate: isExpanded ? 180 : 0 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
+                            <ChevronDown className="w-5 h-5 text-amber-700" />
+                          </div>
+                        </motion.div>
                       </div>
                     </button>
                     
@@ -438,26 +465,32 @@ export default function FunctionalRawMaterialsPage() {
       </section>
 
       {/* Info Section */}
-      <section className="py-12 md:py-16 bg-amber-50/50">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-2xl sm:text-3xl font-light text-gray-900 mb-6 break-words">
-              Gut-Skin-Axeln
+      <section className="py-20 md:py-32 bg-gradient-to-t from-amber-50 to-white">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="container mx-auto px-4"
+        >
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-gray-900 mb-8 tracking-wide">
+              Forskning & Vetenskap
             </h2>
-            <p className="text-base sm:text-lg text-gray-600 mb-8 break-words px-2">
+            <p className="text-lg sm:text-xl text-gray-700 mb-12 leading-relaxed px-4">
               Forskning visar att det finns en stark koppling mellan tarmhälsa och hudhälsa. 
               Genom att äta rätt funktionella råvaror kan du stödja både din tarmflora och 
               din hud för optimal hälsa och skönhet inifrån.
             </p>
             <Link
               href={`/${currentLocale}/kunskap`}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-amber-600 text-white rounded-full hover:bg-amber-700 transition-colors"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-[#FCB237] text-white rounded-full hover:bg-[#E79C1A] transition-all transform hover:scale-105 text-lg font-medium shadow-lg"
             >
               Utforska mer kunskap
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="w-5 h-5" />
             </Link>
           </div>
-        </div>
+        </motion.div>
       </section>
     </div>
     <Footer />

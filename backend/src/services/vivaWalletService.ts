@@ -331,6 +331,73 @@ export class VivaWalletService {
       throw error
     }
   }
+
+  /**
+   * Create payment order (legacy method for compatibility)
+   */
+  async createPaymentOrder(orderData: any): Promise<CreateOrderResponse> {
+    return this.createSubscriptionOrder({
+      amount: orderData.amount / 100, // Convert from cents
+      currency: orderData.currency || 'SEK',
+      customerEmail: orderData.customer.email,
+      customerName: orderData.customer.fullName,
+      customerPhone: orderData.customer.phone,
+      description: orderData.customerTrns,
+      allowRecurring: orderData.allowRecurring
+    })
+  }
+
+  /**
+   * Create Smart Checkout URL (legacy method)
+   */
+  createSmartCheckoutUrl(orderCode: number): string {
+    return this.getPaymentUrl(orderCode)
+  }
+
+  /**
+   * Verify webhook signature
+   */
+  verifyWebhookSignature(payload: string, signature: string): boolean {
+    try {
+      const crypto = require('crypto')
+      const expectedSignature = crypto
+        .createHmac('sha256', this.config.apiKey)
+        .update(payload)
+        .digest('hex')
+      
+      return signature === expectedSignature
+    } catch (error) {
+      logger.error('Failed to verify webhook signature:', error)
+      return false
+    }
+  }
+
+  /**
+   * Process webhook payload
+   */
+  processWebhook(payload: any): any {
+    return {
+      orderId: payload.OrderCode?.toString() || '',
+      status: this.mapVivaStatus(payload.StateId),
+      amount: payload.Amount || 0,
+      transactionId: payload.TransactionId
+    }
+  }
+
+  /**
+   * Map Viva status to internal status
+   */
+  private mapVivaStatus(stateId: number): string {
+    switch (stateId) {
+      case 0: return 'pending'
+      case 1: return 'completed'
+      case 2: return 'cancelled'
+      case 3: return 'failed'
+      case 4: return 'failed'
+      case 5: return 'refunded'
+      default: return 'pending'
+    }
+  }
 }
 
 export const vivaWalletService = new VivaWalletService() 
