@@ -130,6 +130,7 @@ export default function FunctionalRawMaterialsPage() {
   const [loading, setLoading] = useState(true)
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set())
   const [isMobile, setIsMobile] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const pathname = usePathname()
   const currentLocale = (pathname.split('/')[1] || 'sv') as string
   const { cartCount, openCart } = useCart()
@@ -223,9 +224,9 @@ export default function FunctionalRawMaterialsPage() {
                 <Image
                   src="/1753_white.png"
                   alt="1753 Skincare"
-                  width={160}
-                  height={64}
-                  className="h-12 md:h-16 w-auto"
+                  width={200}
+                  height={80}
+                  className="h-16 md:h-20 w-auto"
                   priority
                 />
               </Link>
@@ -254,7 +255,10 @@ export default function FunctionalRawMaterialsPage() {
                 </button>
 
                 {/* Mobile Menu Button */}
-                <button className="md:hidden text-white hover:text-amber-200 transition-colors">
+                <button 
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  className="md:hidden text-white hover:text-amber-200 transition-colors"
+                >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                   </svg>
@@ -262,6 +266,49 @@ export default function FunctionalRawMaterialsPage() {
               </div>
             </div>
           </nav>
+
+          {/* Mobile Menu */}
+          <AnimatePresence>
+            {mobileMenuOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="absolute top-20 left-4 right-4 z-30 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg md:hidden"
+              >
+                <div className="p-4 space-y-4">
+                  <Link 
+                    href={`/${currentLocale}/produkter`}
+                    className="block text-gray-800 hover:text-amber-600 font-medium"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Produkter
+                  </Link>
+                  <Link 
+                    href={`/${currentLocale}/om-oss`}
+                    className="block text-gray-800 hover:text-amber-600 font-medium"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Om oss
+                  </Link>
+                  <Link 
+                    href={`/${currentLocale}/kunskap`}
+                    className="block text-gray-800 hover:text-amber-600 font-medium"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Kunskap
+                  </Link>
+                  <Link 
+                    href={`/${currentLocale}/kontakt`}
+                    className="block text-gray-800 hover:text-amber-600 font-medium"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Kontakt
+                  </Link>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Hero Content */}
           <div className="relative z-10 h-full flex flex-col items-center justify-center px-4">
