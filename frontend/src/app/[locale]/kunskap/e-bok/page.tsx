@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -17,6 +17,18 @@ export default function EBookPage() {
   const { cartCount, openCart } = useCart()
   const { user } = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  
+  // Prevent body scroll when menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [mobileMenuOpen])
   
   const [email, setEmail] = useState('')
   const [privacyAccepted, setPrivacyAccepted] = useState(false)
@@ -188,55 +200,7 @@ export default function EBookPage() {
           </div>
         </nav>
 
-        {/* Mobile Menu */}
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="absolute top-24 left-4 right-4 z-40 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg"
-            >
-              <div className="p-4 space-y-4">
-                <Link 
-                  href={`/${currentLocale}/produkter`}
-                  className="block text-gray-800 hover:text-amber-600 font-medium"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Produkter
-                </Link>
-                <Link 
-                  href={`/${currentLocale}/om-oss`}
-                  className="block text-gray-800 hover:text-amber-600 font-medium"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Om oss
-                </Link>
-                <Link 
-                  href={`/${currentLocale}/kunskap`}
-                  className="block text-gray-800 hover:text-amber-600 font-medium"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Kunskap
-                </Link>
-                <Link 
-                  href={`/${currentLocale}/kontakt`}
-                  className="block text-gray-800 hover:text-amber-600 font-medium"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Kontakt
-                </Link>
-                <Link 
-                  href={user ? `/${currentLocale}/dashboard` : `/${currentLocale}/auth/login`}
-                  className="block text-gray-800 hover:text-amber-600 font-medium"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {user ? 'Mitt konto' : 'Logga in'}
-                </Link>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+
 
         {/* Hero Content */}
         <div className="relative z-10 h-full flex items-center justify-center px-6">
@@ -342,7 +306,204 @@ export default function EBookPage() {
         </div>
       </section>
 
+      {/* Slide-in Menu from Right */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <>
+            {/* Background overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+              onClick={() => setMobileMenuOpen(false)}
+            />
+            
+            {/* Menu panel */}
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'tween', duration: 0.3 }}
+              className="fixed right-0 top-0 h-full w-80 md:w-96 bg-white z-50 overflow-y-auto"
+            >
+              {/* Close button */}
+              <button
+                onClick={() => setMobileMenuOpen(false)}
+                className="absolute top-6 right-6 md:top-8 md:right-8 p-2 hover:opacity-60 transition-opacity"
+              >
+                <X className="w-6 h-6 text-black" />
+              </button>
 
+              {/* Menu items */}
+              <nav className="pt-20 px-8 md:px-12 pb-8">
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: 0.1 }}
+                  className="mb-8"
+                >
+                  <Link
+                    href={`/${currentLocale}`}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block text-lg font-light tracking-wider text-black hover:opacity-60 transition-opacity"
+                  >
+                    HEM
+                  </Link>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: 0.15 }}
+                  className="mb-8"
+                >
+                  <Link
+                    href={`/${currentLocale}/produkter`}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block text-lg font-light tracking-wider text-black hover:opacity-60 transition-opacity"
+                  >
+                    PRODUKTER
+                  </Link>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: 0.2 }}
+                  className="mb-8"
+                >
+                  <Link
+                    href={`/${currentLocale}/quiz`}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block text-lg font-light tracking-wider text-black hover:opacity-60 transition-opacity"
+                  >
+                    HUDANALYS
+                  </Link>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: 0.25 }}
+                  className="mb-8"
+                >
+                  <Link
+                    href={`/${currentLocale}/om-oss`}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block text-lg font-light tracking-wider text-black hover:opacity-60 transition-opacity mb-4"
+                  >
+                    OM OSS
+                  </Link>
+                  <div className="ml-4 space-y-3">
+                    <Link
+                      href={`/${currentLocale}/om-oss/ingredienser`}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block text-sm font-light text-gray-600 hover:text-black transition-colors"
+                    >
+                      Ingredienser
+                    </Link>
+                    <Link
+                      href={`/${currentLocale}/om-oss/faq`}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block text-sm font-light text-gray-600 hover:text-black transition-colors"
+                    >
+                      Vanliga frågor
+                    </Link>
+                    <Link
+                      href={`/${currentLocale}/om-oss/aterforsaljare`}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block text-sm font-light text-gray-600 hover:text-black transition-colors"
+                    >
+                      Återförsäljare
+                    </Link>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: 0.3 }}
+                  className="mb-8"
+                >
+                  <Link
+                    href={`/${currentLocale}/kunskap`}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block text-lg font-light tracking-wider text-black hover:opacity-60 transition-opacity mb-4"
+                  >
+                    KUNSKAP
+                  </Link>
+                  <div className="ml-4 space-y-3">
+                    <Link
+                      href={`/${currentLocale}/kunskap/e-bok`}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block text-sm font-light text-gray-600 hover:text-black transition-colors"
+                    >
+                      E-bok
+                    </Link>
+                    <Link
+                      href={`/${currentLocale}/kunskap/funktionella-ravaror`}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block text-sm font-light text-gray-600 hover:text-black transition-colors"
+                    >
+                      Funktionella råvaror
+                    </Link>
+                    <Link
+                      href={`/${currentLocale}/blogg`}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block text-sm font-light text-gray-600 hover:text-black transition-colors"
+                    >
+                      Blogg
+                    </Link>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: 0.35 }}
+                  className="mb-8"
+                >
+                  <Link
+                    href={`/${currentLocale}/kontakt`}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block text-lg font-light tracking-wider text-black hover:opacity-60 transition-opacity"
+                  >
+                    KONTAKT
+                  </Link>
+                </motion.div>
+
+                {/* User menu items at bottom */}
+                {user && (
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: 0.4 }}
+                    className="mt-12 pt-8 border-t border-gray-200"
+                  >
+                    <Link
+                      href={`/${currentLocale}/dashboard`}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block text-sm font-light text-gray-600 hover:text-black transition-colors mb-3"
+                    >
+                      Min profil
+                    </Link>
+                    <button
+                      onClick={() => {
+                        setMobileMenuOpen(false)
+                      }}
+                      className="block text-sm font-light text-gray-600 hover:text-black transition-colors"
+                    >
+                      Logga ut
+                    </button>
+                  </motion.div>
+                )}
+              </nav>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       <Footer />
     </div>
