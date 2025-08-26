@@ -188,7 +188,55 @@ export default function EBookPage() {
           </div>
         </nav>
 
-
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="absolute top-24 left-4 right-4 z-40 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg"
+            >
+              <div className="p-4 space-y-4">
+                <Link 
+                  href={`/${currentLocale}/produkter`}
+                  className="block text-gray-800 hover:text-amber-600 font-medium"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Produkter
+                </Link>
+                <Link 
+                  href={`/${currentLocale}/om-oss`}
+                  className="block text-gray-800 hover:text-amber-600 font-medium"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Om oss
+                </Link>
+                <Link 
+                  href={`/${currentLocale}/kunskap`}
+                  className="block text-gray-800 hover:text-amber-600 font-medium"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Kunskap
+                </Link>
+                <Link 
+                  href={`/${currentLocale}/kontakt`}
+                  className="block text-gray-800 hover:text-amber-600 font-medium"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Kontakt
+                </Link>
+                <Link 
+                  href={user ? `/${currentLocale}/dashboard` : `/${currentLocale}/auth/login`}
+                  className="block text-gray-800 hover:text-amber-600 font-medium"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {user ? 'Mitt konto' : 'Logga in'}
+                </Link>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Hero Content */}
         <div className="relative z-10 h-full flex items-center justify-center px-6">
@@ -294,79 +342,7 @@ export default function EBookPage() {
         </div>
       </section>
 
-      {/* Slide-in Menu from Right */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <>
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/50 z-40"
-              onClick={() => setMobileMenuOpen(false)}
-            />
 
-            {/* Menu Panel */}
-            <motion.div
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'tween', duration: 0.3 }}
-              className="fixed right-0 top-0 h-full w-80 bg-white z-50 shadow-2xl"
-            >
-              {/* Close Button */}
-              <button
-                onClick={() => setMobileMenuOpen(false)}
-                className="absolute top-6 right-6 p-2 hover:opacity-70 transition-opacity"
-              >
-                <X className="w-6 h-6 text-gray-900" />
-              </button>
-
-              {/* Menu Links */}
-              <nav className="pt-20 px-8">
-                <Link
-                  href={`/${currentLocale}/produkter`}
-                  className="block py-4 text-lg font-light text-gray-900 hover:text-amber-600 transition-colors border-b border-gray-100"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Produkter
-                </Link>
-                <Link
-                  href={`/${currentLocale}/om-oss`}
-                  className="block py-4 text-lg font-light text-gray-900 hover:text-amber-600 transition-colors border-b border-gray-100"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Om oss
-                </Link>
-                <Link
-                  href={`/${currentLocale}/kunskap`}
-                  className="block py-4 text-lg font-light text-gray-900 hover:text-amber-600 transition-colors border-b border-gray-100"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Kunskap
-                </Link>
-                <Link
-                  href={`/${currentLocale}/kontakt`}
-                  className="block py-4 text-lg font-light text-gray-900 hover:text-amber-600 transition-colors border-b border-gray-100"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Kontakt
-                </Link>
-
-                {/* Account Link */}
-                <Link
-                  href={user ? `/${currentLocale}/dashboard` : `/${currentLocale}/auth/login`}
-                  className="block py-4 text-lg font-light text-gray-900 hover:text-amber-600 transition-colors border-b border-gray-100"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {user ? 'Mitt konto' : 'Logga in'}
-                </Link>
-              </nav>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
 
       <Footer />
     </div>
