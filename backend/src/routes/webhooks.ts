@@ -10,7 +10,16 @@ const router = Router()
  */
 router.post('/viva-wallet', async (req, res) => {
   try {
+    // Always respond with 200 OK first for Viva Wallet validation
+    res.status(200).send('OK')
+    
     const { OrderCode, StateId, Amount, TransactionId } = req.body
+    
+    // If this is just a validation ping (empty body), return early
+    if (!OrderCode && !StateId) {
+      logger.info('Received Viva Wallet validation ping')
+      return
+    }
     
     logger.info('Received Viva Wallet webhook', { 
       orderCode: OrderCode,
@@ -39,32 +48,31 @@ router.post('/viva-wallet', async (req, res) => {
         status = 'pending'
     }
     
-    // Process the webhook
-    await subscriptionService.processPaymentWebhook(OrderCode?.toString() || '', status)
-    
-    logger.info('Viva Wallet webhook processed successfully', {
-      orderCode: OrderCode,
-      status: status
-    })
-
-    // Respond to Viva Wallet with 200 OK
-    res.status(200).json({ 
-      success: true,
-      received: true,
-      orderCode: OrderCode
-    })
+    // Process the webhook asynchronously
+    subscriptionService.processPaymentWebhook(OrderCode?.toString() || '', status)
+      .then(() => {
+        logger.info('Viva Wallet webhook processed successfully', {
+          orderCode: OrderCode,
+          status: status
+        })
+      })
+      .catch((error) => {
+        logger.error('Error processing Viva Wallet webhook:', {
+          error: error.message,
+          orderCode: OrderCode
+        })
+      })
 
   } catch (error: any) {
-    logger.error('Error processing Viva Wallet webhook:', {
+    logger.error('Error in Viva Wallet webhook handler:', {
       error: error.message,
       body: req.body
     })
     
-    // Still respond with 200 to prevent Viva Wallet from retrying
-    res.status(200).json({
-      success: false,
-      error: 'Webhook processing failed'
-    })
+    // Still respond with 200 OK
+    if (!res.headersSent) {
+      res.status(200).send('OK')
+    }
   }
 })
 
