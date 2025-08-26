@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import axios from 'axios'
 import { logger } from '../utils/logger'
 import { subscriptionService } from '../services/subscriptionService'
 
@@ -8,9 +9,41 @@ const router = Router()
  * Viva Wallet webhook validation endpoint (GET)
  * GET /api/webhooks/viva-wallet
  */
-router.get('/viva-wallet', (req, res) => {
-  logger.info('Received Viva Wallet webhook validation request (GET)')
-  res.status(200).send('OK')
+router.get('/viva-wallet', async (req, res) => {
+  try {
+    logger.info('Received Viva Wallet webhook validation request (GET)')
+    
+    // Get Viva Wallet credentials from environment
+    const merchantId = process.env.VIVA_WALLET_MERCHANT_ID
+    const apiKey = process.env.VIVA_WALLET_API_KEY
+    const baseUrl = process.env.VIVA_WALLET_BASE_URL || 'https://api.vivapayments.com'
+    
+    if (!merchantId || !apiKey) {
+      logger.error('Viva Wallet credentials not configured for webhook validation')
+      return res.status(500).json({ error: 'Webhook validation not configured' })
+    }
+    
+    // Create Basic Auth header
+    const credentials = Buffer.from(`${merchantId}:${apiKey}`).toString('base64')
+    
+    // Request verification key from Viva Wallet
+    const response = await axios({
+      method: 'GET',
+      url: `${baseUrl}/api/messages/config/token`,
+      headers: {
+        'Authorization': `Basic ${credentials}`
+      }
+    })
+    
+    logger.info('Successfully retrieved Viva Wallet verification key')
+    
+    // Return the key in the expected format
+    res.status(200).json({ Key: response.data.Key })
+    
+  } catch (error: any) {
+    logger.error('Failed to validate Viva Wallet webhook', { error: error.message })
+    res.status(500).json({ error: 'Webhook validation failed' })
+  }
 })
 
 /**
