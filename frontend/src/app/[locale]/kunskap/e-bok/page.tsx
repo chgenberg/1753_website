@@ -121,7 +121,7 @@ export default function EBookPage() {
         </div>
 
         {/* White Navigation on top of hero */}
-        <nav className="absolute top-0 left-0 right-0 z-20 p-6 md:p-8">
+        <nav className="absolute top-0 left-0 right-0 z-30 p-6 md:p-8">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link href={`/${currentLocale}`} className="block">
@@ -160,7 +160,10 @@ export default function EBookPage() {
 
               {/* Hamburger Menu */}
               <button 
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                onClick={() => {
+                  console.log('Menu clicked, current state:', mobileMenuOpen)
+                  setMobileMenuOpen(!mobileMenuOpen)
+                }}
                 className="p-2 hover:opacity-70 transition-opacity"
               >
                 {mobileMenuOpen ? (
