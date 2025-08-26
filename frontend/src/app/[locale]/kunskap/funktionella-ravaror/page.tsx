@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Header } from '@/components/layout/Header'
+
 import { Footer } from '@/components/layout/Footer'
 import { ChevronDown, ChevronUp, ChevronRight, ShoppingBag, User } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -288,9 +288,6 @@ export default function FunctionalRawMaterialsPage() {
             </motion.div>
           </div>
         </section>
-
-        {/* Navigation Header for content sections */}
-        <Header />
 
         {/* Introduction Section */}
         <section className="py-16 md:py-24 bg-gradient-to-b from-amber-50 to-white">
