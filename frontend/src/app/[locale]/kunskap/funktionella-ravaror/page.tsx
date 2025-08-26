@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 
 import { Footer } from '@/components/layout/Footer'
-import { ChevronDown, ChevronUp, ChevronRight, ShoppingBag, User } from 'lucide-react'
+import { ChevronDown, ChevronUp, ChevronRight, ShoppingBag, User, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { usePathname } from 'next/navigation'
 import { useCart } from '@/contexts/CartContext'
@@ -217,41 +217,25 @@ export default function FunctionalRawMaterialsPage() {
           </div>
 
           {/* White Navigation on top of hero - positioned at very top */}
-          <nav className="absolute top-0 left-0 right-0 z-20 p-4 md:p-6">
+          <nav className="absolute top-0 left-0 right-0 z-20 p-6 md:p-8">
             <div className="flex items-center justify-between">
               {/* Logo */}
               <Link href={`/${currentLocale}`} className="block">
                 <Image
                   src="/1753_white.png"
                   alt="1753 Skincare"
-                  width={240}
-                  height={96}
+                  width={200}
+                  height={80}
                   className="h-16 md:h-24 w-auto"
                   priority
                 />
               </Link>
 
-              {/* Desktop Navigation Links */}
-              <div className="hidden md:flex items-center gap-8">
-                <Link href={`/${currentLocale}/produkter`} className="text-white hover:text-amber-200 transition-colors font-light">
-                  Produkter
-                </Link>
-                <Link href={`/${currentLocale}/om-oss`} className="text-white hover:text-amber-200 transition-colors font-light">
-                  Om oss
-                </Link>
-                <Link href={`/${currentLocale}/kunskap`} className="text-white hover:text-amber-200 transition-colors font-light">
-                  Kunskap
-                </Link>
-                <Link href={`/${currentLocale}/kontakt`} className="text-white hover:text-amber-200 transition-colors font-light">
-                  Kontakt
-                </Link>
-              </div>
-
-              {/* Right Navigation Icons */}
-              <div className="flex items-center gap-2">
+              {/* Right side icons */}
+              <div className="flex items-center gap-4">
                 {/* Cart Icon */}
-                <button 
-                  onClick={openCart} 
+                <button
+                  onClick={openCart}
                   className="relative p-2 hover:opacity-70 transition-opacity"
                 >
                   <ShoppingBag className="w-6 h-6 text-white" />
@@ -262,22 +246,36 @@ export default function FunctionalRawMaterialsPage() {
                   )}
                 </button>
 
-                {/* Account Icon */}
-                <Link 
+                {/* Profile Icon */}
+                <Link
                   href={user ? `/${currentLocale}/dashboard` : `/${currentLocale}/auth/login`}
                   className="p-2 hover:opacity-70 transition-opacity"
                 >
                   <User className="w-6 h-6 text-white" />
                 </Link>
 
-                {/* Mobile Menu Button */}
+                {/* Hamburger Menu */}
                 <button 
                   onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                   className="p-2 hover:opacity-70 transition-opacity"
                 >
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                  </svg>
+                  {mobileMenuOpen ? (
+                    <X className="w-6 h-6 text-white" />
+                  ) : (
+                    <svg
+                      className="w-6 h-6 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 6h16M4 12h16M4 18h16"
+                      />
+                    </svg>
+                  )}
                 </button>
               </div>
             </div>
