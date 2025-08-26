@@ -87,7 +87,7 @@ export function Header() {
               alt="1753 Skincare"
               width={150}
               height={60}
-              className="h-12 md:h-16 w-auto"
+              className="h-16 md:h-24 w-auto"
               priority
             />
           </Link>

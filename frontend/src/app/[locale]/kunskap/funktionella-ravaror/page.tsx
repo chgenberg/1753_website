@@ -220,7 +220,7 @@ export default function FunctionalRawMaterialsPage() {
                   alt="1753 Skincare"
                   width={200}
                   height={80}
-                  className="h-12 md:h-16 w-auto"
+                  className="h-16 md:h-24 w-auto"
                   priority
                 />
               </Link>
