@@ -178,13 +178,13 @@ export default function FunctionalRawMaterialsPage() {
       <Header />
       <div className="min-h-screen bg-gray-50 pt-24">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-b from-amber-50 to-white py-20">
+      <section className="relative bg-gradient-to-b from-amber-50 to-white py-16 md:py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-light text-gray-900 mb-6">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-light text-gray-900 mb-6 break-words">
               Funktionella Råvaror för Hudhälsa
             </h1>
-            <p className="text-lg text-gray-600 mb-8">
+            <p className="text-base sm:text-lg text-gray-600 mb-8 break-words px-2">
               Upptäck kraften i naturens råvaror som arbetar via gut-skin-axeln för att 
               förbättra din hudhälsa inifrån och ut. Baserat på vetenskaplig forskning.
             </p>
@@ -228,10 +228,10 @@ export default function FunctionalRawMaterialsPage() {
                   >
                     <button
                       onClick={() => toggleExpanded(material.id)}
-                      className="w-full p-6 text-left focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 rounded-2xl"
+                      className="w-full p-4 sm:p-6 text-left focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 rounded-2xl"
                     >
                       <div className="flex items-start justify-between">
-                        <div className="flex items-start gap-4 flex-1">
+                        <div className="flex items-start gap-3 sm:gap-4 flex-1">
                           {/* Image */}
                           <div className="flex-shrink-0">
                             {material.thumbnail ? (
@@ -264,16 +264,16 @@ export default function FunctionalRawMaterialsPage() {
                             )}
                           </div>
                           
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-1">
-                              <h3 className="text-lg font-semibold text-gray-900">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-2 mb-1">
+                              <h3 className="text-lg font-semibold text-gray-900 break-words">
                                 {material.swedishName}
                               </h3>
-                              <span className="text-sm text-gray-500">
+                              <span className="text-sm text-gray-500 whitespace-nowrap">
                                 {material.origin}
                               </span>
                             </div>
-                            <p className="text-gray-600">
+                            <p className="text-gray-600 break-words">
                               {material.description}
                             </p>
                           </div>
@@ -306,7 +306,7 @@ export default function FunctionalRawMaterialsPage() {
                                   {material.healthBenefits.map((benefit, index) => (
                                     <li key={index} className="flex items-start gap-2">
                                       <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-1.5 flex-shrink-0"></div>
-                                      <span className="text-sm text-gray-700">{benefit}</span>
+                                      <span className="text-sm text-gray-700 break-words">{benefit}</span>
                                     </li>
                                   ))}
                                 </ul>
@@ -320,7 +320,7 @@ export default function FunctionalRawMaterialsPage() {
                                   {material.nutrients.map((nutrient, index) => (
                                     <span
                                       key={index}
-                                      className="px-3 py-1 bg-amber-50 text-amber-700 rounded-full text-sm"
+                                      className="px-2 sm:px-3 py-1 bg-amber-50 text-amber-700 rounded-full text-xs sm:text-sm break-all"
                                     >
                                       {nutrient}
                                     </span>
@@ -341,13 +341,13 @@ export default function FunctionalRawMaterialsPage() {
       </section>
 
       {/* Info Section */}
-      <section className="py-16 bg-amber-50/50">
+      <section className="py-12 md:py-16 bg-amber-50/50">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl font-light text-gray-900 mb-6">
+            <h2 className="text-2xl sm:text-3xl font-light text-gray-900 mb-6 break-words">
               Gut-Skin-Axeln
             </h2>
-            <p className="text-lg text-gray-600 mb-8">
+            <p className="text-base sm:text-lg text-gray-600 mb-8 break-words px-2">
               Forskning visar att det finns en stark koppling mellan tarmhälsa och hudhälsa. 
               Genom att äta rätt funktionella råvaror kan du stödja både din tarmflora och 
               din hud för optimal hälsa och skönhet inifrån.
