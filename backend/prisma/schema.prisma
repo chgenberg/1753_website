@@ -484,6 +484,7 @@ model Product {
   discounts     ProductDiscount[]
   ingredients   IngredientInfo[] @relation("ProductIngredients")
   translations  ProductTranslation[]
+  subscriptionAddOns SubscriptionAddOn[]
   
   @@map("products")
 }
@@ -1029,7 +1030,7 @@ model Subscription {
   id                    String              @id @default(cuid())
   userId                String
   planId                String
-  status                SubscriptionStatus  @default(ACTIVE)
+  status                SubscriptionStatus
   currentPeriodStart    DateTime
   currentPeriodEnd      DateTime
   trialStart            DateTime?
@@ -1038,6 +1039,16 @@ model Subscription {
   cancelAtPeriodEnd     Boolean             @default(false)
   vivaCustomerToken     String?             // Viva Wallet customer token
   vivaPaymentMethodId   String?             // Viva Wallet payment method ID
+  
+  // New pause functionality
+  pausedAt              DateTime?
+  pausedUntil           DateTime?
+  pauseReason           String?
+  
+  // Frequency modification
+  customInterval        String?             // Override plan interval: monthly, quarterly, yearly
+  customIntervalCount   Int?                // Override plan interval count
+  
   metadata              Json?
   createdAt             DateTime            @default(now())
   updatedAt             DateTime            @updatedAt
@@ -1047,6 +1058,7 @@ model Subscription {
   plan                  SubscriptionPlan    @relation(fields: [planId], references: [id])
   invoices              Invoice[]
   usageRecords          UsageRecord[]
+  addOnOrders           SubscriptionAddOn[]
 
   @@map("subscriptions")
 }
@@ -1093,6 +1105,36 @@ enum SubscriptionStatus {
   UNPAID
   INCOMPLETE
   INCOMPLETE_EXPIRED
+  PAUSED
+}
+
+// Subscription add-on orders (extra products with subscriber discount)
+model SubscriptionAddOn {
+  id                String              @id @default(cuid())
+  subscriptionId    String
+  productId         String
+  quantity          Int                 @default(1)
+  originalPrice     Float               // Original product price
+  discountPercent   Float               // Subscriber discount percentage
+  finalPrice        Float               // Price after discount
+  status            AddOnOrderStatus    @default(PENDING)
+  orderedAt         DateTime            @default(now())
+  shippedAt         DateTime?
+  deliveredAt       DateTime?
+  
+  // Relations
+  subscription      Subscription        @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  product           Product             @relation(fields: [productId], references: [id])
+  
+  @@map("subscription_addons")
+}
+
+enum AddOnOrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELED
 }
 
 enum InvoiceStatus {

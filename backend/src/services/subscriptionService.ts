@@ -1,4 +1,4 @@
-import { PrismaClient, SubscriptionStatus, InvoiceStatus } from '@prisma/client'
+import { PrismaClient, SubscriptionStatus, InvoiceStatus, AddOnOrderStatus } from '@prisma/client'
 import { vivaWalletService } from './vivaWalletService'
 import { logger } from '../utils/logger'
 import { addDays, addMonths, addYears } from 'date-fns'
@@ -76,7 +76,7 @@ export class SubscriptionService {
       let currentPeriodEnd = this.calculateNextBillingDate(now, plan.interval, plan.intervalCount)
       let trialStart = null
       let trialEnd = null
-      let status = SubscriptionStatus.ACTIVE
+      let status: SubscriptionStatus = SubscriptionStatus.ACTIVE
 
       // Handle trial period
       if (plan.trialDays && plan.trialDays > 0) {
@@ -354,7 +354,11 @@ export class SubscriptionService {
       // Find invoice by Viva order ID
       const invoice = await prisma.invoice.findFirst({
         where: { vivaOrderId: orderCode },
-        include: { subscription: true }
+        include: { 
+          subscription: {
+            include: { plan: true }
+          }
+        }
       })
 
       if (!invoice) {
@@ -416,6 +420,312 @@ export class SubscriptionService {
         orderCode,
         error: error.message 
       })
+    }
+  }
+
+  /**
+   * Pause a subscription for 1-3 months
+   */
+  async pauseSubscription(subscriptionId: string, pauseMonths: number, reason?: string) {
+    try {
+      if (pauseMonths < 1 || pauseMonths > 3) {
+        throw new Error('Pause duration must be between 1-3 months')
+      }
+
+      const subscription = await prisma.subscription.findUnique({
+        where: { id: subscriptionId },
+        include: { plan: true }
+      })
+
+      if (!subscription) {
+        throw new Error('Subscription not found')
+      }
+
+      if (subscription.status !== SubscriptionStatus.ACTIVE) {
+        throw new Error('Only active subscriptions can be paused')
+      }
+
+      const pausedAt = new Date()
+      const pausedUntil = addMonths(pausedAt, pauseMonths)
+
+      const updatedSubscription = await prisma.subscription.update({
+        where: { id: subscriptionId },
+        data: {
+          status: SubscriptionStatus.PAUSED,
+          pausedAt,
+          pausedUntil,
+          pauseReason: reason,
+          // Extend current period by pause duration
+          currentPeriodEnd: addMonths(subscription.currentPeriodEnd, pauseMonths)
+        },
+        include: { plan: true }
+      })
+
+      logger.info('Subscription paused', {
+        subscriptionId,
+        pauseMonths,
+        pausedUntil,
+        reason
+      })
+
+      return updatedSubscription
+    } catch (error: any) {
+      logger.error('Failed to pause subscription', {
+        subscriptionId,
+        error: error.message
+      })
+      throw new Error(`Failed to pause subscription: ${error.message}`)
+    }
+  }
+
+  /**
+   * Resume a paused subscription
+   */
+  async resumeSubscription(subscriptionId: string) {
+    try {
+      const subscription = await prisma.subscription.findUnique({
+        where: { id: subscriptionId },
+        include: { plan: true }
+      })
+
+      if (!subscription) {
+        throw new Error('Subscription not found')
+      }
+
+      if (subscription.status !== SubscriptionStatus.PAUSED) {
+        throw new Error('Only paused subscriptions can be resumed')
+      }
+
+      const updatedSubscription = await prisma.subscription.update({
+        where: { id: subscriptionId },
+        data: {
+          status: SubscriptionStatus.ACTIVE,
+          pausedAt: null,
+          pausedUntil: null,
+          pauseReason: null
+        },
+        include: { plan: true }
+      })
+
+      logger.info('Subscription resumed', { subscriptionId })
+
+      return updatedSubscription
+    } catch (error: any) {
+      logger.error('Failed to resume subscription', {
+        subscriptionId,
+        error: error.message
+      })
+      throw new Error(`Failed to resume subscription: ${error.message}`)
+    }
+  }
+
+  /**
+   * Change subscription delivery frequency
+   */
+  async changeSubscriptionFrequency(
+    subscriptionId: string,
+    newInterval: 'monthly' | 'quarterly' | 'yearly',
+    newIntervalCount: number = 1
+  ) {
+    try {
+      const subscription = await prisma.subscription.findUnique({
+        where: { id: subscriptionId },
+        include: { plan: true }
+      })
+
+      if (!subscription) {
+        throw new Error('Subscription not found')
+      }
+
+      if (subscription.status === SubscriptionStatus.CANCELED) {
+        throw new Error('Cannot change frequency of canceled subscription')
+      }
+
+      // Calculate new period end based on new frequency
+      const currentPeriodStart = subscription.currentPeriodStart
+      const newPeriodEnd = this.calculateNextBillingDate(
+        currentPeriodStart,
+        newInterval,
+        newIntervalCount
+      )
+
+      const updatedSubscription = await prisma.subscription.update({
+        where: { id: subscriptionId },
+        data: {
+          customInterval: newInterval,
+          customIntervalCount: newIntervalCount,
+          currentPeriodEnd: newPeriodEnd
+        },
+        include: { plan: true }
+      })
+
+      logger.info('Subscription frequency changed', {
+        subscriptionId,
+        oldInterval: subscription.plan.interval,
+        oldIntervalCount: subscription.plan.intervalCount,
+        newInterval,
+        newIntervalCount
+      })
+
+      return updatedSubscription
+    } catch (error: any) {
+      logger.error('Failed to change subscription frequency', {
+        subscriptionId,
+        error: error.message
+      })
+      throw new Error(`Failed to change frequency: ${error.message}`)
+    }
+  }
+
+  /**
+   * Add extra product to subscription with subscriber discount
+   */
+  async addSubscriptionProduct(
+    subscriptionId: string,
+    productId: string,
+    quantity: number = 1,
+    discountPercent: number = 15 // Default 15% subscriber discount
+  ) {
+    try {
+      const subscription = await prisma.subscription.findUnique({
+        where: { id: subscriptionId },
+        include: { plan: true }
+      })
+
+      if (!subscription) {
+        throw new Error('Subscription not found')
+      }
+
+      if (subscription.status !== SubscriptionStatus.ACTIVE) {
+        throw new Error('Only active subscriptions can add products')
+      }
+
+      const product = await prisma.product.findUnique({
+        where: { id: productId }
+      })
+
+      if (!product) {
+        throw new Error('Product not found')
+      }
+
+      if (!product.isActive) {
+        throw new Error('Product is not available')
+      }
+
+      const originalPrice = product.price
+      const discountAmount = (originalPrice * discountPercent) / 100
+      const finalPrice = originalPrice - discountAmount
+
+      const addOnOrder = await prisma.subscriptionAddOn.create({
+        data: {
+          subscriptionId,
+          productId,
+          quantity,
+          originalPrice,
+          discountPercent,
+          finalPrice: finalPrice * quantity
+        },
+        include: {
+          product: true,
+          subscription: {
+            include: { plan: true, user: true }
+          }
+        }
+      })
+
+      // Create payment order for the add-on
+      const vivaOrder = await vivaWalletService.createSubscriptionOrder({
+        amount: addOnOrder.finalPrice,
+        currency: 'SEK',
+        customerEmail: addOnOrder.subscription.user.email,
+        customerName: `${addOnOrder.subscription.user.firstName} ${addOnOrder.subscription.user.lastName}`,
+        customerPhone: addOnOrder.subscription.user.phone || undefined,
+        description: `Add-on: ${product.name} (${discountPercent}% subscriber discount)`,
+        allowRecurring: false
+      })
+
+      logger.info('Subscription add-on product created', {
+        subscriptionId,
+        productId,
+        quantity,
+        originalPrice,
+        finalPrice: addOnOrder.finalPrice,
+        discountPercent,
+        orderCode: vivaOrder.orderCode
+      })
+
+      return {
+        addOnOrder,
+        paymentUrl: vivaWalletService.getPaymentUrl(vivaOrder.orderCode)
+      }
+    } catch (error: any) {
+      logger.error('Failed to add subscription product', {
+        subscriptionId,
+        productId,
+        error: error.message
+      })
+      throw new Error(`Failed to add product: ${error.message}`)
+    }
+  }
+
+  /**
+   * Get subscription add-on orders
+   */
+  async getSubscriptionAddOns(subscriptionId: string) {
+    try {
+      const addOns = await prisma.subscriptionAddOn.findMany({
+        where: { subscriptionId },
+        include: { product: true },
+        orderBy: { orderedAt: 'desc' }
+      })
+
+      return addOns
+    } catch (error: any) {
+      logger.error('Failed to get subscription add-ons', {
+        subscriptionId,
+        error: error.message
+      })
+      throw new Error(`Failed to get add-ons: ${error.message}`)
+    }
+  }
+
+  /**
+   * Get effective billing interval for subscription (considering custom frequency)
+   */
+  private getEffectiveInterval(subscription: any): { interval: string; intervalCount: number } {
+    return {
+      interval: subscription.customInterval || subscription.plan.interval,
+      intervalCount: subscription.customIntervalCount || subscription.plan.intervalCount
+    }
+  }
+
+  /**
+   * Check if subscription should be automatically resumed from pause
+   */
+  async checkAndResumeExpiredPauses() {
+    try {
+      const now = new Date()
+      const expiredPauses = await prisma.subscription.findMany({
+        where: {
+          status: SubscriptionStatus.PAUSED,
+          pausedUntil: {
+            lte: now
+          }
+        },
+        include: { plan: true }
+      })
+
+      for (const subscription of expiredPauses) {
+        await this.resumeSubscription(subscription.id)
+        logger.info('Auto-resumed subscription from expired pause', {
+          subscriptionId: subscription.id
+        })
+      }
+
+      return expiredPauses.length
+    } catch (error: any) {
+      logger.error('Failed to check expired pauses', { error: error.message })
+      return 0
     }
   }
 }

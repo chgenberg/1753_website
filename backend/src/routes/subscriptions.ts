@@ -120,6 +120,140 @@ router.post('/:subscriptionId/renew', async (req, res) => {
 })
 
 /**
+ * Pause a subscription
+ */
+router.post('/:subscriptionId/pause', auth, async (req, res) => {
+  try {
+    const { subscriptionId } = req.params
+    const { pauseMonths, reason } = req.body
+    
+    // TODO: Check if user owns this subscription
+    const subscription = await subscriptionService.pauseSubscription(
+      subscriptionId,
+      pauseMonths,
+      reason
+    )
+    
+    res.json(subscription)
+  } catch (error: any) {
+    logger.error('Failed to pause subscription', { 
+      subscriptionId: req.params.subscriptionId,
+      error: error.message 
+    })
+    res.status(500).json({ error: 'Failed to pause subscription' })
+  }
+})
+
+/**
+ * Resume a paused subscription
+ */
+router.post('/:subscriptionId/resume', auth, async (req, res) => {
+  try {
+    const { subscriptionId } = req.params
+    
+    // TODO: Check if user owns this subscription
+    const subscription = await subscriptionService.resumeSubscription(subscriptionId)
+    
+    res.json(subscription)
+  } catch (error: any) {
+    logger.error('Failed to resume subscription', { 
+      subscriptionId: req.params.subscriptionId,
+      error: error.message 
+    })
+    res.status(500).json({ error: 'Failed to resume subscription' })
+  }
+})
+
+/**
+ * Change subscription frequency
+ */
+router.post('/:subscriptionId/frequency', auth, async (req, res) => {
+  try {
+    const { subscriptionId } = req.params
+    const { interval, intervalCount } = req.body
+    
+    // TODO: Check if user owns this subscription
+    const subscription = await subscriptionService.changeSubscriptionFrequency(
+      subscriptionId,
+      interval,
+      intervalCount
+    )
+    
+    res.json(subscription)
+  } catch (error: any) {
+    logger.error('Failed to change subscription frequency', { 
+      subscriptionId: req.params.subscriptionId,
+      error: error.message 
+    })
+    res.status(500).json({ error: 'Failed to change frequency' })
+  }
+})
+
+/**
+ * Add extra product to subscription with discount
+ */
+router.post('/:subscriptionId/add-product', auth, async (req, res) => {
+  try {
+    const { subscriptionId } = req.params
+    const { productId, quantity, discountPercent } = req.body
+    
+    // TODO: Check if user owns this subscription
+    const result = await subscriptionService.addSubscriptionProduct(
+      subscriptionId,
+      productId,
+      quantity,
+      discountPercent
+    )
+    
+    res.status(201).json(result)
+  } catch (error: any) {
+    logger.error('Failed to add subscription product', { 
+      subscriptionId: req.params.subscriptionId,
+      error: error.message 
+    })
+    res.status(500).json({ error: 'Failed to add product' })
+  }
+})
+
+/**
+ * Get subscription add-on orders
+ */
+router.get('/:subscriptionId/add-ons', auth, async (req, res) => {
+  try {
+    const { subscriptionId } = req.params
+    
+    // TODO: Check if user owns this subscription
+    const addOns = await subscriptionService.getSubscriptionAddOns(subscriptionId)
+    
+    res.json(addOns)
+  } catch (error: any) {
+    logger.error('Failed to get subscription add-ons', { 
+      subscriptionId: req.params.subscriptionId,
+      error: error.message 
+    })
+    res.status(500).json({ error: 'Failed to get add-ons' })
+  }
+})
+
+/**
+ * Check and resume expired pauses (cron job)
+ */
+router.post('/maintenance/resume-expired', async (req, res) => {
+  try {
+    // TODO: Add API key authentication for cron jobs
+    const resumedCount = await subscriptionService.checkAndResumeExpiredPauses()
+    
+    res.json({ 
+      message: `Resumed ${resumedCount} expired paused subscriptions`,
+      resumedCount 
+    })
+  } catch (error: any) {
+    logger.error('Failed to resume expired pauses', { error: error.message })
+    res.status(500).json({ error: 'Failed to resume expired pauses' })
+  }
+})
+
+/**
  * Viva Wallet webhook for payment notifications
  */
 router.post('/webhook/viva', async (req, res) => {
