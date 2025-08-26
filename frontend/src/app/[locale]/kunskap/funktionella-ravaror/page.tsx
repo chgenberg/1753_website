@@ -193,11 +193,6 @@ export default function FunctionalRawMaterialsPage() {
       <div className="min-h-screen bg-gray-50">
         {/* Hero Section with Background Image */}
         <section className="relative h-screen min-h-[600px] overflow-hidden">
-          {/* Debug info - remove in production */}
-          <div className="absolute top-0 left-0 z-50 bg-red-500 text-white p-2 text-xs">
-            Debug: Hero section loaded
-          </div>
-          
           {/* Background Image with fallback */}
           <div className="absolute inset-0 z-0 bg-gradient-to-br from-green-900 via-green-800 to-green-700">
             <Image
@@ -213,9 +208,7 @@ export default function FunctionalRawMaterialsPage() {
               onError={(e) => {
                 console.error('Image failed to load:', e);
               }}
-              onLoad={() => {
-                console.log('Image loaded successfully');
-              }}
+
             />
             {/* Gradient overlay for better text readability */}
             <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/30" />
