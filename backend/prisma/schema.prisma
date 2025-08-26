@@ -48,6 +48,7 @@ model User {
   videoWatchHistory    VideoWatchHistory[]
   expertConsultations  ExpertConsultation[]
   personalizedSuggestions PersonalizedSuggestion[]
+  subscriptions        Subscription[]
   
   @@map("users")
 }
@@ -1001,4 +1002,102 @@ model IngredientInfoTranslation {
   ingredient      IngredientInfo @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
   @@unique([ingredientId, locale])
   @@map("ingredient_translations")
+}
+
+// Subscription models for SaaS service
+model SubscriptionPlan {
+  id                String   @id @default(cuid())
+  name              String
+  description       String?
+  price             Float
+  currency          String   @default("SEK")
+  interval          String   // monthly, quarterly, yearly
+  intervalCount     Int      @default(1)
+  trialDays         Int?     @default(0)
+  features          Json?    // Array of features included
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  subscriptions     Subscription[]
+  
+  @@map("subscription_plans")
+}
+
+model Subscription {
+  id                    String              @id @default(cuid())
+  userId                String
+  planId                String
+  status                SubscriptionStatus  @default(ACTIVE)
+  currentPeriodStart    DateTime
+  currentPeriodEnd      DateTime
+  trialStart            DateTime?
+  trialEnd              DateTime?
+  canceledAt            DateTime?
+  cancelAtPeriodEnd     Boolean             @default(false)
+  vivaCustomerToken     String?             // Viva Wallet customer token
+  vivaPaymentMethodId   String?             // Viva Wallet payment method ID
+  metadata              Json?
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+
+  // Relations
+  user                  User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan                  SubscriptionPlan    @relation(fields: [planId], references: [id])
+  invoices              Invoice[]
+  usageRecords          UsageRecord[]
+
+  @@map("subscriptions")
+}
+
+model Invoice {
+  id                String        @id @default(cuid())
+  subscriptionId    String
+  amount            Float
+  currency          String        @default("SEK")
+  status            InvoiceStatus @default(PENDING)
+  dueDate           DateTime
+  paidAt            DateTime?
+  vivaOrderId       String?       // Viva Wallet order ID
+  vivaPaymentId     String?       // Viva Wallet payment ID
+  metadata          Json?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  // Relations
+  subscription      Subscription  @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  @@map("invoices")
+}
+
+model UsageRecord {
+  id             String       @id @default(cuid())
+  subscriptionId String
+  feature        String       // e.g., "api_calls", "storage_gb", "consultations"
+  quantity       Int
+  recordedAt     DateTime     @default(now())
+  metadata       Json?
+
+  // Relations
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  @@map("usage_records")
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  TRIALING
+  PAST_DUE
+  CANCELED
+  UNPAID
+  INCOMPLETE
+  INCOMPLETE_EXPIRED
+}
+
+enum InvoiceStatus {
+  PENDING
+  PAID
+  FAILED
+  CANCELED
 }

@@ -1,235 +1,279 @@
-import axios, { AxiosResponse } from 'axios'
+import axios from 'axios'
 import { logger } from '../utils/logger'
 
-interface VivaWalletCredentials {
+interface VivaWalletConfig {
   merchantId: string
   apiKey: string
   sourceCode: string
   baseUrl: string
 }
 
-interface SmartCheckoutOrder {
-  amount: number // Amount in cents
-  customerTrns: string // Customer description
+interface CreateOrderRequest {
+  amount: number
+  currency: string
+  customerTrns: string
   customer: {
     email: string
     fullName: string
     phone?: string
-    countryCode?: string
-    requestLang?: string
   }
   paymentTimeout?: number
-  merchantTrns?: string
-  tags?: string[]
+  preauth?: boolean
   allowRecurring?: boolean
-  maxInstallments?: number
-  disableExactAmount?: boolean
-  disableCash?: boolean
-  disableWallet?: boolean
 }
 
-interface SmartCheckoutResponse {
+interface CreateOrderResponse {
   orderCode: number
-  qrCodeUrl?: string
-  redirectUrl?: string
+  errorCode: number
+  errorText: string
+  timeStamp: string
+  correlationId: string
 }
 
-interface PaymentResult {
-  orderId: string
-  status: 'pending' | 'completed' | 'failed' | 'cancelled'
+interface PaymentResponse {
+  email: string
   amount: number
-  transactionId?: string
-  errorMessage?: string
+  orderCode: number
+  statusId: string
+  fullName: string
+  insDate: string
+  cardNumber: string
+  currencyCode: string
+  customerTrns: string
+  merchantTrns: string
+  transactionTypeId: number
 }
 
-class VivaWalletService {
-  private credentials: VivaWalletCredentials
+export class VivaWalletService {
+  private config: VivaWalletConfig
 
   constructor() {
-    this.credentials = {
+    this.config = {
       merchantId: process.env.VIVA_MERCHANT_ID || '',
       apiKey: process.env.VIVA_API_KEY || '',
-      sourceCode: process.env.VIVA_SOURCE_CODE || '1753_SKINCARE',
-      baseUrl: process.env.VIVA_BASE_URL || 'https://api.vivapayments.com'
+      sourceCode: process.env.VIVA_SOURCE_CODE || '',
+      baseUrl: process.env.VIVA_BASE_URL || 'https://demo.vivapayments.com' // Use demo for testing
     }
 
-    if (!this.credentials.merchantId || !this.credentials.apiKey) {
-      logger.warn('Viva Wallet Smart Checkout credentials not configured')
-    }
-  }
-
-  /**
-   * Get authentication headers for Smart Checkout
-   */
-  private getHeaders() {
-    return {
-      'Authorization': `Basic ${Buffer.from(`:${this.credentials.apiKey}`).toString('base64')}`,
-      'Content-Type': 'application/json'
+    if (!this.config.merchantId || !this.config.apiKey || !this.config.sourceCode) {
+      logger.warn('Viva Wallet credentials not configured')
     }
   }
 
   /**
-   * Create Smart Checkout payment order
+   * Create a payment order for subscription
    */
-  async createPaymentOrder(orderData: SmartCheckoutOrder): Promise<SmartCheckoutResponse> {
+  async createSubscriptionOrder(params: {
+    amount: number
+    currency: string
+    customerEmail: string
+    customerName: string
+    customerPhone?: string
+    description: string
+    allowRecurring?: boolean
+  }): Promise<CreateOrderResponse> {
     try {
-      const payload = {
-        amount: orderData.amount,
-        customerTrns: orderData.customerTrns,
+      const orderData: CreateOrderRequest = {
+        amount: Math.round(params.amount * 100), // Convert to cents
+        currency: params.currency,
+        customerTrns: params.description,
         customer: {
-          email: orderData.customer.email,
-          fullName: orderData.customer.fullName,
-          phone: orderData.customer.phone,
-          countryCode: orderData.customer.countryCode || 'SE',
-          requestLang: orderData.customer.requestLang || 'sv-SE'
+          email: params.customerEmail,
+          fullName: params.customerName,
+          phone: params.customerPhone
         },
-        paymentTimeout: orderData.paymentTimeout || 1800, // 30 minutes
-        merchantTrns: orderData.merchantTrns,
-        tags: orderData.tags || [],
-        allowRecurring: orderData.allowRecurring || false,
-        maxInstallments: orderData.maxInstallments || 1,
-        disableExactAmount: orderData.disableExactAmount || false,
-        disableCash: orderData.disableCash || false,
-        disableWallet: orderData.disableWallet || false,
-        sourceCode: this.credentials.sourceCode
+        paymentTimeout: 300, // 5 minutes
+        allowRecurring: params.allowRecurring || true
       }
 
-      logger.info('Creating Viva Wallet Smart Checkout order', { 
-        amount: payload.amount,
-        customerEmail: payload.customer.email 
-      })
-      logger.info('Full payload being sent to Viva Wallet:', JSON.stringify(payload, null, 2))
-      logger.info('Headers being sent:', this.getHeaders())
-
-      const response: AxiosResponse<SmartCheckoutResponse> = await axios.post(
-        `${this.credentials.baseUrl}/checkout/v2/orders`,
-        payload,
-        { headers: this.getHeaders() }
+      const response = await axios.post(
+        `${this.config.baseUrl}/api/orders`,
+        orderData,
+        {
+          auth: {
+            username: this.config.merchantId,
+            password: this.config.apiKey
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
       )
 
-      logger.info(`Viva Wallet Smart Checkout order created: ${response.data.orderCode}`)
-      return response.data
+      logger.info('Viva Wallet order created', { 
+        orderCode: response.data.orderCode,
+        amount: params.amount,
+        currency: params.currency 
+      })
 
+      return response.data
     } catch (error: any) {
-      logger.error('Failed to create Viva Wallet Smart Checkout order:', error.response?.data || error.message)
-      logger.error('Error status:', error.response?.status)
-      logger.error('Error headers:', error.response?.headers)
-      logger.error('Full error object:', error)
-      
-      // Return more detailed error
-      const errorMessage = error.response?.data?.message || error.response?.data || error.message || 'Unknown error'
-      throw new Error(`Viva Wallet API error: ${JSON.stringify(errorMessage)}`)
+      logger.error('Failed to create Viva Wallet order', { 
+        error: error.message,
+        response: error.response?.data 
+      })
+      throw new Error(`Failed to create payment order: ${error.message}`)
     }
   }
 
   /**
-   * Get payment status
+   * Get payment URL for checkout
    */
-  async getPaymentStatus(orderCode: number): Promise<PaymentResult> {
+  getPaymentUrl(orderCode: number): string {
+    return `${this.config.baseUrl}/web/checkout?ref=${orderCode}&s=${this.config.sourceCode}`
+  }
+
+  /**
+   * Verify payment notification
+   */
+  async verifyPayment(orderCode: number): Promise<PaymentResponse | null> {
     try {
       const response = await axios.get(
-        `${this.credentials.baseUrl}/checkout/v2/orders/${orderCode}`,
-        { headers: this.getHeaders() }
+        `${this.config.baseUrl}/api/transactions`,
+        {
+          params: {
+            ordercode: orderCode
+          },
+          auth: {
+            username: this.config.merchantId,
+            password: this.config.apiKey
+          }
+        }
       )
 
-      const order = response.data
-      
-      return {
-        orderId: order.orderCode.toString(),
-        status: this.mapVivaStatus(order.stateId),
-        amount: order.requestAmount,
-        transactionId: order.transactionId
+      if (response.data && response.data.length > 0) {
+        const payment = response.data[0]
+        logger.info('Payment verified', { 
+          orderCode,
+          statusId: payment.statusId,
+          amount: payment.amount 
+        })
+        return payment
       }
 
+      return null
     } catch (error: any) {
-      logger.error('Failed to get Viva Wallet payment status:', error.response?.data || error.message)
-      return {
-        orderId: orderCode.toString(),
-        status: 'failed',
-        amount: 0,
-        errorMessage: 'Failed to check payment status'
-      }
+      logger.error('Failed to verify payment', { 
+        error: error.message,
+        orderCode 
+      })
+      throw new Error(`Failed to verify payment: ${error.message}`)
     }
   }
 
   /**
-   * Cancel payment order
+   * Create recurring payment for subscription renewal
    */
-  async cancelPaymentOrder(orderCode: number): Promise<boolean> {
+  async createRecurringPayment(params: {
+    originalOrderCode: number
+    amount: number
+    currency: string
+    description: string
+  }): Promise<CreateOrderResponse> {
+    try {
+      const orderData = {
+        amount: Math.round(params.amount * 100), // Convert to cents
+        currency: params.currency,
+        customerTrns: params.description,
+        sourceCode: this.config.sourceCode,
+        merchantTrns: `Recurring payment for order ${params.originalOrderCode}`
+      }
+
+      const response = await axios.post(
+        `${this.config.baseUrl}/api/orders/recurring`,
+        {
+          ...orderData,
+          originalOrderCode: params.originalOrderCode
+        },
+        {
+          auth: {
+            username: this.config.merchantId,
+            password: this.config.apiKey
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+
+      logger.info('Recurring payment created', { 
+        originalOrderCode: params.originalOrderCode,
+        newOrderCode: response.data.orderCode,
+        amount: params.amount 
+      })
+
+      return response.data
+    } catch (error: any) {
+      logger.error('Failed to create recurring payment', { 
+        error: error.message,
+        originalOrderCode: params.originalOrderCode 
+      })
+      throw new Error(`Failed to create recurring payment: ${error.message}`)
+    }
+  }
+
+  /**
+   * Cancel a recurring payment
+   */
+  async cancelRecurringPayment(orderCode: number): Promise<boolean> {
     try {
       await axios.delete(
-        `${this.credentials.baseUrl}/checkout/v2/orders/${orderCode}`,
-        { headers: this.getHeaders() }
+        `${this.config.baseUrl}/api/orders/recurring/${orderCode}`,
+        {
+          auth: {
+            username: this.config.merchantId,
+            password: this.config.apiKey
+          }
+        }
       )
 
-      logger.info(`Viva Wallet payment order cancelled: ${orderCode}`)
+      logger.info('Recurring payment cancelled', { orderCode })
       return true
-
     } catch (error: any) {
-      logger.error('Failed to cancel Viva Wallet payment order:', error.response?.data || error.message)
+      logger.error('Failed to cancel recurring payment', { 
+        error: error.message,
+        orderCode 
+      })
       return false
     }
   }
 
   /**
-   * Verify webhook signature for Smart Checkout
+   * Refund a payment
    */
-  verifyWebhookSignature(payload: string, signature: string): boolean {
+  async refundPayment(transactionId: string, amount?: number): Promise<boolean> {
     try {
-      // For Smart Checkout, signature verification is optional but recommended
-      // The signature is sent in the Authorization header as "Basic [signature]"
-      const crypto = require('crypto')
-      const expectedSignature = crypto
-        .createHmac('sha256', this.credentials.apiKey)
-        .update(payload)
-        .digest('hex')
-      
-      return signature === expectedSignature
-    } catch (error) {
-      logger.error('Failed to verify webhook signature:', error)
+      const refundData: any = {
+        transactionId
+      }
+
+      if (amount) {
+        refundData.amount = Math.round(amount * 100) // Convert to cents
+      }
+
+      await axios.post(
+        `${this.config.baseUrl}/api/transactions/refund`,
+        refundData,
+        {
+          auth: {
+            username: this.config.merchantId,
+            password: this.config.apiKey
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+
+      logger.info('Payment refunded', { transactionId, amount })
+      return true
+    } catch (error: any) {
+      logger.error('Failed to refund payment', { 
+        error: error.message,
+        transactionId 
+      })
       return false
     }
-  }
-
-  /**
-   * Process Smart Checkout webhook payload
-   */
-  processWebhook(payload: any): PaymentResult {
-    return {
-      orderId: payload.OrderCode?.toString() || '',
-      status: this.mapVivaStatus(payload.StateId),
-      amount: payload.Amount || 0,
-      transactionId: payload.TransactionId
-    }
-  }
-
-  /**
-   * Map Viva Wallet status to our internal status
-   */
-  private mapVivaStatus(stateId: number): 'pending' | 'completed' | 'failed' | 'cancelled' {
-    switch (stateId) {
-      case 0: return 'pending'     // Pending
-      case 1: return 'completed'   // Paid
-      case 2: return 'cancelled'   // Cancelled
-      case 3: return 'failed'      // Expired
-      case 4: return 'failed'      // Error
-      case 5: return 'failed'      // Refunded
-      default: return 'pending'
-    }
-  }
-
-  /**
-   * Create payment URL for redirect
-   */
-  createPaymentUrl(orderCode: number): string {
-    return `${this.credentials.baseUrl.replace('api.', 'www.')}/web/checkout?ref=${orderCode}`
-  }
-
-  /**
-   * Create Smart Checkout redirect URL with source code
-   */
-  createSmartCheckoutUrl(orderCode: number): string {
-    return `https://www.vivapayments.com/web/checkout?ref=${orderCode}&s=${this.credentials.sourceCode}`
   }
 
   /**
@@ -237,16 +281,19 @@ class VivaWalletService {
    */
   async testConnection(): Promise<boolean> {
     try {
-      // Test with a simple GET request to verify credentials
+      // Test with a simple request to verify credentials
       const response = await axios.get(
-        `${this.credentials.baseUrl}/checkout/v2/orders/0`, // This will return 404 but validate auth
+        `${this.config.baseUrl}/api/orders/0`, // This will return 404 but validate auth
         { 
-          headers: this.getHeaders(),
+          auth: {
+            username: this.config.merchantId,
+            password: this.config.apiKey
+          },
           validateStatus: (status) => status === 404 || status === 200 // 404 is expected for non-existent order
         }
       )
 
-      logger.info('Viva Wallet Smart Checkout connection test successful')
+      logger.info('Viva Wallet connection test successful')
       return true
     } catch (error: any) {
       if (error.response?.status === 401) {
@@ -255,7 +302,7 @@ class VivaWalletService {
       }
       if (error.response?.status === 404) {
         // 404 is expected when testing with order ID 0
-        logger.info('Viva Wallet Smart Checkout connection test successful (404 expected)')
+        logger.info('Viva Wallet connection test successful (404 expected)')
         return true
       }
       logger.error('Viva Wallet connection test failed:', error.response?.data || error.message)
@@ -269,8 +316,13 @@ class VivaWalletService {
   async getMerchantInfo(): Promise<any> {
     try {
       const response = await axios.get(
-        `${this.credentials.baseUrl}/api/merchants/${this.credentials.merchantId}`,
-        { headers: this.getHeaders() }
+        `${this.config.baseUrl}/api/merchants/${this.config.merchantId}`,
+        {
+          auth: {
+            username: this.config.merchantId,
+            password: this.config.apiKey
+          }
+        }
       )
 
       return response.data
@@ -281,5 +333,4 @@ class VivaWalletService {
   }
 }
 
-export const vivaWalletService = new VivaWalletService()
-export default vivaWalletService 
+export const vivaWalletService = new VivaWalletService() 
