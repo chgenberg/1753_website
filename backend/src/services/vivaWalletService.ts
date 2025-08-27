@@ -48,6 +48,7 @@ export class VivaWalletService {
   private config: VivaWalletConfig
   private accessToken: string | null = null
   private tokenExpiry: number = 0
+  private subscriptionSourceCode: string = process.env.VIVA_SOURCE_CODE_SUBSCRIPTION || ''
 
   constructor() {
     this.config = {
@@ -131,13 +132,13 @@ export class VivaWalletService {
         },
         paymentTimeout: 300,
         preauth: false,
-        allowRecurring: params.allowRecurring ?? false,
+        allowRecurring: params.allowRecurring ?? true,
         maxInstallments: 1,
         paymentNotification: true,
         disableExactAmount: false,
         disableCash: true,
         disableWallet: false,
-        sourceCode: this.config.sourceCode,
+        sourceCode: this.subscriptionSourceCode || this.config.sourceCode,
         merchantTrns: `Order-${Date.now()}`
       }
 
@@ -248,6 +249,10 @@ export class VivaWalletService {
     return `https://www.vivapayments.com/web/checkout?ref=${orderCode}&s=${this.config.sourceCode}`
   }
 
+  getPaymentUrlForSource(orderCode: number, sourceCode: string): string {
+    return `https://www.vivapayments.com/web/checkout?ref=${orderCode}&s=${sourceCode}`
+  }
+
   /**
    * Verify payment notification
    */
@@ -300,39 +305,27 @@ export class VivaWalletService {
         amount: Math.round(params.amount * 100), // Convert to cents
         currency: params.currency,
         customerTrns: params.description,
-        sourceCode: this.config.sourceCode,
-        merchantTrns: `Recurring payment for order ${params.originalOrderCode}`
+        paymentTimeout: 300,
+        allowRecurring: true,
+        sourceCode: this.subscriptionSourceCode || this.config.sourceCode,
       }
 
+      const accessToken = await this.getAccessToken()
+
       const response = await axios.post(
-        `${this.config.baseUrl}/api/orders/recurring`,
+        `${this.config.baseUrl}/checkout/v2/orders`,
+        orderData,
         {
-          ...orderData,
-          originalOrderCode: params.originalOrderCode
-        },
-        {
-          auth: {
-            username: this.config.merchantId,
-            password: this.config.apiKey
-          },
           headers: {
+            'Authorization': `Bearer ${accessToken}`,
             'Content-Type': 'application/json'
           }
         }
       )
 
-      logger.info('Recurring payment created', { 
-        originalOrderCode: params.originalOrderCode,
-        newOrderCode: response.data.orderCode,
-        amount: params.amount 
-      })
-
       return response.data
     } catch (error: any) {
-      logger.error('Failed to create recurring payment', { 
-        error: error.message,
-        originalOrderCode: params.originalOrderCode 
-      })
+      logger.error('Failed to create recurring Viva Wallet order', { error: error.message, data: error.response?.data })
       throw new Error(`Failed to create recurring payment: ${error.message}`)
     }
   }

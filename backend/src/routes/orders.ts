@@ -647,4 +647,27 @@ router.get('/test/viva-wallet', async (req, res) => {
   }
 })
 
+/**
+ * Test: create subscription order and return checkout URL
+ */
+router.get('/test/viva-subscription', async (req, res) => {
+  try {
+    const testOrder = await vivaWalletService.createSubscriptionOrder({
+      amount: 1, // 1 SEK
+      currency: 'SEK',
+      customerEmail: 'test@1753skincare.com',
+      customerName: 'Test Subscription',
+      description: 'Test Subscription Order',
+      allowRecurring: true
+    })
+
+    const source = process.env.VIVA_SOURCE_CODE_SUBSCRIPTION || process.env.VIVA_SOURCE_CODE || ''
+    const checkoutUrl = `https://www.vivapayments.com/web/checkout?ref=${testOrder.orderCode}&s=${source}`
+
+    return res.json({ success: true, orderCode: testOrder.orderCode, checkoutUrl })
+  } catch (error: any) {
+    return res.status(500).json({ success: false, error: error.message })
+  }
+})
+
 export default router 
