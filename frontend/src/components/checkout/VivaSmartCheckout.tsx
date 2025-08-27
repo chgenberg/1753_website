@@ -45,6 +45,7 @@ export default function VivaSmartCheckout({
   const containerRef = useRef<HTMLDivElement>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [fallbackUrl, setFallbackUrl] = useState<string | null>(null)
 
   useEffect(() => {
     // Load Viva Smart Checkout script
@@ -58,6 +59,7 @@ export default function VivaSmartCheckout({
       setError('Failed to load payment script')
       setIsLoading(false)
       onError('Failed to load payment script')
+      setFallbackUrl(`${baseURL}/web/checkout?ref=${orderCode}&s=${sourceCode}`)
     }
     document.body.appendChild(script)
 
@@ -72,6 +74,7 @@ export default function VivaSmartCheckout({
       setError('Viva Payments SDK not loaded')
       setIsLoading(false)
       onError('Payment system not available')
+      setFallbackUrl(`${baseURL}/web/checkout?ref=${orderCode}&s=${sourceCode}`)
       return
     }
 
@@ -116,9 +119,11 @@ export default function VivaSmartCheckout({
 
       setIsLoading(false)
     } catch (err: any) {
+      console.error('Viva Smart Checkout init error:', err)
       setError('Failed to initialize payment')
       setIsLoading(false)
       onError('Failed to initialize payment')
+      setFallbackUrl(`${baseURL}/web/checkout?ref=${orderCode}&s=${sourceCode}`)
     }
   }
 
@@ -137,6 +142,16 @@ export default function VivaSmartCheckout({
           <div>
             <p className="text-sm font-medium text-red-900">Betalningsfel</p>
             <p className="text-sm text-red-700 mt-1">{error}</p>
+            {fallbackUrl && (
+              <a
+                href={fallbackUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center mt-3 px-4 py-2 rounded-lg bg-[#8B6B47] text-white hover:opacity-90 transition"
+              >
+                Fortsätt till säker betalning
+              </a>
+            )}
           </div>
         </div>
       )}
