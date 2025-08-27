@@ -330,7 +330,7 @@ router.get('/test/viva-both', async (req, res) => {
       merchantTrns: `Test-${Date.now()}`
     }
 
-    const results = {}
+    const results: any = {}
 
     // Test production URL
     try {
