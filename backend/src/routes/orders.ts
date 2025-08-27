@@ -157,11 +157,11 @@ router.post('/create', async (req, res) => {
       var paymentOrder = await vivaWalletService.createPaymentOrder(paymentOrderParams)
     }
     
-    // Update order with payment order code
+    // Update order with payment reference (store Viva orderCode)
     await prisma.order.update({
       where: { id: order.id },
       data: {
-        paymentOrderCode: paymentOrder.orderCode.toString()
+        paymentReference: paymentOrder.orderCode.toString()
       }
     })
     
@@ -208,9 +208,9 @@ router.post('/complete-payment', async (req, res) => {
       })
     }
     
-    // Find order by payment order code
+    // Find order by payment reference (stored orderCode)
     const order = await prisma.order.findFirst({
-      where: { paymentOrderCode: orderCode }
+      where: { paymentReference: orderCode }
     })
     
     if (!order) {

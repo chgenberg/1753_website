@@ -672,7 +672,6 @@ export default function ProductPage() {
             >
               <ProductReviews 
                 productId={product.id}
-                productSlug={product.slug}
               />
             </motion.div>
           )}
