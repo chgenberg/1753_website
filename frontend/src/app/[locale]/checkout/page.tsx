@@ -154,13 +154,22 @@ export default function CheckoutPage() {
       const response = await fetch('/api/discounts/validate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: discountCode.toUpperCase() })
+        body: JSON.stringify({ 
+          code: discountCode.toUpperCase(),
+          orderTotal: subtotal 
+        })
       })
 
       const data = await response.json()
 
-      if (data.valid) {
-        setAppliedDiscount(data.discount)
+      if (data.success) {
+        setAppliedDiscount({
+          id: data.discountCode.id,
+          code: data.discountCode.code,
+          name: data.discountCode.name,
+          type: data.discountCode.type,
+          value: data.discountCode.discountAmount
+        })
         toast.success('Rabattkod tillagd! 🎉')
       } else {
         setDiscountError(data.message || 'Ogiltig rabattkod')
@@ -181,11 +190,8 @@ export default function CheckoutPage() {
   const calculateDiscount = () => {
     if (!appliedDiscount) return 0
     
-    if (appliedDiscount.type === 'percentage') {
-      return Math.round(subtotal * (appliedDiscount.value / 100))
-    } else {
-      return Math.min(appliedDiscount.value, subtotal)
-    }
+    // The discount value is already calculated from the backend
+    return appliedDiscount.value || 0
   }
 
   const finalTotal = total - calculateDiscount()

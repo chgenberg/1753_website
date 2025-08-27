@@ -138,6 +138,8 @@ export class VivaWalletService {
         disableExactAmount: false,
         disableCash: true,
         disableWallet: false,
+        // Enable Swish for Swedish customers
+        enableSwish: true,
         sourceCode: this.subscriptionSourceCode || this.config.sourceCode,
         merchantTrns: `Order-${Date.now()}`
       }
