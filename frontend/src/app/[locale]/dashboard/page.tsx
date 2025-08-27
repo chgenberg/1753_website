@@ -159,10 +159,9 @@ export default function DashboardPage() {
   if (activeTab === 'overview') {
     return (
       <>
-        <Header />
         <div className="relative min-h-screen">
-          {/* Background Image */}
-          <div className="fixed inset-0 -z-10">
+          {/* Background Image - Full height including header */}
+          <div className="absolute inset-0 z-0">
             <Image
               src={isMobile ? '/background/inlogg_mobile.png' : '/background/inlogg.png'}
               alt="Dashboard Background"
@@ -173,8 +172,13 @@ export default function DashboardPage() {
             <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
           </div>
 
+          {/* Header - positioned over the background */}
+          <div className="relative z-20">
+            <Header />
+          </div>
+
           {/* Content */}
-          <div className="relative min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 pt-24">
+          <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 pt-24">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -221,10 +225,10 @@ export default function DashboardPage() {
 
               {/* Quick Stats */}
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.6 }}
-                className="mt-12 flex flex-wrap justify-center gap-8 text-white"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+                className="grid grid-cols-3 gap-8 mt-12 text-white"
               >
                 <div className="text-center">
                   <p className="text-3xl font-light">{orders.length}</p>
@@ -250,14 +254,31 @@ export default function DashboardPage() {
   // Rest of the component for other tabs
   return (
     <>
-      <Header />
-      <div className="min-h-screen bg-[#FAFAFA] pt-20">
+      <div className="relative min-h-screen">
+        {/* Background Image - Full height including header */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src={isMobile ? '/background/inlogg_mobile.png' : '/background/inlogg.png'}
+            alt="Dashboard Background"
+            fill
+            className="object-cover object-center"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60" />
+        </div>
+
+        {/* Header - positioned over the background */}
+        <div className="relative z-20">
+          <Header />
+        </div>
+
+        <div className="relative z-10 min-h-screen pt-20">
         {/* Back to overview button */}
-        <div className="bg-white border-b">
+        <div className="bg-white/90 backdrop-blur-md border-b border-white/20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <button
               onClick={() => setActiveTab('overview')}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+              className="flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-colors"
             >
               <ChevronRight className="w-4 h-4 rotate-180" />
               <span>Tillbaka till översikt</span>
@@ -266,7 +287,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Tabs */}
-        <div className="bg-white border-b sticky top-20 z-10">
+        <div className="bg-white/90 backdrop-blur-md border-b border-white/20 sticky top-20 z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex space-x-8 overflow-x-auto">
               {tabs.filter(tab => tab.id !== 'overview').map((tab) => {
@@ -293,7 +314,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Content */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
           <AnimatePresence mode="wait">
             {activeTab === 'orders' && (
               <motion.div
@@ -323,7 +344,7 @@ export default function DashboardPage() {
                 ) : (
                   <div className="space-y-6">
                     {orders.map((order) => (
-                      <div key={order.id} className="bg-white border rounded-lg overflow-hidden">
+                      <div key={order.id} className="bg-white/95 backdrop-blur-sm border border-white/30 rounded-lg overflow-hidden shadow-lg">
                         <div className="p-6">
                           <div className="flex justify-between items-start mb-4">
                             <div>
@@ -409,7 +430,7 @@ export default function DashboardPage() {
                   <Link
                     key={index}
                     href={item.link}
-                    className="group relative bg-white border rounded-xl overflow-hidden hover:shadow-xl transition-all transform hover:-translate-y-1"
+                    className="group relative bg-white/95 backdrop-blur-sm border border-white/30 rounded-xl overflow-hidden hover:shadow-xl transition-all transform hover:-translate-y-1"
                   >
                     <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-10 transition-opacity`} />
                     <div className="relative p-6">
@@ -440,7 +461,7 @@ export default function DashboardPage() {
                   <button
                     key={video.id}
                     onClick={() => setShowVideoModal(true)}
-                    className="group bg-white border rounded-xl overflow-hidden hover:shadow-xl transition-all transform hover:-translate-y-1"
+                    className="group bg-white/95 backdrop-blur-sm border border-white/30 rounded-xl overflow-hidden hover:shadow-xl transition-all transform hover:-translate-y-1"
                   >
                     <div className="relative h-48 bg-gray-100">
                       <Image
@@ -500,8 +521,9 @@ export default function DashboardPage() {
             </motion.div>
           )}
         </AnimatePresence>
+        </div>
+        <Footer />
       </div>
-      <Footer />
     </>
   )
 } 

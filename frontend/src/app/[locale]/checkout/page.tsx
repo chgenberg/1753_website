@@ -369,7 +369,7 @@ export default function CheckoutPage() {
     <div className="min-h-screen bg-gradient-to-br from-[#FFF9F3] via-white to-[#FFF9F3]">
       <Header />
       
-      <div className="container mx-auto px-4 pt-24 pb-12 md:pt-32 md:pb-16 max-w-6xl">
+      <div className="container mx-auto px-4 sm:px-6 pt-24 pb-12 md:pt-32 md:pb-16 max-w-6xl">
         {/* Header with progress */}
         <div className="mb-8 md:mb-12">
           <motion.div 
@@ -385,7 +385,7 @@ export default function CheckoutPage() {
               <span className="hidden md:inline font-light tracking-wider">TILLBAKA</span>
             </button>
             
-            <div className="flex items-center gap-3 text-xs md:text-sm">
+            <div className="flex items-center gap-2 sm:gap-3 text-xs md:text-sm">
               {[
                 { num: 1, label: 'INFORMATION' },
                 { num: 2, label: 'LEVERANS' },
@@ -411,7 +411,7 @@ export default function CheckoutPage() {
                   }`}>
                     {step.label}
                   </span>
-                  {index < 3 && <ChevronRight className="w-4 h-4 mx-2 text-gray-300" />}
+                  {index < 3 && <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 mx-1 sm:mx-2 text-gray-300" />}
                 </div>
               ))}
             </div>
@@ -428,9 +428,9 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8 lg:gap-12">
+        <div className="grid lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-12 overflow-hidden">
           {/* Main Form */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 min-w-0">
             <AnimatePresence mode="wait">
               {/* Step 1: Contact Information */}
               {currentStep === 1 && (
@@ -440,7 +440,7 @@ export default function CheckoutPage() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -50 }}
                   transition={{ duration: 0.3, ease: "easeOut" }}
-                  className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl p-8 md:p-10 border border-[#E5D5C7]/30"
+                  className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl p-6 sm:p-8 md:p-10 border border-[#E5D5C7]/30"
                 >
                   <div className="flex items-center gap-3 mb-8">
                     <motion.div
@@ -451,7 +451,7 @@ export default function CheckoutPage() {
                     >
                       <User className="w-6 h-6 text-white" />
                     </motion.div>
-                    <h2 className="text-2xl md:text-3xl font-light tracking-[0.2em] uppercase" style={{ fontFamily: "'Inter', sans-serif" }}>
+                    <h2 className="text-xl md:text-3xl font-light tracking-[0.1em] md:tracking-[0.2em] uppercase" style={{ fontFamily: "'Inter', sans-serif" }}>
                       Kontaktinformation
                     </h2>
                   </div>
@@ -469,7 +469,7 @@ export default function CheckoutPage() {
                         value={form.email}
                         onChange={(e) => handleInputChange('email', e.target.value)}
                         className={`
-                          w-full px-6 py-4 bg-[#FFF9F3] border-2 rounded-2xl text-gray-800 
+                          w-full px-4 sm:px-6 py-3 sm:py-4 bg-[#FFF9F3] border-2 rounded-2xl text-gray-800 
                           focus:ring-0 focus:border-[#E79C1A] outline-none transition-all
                           ${formErrors.email ? 'border-red-400' : 'border-transparent'}
                           peer
@@ -479,13 +479,13 @@ export default function CheckoutPage() {
                       />
                       <label 
                         htmlFor="email"
-                        className="absolute left-6 top-4 text-gray-500 transition-all duration-200 
+                        className="absolute left-4 sm:left-6 top-3 sm:top-4 text-gray-500 transition-all duration-200 
                         peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#E79C1A] peer-focus:text-sm
                         peer-[:not(:placeholder-shown)]:-translate-y-8 peer-[:not(:placeholder-shown)]:text-sm"
                       >
                         E-postadress
                       </label>
-                      <Mail className="absolute right-6 top-4 w-5 h-5 text-gray-400" />
+                      <Mail className="absolute right-4 sm:right-6 top-3 sm:top-4 w-5 h-5 text-gray-400" />
                       {formErrors.email && (
                         <motion.p
                           initial={{ opacity: 0 }}
@@ -510,7 +510,7 @@ export default function CheckoutPage() {
                           value={form.firstName}
                           onChange={(e) => handleInputChange('firstName', e.target.value)}
                           className={`
-                            w-full px-6 py-4 bg-[#FFF9F3] border-2 rounded-2xl text-gray-800
+                            w-full px-4 sm:px-6 py-3 sm:py-4 bg-[#FFF9F3] border-2 rounded-2xl text-gray-800
                             focus:ring-0 focus:border-[#E79C1A] outline-none transition-all
                             ${formErrors.firstName ? 'border-red-400' : 'border-transparent'}
                             peer
@@ -520,7 +520,7 @@ export default function CheckoutPage() {
                         />
                         <label 
                           htmlFor="firstName"
-                          className="absolute left-6 top-4 text-gray-500 transition-all duration-200 
+                          className="absolute left-4 sm:left-6 top-3 sm:top-4 text-gray-500 transition-all duration-200 
                           peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#E79C1A] peer-focus:text-sm
                           peer-[:not(:placeholder-shown)]:-translate-y-8 peer-[:not(:placeholder-shown)]:text-sm"
                         >
@@ -548,7 +548,7 @@ export default function CheckoutPage() {
                           value={form.lastName}
                           onChange={(e) => handleInputChange('lastName', e.target.value)}
                           className={`
-                            w-full px-6 py-4 bg-[#FFF9F3] border-2 rounded-2xl text-gray-800
+                            w-full px-4 sm:px-6 py-3 sm:py-4 bg-[#FFF9F3] border-2 rounded-2xl text-gray-800
                             focus:ring-0 focus:border-[#E79C1A] outline-none transition-all
                             ${formErrors.lastName ? 'border-red-400' : 'border-transparent'}
                             peer
@@ -558,7 +558,7 @@ export default function CheckoutPage() {
                         />
                         <label 
                           htmlFor="lastName"
-                          className="absolute left-6 top-4 text-gray-500 transition-all duration-200 
+                          className="absolute left-4 sm:left-6 top-3 sm:top-4 text-gray-500 transition-all duration-200 
                           peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#E79C1A] peer-focus:text-sm
                           peer-[:not(:placeholder-shown)]:-translate-y-8 peer-[:not(:placeholder-shown)]:text-sm"
                         >
@@ -588,7 +588,7 @@ export default function CheckoutPage() {
                         value={form.phone}
                         onChange={(e) => handleInputChange('phone', e.target.value)}
                         className={`
-                          w-full px-6 py-4 bg-[#FFF9F3] border-2 rounded-2xl text-gray-800
+                          w-full px-4 sm:px-6 py-3 sm:py-4 bg-[#FFF9F3] border-2 rounded-2xl text-gray-800
                           focus:ring-0 focus:border-[#E79C1A] outline-none transition-all
                           ${formErrors.phone ? 'border-red-400' : 'border-transparent'}
                           peer
@@ -598,13 +598,13 @@ export default function CheckoutPage() {
                       />
                       <label 
                         htmlFor="phone"
-                        className="absolute left-6 top-4 text-gray-500 transition-all duration-200 
+                        className="absolute left-4 sm:left-6 top-3 sm:top-4 text-gray-500 transition-all duration-200 
                         peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#E79C1A] peer-focus:text-sm
                         peer-[:not(:placeholder-shown)]:-translate-y-8 peer-[:not(:placeholder-shown)]:text-sm"
                       >
                         Telefonnummer
                       </label>
-                      <Phone className="absolute right-6 top-4 w-5 h-5 text-gray-400" />
+                      <Phone className="absolute right-4 sm:right-6 top-3 sm:top-4 w-5 h-5 text-gray-400" />
                       {formErrors.phone && (
                         <motion.p
                           initial={{ opacity: 0 }}
@@ -683,7 +683,7 @@ export default function CheckoutPage() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -50 }}
                   transition={{ duration: 0.3, ease: "easeOut" }}
-                  className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl p-8 md:p-10 border border-[#E5D5C7]/30"
+                  className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl p-6 sm:p-8 md:p-10 border border-[#E5D5C7]/30"
                 >
                   <div className="flex items-center gap-3 mb-8">
                     <motion.div
@@ -694,7 +694,7 @@ export default function CheckoutPage() {
                     >
                       <MapPin className="w-6 h-6 text-white" />
                     </motion.div>
-                    <h2 className="text-2xl md:text-3xl font-light tracking-[0.2em] uppercase" style={{ fontFamily: "'Inter', sans-serif" }}>
+                    <h2 className="text-xl md:text-3xl font-light tracking-[0.1em] md:tracking-[0.2em] uppercase" style={{ fontFamily: "'Inter', sans-serif" }}>
                       Leveransadress
                     </h2>
                   </div>
@@ -712,7 +712,7 @@ export default function CheckoutPage() {
                         value={form.address}
                         onChange={(e) => handleInputChange('address', e.target.value)}
                         className={`
-                          w-full px-6 py-4 bg-[#FFF9F3] border-2 rounded-2xl text-gray-800
+                          w-full px-4 sm:px-6 py-3 sm:py-4 bg-[#FFF9F3] border-2 rounded-2xl text-gray-800
                           focus:ring-0 focus:border-[#E79C1A] outline-none transition-all
                           ${formErrors.address ? 'border-red-400' : 'border-transparent'}
                           peer
@@ -722,7 +722,7 @@ export default function CheckoutPage() {
                       />
                       <label 
                         htmlFor="address"
-                        className="absolute left-6 top-4 text-gray-500 transition-all duration-200 
+                        className="absolute left-4 sm:left-6 top-3 sm:top-4 text-gray-500 transition-all duration-200 
                         peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#E79C1A] peer-focus:text-sm
                         peer-[:not(:placeholder-shown)]:-translate-y-8 peer-[:not(:placeholder-shown)]:text-sm"
                       >
@@ -915,7 +915,7 @@ export default function CheckoutPage() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -50 }}
                   transition={{ duration: 0.3, ease: "easeOut" }}
-                  className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl p-8 md:p-10 border border-[#E5D5C7]/30"
+                  className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl p-6 sm:p-8 md:p-10 border border-[#E5D5C7]/30"
                 >
                   <div className="flex items-center gap-3 mb-8">
                     <motion.div
@@ -926,7 +926,7 @@ export default function CheckoutPage() {
                     >
                       <Check className="w-6 h-6 text-white" />
                     </motion.div>
-                    <h2 className="text-2xl md:text-3xl font-light tracking-[0.2em] uppercase" style={{ fontFamily: "'Inter', sans-serif" }}>
+                    <h2 className="text-xl md:text-3xl font-light tracking-[0.1em] md:tracking-[0.2em] uppercase" style={{ fontFamily: "'Inter', sans-serif" }}>
                       Orderöversikt
                     </h2>
                   </div>
@@ -1054,18 +1054,18 @@ export default function CheckoutPage() {
                       disabled={isProcessing}
                       whileHover={{ scale: isProcessing ? 1 : 1.02 }}
                       whileTap={{ scale: isProcessing ? 1 : 0.98 }}
-                      className="w-full py-5 bg-[#E79C1A] text-white rounded-2xl font-medium tracking-wider text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-3 group"
+                      className="w-full py-4 sm:py-5 bg-[#E79C1A] text-white rounded-2xl font-medium tracking-wide sm:tracking-wider text-base sm:text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-2 sm:gap-3 group"
                     >
                       {isProcessing ? (
                         <>
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                          <span>BEHANDLAR BESTÄLLNING...</span>
+                          <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
+                          <span className="text-sm sm:text-base">BEHANDLAR BESTÄLLNING...</span>
                         </>
                       ) : (
                         <>
-                          <Zap className="w-5 h-5" />
-                          <span>SLUTFÖR KÖP ({finalTotal} kr)</span>
-                          <Lock className="w-4 h-4 opacity-60" />
+                          <Zap className="w-4 h-4 sm:w-5 sm:h-5" />
+                          <span className="text-sm sm:text-base">SLUTFÖR KÖP ({finalTotal} kr)</span>
+                          <Lock className="w-3 h-3 sm:w-4 sm:h-4 opacity-60" />
                         </>
                       )}
                     </motion.button>
@@ -1091,9 +1091,9 @@ export default function CheckoutPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl p-6 md:p-8 border border-[#E5D5C7]/30"
+              className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl p-4 sm:p-6 md:p-8 border border-[#E5D5C7]/30"
             >
-              <h3 className="text-xl font-light tracking-wider mb-6 uppercase">Ordersammanfattning</h3>
+              <h3 className="text-lg sm:text-xl font-light tracking-wide sm:tracking-wider mb-6 uppercase">Ordersammanfattning</h3>
               
               {/* Items with animation */}
               <div className="space-y-4 mb-6">

@@ -38,6 +38,18 @@
     word-break: break-word;
     hyphens: auto;
   }
+  
+  /* Prevent horizontal scrolling on mobile */
+  @media (max-width: 768px) {
+    html, body {
+      overflow-x: hidden;
+    }
+    
+    * {
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+  }
 }
 
 /* Add gradient definition to body */
