@@ -28,17 +28,39 @@ crontab -e
 ```
 
 ### Option 2: Railway Cron Jobs
-Om ni använder Railway, lägg till i `railway.toml`:
+Om ni använder Railway:
 
-```toml
-[[services]]
-name = "review-requests"
-source = "backend"
+1. **Lägg till miljövariabler i Railway Dashboard:**
+   ```
+   SMTP_HOST=your-smtp-host
+   SMTP_PORT=587
+   SMTP_USER=your-smtp-user
+   SMTP_PASS=your-smtp-password
+   FROM_NAME=1753 Skincare
+   FROM_EMAIL=hej@1753skincare.com
+   DATABASE_URL=your-database-url
+   ```
 
-[services.cron]
-schedule = "0 9 * * *"  # Dagligen kl 09:00
-command = "npm run send:review-requests"
-```
+2. **Skapa en cron service i Railway:**
+   - Gå till Railway Dashboard
+   - Lägg till ny service → Cron Job
+   - Använd samma repo och branch
+   - Sätt schedule: `0 9 * * *` (dagligen kl 09:00)
+   - Command: `cd backend && npm run send:review-requests`
+
+3. **Alternativt, lägg till i `railway.json`:**
+   ```json
+   {
+     "services": {
+       "review-requests": {
+         "source": "backend",
+         "builder": "nixpacks",
+         "startCommand": "npm run send:review-requests",
+         "cronSchedule": "0 9 * * *"
+       }
+     }
+   }
+   ```
 
 ### Option 3: GitHub Actions (Gratis)
 Skapa `.github/workflows/review-requests.yml`:

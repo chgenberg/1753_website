@@ -49,7 +49,12 @@ async function sendReviewRequests() {
     for (const order of eligibleOrders) {
       try {
         const firstName = order.customerName?.split(' ')[0] || 'Kund'
-        const reviewUrl = `https://1753skincare.com/sv/recensioner?order=${order.orderNumber}`
+        const mainProduct = order.items[0]?.product
+        const productName = mainProduct?.name || 'dina produkter'
+        const productId = mainProduct?.id || ''
+        
+        // Include product ID and customer info in review URL for auto-fill
+        const reviewUrl = `https://1753skincare.com/sv/recensioner/ny?order=${order.orderNumber}&product=${productId}&name=${encodeURIComponent(order.customerName || '')}&email=${encodeURIComponent(order.email)}`
         const unsubscribeUrl = `https://1753skincare.com/sv/avsluta-recensionspaminnelser?email=${encodeURIComponent(order.email)}`
         
         // Calculate estimated delivery date (order date + 4 days)
@@ -58,11 +63,12 @@ async function sendReviewRequests() {
         
         await sendEmail({
           to: order.email,
-          subject: `Hur var din upplevelse med ${order.items[0]?.product?.name || 'dina produkter'}? ⭐`,
+          subject: `${firstName}, vad tyckte du om ${productName}?`,
           template: 'reviewRequest',
           data: {
             firstName,
             orderNumber: order.orderNumber,
+            productName,
             deliveryDate: deliveryDate.toLocaleDateString('sv-SE'),
             reviewUrl,
             unsubscribeUrl
