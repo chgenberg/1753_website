@@ -1,416 +1,250 @@
-import express from 'express'
-import { orderService } from '../services/orderService'
+import { Router } from 'express'
+import { z } from 'zod'
+import { vivaWalletService } from '../services/vivaWalletService'
 import { logger } from '../utils/logger'
+import prisma from '../lib/prisma'
 
-const router = express.Router()
+const router = Router()
+
+// Schema for order creation
+const createOrderSchema = z.object({
+  customer: z.object({
+    email: z.string().email(),
+    firstName: z.string().min(1),
+    lastName: z.string().min(1),
+    phone: z.string().min(1)
+  }),
+  shippingAddress: z.object({
+    address: z.string().min(1),
+    apartment: z.string().optional(),
+    city: z.string().min(1),
+    postalCode: z.string().min(1),
+    country: z.string().min(1)
+  }),
+  items: z.array(z.object({
+    productId: z.string(),
+    variantId: z.string().optional(),
+    quantity: z.number().positive(),
+    price: z.number().positive()
+  })).min(1),
+  discountCode: z.string().optional(),
+  subtotal: z.number().positive(),
+  shippingCost: z.number().min(0),
+  total: z.number().positive(),
+  newsletter: z.boolean()
+})
 
 /**
- * Create payment order
- * POST /api/orders/payment
+ * Create a new order and payment
  */
-router.post('/payment', async (req, res) => {
+router.post('/create', async (req, res) => {
   try {
-    const orderData = req.body
-
-    // Validate required fields
-    const requiredFields = ['customer', 'items', 'orderId', 'total']
-    const missingFields = requiredFields.filter(field => !orderData[field])
+    const validatedData = createOrderSchema.parse(req.body)
     
-    if (missingFields.length > 0) {
-      return res.status(400).json({
-        success: false,
-        error: `Missing required fields: ${missingFields.join(', ')}`
-      })
-    }
-
-    // Generate unique order ID if not provided
-    if (!orderData.orderId) {
-      orderData.orderId = `1753-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-    }
-
-    // Set order date
-    orderData.orderDate = new Date()
-
-    // Create payment in Viva Wallet
-    const paymentResult = await orderService.createPayment(orderData)
-
-    if (!paymentResult.success) {
-      logger.error('Payment creation failed:', paymentResult.error)
-      return res.status(400).json({
-        success: false,
-        error: paymentResult.error
-      })
-    }
-
-    // Store order data temporarily (you should implement proper storage)
-    // await storeOrderData(orderData)
-
-    logger.info(`Payment created for order: ${orderData.orderId}`, {
-      paymentId: paymentResult.paymentId,
-      orderCode: paymentResult.orderCode
+    // Generate order number
+    const orderNumber = `1753-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`
+    
+    // Create order in database
+    const order = await prisma.order.create({
+      data: {
+        orderNumber,
+        email: validatedData.customer.email,
+        customerName: `${validatedData.customer.firstName} ${validatedData.customer.lastName}`,
+        customerPhone: validatedData.customer.phone,
+        phone: validatedData.customer.phone,
+        shippingAddress: {
+          firstName: validatedData.customer.firstName,
+          lastName: validatedData.customer.lastName,
+          address: validatedData.shippingAddress.address,
+          apartment: validatedData.shippingAddress.apartment,
+          city: validatedData.shippingAddress.city,
+          postalCode: validatedData.shippingAddress.postalCode,
+          country: validatedData.shippingAddress.country
+        },
+        billingAddress: {
+          firstName: validatedData.customer.firstName,
+          lastName: validatedData.customer.lastName,
+          address: validatedData.shippingAddress.address,
+          apartment: validatedData.shippingAddress.apartment,
+          city: validatedData.shippingAddress.city,
+          postalCode: validatedData.shippingAddress.postalCode,
+          country: validatedData.shippingAddress.country
+        },
+        items: {
+          create: validatedData.items.map(item => ({
+            productId: item.productId,
+            variantId: item.variantId,
+            quantity: item.quantity,
+            price: item.price,
+            title: 'Product' // This should be fetched from the product
+          }))
+        },
+        subtotal: validatedData.subtotal,
+        shippingAmount: validatedData.shippingCost,
+        totalAmount: validatedData.total,
+        status: 'PENDING',
+        paymentStatus: 'PENDING'
+      },
+      include: {
+        items: true
+      }
     })
-
+    
+    // Create payment order in Viva Wallet
+    const paymentOrder = await vivaWalletService.createPaymentOrder({
+      amount: validatedData.total,
+      customerTrns: `Order #${order.id}`,
+      customer: {
+        email: validatedData.customer.email,
+        fullName: `${validatedData.customer.firstName} ${validatedData.customer.lastName}`,
+        phone: validatedData.customer.phone,
+        countryCode: 'SE',
+        requestLang: 'sv-SE'
+      },
+      merchantTrns: order.id,
+      tags: ['ecommerce', 'webshop']
+    })
+    
+    // Update order with payment order code
+    await prisma.order.update({
+      where: { id: order.id },
+      data: {
+        paymentOrderCode: paymentOrder.orderCode.toString()
+      }
+    })
+    
+    logger.info('Order created successfully', {
+      orderId: order.id,
+      vivaOrderCode: paymentOrder.orderCode
+    })
+    
     res.json({
       success: true,
-      orderId: orderData.orderId,
-      paymentId: paymentResult.paymentId,
-      orderCode: paymentResult.orderCode,
-      redirectUrl: paymentResult.redirectUrl
+      orderId: order.id,
+      orderCode: paymentOrder.orderCode.toString(),
+      amount: validatedData.total
     })
-
   } catch (error: any) {
-    logger.error('Error creating payment order:', error)
+    logger.error('Error creating order:', error)
+    
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid order data',
+        details: error.errors
+      })
+    }
+    
     res.status(500).json({
       success: false,
-      error: 'Internal server error'
+      error: error.message || 'Failed to create order'
     })
   }
 })
 
 /**
- * Viva Wallet webhook endpoint
- * POST /api/orders/webhook/viva-wallet
+ * Complete payment after card tokenization
  */
-router.post('/webhook/viva-wallet', async (req, res) => {
+router.post('/complete-payment', async (req, res) => {
   try {
-    const signature = req.headers['x-viva-signature'] as string
-    const payload = req.body
-
-    logger.info('Received Viva Wallet webhook', { 
-      orderCode: payload.OrderCode,
-      stateId: payload.StateId 
-    })
-
-    // Process the webhook
-    const result = await orderService.processPaymentWebhook(payload, signature)
-
-    if (!result.success) {
-      logger.error('Webhook processing failed:', result.errors)
+    const { orderCode, cardToken } = req.body
+    
+    if (!orderCode || !cardToken) {
       return res.status(400).json({
         success: false,
-        errors: result.errors
+        error: 'Missing orderCode or cardToken'
       })
     }
-
-    logger.info('Webhook processed successfully:', {
-      orderId: result.orderId,
-      fortnoxOrder: result.fortnoxOrderNumber,
-      ongoingOrder: result.ongoingOrderNumber,
-      warnings: result.warnings
-    })
-
-    // Respond to Viva Wallet
-    res.json({
-      success: true,
-      orderId: result.orderId
-    })
-
-  } catch (error: any) {
-    logger.error('Error processing Viva Wallet webhook:', error)
-    res.status(500).json({
-      success: false,
-      error: 'Internal server error'
-    })
-  }
-})
-
-/**
- * Get order status
- * GET /api/orders/:orderId/status
- */
-router.get('/:orderId/status', async (req, res) => {
-  try {
-    const { orderId } = req.params
-
-    const status = await orderService.getOrderStatus(orderId)
-
-    res.json({
-      success: true,
-      ...status
-    })
-
-  } catch (error: any) {
-    logger.error('Error getting order status:', error)
     
-    if (error.message === 'Order not found') {
+    // Find order by payment order code
+    const order = await prisma.order.findFirst({
+      where: { paymentOrderCode: orderCode }
+    })
+    
+    if (!order) {
       return res.status(404).json({
         success: false,
         error: 'Order not found'
       })
     }
-
-    res.status(500).json({
-      success: false,
-      error: 'Internal server error'
+    
+    // Process the payment with Viva Wallet
+    const paymentResult = await vivaWalletService.processCardPayment({
+      orderCode,
+      cardToken
     })
-  }
-})
-
-/**
- * Test integrations
- * GET /api/orders/test/integrations
- */
-router.get('/test/integrations', async (req, res) => {
-  try {
-    const results = await orderService.testIntegrations()
-
-    const allWorking = Object.values(results).every(status => status === true)
-    const statusCode = allWorking ? 200 : 206 // 206 = Partial Content
-
-    res.status(statusCode).json({
-      success: allWorking,
-      integrations: results,
-      message: allWorking 
-        ? 'All integrations working' 
-        : 'Some integrations have issues'
+    
+    // Update order with payment result
+    await prisma.order.update({
+      where: { id: order.id },
+      data: {
+        paymentStatus: paymentResult.success ? 'PAID' : 'FAILED',
+        status: paymentResult.success ? 'PROCESSING' : 'CANCELLED',
+        transactionId: paymentResult.transactionId
+      }
     })
-
+    
+    if (paymentResult.success) {
+      // Create order in Ongoing WMS
+      // This would be implemented when Ongoing is fully integrated
+      logger.info('Payment completed successfully', {
+        orderId: order.id,
+        transactionId: paymentResult.transactionId
+      })
+      
+      res.json({
+        success: true,
+        transactionId: paymentResult.transactionId
+      })
+    } else {
+      res.status(400).json({
+        success: false,
+        error: paymentResult.error || 'Payment failed'
+      })
+    }
   } catch (error: any) {
-    logger.error('Error testing integrations:', error)
+    logger.error('Error completing payment:', error)
     res.status(500).json({
       success: false,
-      error: 'Internal server error'
+      error: error.message || 'Failed to complete payment'
     })
   }
 })
 
 /**
- * Test Viva Wallet specifically
- * GET /api/orders/test/viva-wallet
+ * Test endpoint for Viva Wallet integration
  */
 router.get('/test/viva-wallet', async (req, res) => {
   try {
-    const { vivaWalletService } = await import('../services/vivaWalletService')
-    
-    // Test connection
-    const connectionTest = await vivaWalletService.testConnection()
-    
-    let merchantInfo = null
-    try {
-      merchantInfo = await vivaWalletService.getMerchantInfo()
-    } catch (merchantError) {
-      // This might fail if endpoint doesn't exist, that's ok
-    }
-
-    res.json({
-      success: connectionTest,
-      connection: connectionTest,
-      merchantInfo: merchantInfo,
-      credentials: {
-        merchantId: process.env.VIVA_MERCHANT_ID ? '✓ Set' : '✗ Missing',
-        apiKey: process.env.VIVA_API_KEY ? '✓ Set' : '✗ Missing',
-        sourceCode: process.env.VIVA_SOURCE_CODE || '1753_SKINCARE',
-        baseUrl: process.env.VIVA_BASE_URL || 'https://api.vivapayments.com'
-      }
+    // Create a test payment order
+    const testOrder = await vivaWalletService.createPaymentOrder({
+      amount: 100, // 100 SEK
+      customerTrns: 'Test Order - 1753 Skincare',
+      customer: {
+        email: 'test@1753skincare.com',
+        fullName: 'Test Customer',
+        phone: '+46701234567',
+        countryCode: 'SE',
+        requestLang: 'sv-SE'
+      },
+      merchantTrns: `TEST-${Date.now()}`,
+      tags: ['test', 'integration']
     })
 
+    res.json({
+      success: true,
+      message: 'Viva Wallet test order created',
+      orderCode: testOrder.orderCode,
+      checkoutUrl: vivaWalletService.getPaymentUrl(testOrder.orderCode)
+    })
   } catch (error: any) {
-    logger.error('Error testing Viva Wallet:', error)
+    logger.error('Viva Wallet test failed:', error)
     res.status(500).json({
       success: false,
       error: error.message,
-      credentials: {
-        merchantId: process.env.VIVA_MERCHANT_ID ? '✓ Set' : '✗ Missing',
-        apiKey: process.env.VIVA_API_KEY ? '✓ Set' : '✗ Missing'
-      }
+      details: error.response?.data
     })
   }
-})
-
-/**
- * Create test payment (for testing Viva Wallet)
- * POST /api/orders/test/payment
- */
-router.post('/test/payment', async (req, res) => {
-  try {
-    logger.info('Test payment route called')
-    const testOrderData = {
-      orderId: `TEST-${Date.now()}`,
-      customer: {
-        email: 'test@1753skincare.com',
-        firstName: 'Test',
-        lastName: 'Customer',
-        phone: '+46701234567',
-        address: 'Testgatan 1',
-        apartment: '',
-        city: 'Stockholm', 
-        postalCode: '11122',
-        country: 'SE'
-      },
-      items: [{
-        productId: 'test-product',
-        name: 'Test Product - 1753 Skincare',
-        price: 99,
-        quantity: 1,
-        sku: 'TEST-SKU'
-      }],
-      subtotal: 99,
-      shipping: 0,
-      tax: 0,
-      total: 99, // 99 SEK for testing
-      currency: 'SEK',
-      paymentMethod: 'card' as const,
-      orderDate: new Date(),
-      newsletter: false,
-      comments: 'Test order for Viva Wallet integration'
-    }
-
-    logger.info('Calling orderService.createPayment with test data')
-    const paymentResult = await orderService.createPayment(testOrderData)
-    logger.info('Payment result received:', { success: paymentResult.success })
-
-    if (!paymentResult.success) {
-      return res.status(400).json({
-        success: false,
-        error: paymentResult.error
-      })
-    }
-
-    res.json({
-      success: true,
-      message: 'Test payment created successfully',
-      orderId: testOrderData.orderId,
-      paymentId: paymentResult.paymentId,
-      orderCode: paymentResult.orderCode,
-      redirectUrl: paymentResult.redirectUrl,
-      instructions: 'Use this URL to test the payment flow. Use test card: 4111 1111 1111 1111'
-    })
-
-  } catch (error: any) {
-    logger.error('Error creating test payment:', error)
-    logger.error('Error stack:', error.stack)
-    res.status(500).json({
-      success: false,
-      error: 'Internal server error',
-      details: error.message
-    })
-  }
-})
-
-/**
- * Manual order processing (for testing/admin)
- * POST /api/orders/:orderId/process
- */
-router.post('/:orderId/process', async (req, res) => {
-  try {
-    const { orderId } = req.params
-    const { forceProcess = false } = req.body
-
-    // This would typically check if order is already processed
-    // and only allow manual processing in specific cases
-
-    logger.info(`Manual order processing requested: ${orderId}`)
-
-    // You would implement order retrieval and processing here
-    // const orderData = await getOrderData(orderId)
-    // const result = await orderService.processOrder(orderData)
-
-    res.json({
-      success: true,
-      message: 'Manual order processing not yet implemented',
-      orderId
-    })
-
-  } catch (error: any) {
-    logger.error('Error processing order manually:', error)
-    res.status(500).json({
-      success: false,
-      error: 'Internal server error'
-    })
-  }
-})
-
-/**
- * Debug: GET version of test/payment to see if path matching works
- * GET /api/orders/test/payment
- */
-router.get('/test/payment', (req, res) => {
-  logger.info('GET /test/payment called (debug route)')
-  res.json({
-    success: true,
-    message: 'GET version of /test/payment works',
-    method: 'GET',
-    path: req.path,
-    originalUrl: req.originalUrl
-  })
-})
-
-/**
- * Debug: List all registered routes
- * GET /api/orders/debug/routes
- */
-router.get('/debug/routes', (req, res) => {
-  const routes: string[] = []
-  
-  // Get all registered routes from this router
-  router.stack.forEach((layer: any) => {
-    if (layer.route) {
-      const methods = Object.keys(layer.route.methods).join(', ').toUpperCase()
-      routes.push(`${methods} /api/orders${layer.route.path}`)
-    }
-  })
-  
-  res.json({
-    success: true,
-    message: 'All registered order routes',
-    routes: routes.sort(),
-    timestamp: new Date().toISOString()
-  })
-})
-
-/**
- * Health check for order service
- * GET /api/orders/health
- */
-router.get('/health', async (req, res) => {
-  try {
-    // Basic health check
-    const integrations = await orderService.testIntegrations()
-    
-    const healthStatus = {
-      status: 'healthy',
-      timestamp: new Date().toISOString(),
-      services: {
-        orderService: true,
-        ...integrations
-      }
-    }
-
-    const allHealthy = Object.values(healthStatus.services).every(status => status === true)
-    
-    if (!allHealthy) {
-      healthStatus.status = 'degraded'
-    }
-
-    res.status(allHealthy ? 200 : 503).json(healthStatus)
-
-  } catch (error: any) {
-    logger.error('Health check failed:', error)
-    res.status(503).json({
-      status: 'unhealthy',
-      timestamp: new Date().toISOString(),
-      error: error.message
-    })
-  }
-})
-
-// Debug: Catch-all route to see what requests actually reach this router
-router.all('*', (req, res) => {
-  logger.info(`Catch-all route hit: ${req.method} ${req.path}`)
-  logger.info('Full URL:', req.url)
-  logger.info('Base URL:', req.baseUrl)
-  logger.info('Original URL:', req.originalUrl)
-  res.status(404).json({
-    success: false,
-    message: `Route ${req.method} ${req.path} not found in orders router`,
-    debug: {
-      method: req.method,
-      path: req.path,
-      url: req.url,
-      baseUrl: req.baseUrl,
-      originalUrl: req.originalUrl
-    }
-  })
 })
 
 export default router 

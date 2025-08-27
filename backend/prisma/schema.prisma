@@ -517,6 +517,10 @@ model Order {
   // Payment info
   paymentMethod   String?
   paymentReference String?
+  paymentOrderCode String?
+  transactionId   String?
+  customerName    String?
+  customerPhone   String?
   
   // Fulfillment
   trackingNumber  String?

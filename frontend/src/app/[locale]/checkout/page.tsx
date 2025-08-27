@@ -7,6 +7,7 @@ import Image from 'next/image'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { useCart } from '@/contexts/CartContext'
+import VivaSmartCheckout from '@/components/checkout/VivaSmartCheckout'
 import { 
   CreditCard,
   Lock,
@@ -67,8 +68,9 @@ export default function CheckoutPage() {
   const router = useRouter()
   const { items, total, subtotal, shipping, clearCart } = useCart()
   const [isProcessing, setIsProcessing] = useState(false)
-  const [currentStep, setCurrentStep] = useState(1) // 1: Info, 2: Shipping, 3: Payment
+  const [currentStep, setCurrentStep] = useState(1) // 1: Info, 2: Shipping, 3: Payment, 4: Card Details
   const [isMobile, setIsMobile] = useState(false)
+  const [orderDetails, setOrderDetails] = useState<{orderId: string, orderCode: string, amount: number} | null>(null)
   
   // Discount code state
   const [discountCode, setDiscountCode] = useState('')
@@ -184,6 +186,17 @@ export default function CheckoutPage() {
   const finalTotal = total - calculateDiscount()
 
   const [formErrors, setFormErrors] = useState<Record<string, string>>({})
+  
+  const handlePaymentSuccess = (transactionId: string) => {
+    // Clear cart and redirect to success
+    clearCart()
+    router.push(`/checkout/success?transactionId=${transactionId}`)
+  }
+  
+  const handlePaymentError = (error: string) => {
+    toast.error(error)
+    setIsProcessing(false)
+  }
 
   const validateStep1 = () => {
     const errors: Record<string, string> = {}
@@ -232,15 +245,60 @@ export default function CheckoutPage() {
     setIsProcessing(true)
     
     try {
-      // TODO: Implement real payment processing
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
-      // Clear cart and redirect to success
-      clearCart()
-      router.push('/checkout/success')
-    } catch (error) {
-      console.error('Error submitting order:', error)
-      toast.error('Ett fel uppstod vid beställningen')
+      // Create order in backend
+      const orderData = {
+        customer: {
+          email: form.email,
+          firstName: form.firstName,
+          lastName: form.lastName,
+          phone: form.phone
+        },
+        shippingAddress: {
+          address: form.address,
+          apartment: form.apartment,
+          city: form.city,
+          postalCode: form.postalCode,
+          country: form.country
+        },
+        items: items.map(item => ({
+          productId: item.productId,
+          variantId: item.variantId,
+          quantity: item.quantity,
+          price: item.price
+        })),
+        discountCode: appliedDiscount?.code,
+        subtotal,
+        shippingCost: shipping,
+        total: finalTotal,
+        newsletter: form.newsletter
+      }
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002'}/api/orders/create`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(orderData)
+      })
+
+      const data = await response.json()
+
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to create order')
+      }
+
+      // Store order details for payment processing
+      setOrderDetails({
+        orderId: data.orderId,
+        orderCode: data.orderCode,
+        amount: finalTotal
+      })
+
+      // Move to payment step
+      setCurrentStep(4) // Add new step for payment processing
+    } catch (error: any) {
+      console.error('Error creating order:', error)
+      toast.error(error.message || 'Ett fel uppstod vid beställningen')
     } finally {
       setIsProcessing(false)
     }
@@ -287,7 +345,13 @@ export default function CheckoutPage() {
               <ChevronRight className="w-4 h-4" />
               <span className={currentStep >= 2 ? 'text-[#8B6B47] font-medium' : ''}>Leverans</span>
               <ChevronRight className="w-4 h-4" />
-              <span className={currentStep >= 3 ? 'text-[#8B6B47] font-medium' : ''}>Betalning</span>
+              <span className={currentStep >= 3 ? 'text-[#8B6B47] font-medium' : ''}>Översikt</span>
+              {currentStep >= 4 && (
+                <>
+                  <ChevronRight className="w-4 h-4" />
+                  <span className="text-[#8B6B47] font-medium">Betalning</span>
+                </>
+              )}
             </div>
           </div>
           
@@ -295,7 +359,7 @@ export default function CheckoutPage() {
           <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
             <motion.div
               initial={{ width: '0%' }}
-              animate={{ width: `${(currentStep / 3) * 100}%` }}
+              animate={{ width: `${(currentStep / 4) * 100}%` }}
               transition={{ duration: 0.5 }}
               className="h-full bg-gradient-to-r from-[#8B6B47] to-[#6B5337]"
             />
@@ -569,44 +633,51 @@ export default function CheckoutPage() {
                   className="bg-white rounded-2xl shadow-sm p-6 md:p-8"
                 >
                   <h2 className="text-2xl font-light mb-6 flex items-center gap-3">
-                    <CreditCard className="w-6 h-6 text-[#8B6B47]" />
-                    Betalning
+                    <Check className="w-6 h-6 text-[#8B6B47]" />
+                    Orderöversikt
                   </h2>
 
                   <div className="space-y-4">
-                    {/* Payment method selection */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-3">
-                        Välj betalningsmetod
-                      </label>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <button
-                          onClick={() => handleInputChange('paymentMethod', 'card')}
-                          className={`p-4 rounded-xl border-2 transition-all ${
-                            form.paymentMethod === 'card'
-                              ? 'border-[#8B6B47] bg-[#8B6B47]/10'
-                              : 'border-gray-200 hover:border-gray-300'
-                          }`}
-                        >
-                          <CreditCard className="w-8 h-8 mx-auto mb-2 text-[#8B6B47]" />
-                          <div className="font-medium">Kort</div>
-                          <div className="text-sm text-gray-600 mt-1">Visa, Mastercard, etc.</div>
-                        </button>
-                        
-                        <button
-                          onClick={() => handleInputChange('paymentMethod', 'swish')}
-                          className={`p-4 rounded-xl border-2 transition-all ${
-                            form.paymentMethod === 'swish'
-                              ? 'border-[#8B6B47] bg-[#8B6B47]/10'
-                              : 'border-gray-200 hover:border-gray-300'
-                          }`}
-                        >
-                          <div className="w-8 h-8 mx-auto mb-2 bg-[#00C863] rounded-lg flex items-center justify-center text-white font-bold">
-                            S
+                    {/* Order summary */}
+                    <div className="border border-gray-200 rounded-xl p-4">
+                      <h3 className="font-medium mb-3">Leveransadress</h3>
+                      <p className="text-sm text-gray-600">
+                        {form.firstName} {form.lastName}<br />
+                        {form.address} {form.apartment && `, ${form.apartment}`}<br />
+                        {form.postalCode} {form.city}<br />
+                        {form.country}
+                      </p>
+                    </div>
+                    
+                    <div className="border border-gray-200 rounded-xl p-4">
+                      <h3 className="font-medium mb-3">Kontaktuppgifter</h3>
+                      <p className="text-sm text-gray-600">
+                        {form.email}<br />
+                        {form.phone}
+                      </p>
+                    </div>
+                    
+                    <div className="border border-gray-200 rounded-xl p-4">
+                      <h3 className="font-medium mb-3">Orderdetaljer</h3>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Delsumma</span>
+                          <span>{subtotal} kr</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Frakt</span>
+                          <span>{shipping} kr</span>
+                        </div>
+                        {appliedDiscount && (
+                          <div className="flex justify-between text-green-600">
+                            <span>Rabatt ({appliedDiscount.code})</span>
+                            <span>-{calculateDiscount()} kr</span>
                           </div>
-                          <div className="font-medium">Swish</div>
-                          <div className="text-sm text-gray-600 mt-1">Betala med mobilen</div>
-                        </button>
+                        )}
+                        <div className="flex justify-between font-medium text-base pt-2 border-t">
+                          <span>Totalt</span>
+                          <span>{finalTotal} kr</span>
+                        </div>
                       </div>
                     </div>
 
@@ -650,6 +721,41 @@ export default function CheckoutPage() {
                       <a href="/integritetspolicy" className="text-[#8B6B47] hover:underline">integritetspolicy</a>
                     </p>
                   </div>
+                </motion.div>
+              )}
+              
+              {/* Step 4: Smart Checkout Payment */}
+              {currentStep === 4 && orderDetails && (
+                <motion.div
+                  key="step4"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="bg-white rounded-2xl shadow-sm p-6 md:p-8"
+                >
+                  <h2 className="text-2xl font-light mb-6 flex items-center gap-3">
+                    <CreditCard className="w-6 h-6 text-[#8B6B47]" />
+                    Säker betalning
+                  </h2>
+
+                  <VivaSmartCheckout
+                    orderCode={orderDetails.orderCode}
+                    amount={orderDetails.amount}
+                    onSuccess={handlePaymentSuccess}
+                    onError={handlePaymentError}
+                    publicKey={process.env.NEXT_PUBLIC_VIVA_PUBLIC_KEY || ''}
+                    sourceCode={process.env.NEXT_PUBLIC_VIVA_SOURCE_CODE || ''}
+                    baseURL={process.env.NEXT_PUBLIC_VIVA_BASE_URL}
+                  />
+
+                  {/* Terms */}
+                  <p className="text-xs text-gray-500 text-center mt-6">
+                    Genom att slutföra köpet godkänner du våra{' '}
+                    <a href="/villkor" className="text-[#8B6B47] hover:underline">köpvillkor</a>
+                    {' '}och{' '}
+                    <a href="/integritetspolicy" className="text-[#8B6B47] hover:underline">integritetspolicy</a>
+                  </p>
                 </motion.div>
               )}
             </AnimatePresence>

@@ -126,6 +126,70 @@ export class VivaWalletService {
   }
 
   /**
+   * Process card payment using token
+   */
+  async processCardPayment(params: {
+    orderCode: string
+    cardToken: string
+  }): Promise<{
+    success: boolean
+    transactionId?: string
+    error?: string
+  }> {
+    try {
+      const response = await axios.post(
+        `${this.config.baseUrl}/nativecheckout/v2/transactions`,
+        {
+          orderCode: params.orderCode,
+          token: params.cardToken
+        },
+        {
+          auth: {
+            username: this.config.merchantId,
+            password: this.config.apiKey
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+
+      if (response.data.statusId === 'F') {
+        logger.info('Card payment successful', {
+          orderCode: params.orderCode,
+          transactionId: response.data.transactionId
+        })
+
+        return {
+          success: true,
+          transactionId: response.data.transactionId
+        }
+      } else {
+        logger.error('Card payment failed', {
+          orderCode: params.orderCode,
+          statusId: response.data.statusId,
+          eventId: response.data.eventId
+        })
+
+        return {
+          success: false,
+          error: response.data.message || 'Payment failed'
+        }
+      }
+    } catch (error: any) {
+      logger.error('Error processing card payment', {
+        error: error.message,
+        response: error.response?.data
+      })
+
+      return {
+        success: false,
+        error: error.response?.data?.message || error.message || 'Payment processing failed'
+      }
+    }
+  }
+
+  /**
    * Get payment URL for checkout
    */
   getPaymentUrl(orderCode: number): string {
