@@ -264,6 +264,33 @@ router.post('/complete-payment', async (req, res) => {
 })
 
 /**
+ * Test endpoint to check environment variables
+ * GET /api/orders/test/env
+ */
+router.get('/test/env', async (req, res) => {
+  try {
+    const envVars = {
+      VIVA_MERCHANT_ID: process.env.VIVA_MERCHANT_ID ? '***' + process.env.VIVA_MERCHANT_ID.slice(-4) : 'NOT SET',
+      VIVA_API_KEY: process.env.VIVA_API_KEY ? '***' + process.env.VIVA_API_KEY.slice(-4) : 'NOT SET',
+      VIVA_SOURCE_CODE: process.env.VIVA_SOURCE_CODE || 'NOT SET',
+      VIVA_BASE_URL: process.env.VIVA_BASE_URL || 'NOT SET',
+      NODE_ENV: process.env.NODE_ENV || 'NOT SET'
+    }
+
+    res.json({
+      success: true,
+      environment: envVars,
+      message: 'Environment variables check'
+    })
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    })
+  }
+})
+
+/**
  * Test endpoint for Viva Wallet integration
  */
 router.get('/test/viva-wallet', async (req, res) => {
