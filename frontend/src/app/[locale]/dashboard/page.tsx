@@ -30,42 +30,27 @@ interface Order {
   date: string
   status: string
   total: number
+  currency?: string
+  paymentStatus?: string
+  fulfillmentStatus?: string
+  trackingNumber?: string
+  trackingCompany?: string
+  shippedAt?: string
+  deliveredAt?: string
   items: Array<{
     id: string
     name: string
     quantity: number
     price: number
+    total?: number
     image: string
   }>
 }
 
-// Mock data - replace with API call
-const mockOrders: Order[] = [
-  {
-    id: '1',
-    orderNumber: 'ORD-2024-001',
-    date: '2024-08-20',
-    status: 'Levererad',
-    total: 1299,
-    items: [
-      { id: '1', name: 'DUO-kit', quantity: 1, price: 899, image: '/products_2025/DUO.png' },
-      { id: '2', name: 'TA-DA', quantity: 1, price: 400, image: '/products_2025/TA-DA.png' }
-    ]
-  },
-  {
-    id: '2',
-    orderNumber: 'ORD-2024-002',
-    date: '2024-07-15',
-    status: 'Levererad',
-    total: 599,
-    items: [
-      { id: '3', name: 'The ONE Facial Oil', quantity: 1, price: 599, image: '/products_2025/The_ONE_bottle.png' }
-    ]
-  }
-]
+
 
 export default function DashboardPage() {
-  const { user } = useAuth()
+  const { user, token } = useAuth()
   const { addToCart } = useCart()
   const router = useRouter()
   const [activeTab, setActiveTab] = useState<'overview' | 'orders' | 'knowledge' | 'videos' | 'quiz'>('overview')
@@ -86,24 +71,88 @@ export default function DashboardPage() {
   useEffect(() => {
     // Fetch user orders from API
     const fetchOrders = async () => {
+      if (!token) {
+        setLoading(false)
+        return
+      }
+
       try {
-        // TODO: Replace with actual API call
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        setOrders(mockOrders)
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002'}/api/orders/user`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        })
+
+        if (response.ok) {
+          const data = await response.json()
+          if (data.success) {
+            // Transform API response to match Order interface
+            const transformedOrders = data.orders.map((order: any) => ({
+              id: order.id,
+              orderNumber: order.orderNumber,
+              date: order.date,
+              status: order.status,
+              total: order.total,
+              currency: order.currency || 'SEK',
+              paymentStatus: order.paymentStatus,
+              fulfillmentStatus: order.fulfillmentStatus,
+              trackingNumber: order.trackingNumber,
+              trackingCompany: order.trackingCompany,
+              shippedAt: order.shippedAt,
+              deliveredAt: order.deliveredAt,
+              items: order.items
+            }))
+            setOrders(transformedOrders)
+          } else {
+            console.error('Failed to fetch orders:', data.error)
+            setOrders([])
+          }
+        } else {
+          console.error('Failed to fetch orders:', response.statusText)
+          setOrders([])
+        }
       } catch (error) {
         console.error('Failed to fetch orders:', error)
+        setOrders([])
       } finally {
         setLoading(false)
       }
     }
 
     fetchOrders()
-  }, [])
+  }, [token])
 
   const handleReorderAll = async (order: Order) => {
-    // For reordering, we'll need to fetch the actual products from API
-    // For now, just navigate to cart with a message
-    router.push('/cart')
+    try {
+      // Add all items from the order to cart
+      for (const item of order.items) {
+        // We need to fetch the actual product data to add to cart
+        // For now, we'll create a basic product structure
+        const product = {
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          images: [{ id: '1', url: item.image, alt: item.name, position: 0 }],
+          slug: item.name.toLowerCase().replace(/\s+/g, '-'),
+          description: '',
+          variants: [],
+          inventory: { quantity: 100, sku: item.id, trackQuantity: false },
+          saleProduct: false,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
+        
+        addToCart(product as any, item.quantity)
+      }
+      
+      // Navigate to cart
+      router.push('/cart')
+    } catch (error) {
+      console.error('Failed to reorder:', error)
+      // Fallback: just navigate to products page
+      router.push('/products')
+    }
   }
 
   const tabs = [
@@ -359,6 +408,12 @@ export default function DashboardPage() {
                                 <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">
                                   {order.status}
                                 </span>
+                                {order.trackingNumber && (
+                                  <span className="flex items-center gap-1 text-blue-600">
+                                    <Package className="w-4 h-4" />
+                                    <span className="text-xs">Spårning: {order.trackingNumber}</span>
+                                  </span>
+                                )}
                               </div>
                             </div>
                             <div className="text-right">

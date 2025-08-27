@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { vivaWalletService } from '../services/vivaWalletService'
 import { sendEmail } from '../services/emailService'
 import { logger } from '../utils/logger'
+import { authenticateToken, optionalAuth } from '../middleware/auth'
 import prisma from '../lib/prisma'
 
 const router = Router()
@@ -73,7 +74,7 @@ const createOrderSchema = z.object({
 /**
  * Create a new order and payment
  */
-router.post('/create', async (req, res) => {
+router.post('/create', optionalAuth, async (req: any, res) => {
   try {
     const validatedData = createOrderSchema.parse(req.body)
     
@@ -84,6 +85,7 @@ router.post('/create', async (req, res) => {
     const order = await prisma.order.create({
       data: {
         orderNumber,
+        userId: req.userId || null, // Link to user if authenticated
         email: validatedData.customer.email,
         customerName: `${validatedData.customer.firstName} ${validatedData.customer.lastName}`,
         customerPhone: validatedData.customer.phone,
@@ -194,6 +196,122 @@ router.post('/create', async (req, res) => {
     })
   }
 })
+
+/**
+ * Get user's orders
+ * GET /api/orders/user
+ */
+router.get('/user', authenticateToken, async (req: any, res) => {
+  try {
+    const userId = req.userId
+    
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        error: 'User not authenticated'
+      })
+    }
+
+    // Find orders by user email (since orders might not have userId)
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { email: true }
+    })
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: 'User not found'
+      })
+    }
+
+    // Get orders for this user (by userId or email)
+    const orders = await prisma.order.findMany({
+      where: { 
+        OR: [
+          { userId: userId },
+          { email: user.email }
+        ]
+      },
+      include: {
+        items: {
+          include: {
+            product: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+                images: true
+              }
+            }
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    })
+
+    // Transform orders to match frontend interface
+    const transformedOrders = orders.map(order => ({
+      id: order.id,
+      orderNumber: order.orderNumber,
+      date: order.createdAt.toISOString(),
+      status: getOrderStatusText(order.status, order.paymentStatus, order.fulfillmentStatus),
+      total: order.totalAmount,
+      currency: order.currency || 'SEK',
+      paymentStatus: order.paymentStatus,
+      fulfillmentStatus: order.fulfillmentStatus,
+      trackingNumber: order.trackingNumber,
+      trackingCompany: order.trackingCompany,
+      shippedAt: order.shippedAt,
+      deliveredAt: order.deliveredAt,
+      items: order.items.map(item => ({
+        id: item.id,
+        name: item.product?.name || item.title || 'Unknown Product',
+        quantity: item.quantity,
+        price: item.price,
+        total: item.price * item.quantity,
+        image: item.product?.images?.[0] || '/images/products/default.png'
+      }))
+    }))
+
+    res.json({
+      success: true,
+      orders: transformedOrders
+    })
+
+  } catch (error: any) {
+    logger.error('Failed to get user orders:', error)
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get orders'
+    })
+  }
+})
+
+// Helper function to get readable order status
+function getOrderStatusText(status: string, paymentStatus: string, fulfillmentStatus: string): string {
+  if (paymentStatus === 'PAID') {
+    if (fulfillmentStatus === 'FULFILLED') {
+      return 'Levererad'
+    } else if (fulfillmentStatus === 'PARTIALLY_FULFILLED') {
+      return 'Delvis levererad'
+    } else if (fulfillmentStatus === 'SHIPPED') {
+      return 'Skickad'
+    } else {
+      return 'Behandlas'
+    }
+  } else if (paymentStatus === 'PENDING') {
+    return 'Väntar på betalning'
+  } else if (paymentStatus === 'FAILED') {
+    return 'Betalning misslyckades'
+  } else if (paymentStatus === 'CANCELLED') {
+    return 'Avbruten'
+  } else {
+    return 'Okänd status'
+  }
+}
 
 /**
  * Complete payment after card tokenization
