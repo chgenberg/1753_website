@@ -1024,35 +1024,20 @@ export default function CheckoutPage() {
                       </div>
                     </motion.div>
 
-                    {/* Betalning (inbäddad Smart Checkout) */}
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.4 }}
-                      className="bg-white/80 rounded-2xl p-6 border border-[#E5D5C7]/30"
-                    >
+                                          {/* Security badges */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.4 }}
+                        className="bg-green-50 rounded-2xl p-6 border border-green-100"
+                      >
                       <div className="flex items-start gap-4">
                         <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-md">
                           <Shield className="w-6 h-6 text-green-600" />
                         </div>
                         <div>
-                          <h3 className="font-medium text-gray-900 mb-4">Betala med kort / Google Pay</h3>
-                          {/* Viva Smart Checkout embed med fallback */}
-                          <VivaSmartCheckout
-                            orderCode={orderDetails?.orderCode || ''}
-                            amount={finalTotal}
-                            publicKey={process.env.NEXT_PUBLIC_VIVA_PUBLIC_KEY || ''}
-                            sourceCode={process.env.NEXT_PUBLIC_VIVA_SOURCE_CODE || ''}
-                            baseURL={process.env.NEXT_PUBLIC_VIVA_BASE_URL || 'https://api.vivapayments.com'}
-                            onSuccess={(txId) => {
-                              router.push(`/checkout/success?transactionId=${txId}&orderCode=${orderDetails?.orderCode}`)
-                            }}
-                            onError={(err) => {
-                              console.error('Embedded checkout error:', err)
-                            }}
-                          />
-
-                          <p className="text-sm text-green-700">
+                                                     <h3 className="font-medium text-green-900 mb-2">Säker betalning</h3>
+                           <p className="text-sm text-green-700">
                             Din betalningsinformation är krypterad och säker. Vi lagrar aldrig kortuppgifter.
                           </p>
                         </div>
