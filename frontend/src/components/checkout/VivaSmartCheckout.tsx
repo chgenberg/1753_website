@@ -49,7 +49,7 @@ export default function VivaSmartCheckout({
   useEffect(() => {
     // Load Viva Smart Checkout script
     const script = document.createElement('script')
-    script.src = `${baseURL}/web/checkout/v2/js`
+    script.src = `https://www.vivapayments.com/web/checkout/v2/js`
     script.async = true
     script.onload = () => {
       initializeCheckout()
@@ -207,11 +207,13 @@ export default function VivaSmartCheckout({
       </div>
 
       {/* Card type icons */}
+      {/* Removed until assets are added to /public/images/payment to avoid 404s
       <div className="flex items-center gap-3 mt-4 justify-center opacity-50">
         <img src="/images/payment/visa.svg" alt="Visa" className="h-8" />
         <img src="/images/payment/mastercard.svg" alt="Mastercard" className="h-8" />
         <img src="/images/payment/amex.svg" alt="American Express" className="h-8" />
       </div>
+      */}
     </div>
   )
 } 

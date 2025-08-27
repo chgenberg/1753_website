@@ -67,7 +67,7 @@ const nextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.judge.me https://api.vivapayments.com https://accounts.vivapayments.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; media-src 'self' data: https: blob:; worker-src 'self' blob:; connect-src 'self' https://1753skincare.com https://1753websitebackend-production.up.railway.app https://api.vivapayments.com https://accounts.vivapayments.com; font-src 'self' https: data:; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.judge.me https://api.vivapayments.com https://accounts.vivapayments.com https://www.vivapayments.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; media-src 'self' data: https: blob:; worker-src 'self' blob:; connect-src 'self' https://1753skincare.com https://1753websitebackend-production.up.railway.app https://api.vivapayments.com https://accounts.vivapayments.com https://www.vivapayments.com; font-src 'self' https: data:; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
           },
         ],
       },
