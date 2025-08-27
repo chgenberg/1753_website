@@ -6,6 +6,9 @@ const MESSAGES_DIR = path.resolve(__dirname, '../../messages')
 const SOURCE_LOCALE = 'sv'
 const TARGET_LOCALES = ['en', 'es', 'de', 'fr']
 
+// Configurable tokens per string; default 1000 for ample room
+const MAX_COMPLETION_TOKENS = parseInt(process.env.OPENAI_MAX_COMPLETION_TOKENS || '1000', 10)
+
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, 'utf-8'))
 }
@@ -52,8 +55,7 @@ async function translateWithOpenAI(text, targetLocale) {
   const completion = await client.chat.completions.create({
     model,
     messages: [{ role: 'user', content: prompt }],
-    // Use default temperature (omit param) to be compatible with gpt-5 models
-    max_completion_tokens: 300
+    max_completion_tokens: MAX_COMPLETION_TOKENS
   })
   return completion.choices[0]?.message?.content?.trim() || null
 }
