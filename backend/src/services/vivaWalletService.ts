@@ -134,7 +134,7 @@ export class VivaWalletService {
         preauth: false,
         allowRecurring: params.allowRecurring ?? true,
         maxInstallments: 1,
-        paymentNotification: true,
+        paymentNotification: false,
         disableExactAmount: false,
         disableCash: true,
         disableWallet: false,
@@ -460,8 +460,9 @@ export class VivaWalletService {
    * Create payment order (legacy method for compatibility)
    */
   async createPaymentOrder(orderData: any): Promise<CreateOrderResponse> {
+    // orderData.amount is already in major units (e.g., SEK), we should NOT divide by 100
     return this.createSubscriptionOrder({
-      amount: orderData.amount / 100, // Convert from cents
+      amount: orderData.amount,
       currency: orderData.currency || 'SEK',
       customerEmail: orderData.customer.email,
       customerName: orderData.customer.fullName,
