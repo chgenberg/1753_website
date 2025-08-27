@@ -26,13 +26,19 @@ router.options('/viva-wallet', (req, res) => {
  * GET /api/webhooks/viva-wallet
  */
 router.get('/viva-wallet', (req, res) => {
-  logger.info('Received Viva Wallet webhook validation request (GET)')
+  logger.info('Received Viva Wallet webhook validation request (GET)', {
+    headers: req.headers,
+    query: req.query,
+    body: req.body
+  })
   
   const validationKey = (process.env.VIVA_WALLET_WEBHOOK_SECRET || (env as any).VIVA_WALLET_WEBHOOK_SECRET || 'B3248222FDCD1885AEAFE51CCC1B5607F00903F6') as string
 
   if (!process.env.VIVA_WALLET_WEBHOOK_SECRET) {
     logger.warn('VIVA_WALLET_WEBHOOK_SECRET is not set. Using fallback key for validation response.')
   }
+
+  logger.info('Responding with validation key:', { Key: validationKey })
 
   // According to Viva Wallet docs, return just the key as they expect
   res.status(200).json({ 
