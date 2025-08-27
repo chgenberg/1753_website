@@ -6,6 +6,38 @@ import prisma from '../lib/prisma'
 
 const router = Router()
 
+// Helper functions
+function getCountryCode(country: string): string {
+  const countryMap: Record<string, string> = {
+    'Sverige': 'SE',
+    'Sweden': 'SE',
+    'Norge': 'NO',
+    'Norway': 'NO',
+    'Danmark': 'DK',
+    'Denmark': 'DK',
+    'Finland': 'FI',
+    'Tyskland': 'DE',
+    'Germany': 'DE',
+    'Frankrike': 'FR',
+    'France': 'FR',
+    'Spanien': 'ES',
+    'Spain': 'ES'
+  }
+  return countryMap[country] || 'SE'
+}
+
+function getRequestLang(currency: string): string {
+  const langMap: Record<string, string> = {
+    'SEK': 'sv-SE',
+    'EUR': 'en-GB',
+    'USD': 'en-US',
+    'GBP': 'en-GB',
+    'NOK': 'nb-NO',
+    'DKK': 'da-DK'
+  }
+  return langMap[currency] || 'en-GB'
+}
+
 // Schema for order creation
 const createOrderSchema = z.object({
   customer: z.object({
@@ -31,7 +63,10 @@ const createOrderSchema = z.object({
   subtotal: z.number().positive(),
   shippingCost: z.number().min(0),
   total: z.number().positive(),
-  newsletter: z.boolean()
+  currency: z.enum(['SEK', 'EUR', 'USD', 'GBP', 'NOK', 'DKK']).default('SEK'),
+  newsletter: z.boolean(),
+  isSubscription: z.boolean().optional(),
+  subscriptionInterval: z.enum(['monthly', 'bimonthly', 'quarterly']).optional()
 })
 
 /**
@@ -91,19 +126,36 @@ router.post('/create', async (req, res) => {
     })
     
     // Create payment order in Viva Wallet
-    const paymentOrder = await vivaWalletService.createPaymentOrder({
+    const paymentOrderParams: any = {
       amount: validatedData.total,
       customerTrns: `Order #${order.id}`,
       customer: {
         email: validatedData.customer.email,
         fullName: `${validatedData.customer.firstName} ${validatedData.customer.lastName}`,
         phone: validatedData.customer.phone,
-        countryCode: 'SE',
-        requestLang: 'sv-SE'
+        countryCode: getCountryCode(validatedData.shippingAddress.country),
+        requestLang: getRequestLang(validatedData.currency)
       },
       merchantTrns: order.id,
       tags: ['ecommerce', 'webshop']
-    })
+    }
+
+    // If it's a subscription order, create a recurring payment
+    if (validatedData.isSubscription) {
+      const subscriptionResult = await vivaWalletService.createSubscriptionOrder({
+        amount: validatedData.total,
+        currency: validatedData.currency,
+        customerEmail: validatedData.customer.email,
+        customerName: `${validatedData.customer.firstName} ${validatedData.customer.lastName}`,
+        customerPhone: validatedData.customer.phone,
+        description: `Prenumeration - ${validatedData.subscriptionInterval}`,
+        allowRecurring: true
+      })
+      
+      var paymentOrder = subscriptionResult
+    } else {
+      var paymentOrder = await vivaWalletService.createPaymentOrder(paymentOrderParams)
+    }
     
     // Update order with payment order code
     await prisma.order.update({

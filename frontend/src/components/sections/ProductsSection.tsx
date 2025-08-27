@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { ShoppingBag, Star, Plus, Check, Package } from 'lucide-react'
+import { useCurrency } from '@/contexts/CurrencyContext'
 // Temporarily remove FloatingReviews to fix React error
 // import FloatingReviews from '@/components/reviews/FloatingReviews'
 
@@ -28,6 +29,7 @@ export function ProductsSection() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [addedToCart, setAddedToCart] = useState<string[]>([])
+  const { formatMoney } = useCurrency()
 
   useEffect(() => {
     fetchProducts()
@@ -245,11 +247,11 @@ export function ProductsSection() {
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="text-2xl font-bold text-[#FCB237]">
-                            {product.price} kr
+                            {formatMoney(product.price)}
                           </span>
                           {product.compareAtPrice && product.compareAtPrice > product.price && (
                             <span className="text-sm text-gray-500 line-through">
-                              {product.compareAtPrice} kr
+                              {formatMoney(product.compareAtPrice)}
                             </span>
                           )}
                         </div>
