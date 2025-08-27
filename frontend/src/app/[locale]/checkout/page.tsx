@@ -345,7 +345,7 @@ export default function CheckoutPage() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => router.push('/products')}
-            className="bg-gradient-to-r from-[#B89B7B] to-[#9A7E5F] text-white px-10 py-4 rounded-full font-light tracking-wider hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
+            className="bg-[#E79C1A] text-white px-10 py-4 rounded-full font-light tracking-wider hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
           >
             FORTSÄTT HANDLA
           </motion.button>
@@ -359,7 +359,7 @@ export default function CheckoutPage() {
     <div className="min-h-screen bg-gradient-to-br from-[#FFF9F3] via-white to-[#FFF9F3]">
       <Header />
       
-      <div className="container mx-auto px-4 py-6 md:py-12 max-w-6xl">
+      <div className="container mx-auto px-4 pt-24 pb-12 md:pt-32 md:pb-16 max-w-6xl">
         {/* Header with progress */}
         <div className="mb-8 md:mb-12">
           <motion.div 
@@ -369,7 +369,7 @@ export default function CheckoutPage() {
           >
             <button
               onClick={() => currentStep > 1 ? setCurrentStep(currentStep - 1) : router.push('/cart')}
-              className="group flex items-center gap-2 text-gray-600 hover:text-[#B89B7B] transition-colors"
+              className="group flex items-center gap-2 text-gray-600 hover:text-[#E79C1A] transition-colors"
             >
               <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
               <span className="hidden md:inline font-light tracking-wider">TILLBAKA</span>
@@ -389,7 +389,7 @@ export default function CheckoutPage() {
                     className={`
                       w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center font-light
                       ${currentStep >= step.num 
-                        ? 'bg-gradient-to-r from-[#B89B7B] to-[#9A7E5F] text-white shadow-lg' 
+                        ? 'bg-[#E79C1A] text-white shadow-lg' 
                         : 'bg-gray-200 text-gray-500'
                       }
                     `}
@@ -397,7 +397,7 @@ export default function CheckoutPage() {
                     {currentStep > step.num ? <Check className="w-4 h-4" /> : step.num}
                   </motion.div>
                   <span className={`hidden md:inline ml-2 tracking-wider ${
-                    currentStep >= step.num ? 'text-[#B89B7B] font-medium' : 'text-gray-400'
+                    currentStep >= step.num ? 'text-[#E79C1A] font-medium' : 'text-gray-400'
                   }`}>
                     {step.label}
                   </span>
@@ -413,7 +413,7 @@ export default function CheckoutPage() {
               initial={{ width: '0%' }}
               animate={{ width: `${(currentStep / 4) * 100}%` }}
               transition={{ duration: 0.5, ease: "easeOut" }}
-              className="h-full bg-gradient-to-r from-[#B89B7B] to-[#9A7E5F] shadow-sm"
+              className="h-full bg-[#E79C1A] shadow-sm"
             />
           </div>
         </div>
@@ -437,7 +437,7 @@ export default function CheckoutPage() {
                       initial={{ rotate: -180 }}
                       animate={{ rotate: 0 }}
                       transition={{ duration: 0.5 }}
-                      className="w-12 h-12 bg-gradient-to-r from-[#B89B7B] to-[#9A7E5F] rounded-full flex items-center justify-center shadow-lg"
+                      className="w-12 h-12 bg-[#E79C1A] rounded-full flex items-center justify-center shadow-lg"
                     >
                       <User className="w-6 h-6 text-white" />
                     </motion.div>
@@ -460,7 +460,7 @@ export default function CheckoutPage() {
                         onChange={(e) => handleInputChange('email', e.target.value)}
                         className={`
                           w-full px-6 py-4 bg-[#FFF9F3] border-2 rounded-2xl text-gray-800 
-                          focus:ring-0 focus:border-[#B89B7B] outline-none transition-all
+                          focus:ring-0 focus:border-[#E79C1A] outline-none transition-all
                           ${formErrors.email ? 'border-red-400' : 'border-transparent'}
                           peer
                         `}
@@ -470,7 +470,7 @@ export default function CheckoutPage() {
                       <label 
                         htmlFor="email"
                         className="absolute left-6 top-4 text-gray-500 transition-all duration-200 
-                        peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#B89B7B] peer-focus:text-sm
+                        peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#E79C1A] peer-focus:text-sm
                         peer-[:not(:placeholder-shown)]:-translate-y-8 peer-[:not(:placeholder-shown)]:text-sm"
                       >
                         E-postadress
@@ -501,7 +501,7 @@ export default function CheckoutPage() {
                           onChange={(e) => handleInputChange('firstName', e.target.value)}
                           className={`
                             w-full px-6 py-4 bg-[#FFF9F3] border-2 rounded-2xl text-gray-800
-                            focus:ring-0 focus:border-[#B89B7B] outline-none transition-all
+                            focus:ring-0 focus:border-[#E79C1A] outline-none transition-all
                             ${formErrors.firstName ? 'border-red-400' : 'border-transparent'}
                             peer
                           `}
@@ -511,7 +511,7 @@ export default function CheckoutPage() {
                         <label 
                           htmlFor="firstName"
                           className="absolute left-6 top-4 text-gray-500 transition-all duration-200 
-                          peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#B89B7B] peer-focus:text-sm
+                          peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#E79C1A] peer-focus:text-sm
                           peer-[:not(:placeholder-shown)]:-translate-y-8 peer-[:not(:placeholder-shown)]:text-sm"
                         >
                           Förnamn
@@ -539,7 +539,7 @@ export default function CheckoutPage() {
                           onChange={(e) => handleInputChange('lastName', e.target.value)}
                           className={`
                             w-full px-6 py-4 bg-[#FFF9F3] border-2 rounded-2xl text-gray-800
-                            focus:ring-0 focus:border-[#B89B7B] outline-none transition-all
+                            focus:ring-0 focus:border-[#E79C1A] outline-none transition-all
                             ${formErrors.lastName ? 'border-red-400' : 'border-transparent'}
                             peer
                           `}
@@ -549,7 +549,7 @@ export default function CheckoutPage() {
                         <label 
                           htmlFor="lastName"
                           className="absolute left-6 top-4 text-gray-500 transition-all duration-200 
-                          peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#B89B7B] peer-focus:text-sm
+                          peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#E79C1A] peer-focus:text-sm
                           peer-[:not(:placeholder-shown)]:-translate-y-8 peer-[:not(:placeholder-shown)]:text-sm"
                         >
                           Efternamn
@@ -579,7 +579,7 @@ export default function CheckoutPage() {
                         onChange={(e) => handleInputChange('phone', e.target.value)}
                         className={`
                           w-full px-6 py-4 bg-[#FFF9F3] border-2 rounded-2xl text-gray-800
-                          focus:ring-0 focus:border-[#B89B7B] outline-none transition-all
+                          focus:ring-0 focus:border-[#E79C1A] outline-none transition-all
                           ${formErrors.phone ? 'border-red-400' : 'border-transparent'}
                           peer
                         `}
@@ -589,7 +589,7 @@ export default function CheckoutPage() {
                       <label 
                         htmlFor="phone"
                         className="absolute left-6 top-4 text-gray-500 transition-all duration-200 
-                        peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#B89B7B] peer-focus:text-sm
+                        peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#E79C1A] peer-focus:text-sm
                         peer-[:not(:placeholder-shown)]:-translate-y-8 peer-[:not(:placeholder-shown)]:text-sm"
                       >
                         Telefonnummer
@@ -623,8 +623,8 @@ export default function CheckoutPage() {
                           />
                           <div className={`
                             w-6 h-6 rounded-lg border-2 transition-all duration-200
-                            ${form.newsletter ? 'bg-gradient-to-r from-[#B89B7B] to-[#9A7E5F] border-transparent' : 'bg-white border-gray-300'}
-                            group-hover:border-[#B89B7B]
+                            ${form.newsletter ? 'bg-[#E79C1A] border-transparent' : 'bg-white border-gray-300'}
+                            group-hover:border-[#E79C1A]
                           `}>
                             {form.newsletter && (
                               <motion.div
@@ -656,7 +656,7 @@ export default function CheckoutPage() {
                       onClick={handleNextStep}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="w-full py-5 bg-gradient-to-r from-[#B89B7B] to-[#9A7E5F] text-white rounded-2xl font-light tracking-wider text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-3 group"
+                      className="w-full py-5 bg-[#E79C1A] text-white rounded-2xl font-light tracking-wider text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-3 group"
                     >
                       <span>FORTSÄTT TILL LEVERANS</span>
                       <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -680,7 +680,7 @@ export default function CheckoutPage() {
                       initial={{ rotate: -180 }}
                       animate={{ rotate: 0 }}
                       transition={{ duration: 0.5 }}
-                      className="w-12 h-12 bg-gradient-to-r from-[#B89B7B] to-[#9A7E5F] rounded-full flex items-center justify-center shadow-lg"
+                      className="w-12 h-12 bg-[#E79C1A] rounded-full flex items-center justify-center shadow-lg"
                     >
                       <MapPin className="w-6 h-6 text-white" />
                     </motion.div>
@@ -703,7 +703,7 @@ export default function CheckoutPage() {
                         onChange={(e) => handleInputChange('address', e.target.value)}
                         className={`
                           w-full px-6 py-4 bg-[#FFF9F3] border-2 rounded-2xl text-gray-800
-                          focus:ring-0 focus:border-[#B89B7B] outline-none transition-all
+                          focus:ring-0 focus:border-[#E79C1A] outline-none transition-all
                           ${formErrors.address ? 'border-red-400' : 'border-transparent'}
                           peer
                         `}
@@ -713,7 +713,7 @@ export default function CheckoutPage() {
                       <label 
                         htmlFor="address"
                         className="absolute left-6 top-4 text-gray-500 transition-all duration-200 
-                        peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#B89B7B] peer-focus:text-sm
+                        peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#E79C1A] peer-focus:text-sm
                         peer-[:not(:placeholder-shown)]:-translate-y-8 peer-[:not(:placeholder-shown)]:text-sm"
                       >
                         Gatuadress
@@ -740,14 +740,14 @@ export default function CheckoutPage() {
                         type="text"
                         value={form.apartment}
                         onChange={(e) => handleInputChange('apartment', e.target.value)}
-                        className="w-full px-6 py-4 bg-[#FFF9F3] border-2 border-transparent rounded-2xl text-gray-800 focus:ring-0 focus:border-[#B89B7B] outline-none transition-all peer"
+                        className="w-full px-6 py-4 bg-[#FFF9F3] border-2 border-transparent rounded-2xl text-gray-800 focus:ring-0 focus:border-[#E79C1A] outline-none transition-all peer"
                         placeholder=" "
                         id="apartment"
                       />
                       <label 
                         htmlFor="apartment"
                         className="absolute left-6 top-4 text-gray-500 transition-all duration-200 
-                        peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#B89B7B] peer-focus:text-sm
+                        peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#E79C1A] peer-focus:text-sm
                         peer-[:not(:placeholder-shown)]:-translate-y-8 peer-[:not(:placeholder-shown)]:text-sm"
                       >
                         Lägenhet, svit etc. (valfritt)
@@ -768,7 +768,7 @@ export default function CheckoutPage() {
                           onChange={(e) => handleInputChange('postalCode', e.target.value)}
                           className={`
                             w-full px-6 py-4 bg-[#FFF9F3] border-2 rounded-2xl text-gray-800
-                            focus:ring-0 focus:border-[#B89B7B] outline-none transition-all
+                            focus:ring-0 focus:border-[#E79C1A] outline-none transition-all
                             ${formErrors.postalCode ? 'border-red-400' : 'border-transparent'}
                             peer
                           `}
@@ -778,7 +778,7 @@ export default function CheckoutPage() {
                         <label 
                           htmlFor="postalCode"
                           className="absolute left-6 top-4 text-gray-500 transition-all duration-200 
-                          peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#B89B7B] peer-focus:text-sm
+                          peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#E79C1A] peer-focus:text-sm
                           peer-[:not(:placeholder-shown)]:-translate-y-8 peer-[:not(:placeholder-shown)]:text-sm"
                         >
                           Postnummer
@@ -806,7 +806,7 @@ export default function CheckoutPage() {
                           onChange={(e) => handleInputChange('city', e.target.value)}
                           className={`
                             w-full px-6 py-4 bg-[#FFF9F3] border-2 rounded-2xl text-gray-800
-                            focus:ring-0 focus:border-[#B89B7B] outline-none transition-all
+                            focus:ring-0 focus:border-[#E79C1A] outline-none transition-all
                             ${formErrors.city ? 'border-red-400' : 'border-transparent'}
                             peer
                           `}
@@ -816,7 +816,7 @@ export default function CheckoutPage() {
                         <label 
                           htmlFor="city"
                           className="absolute left-6 top-4 text-gray-500 transition-all duration-200 
-                          peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#B89B7B] peer-focus:text-sm
+                          peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#E79C1A] peer-focus:text-sm
                           peer-[:not(:placeholder-shown)]:-translate-y-8 peer-[:not(:placeholder-shown)]:text-sm"
                         >
                           Stad
@@ -843,7 +843,7 @@ export default function CheckoutPage() {
                       <select
                         value={form.country}
                         onChange={(e) => handleInputChange('country', e.target.value)}
-                        className="w-full px-6 py-4 bg-[#FFF9F3] border-2 border-transparent rounded-2xl text-gray-800 focus:ring-0 focus:border-[#B89B7B] outline-none transition-all appearance-none cursor-pointer"
+                        className="w-full px-6 py-4 bg-[#FFF9F3] border-2 border-transparent rounded-2xl text-gray-800 focus:ring-0 focus:border-[#E79C1A] outline-none transition-all appearance-none cursor-pointer"
                       >
                         <option value="Sverige">Sverige</option>
                         <option value="Norge">Norge</option>
@@ -861,18 +861,18 @@ export default function CheckoutPage() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.6 }}
-                      className="bg-gradient-to-r from-[#FFF9F3] to-[#FFF5ED] rounded-2xl p-6 mt-8 border border-[#E5D5C7]/30"
+                      className="bg-[#FFF9F3] rounded-2xl p-6 mt-8 border border-[#E5D5C7]/30"
                     >
                       <div className="flex items-start gap-4">
                         <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-md">
-                          <Package className="w-6 h-6 text-[#B89B7B]" />
+                          <Package className="w-6 h-6 text-[#E79C1A]" />
                         </div>
                         <div className="flex-1">
                           <h3 className="font-medium text-gray-800 mb-2">Standard leverans</h3>
                           <p className="text-sm text-gray-600 mb-3">
                             Leverans inom 2-4 arbetsdagar
                           </p>
-                          <div className="flex items-center gap-2 text-[#B89B7B]">
+                          <div className="flex items-center gap-2 text-[#E79C1A]">
                             <Sparkles className="w-4 h-4" />
                             <span className="text-sm font-medium">Fri frakt över 500 kr!</span>
                           </div>
@@ -888,7 +888,7 @@ export default function CheckoutPage() {
                       onClick={handleNextStep}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="w-full py-5 bg-gradient-to-r from-[#B89B7B] to-[#9A7E5F] text-white rounded-2xl font-light tracking-wider text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-3 group"
+                      className="w-full py-5 bg-[#E79C1A] text-white rounded-2xl font-light tracking-wider text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-3 group"
                     >
                       <span>GRANSKA BESTÄLLNING</span>
                       <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -912,7 +912,7 @@ export default function CheckoutPage() {
                       initial={{ rotate: -180 }}
                       animate={{ rotate: 0 }}
                       transition={{ duration: 0.5 }}
-                      className="w-12 h-12 bg-gradient-to-r from-[#B89B7B] to-[#9A7E5F] rounded-full flex items-center justify-center shadow-lg"
+                      className="w-12 h-12 bg-[#E79C1A] rounded-full flex items-center justify-center shadow-lg"
                     >
                       <Check className="w-6 h-6 text-white" />
                     </motion.div>
@@ -929,7 +929,7 @@ export default function CheckoutPage() {
                       transition={{ delay: 0.1 }}
                       className="bg-[#FFF9F3] rounded-2xl p-6 space-y-4"
                     >
-                      <div className="flex items-center gap-3 text-[#B89B7B] mb-2">
+                      <div className="flex items-center gap-3 text-[#E79C1A] mb-2">
                         <MapPin className="w-5 h-5" />
                         <h3 className="font-medium">Leveransadress</h3>
                       </div>
@@ -947,7 +947,7 @@ export default function CheckoutPage() {
                       transition={{ delay: 0.2 }}
                       className="bg-[#FFF9F3] rounded-2xl p-6 space-y-4"
                     >
-                      <div className="flex items-center gap-3 text-[#B89B7B] mb-2">
+                      <div className="flex items-center gap-3 text-[#E79C1A] mb-2">
                         <Mail className="w-5 h-5" />
                         <h3 className="font-medium">Kontaktuppgifter</h3>
                       </div>
@@ -963,7 +963,7 @@ export default function CheckoutPage() {
                       transition={{ delay: 0.3 }}
                       className="bg-[#FFF9F3] rounded-2xl p-6"
                     >
-                      <div className="flex items-center gap-3 text-[#B89B7B] mb-4">
+                      <div className="flex items-center gap-3 text-[#E79C1A] mb-4">
                         <ShoppingBag className="w-5 h-5" />
                         <h3 className="font-medium">Orderdetaljer</h3>
                       </div>
@@ -988,7 +988,7 @@ export default function CheckoutPage() {
                         <div className="pt-3 border-t border-[#E5D5C7]">
                           <div className="flex justify-between text-lg">
                             <span className="font-medium">Totalt</span>
-                            <span className="font-semibold text-[#B89B7B]">{finalTotal} kr</span>
+                            <span className="font-semibold text-[#E79C1A]">{finalTotal} kr</span>
                           </div>
                         </div>
                       </div>
@@ -999,7 +999,7 @@ export default function CheckoutPage() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.4 }}
-                      className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-100"
+                      className="bg-green-50 rounded-2xl p-6 border border-green-100"
                     >
                       <div className="flex items-start gap-4">
                         <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-md">
@@ -1028,7 +1028,7 @@ export default function CheckoutPage() {
                       ].map((badge, index) => (
                         <div key={index} className="text-center">
                           <div className="w-12 h-12 bg-[#FFF9F3] rounded-full flex items-center justify-center mx-auto mb-2">
-                            <badge.icon className="w-6 h-6 text-[#B89B7B]" />
+                            <badge.icon className="w-6 h-6 text-[#E79C1A]" />
                           </div>
                           <p className="text-xs text-gray-600">{badge.text}</p>
                         </div>
@@ -1044,7 +1044,7 @@ export default function CheckoutPage() {
                       disabled={isProcessing}
                       whileHover={{ scale: isProcessing ? 1 : 1.02 }}
                       whileTap={{ scale: isProcessing ? 1 : 0.98 }}
-                      className="w-full py-5 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-white rounded-2xl font-medium tracking-wider text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-3 group"
+                      className="w-full py-5 bg-[#E79C1A] text-white rounded-2xl font-medium tracking-wider text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-3 group"
                     >
                       {isProcessing ? (
                         <>
@@ -1063,9 +1063,9 @@ export default function CheckoutPage() {
                     {/* Terms */}
                     <p className="text-xs text-gray-500 text-center">
                       Genom att slutföra köpet godkänner du våra{' '}
-                      <a href="/villkor" className="text-[#B89B7B] hover:underline">köpvillkor</a>
+                      <a href="/villkor" className="text-[#E79C1A] hover:underline">köpvillkor</a>
                       {' '}och{' '}
-                      <a href="/integritetspolicy" className="text-[#B89B7B] hover:underline">integritetspolicy</a>
+                      <a href="/integritetspolicy" className="text-[#E79C1A] hover:underline">integritetspolicy</a>
                     </p>
                   </div>
                 </motion.div>
@@ -1086,7 +1086,7 @@ export default function CheckoutPage() {
                       initial={{ rotate: -180 }}
                       animate={{ rotate: 0 }}
                       transition={{ duration: 0.5 }}
-                      className="w-12 h-12 bg-gradient-to-r from-[#B89B7B] to-[#9A7E5F] rounded-full flex items-center justify-center shadow-lg"
+                      className="w-12 h-12 bg-[#E79C1A] rounded-full flex items-center justify-center shadow-lg"
                     >
                       <CreditCard className="w-6 h-6 text-white" />
                     </motion.div>
@@ -1165,7 +1165,7 @@ export default function CheckoutPage() {
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         transition={{ delay: 0.2 + index * 0.1 }}
-                        className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-[#B89B7B] to-[#9A7E5F] text-white text-xs rounded-full flex items-center justify-center shadow-md"
+                        className="absolute -top-2 -right-2 w-6 h-6 bg-[#E79C1A] text-white text-xs rounded-full flex items-center justify-center shadow-md"
                       >
                         {item.quantity}
                       </motion.span>
@@ -1192,7 +1192,7 @@ export default function CheckoutPage() {
                       value={discountCode}
                       onChange={(e) => setDiscountCode(e.target.value)}
                       placeholder="Rabattkod"
-                      className="w-full px-4 py-3 bg-[#FFF9F3] border-2 border-transparent rounded-xl text-sm focus:ring-0 focus:border-[#B89B7B] outline-none transition-all pl-10"
+                      className="w-full px-4 py-3 bg-[#FFF9F3] border-2 border-transparent rounded-xl text-sm focus:ring-0 focus:border-[#E79C1A] outline-none transition-all pl-10"
                       disabled={!!appliedDiscount}
                     />
                     <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -1211,7 +1211,7 @@ export default function CheckoutPage() {
                     <button
                       onClick={validateDiscountCode}
                       disabled={isValidatingDiscount || !discountCode.trim()}
-                      className="px-6 py-3 bg-gradient-to-r from-[#B89B7B] to-[#9A7E5F] text-white rounded-xl text-sm hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-6 py-3 bg-[#E79C1A] text-white rounded-xl text-sm hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isValidatingDiscount ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -1277,7 +1277,7 @@ export default function CheckoutPage() {
                     key={finalTotal}
                     initial={{ scale: 0.8 }}
                     animate={{ scale: 1 }}
-                    className="text-[#B89B7B]"
+                    className="text-[#E79C1A]"
                   >
                     {finalTotal} kr
                   </motion.span>
@@ -1317,7 +1317,7 @@ export default function CheckoutPage() {
                 className="mt-6 p-4 bg-[#FFF9F3] rounded-2xl text-center"
               >
                 <p className="text-sm text-gray-600 mb-2">Behöver du hjälp?</p>
-                <a href="/kontakt" className="text-[#B89B7B] hover:underline text-sm font-medium">
+                <a href="/kontakt" className="text-[#E79C1A] hover:underline text-sm font-medium">
                   Kontakta kundservice →
                 </a>
               </motion.div>
