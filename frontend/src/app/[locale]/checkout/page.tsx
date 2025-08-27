@@ -195,7 +195,8 @@ export default function CheckoutPage() {
   const handlePaymentSuccess = (transactionId: string) => {
     // Clear cart and redirect to success
     clearCart()
-    router.push(`/checkout/success?transactionId=${transactionId}`)
+    const orderCode = orderDetails?.orderCode || ''
+    router.push(`/checkout/success?transactionId=${transactionId}&orderCode=${orderCode}`)
   }
   
   const handlePaymentError = (error: string) => {

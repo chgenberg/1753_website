@@ -200,14 +200,26 @@ const templates: Record<string, (data: Record<string, any>) => EmailTemplate> = 
         <meta charset="utf-8">
         <title>Orderbekräftelse</title>
         <style>
-          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: linear-gradient(135deg, #fcb237 0%, #f8d04f 100%); padding: 30px; text-align: center; color: white; }
-          .content { padding: 30px; background: #f9f9f9; }
-          .order-details { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
-          .order-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
-          .order-total { font-weight: bold; font-size: 18px; }
-          .footer { padding: 20px; text-align: center; color: #666; font-size: 14px; }
+          body { font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: #333; background: #f7f7f7; margin: 0; padding: 0; }
+          .container { max-width: 600px; margin: 20px auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+          .header { background: #E79C1A; padding: 40px 30px; text-align: center; color: white; }
+          .header h1 { margin: 0; font-size: 32px; letter-spacing: 0.1em; font-weight: 300; text-transform: uppercase; }
+          .header p { margin: 10px 0 0; font-size: 18px; opacity: 0.9; }
+          .content { padding: 40px 30px; }
+          .greeting { font-size: 20px; margin-bottom: 20px; }
+          .order-details { background: #FFF9F3; padding: 25px; border-radius: 12px; margin: 25px 0; }
+          .order-header { display: flex; justify-content: space-between; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #E79C1A; }
+          .order-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
+          .order-item:last-child { border-bottom: none; }
+          .order-total { font-weight: bold; font-size: 20px; color: #E79C1A; margin-top: 15px; padding-top: 15px; border-top: 2px solid #E79C1A; }
+          .delivery-info { background: #f8f8f8; padding: 20px; border-radius: 12px; margin: 25px 0; }
+          .timeline { margin: 30px 0; }
+          .timeline-item { display: flex; align-items: center; margin: 15px 0; }
+          .timeline-icon { width: 40px; height: 40px; background: #E79C1A; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; margin-right: 15px; }
+          .button { display: inline-block; padding: 14px 30px; background: #E79C1A; color: white; text-decoration: none; border-radius: 25px; margin: 20px 0; font-weight: 500; }
+          .footer { padding: 30px; text-align: center; color: #666; font-size: 14px; background: #f8f8f8; }
+          .social-links { margin: 20px 0; }
+          .social-links a { margin: 0 10px; }
         </style>
       </head>
       <body>
@@ -217,38 +229,92 @@ const templates: Record<string, (data: Record<string, any>) => EmailTemplate> = 
             <p>Tack för din beställning!</p>
           </div>
           <div class="content">
-            <h2>Hej ${data.firstName}!</h2>
-            <p>Vi har mottagit din beställning och den bearbetas nu. Du kommer att få en bekräftelse när den skickas.</p>
+            <div class="greeting">
+              <strong>Hej ${data.firstName}! 💛</strong>
+            </div>
+            <p>Vi är så glada att få vara en del av din hudvårdsresa! Din beställning har tagits emot och behandlas nu med omsorg.</p>
             
             <div class="order-details">
-              <h3>Orderdetaljer</h3>
-              <p><strong>Ordernummer:</strong> ${data.orderNumber}</p>
-              <p><strong>Orderdatum:</strong> ${data.orderDate}</p>
-              
-              <h4>Beställda produkter:</h4>
-              ${data.items.map((item: any) => `
-                <div class="order-item">
-                  <span>${item.name} x ${item.quantity}</span>
-                  <span>${item.total} ${data.currency}</span>
+              <div class="order-header">
+                <div>
+                  <strong>Ordernummer:</strong><br>
+                  ${data.orderNumber}
                 </div>
-              `).join('')}
+                <div style="text-align: right;">
+                  <strong>Datum:</strong><br>
+                  ${data.orderDate}
+                </div>
+              </div>
+              
+              <div style="margin: 20px 0;">
+                ${data.items.map((item: any) => `
+                  <div class="order-item">
+                    <span>${item.name} x ${item.quantity}</span>
+                    <span style="font-weight: 500;">${item.total} ${data.currency}</span>
+                  </div>
+                `).join('')}
+              </div>
               
               <div class="order-item order-total">
-                <span>Totalt</span>
+                <span>Totalt att betala</span>
                 <span>${data.total} ${data.currency}</span>
               </div>
             </div>
             
-            <p>Din beställning kommer att skickas till:</p>
-            <p>
-              ${data.shippingAddress.firstName} ${data.shippingAddress.lastName}<br>
-              ${data.shippingAddress.address1}<br>
-              ${data.shippingAddress.postalCode} ${data.shippingAddress.city}
-            </p>
+            <div class="delivery-info">
+              <h3 style="margin-top: 0;">📦 Leveransadress</h3>
+              <p style="margin-bottom: 0;">
+                ${data.shippingAddress.firstName} ${data.shippingAddress.lastName}<br>
+                ${data.shippingAddress.address}<br>
+                ${data.shippingAddress.postalCode} ${data.shippingAddress.city}<br>
+                ${data.shippingAddress.country || 'Sverige'}
+              </p>
+            </div>
+            
+            <div class="timeline">
+              <h3>Din orders resa:</h3>
+              <div class="timeline-item">
+                <div class="timeline-icon">✓</div>
+                <div>
+                  <strong>Order mottagen</strong><br>
+                  <span style="color: #666; font-size: 14px;">Vi har tagit emot din beställning</span>
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-icon" style="background: #f0f0f0; color: #999;">2</div>
+                <div>
+                  <strong>Packas med kärlek</strong><br>
+                  <span style="color: #666; font-size: 14px;">Inom 1-2 arbetsdagar</span>
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-icon" style="background: #f0f0f0; color: #999;">3</div>
+                <div>
+                  <strong>På väg till dig</strong><br>
+                  <span style="color: #666; font-size: 14px;">Spårningsnummer skickas via e-post</span>
+                </div>
+              </div>
+            </div>
+            
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="https://1753skincare.com/sv/min-sida" class="button">Se din order</a>
+            </div>
           </div>
           <div class="footer">
-            <p>Med vänliga hälsningar,<br>Team 1753 Skincare</p>
-            <p>Har du frågor? Kontakta oss på hej@1753skincare.com</p>
+            <p style="margin-bottom: 20px;">
+              <strong>Har du frågor?</strong><br>
+              Vi finns här för dig! Kontakta oss på <a href="mailto:hej@1753skincare.com" style="color: #E79C1A; text-decoration: none;">hej@1753skincare.com</a><br>
+              eller ring <a href="tel:0732305521" style="color: #E79C1A; text-decoration: none;">073-230 55 21</a>
+            </p>
+            
+            <div class="social-links">
+              <a href="https://instagram.com/1753skincare" style="color: #E79C1A;">Instagram</a>
+              <a href="https://facebook.com/1753skincare" style="color: #E79C1A;">Facebook</a>
+            </div>
+            
+            <p style="margin-top: 20px; font-size: 12px; color: #999;">
+              © 2025 1753 Skincare | Hållbar hudvård sedan 1753
+            </p>
           </div>
         </div>
       </body>

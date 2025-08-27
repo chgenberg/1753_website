@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { z } from 'zod'
 import { vivaWalletService } from '../services/vivaWalletService'
+import { sendEmail } from '../services/emailService'
 import { logger } from '../utils/logger'
 import prisma from '../lib/prisma'
 
@@ -237,6 +238,50 @@ router.post('/complete-payment', async (req, res) => {
     })
     
     if (paymentResult.success) {
+      // Send order confirmation email
+      try {
+        // Fetch order with items for email
+        const fullOrder = await prisma.order.findUnique({
+          where: { id: order.id },
+          include: {
+            items: {
+              include: {
+                product: true
+              }
+            }
+          }
+        })
+        
+        if (fullOrder) {
+          await sendEmail({
+            to: fullOrder.email,
+            subject: `Orderbekräftelse #${fullOrder.orderNumber}`,
+            template: 'orderConfirmation',
+            data: {
+              firstName: fullOrder.customerName?.split(' ')[0] || 'Kund',
+              orderNumber: fullOrder.orderNumber,
+              orderDate: new Date().toLocaleDateString('sv-SE'),
+              items: fullOrder.items.map(item => ({
+                name: item.product.name,
+                quantity: item.quantity,
+                total: item.price * item.quantity
+              })),
+              total: fullOrder.totalAmount,
+              currency: 'kr',
+              shippingAddress: fullOrder.shippingAddress as any
+            }
+          })
+          
+          logger.info('Order confirmation email sent', {
+            orderId: order.id,
+            email: fullOrder.email
+          })
+        }
+      } catch (emailError) {
+        // Don't fail the order if email fails
+        logger.error('Failed to send order confirmation email:', emailError)
+      }
+      
       // Create order in Ongoing WMS
       // This would be implemented when Ongoing is fully integrated
       logger.info('Payment completed successfully', {
@@ -246,7 +291,8 @@ router.post('/complete-payment', async (req, res) => {
       
       res.json({
         success: true,
-        transactionId: paymentResult.transactionId
+        transactionId: paymentResult.transactionId,
+        orderCode: fullOrder?.orderNumber
       })
     } else {
       res.status(400).json({
