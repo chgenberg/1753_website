@@ -12,11 +12,9 @@ const router = Router()
 router.get('/viva-wallet', (req, res) => {
   logger.info('Received Viva Wallet webhook validation request (GET)')
   
-  // Return a simple validation response
-  // Viva Wallet just needs to see that the endpoint is reachable
+  // According to Viva Wallet docs, return just the key as they expect
   res.status(200).json({ 
-    Key: 'WEBHOOK_VALIDATION_OK',
-    message: 'Webhook endpoint is active and ready to receive notifications'
+    Key: 'B3248222FDCD1885AEAFE51CCC1B5607F00903F6'
   })
 })
 
