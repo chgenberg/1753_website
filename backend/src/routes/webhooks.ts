@@ -7,6 +7,21 @@ import { env } from '../config/env'
 const router = Router()
 
 /**
+ * Viva Wallet webhook validation endpoint (GET/HEAD/OPTIONS)
+ * /api/webhooks/viva-wallet
+ */
+router.head('/viva-wallet', (req, res) => {
+  logger.info('Received Viva Wallet webhook HEAD check')
+  res.status(200).send('OK')
+})
+
+router.options('/viva-wallet', (req, res) => {
+  logger.info('Received Viva Wallet webhook OPTIONS check')
+  res.setHeader('Allow', 'GET,POST,HEAD,OPTIONS')
+  res.status(200).send('OK')
+})
+
+/**
  * Viva Wallet webhook validation endpoint (GET)
  * GET /api/webhooks/viva-wallet
  */
