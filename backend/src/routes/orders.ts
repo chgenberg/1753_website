@@ -598,6 +598,20 @@ router.get('/test/viva-oauth', async (req, res) => {
 })
 
 /**
+ * Simple frontend connectivity test
+ * GET /api/orders/test/frontend
+ */
+router.get('/test/frontend', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Backend is reachable from frontend',
+    timestamp: new Date().toISOString(),
+    cors: 'enabled',
+    environment: process.env.NODE_ENV || 'development'
+  })
+})
+
+/**
  * Test endpoint for Viva Wallet integration
  */
 router.get('/test/viva-wallet', async (req, res) => {
