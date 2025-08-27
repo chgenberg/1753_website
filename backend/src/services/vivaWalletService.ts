@@ -46,6 +46,8 @@ interface PaymentResponse {
 
 export class VivaWalletService {
   private config: VivaWalletConfig
+  private accessToken: string | null = null
+  private tokenExpiry: number = 0
 
   constructor() {
     this.config = {
@@ -57,6 +59,50 @@ export class VivaWalletService {
 
     if (!this.config.merchantId || !this.config.apiKey || !this.config.sourceCode) {
       logger.warn('Viva Wallet credentials not configured')
+    }
+  }
+
+  /**
+   * Get OAuth access token for Checkout API
+   */
+  private async getAccessToken(): Promise<string> {
+    const clientId = process.env.VIVA_CLIENT_ID
+    const clientSecret = process.env.VIVA_CLIENT_SECRET
+
+    if (!clientId || !clientSecret) {
+      throw new Error('Viva Wallet OAuth credentials not configured')
+    }
+
+    // Check if we have a valid token
+    if (this.accessToken && Date.now() < this.tokenExpiry) {
+      return this.accessToken
+    }
+
+    try {
+      const response = await axios.post(
+        'https://accounts.vivapayments.com/connect/token',
+        'grant_type=client_credentials',
+        {
+          auth: {
+            username: clientId,
+            password: clientSecret
+          },
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
+      )
+
+      this.accessToken = response.data.access_token
+      // Set expiry to 5 minutes before actual expiry for safety
+      this.tokenExpiry = Date.now() + (response.data.expires_in - 300) * 1000
+
+      logger.info('Viva Wallet OAuth token obtained successfully')
+      return this.accessToken
+
+    } catch (error: any) {
+      logger.error('Failed to get Viva Wallet OAuth token:', error.response?.data || error.message)
+      throw new Error(`Failed to get OAuth token: ${error.message}`)
     }
   }
 
@@ -95,15 +141,14 @@ export class VivaWalletService {
         merchantTrns: `Order-${Date.now()}`
       }
 
+      const accessToken = await this.getAccessToken()
+
       const response = await axios.post(
         `${this.config.baseUrl}/checkout/v2/orders`,
         orderData,
         {
-          auth: {
-            username: this.config.merchantId,
-            password: this.config.apiKey
-          },
           headers: {
+            'Authorization': `Bearer ${accessToken}`,
             'Content-Type': 'application/json'
           }
         }
