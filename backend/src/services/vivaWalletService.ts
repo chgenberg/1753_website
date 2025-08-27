@@ -52,7 +52,7 @@ export class VivaWalletService {
       merchantId: process.env.VIVA_MERCHANT_ID || '',
       apiKey: process.env.VIVA_API_KEY || '',
       sourceCode: process.env.VIVA_SOURCE_CODE || '',
-      baseUrl: process.env.VIVA_BASE_URL || 'https://demo.vivapayments.com' // Use demo for testing
+      baseUrl: process.env.VIVA_BASE_URL || 'https://api.vivapayments.com'
     }
 
     if (!this.config.merchantId || !this.config.apiKey || !this.config.sourceCode) {

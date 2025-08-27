@@ -16,7 +16,7 @@ router.get('/viva-wallet', async (req, res) => {
     // Get Viva Wallet credentials from environment
     const merchantId = process.env.VIVA_MERCHANT_ID
     const apiKey = process.env.VIVA_API_KEY
-    const baseUrl = process.env.VIVA_BASE_URL || 'https://demo.vivapayments.com'
+    const baseUrl = process.env.VIVA_BASE_URL || 'https://api.vivapayments.com'
     
     if (!merchantId || !apiKey) {
       logger.error('Viva Wallet credentials not configured for webhook validation')
