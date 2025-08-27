@@ -291,6 +291,112 @@ router.get('/test/env', async (req, res) => {
 })
 
 /**
+ * Test endpoint for Viva Wallet with both production and demo URLs
+ * GET /api/orders/test/viva-both
+ */
+router.get('/test/viva-both', async (req, res) => {
+  try {
+    const axios = require('axios')
+    const merchantId = process.env.VIVA_MERCHANT_ID
+    const apiKey = process.env.VIVA_API_KEY
+    const sourceCode = process.env.VIVA_SOURCE_CODE
+
+    if (!merchantId || !apiKey || !sourceCode) {
+      return res.json({
+        success: false,
+        error: 'Missing Viva Wallet credentials'
+      })
+    }
+
+    const testOrder = {
+      amount: 100, // 1 SEK in cents
+      customerTrns: 'Test order',
+      customer: {
+        email: 'test@example.com',
+        fullName: 'Test Customer',
+        phone: '+46701234567',
+        countryCode: 'SE',
+        requestLang: 'sv-SE'
+      },
+      paymentTimeout: 300,
+      preauth: false,
+      allowRecurring: false,
+      maxInstallments: 1,
+      paymentNotification: true,
+      disableExactAmount: false,
+      disableCash: true,
+      disableWallet: false,
+      sourceCode: sourceCode,
+      merchantTrns: `Test-${Date.now()}`
+    }
+
+    const results = {}
+
+    // Test production URL
+    try {
+      const prodResponse = await axios.post(
+        'https://api.vivapayments.com/checkout/v2/orders',
+        testOrder,
+        {
+          auth: {
+            username: merchantId,
+            password: apiKey
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+      results.production = { success: true, orderCode: prodResponse.data.orderCode }
+    } catch (error: any) {
+      results.production = { 
+        success: false, 
+        error: error.message,
+        status: error.response?.status,
+        data: error.response?.data
+      }
+    }
+
+    // Test demo URL
+    try {
+      const demoResponse = await axios.post(
+        'https://demo-api.vivapayments.com/checkout/v2/orders',
+        testOrder,
+        {
+          auth: {
+            username: merchantId,
+            password: apiKey
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+      results.demo = { success: true, orderCode: demoResponse.data.orderCode }
+    } catch (error: any) {
+      results.demo = { 
+        success: false, 
+        error: error.message,
+        status: error.response?.status,
+        data: error.response?.data
+      }
+    }
+
+    res.json({
+      success: true,
+      results: results,
+      message: 'Tested both production and demo URLs'
+    })
+
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    })
+  }
+})
+
+/**
  * Test endpoint for Viva Wallet integration
  */
 router.get('/test/viva-wallet', async (req, res) => {

@@ -119,7 +119,14 @@ export class VivaWalletService {
     } catch (error: any) {
       logger.error('Failed to create Viva Wallet order', { 
         error: error.message,
-        response: error.response?.data 
+        response: error.response?.data,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        config: {
+          url: error.config?.url,
+          method: error.config?.method,
+          auth: error.config?.auth ? 'CONFIGURED' : 'NOT CONFIGURED'
+        }
       })
       throw new Error(`Failed to create payment order: ${error.message}`)
     }
