@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js",
+    "start": "prisma migrate deploy && node dist/index.js",
     "backup": "npx ts-node --transpile-only scripts/backupDatabase.ts backup",
     "restore": "npx ts-node --transpile-only scripts/backupDatabase.ts restore",
     "backup:daily": "npx ts-node --transpile-only scripts/backupDatabase.ts backup ./backups daily_backup_$(date +%Y%m%d).json",

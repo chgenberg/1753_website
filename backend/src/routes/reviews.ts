@@ -148,7 +148,7 @@ router.get('/product/:productId', async (req, res) => {
     
     // Sort options
     const orderBy = sort === 'helpful' 
-      ? { helpful: 'desc' as const }
+      ? { helpfulVotes: 'desc' as const }
       : { createdAt: 'desc' as const }
     
          const [reviews, total] = await Promise.all([
@@ -253,6 +253,78 @@ router.post('/:reviewId/helpful', async (req, res) => {
       success: false,
       error: 'Failed to update review'
     })
+  }
+})
+
+/**
+ * List all reviews
+ */
+router.get('/', async (req, res) => {
+  try {
+    const { page = '1', limit = '10' } = req.query
+    const pageNum = parseInt(page as string)
+    const limitNum = parseInt(limit as string)
+    const skip = (pageNum - 1) * limitNum
+
+    const [reviews, total] = await Promise.all([
+      prisma.review.findMany({
+        where: { status: 'APPROVED' },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limitNum
+      }),
+      prisma.review.count({ where: { status: 'APPROVED' } })
+    ])
+
+    res.json({ success: true, reviews, total })
+  } catch (error) {
+    logger.error('Error listing reviews:', error)
+    res.status(500).json({ success: false, error: 'Failed to list reviews' })
+  }
+})
+
+/**
+ * Get review statistics
+ */
+router.get('/stats', async (req, res) => {
+  try {
+    const total = await prisma.review.count({ where: { status: 'APPROVED' } })
+    const average = await prisma.review.aggregate({
+      _avg: { rating: true },
+      where: { status: 'APPROVED' }
+    })
+
+    res.json({
+      success: true,
+      averageRating: Math.round((average._avg.rating || 0) * 10) / 10,
+      total
+    })
+  } catch (error) {
+    logger.error('Error getting review stats:', error)
+    res.status(500).json({ success: false, error: 'Failed to get stats' })
+  }
+})
+
+/**
+ * Get product review statistics
+ */
+router.get('/product/:productId/stats', async (req, res) => {
+  try {
+    const { productId } = req.params
+    const total = await prisma.review.count({ where: { status: 'APPROVED', productId } })
+    const average = await prisma.review.aggregate({
+      _avg: { rating: true },
+      where: { status: 'APPROVED', productId }
+    })
+
+    res.json({
+      success: true,
+      averageRating: Math.round((average._avg.rating || 0) * 10) / 10,
+      total
+    })
+  } catch (error) {
+    logger.error('Error getting product review stats:', error)
+    res.status(500).json({ success: false, error: 'Failed to get stats' })
   }
 })
 
