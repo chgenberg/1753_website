@@ -51,7 +51,7 @@ export const CartDrawer = () => {
 
         <div className="fixed inset-0 overflow-hidden">
           <div className="absolute inset-0 overflow-hidden">
-            <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
+            <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-0 sm:pl-10">
               <Transition.Child
                 as={Fragment}
                 enter="transform transition ease-in-out duration-500 sm:duration-700"
@@ -61,19 +61,19 @@ export const CartDrawer = () => {
                 leaveFrom="translate-x-0"
                 leaveTo="translate-x-full"
               >
-                <Dialog.Panel className="pointer-events-auto w-screen max-w-md">
+                <Dialog.Panel className="pointer-events-auto w-screen max-w-full sm:max-w-md">
                   <div className="flex h-full flex-col bg-white shadow-2xl">
                     {/* Header */}
-                    <div className="flex items-center justify-between px-6 py-4 border-b">
-                      <div className="flex items-center gap-3">
-                        <ShoppingBag className="h-6 w-6 text-[#FCB237]" />
-                        <h2 className="text-xl font-semibold">
+                    <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b">
+                      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                        <ShoppingBag className="h-5 w-5 sm:h-6 sm:w-6 text-[#FCB237] flex-shrink-0" />
+                        <h2 className="text-lg sm:text-xl font-semibold truncate">
                           Din varukorg ({cartCount})
                         </h2>
                       </div>
                       <button
                         type="button"
-                        className="rounded-full p-2 hover:bg-gray-100 transition-colors"
+                        className="rounded-full p-2 hover:bg-gray-100 transition-colors flex-shrink-0"
                         onClick={closeCart}
                       >
                         <X className="h-5 w-5" />
@@ -82,12 +82,12 @@ export const CartDrawer = () => {
 
                     {/* Free Shipping Progress */}
                     {remainingForFreeShipping > 0 && (
-                      <div className="px-6 py-3 bg-[#F5F3F0] border-b">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm text-gray-700">
+                      <div className="px-4 sm:px-6 py-3 bg-[#F5F3F0] border-b">
+                        <div className="flex items-center justify-between mb-2 gap-2">
+                          <span className="text-xs sm:text-sm text-gray-700 flex-1">
                             {remainingForFreeShipping} kr kvar till fri frakt!
                           </span>
-                          <Truck className="h-4 w-4 text-[#FCB237]" />
+                          <Truck className="h-4 w-4 text-[#FCB237] flex-shrink-0" />
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
                           <motion.div
@@ -129,11 +129,11 @@ export const CartDrawer = () => {
                               initial={{ opacity: 0, x: 20 }}
                               animate={{ opacity: 1, x: 0 }}
                               exit={{ opacity: 0, x: -20 }}
-                              className="p-6 border-b hover:bg-gray-50 transition-colors"
+                              className="p-4 md:p-6 border-b hover:bg-gray-50 transition-colors"
                             >
-                              <div className="flex gap-4">
+                              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                                 {/* Product Image */}
-                                <div className="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100">
+                                <div className="relative h-20 w-20 sm:h-24 sm:w-24 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100 mx-auto sm:mx-0">
                                   {item.product.images && item.product.images[0] && (
                                     <Image
                                       src={typeof item.product.images[0] === 'string' 
@@ -148,17 +148,28 @@ export const CartDrawer = () => {
                                 </div>
 
                                 {/* Product Details */}
-                                <div className="flex-1">
-                                  <Link
-                                    href={`/products/${item.product.slug}`}
-                                    onClick={closeCart}
-                                    className="font-medium text-gray-900 hover:text-[#FCB237] transition-colors line-clamp-2"
-                                  >
-                                    {item.product.name}
-                                  </Link>
-                                  
-                                  <div className="mt-1 text-sm text-gray-500">
-                                    {item.price} kr
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex flex-col sm:flex-row sm:justify-between gap-2">
+                                    <div className="flex-1 min-w-0">
+                                      <Link
+                                        href={`/products/${item.product.slug}`}
+                                        onClick={closeCart}
+                                        className="font-medium text-gray-900 hover:text-[#FCB237] transition-colors line-clamp-2 text-sm sm:text-base"
+                                      >
+                                        {item.product.name}
+                                      </Link>
+                                      
+                                      <div className="mt-1 text-sm text-gray-500">
+                                        {item.price} kr/st
+                                      </div>
+                                    </div>
+
+                                    {/* Item Total - Mobile */}
+                                    <div className="text-right sm:hidden">
+                                      <div className="font-medium text-gray-900">
+                                        {item.price * item.quantity} kr
+                                      </div>
+                                    </div>
                                   </div>
 
                                   {/* Quantity Controls */}
@@ -170,7 +181,7 @@ export const CartDrawer = () => {
                                       >
                                         <Minus className="h-3 w-3" />
                                       </button>
-                                      <span className="px-3 py-1 text-sm font-medium">
+                                      <span className="px-3 py-1 text-sm font-medium min-w-[2rem] text-center">
                                         {item.quantity}
                                       </span>
                                       <button
@@ -190,8 +201,8 @@ export const CartDrawer = () => {
                                   </div>
                                 </div>
 
-                                {/* Item Total */}
-                                <div className="text-right">
+                                {/* Item Total - Desktop */}
+                                <div className="text-right hidden sm:block min-w-[80px]">
                                   <div className="font-medium text-gray-900">
                                     {item.price * item.quantity} kr
                                   </div>
@@ -205,20 +216,20 @@ export const CartDrawer = () => {
 
                     {/* Footer */}
                     {items.length > 0 && (
-                      <div className="border-t px-6 py-4">
+                      <div className="border-t px-4 sm:px-6 py-4">
                         {/* Trust Badges */}
-                        <div className="flex justify-center gap-6 mb-4 py-3 border-b">
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <Truck className="h-4 w-4" />
-                            <span>Snabb leverans</span>
+                        <div className="flex flex-wrap justify-center gap-3 sm:gap-6 mb-4 py-3 border-b">
+                          <div className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-600">
+                            <Truck className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
+                            <span className="whitespace-nowrap">Snabb leverans</span>
                           </div>
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <Shield className="h-4 w-4" />
-                            <span>Säker betalning</span>
+                          <div className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-600">
+                            <Shield className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
+                            <span className="whitespace-nowrap">Säker betalning</span>
                           </div>
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <Package className="h-4 w-4" />
-                            <span>30 dagars retur</span>
+                          <div className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-600">
+                            <Package className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
+                            <span className="whitespace-nowrap">30 dagars retur</span>
                           </div>
                         </div>
 

@@ -88,11 +88,11 @@ export default function CartPage() {
                   layout
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-white rounded-lg shadow-sm p-6"
+                  className="bg-white rounded-lg shadow-sm p-4 sm:p-6"
                 >
-                  <div className="flex gap-6">
+                  <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
                     {/* Product Image */}
-                    <div className="relative h-32 w-32 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100">
+                    <div className="relative h-24 w-24 sm:h-32 sm:w-32 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100 mx-auto sm:mx-0">
                       {item.product.images && item.product.images[0] && (
                         <Image
                           src={item.product.images[0].url}
@@ -105,12 +105,12 @@ export default function CartPage() {
                     </div>
 
                     {/* Product Details */}
-                    <div className="flex-1">
-                      <div className="flex justify-between">
-                        <div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-col sm:flex-row sm:justify-between gap-2">
+                        <div className="flex-1 min-w-0">
                           <Link
                             href={`/products/${item.product.slug}`}
-                            className="text-lg font-semibold text-gray-900 hover:text-[#FCB237] transition-colors"
+                            className="text-base sm:text-lg font-semibold text-gray-900 hover:text-[#FCB237] transition-colors line-clamp-2"
                           >
                             {item.product.name}
                           </Link>
@@ -120,34 +120,41 @@ export default function CartPage() {
                         </div>
                         <button
                           onClick={() => removeFromCart(item.productId, item.variantId)}
-                          className="text-red-500 hover:text-red-600 transition-colors"
+                          className="text-red-500 hover:text-red-600 transition-colors self-start sm:self-center"
                         >
                           <Trash2 className="h-5 w-5" />
                         </button>
                       </div>
 
-                      <div className="mt-4 flex items-center justify-between">
+                      <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         {/* Quantity Controls */}
-                        <div className="flex items-center border border-gray-300 rounded-lg">
-                          <button
-                            onClick={() => updateQuantity(item.productId, item.quantity - 1, item.variantId)}
-                            className="p-2 hover:bg-gray-100 transition-colors"
-                          >
-                            <Minus className="h-4 w-4" />
-                          </button>
-                          <span className="px-4 py-2 min-w-[60px] text-center font-medium">
-                            {item.quantity}
-                          </span>
-                          <button
-                            onClick={() => updateQuantity(item.productId, item.quantity + 1, item.variantId)}
-                            className="p-2 hover:bg-gray-100 transition-colors"
-                          >
-                            <Plus className="h-4 w-4" />
-                          </button>
+                        <div className="flex items-center justify-between sm:justify-start">
+                          <div className="flex items-center border border-gray-300 rounded-lg">
+                            <button
+                              onClick={() => updateQuantity(item.productId, item.quantity - 1, item.variantId)}
+                              className="p-2 hover:bg-gray-100 transition-colors"
+                            >
+                              <Minus className="h-4 w-4" />
+                            </button>
+                            <span className="px-3 sm:px-4 py-2 min-w-[50px] sm:min-w-[60px] text-center font-medium">
+                              {item.quantity}
+                            </span>
+                            <button
+                              onClick={() => updateQuantity(item.productId, item.quantity + 1, item.variantId)}
+                              className="p-2 hover:bg-gray-100 transition-colors"
+                            >
+                              <Plus className="h-4 w-4" />
+                            </button>
+                          </div>
+
+                          {/* Item Total - Mobile */}
+                          <div className="text-lg font-semibold text-gray-900 sm:hidden">
+                            {item.price * item.quantity} kr
+                          </div>
                         </div>
 
-                        {/* Item Total */}
-                        <div className="text-lg font-semibold text-gray-900">
+                        {/* Item Total - Desktop */}
+                        <div className="text-lg font-semibold text-gray-900 hidden sm:block">
                           {item.price * item.quantity} kr
                         </div>
                       </div>
@@ -169,7 +176,7 @@ export default function CartPage() {
 
             {/* Order Summary */}
             <div className="lg:col-span-1">
-              <div className="bg-white rounded-lg shadow-sm p-6 sticky top-24">
+              <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 sticky top-24">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">
                   Ordersammanfattning
                 </h2>

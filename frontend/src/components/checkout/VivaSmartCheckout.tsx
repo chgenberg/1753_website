@@ -47,34 +47,52 @@ export default function VivaSmartCheckout({
   const [error, setError] = useState<string | null>(null)
   const [fallbackUrl, setFallbackUrl] = useState<string | null>(null)
 
+  // Pick correct Viva host for script/fallback based on environment
+  const checkoutHost = baseURL?.includes('demo')
+    ? 'https://demo.vivapayments.com'
+    : 'https://www.vivapayments.com'
+
   useEffect(() => {
+    // Guard: missing public configuration → fallback to hosted checkout
+    if (!publicKey || !sourceCode) {
+      const message = 'Betalning är inte korrekt konfigurerad (saknar nycklar).'
+      setError(message)
+      setIsLoading(false)
+      onError(message)
+      setFallbackUrl(`${checkoutHost}/web/checkout?ref=${orderCode}${sourceCode ? `&s=${sourceCode}` : ''}`)
+      return
+    }
+
     // Load Viva Smart Checkout script
     const script = document.createElement('script')
-    script.src = `https://www.vivapayments.com/web/checkout/v2/js`
+    script.src = `${checkoutHost}/web/checkout/v2/js`
     script.async = true
     script.onload = () => {
       initializeCheckout()
     }
     script.onerror = () => {
-      setError('Failed to load payment script')
+      setError('Kunde inte ladda betalningsskriptet')
       setIsLoading(false)
       onError('Failed to load payment script')
-      setFallbackUrl(`https://www.vivapayments.com/web/checkout?ref=${orderCode}&s=${sourceCode}`)
+      setFallbackUrl(`${checkoutHost}/web/checkout?ref=${orderCode}&s=${sourceCode}`)
     }
     document.body.appendChild(script)
 
     return () => {
       // Cleanup
-      document.body.removeChild(script)
+      try {
+        document.body.removeChild(script)
+      } catch {}
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderCode])
 
   const initializeCheckout = () => {
-    if (!window.VivaPayments) {
-      setError('Viva Payments SDK not loaded')
+    if (!window.VivaPayments || !window.VivaPayments.cards || typeof window.VivaPayments.cards.setup !== 'function') {
+      setError('Viva Payments SDK är inte tillgängligt')
       setIsLoading(false)
       onError('Payment system not available')
-      setFallbackUrl(`https://www.vivapayments.com/web/checkout?ref=${orderCode}&s=${sourceCode}`)
+      setFallbackUrl(`${checkoutHost}/web/checkout?ref=${orderCode}&s=${sourceCode}`)
       return
     }
 
@@ -86,9 +104,7 @@ export default function VivaSmartCheckout({
         sourceCode,
         paymentTimeout: 1800, // 30 minutes
         cardTokenHandler: async (token: string) => {
-          // Handle the card token
           try {
-            // Process the payment using the token
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002'}/api/orders/complete-payment`, {
               method: 'POST',
               headers: {
@@ -123,7 +139,7 @@ export default function VivaSmartCheckout({
       setError('Failed to initialize payment')
       setIsLoading(false)
       onError('Failed to initialize payment')
-      setFallbackUrl(`https://www.vivapayments.com/web/checkout?ref=${orderCode}&s=${sourceCode}`)
+      setFallbackUrl(`${checkoutHost}/web/checkout?ref=${orderCode}&s=${sourceCode}`)
     }
   }
 
@@ -131,7 +147,7 @@ export default function VivaSmartCheckout({
     <div className="w-full">
       {isLoading && (
         <div className="flex items-center justify-center py-8">
-          <Loader2 className="w-8 h-8 animate-spin text-[#8B6B47]" />
+          <Loader2 className="w-8 h-8 animate-spin text-[#E79C1A]" />
           <span className="ml-3 text-gray-600">Laddar betalningsformulär...</span>
         </div>
       )}
@@ -147,7 +163,7 @@ export default function VivaSmartCheckout({
                 href={fallbackUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center mt-3 px-4 py-2 rounded-lg bg-[#8B6B47] text-white hover:opacity-90 transition"
+                className="inline-flex items-center mt-3 px-4 py-2 rounded-lg bg-[#E79C1A] text-white hover:opacity-90 transition"
               >
                 Fortsätt till säker betalning
               </a>
@@ -169,7 +185,7 @@ export default function VivaSmartCheckout({
           </label>
           <div 
             data-vp="card-number" 
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus-within:ring-2 focus-within:ring-[#8B6B47] focus-within:border-transparent transition-all"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus-within:ring-2 focus-within:ring-[#E79C1A] focus-within:border-transparent transition-all"
           />
         </div>
 
@@ -181,7 +197,7 @@ export default function VivaSmartCheckout({
             </label>
             <div 
               data-vp="expiry" 
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus-within:ring-2 focus-within:ring-[#8B6B47] focus-within:border-transparent transition-all"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus-within:ring-2 focus-within:ring-[#E79C1A] focus-within:border-transparent transition-all"
             />
           </div>
           <div>
@@ -190,7 +206,7 @@ export default function VivaSmartCheckout({
             </label>
             <div 
               data-vp="cvv" 
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus-within:ring-2 focus-within:ring-[#8B6B47] focus-within:border-transparent transition-all"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus-within:ring-2 focus-within:ring-[#E79C1A] focus-within:border-transparent transition-all"
             />
           </div>
         </div>
@@ -204,7 +220,7 @@ export default function VivaSmartCheckout({
             type="text"
             id="cardholder-name"
             placeholder="Som det står på kortet"
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#8B6B47] focus:border-transparent outline-none transition-all"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#E79C1A] focus:border-transparent outline-none transition-all"
           />
         </div>
 
@@ -213,7 +229,7 @@ export default function VivaSmartCheckout({
           <input
             type="checkbox"
             id="remember-card"
-            className="w-4 h-4 text-[#8B6B47] border-gray-300 rounded focus:ring-[#8B6B47]"
+            className="w-4 h-4 text-[#E79C1A] border-gray-300 rounded focus:ring-[#E79C1A]"
           />
           <label htmlFor="remember-card" className="text-sm text-gray-700">
             Spara kort för framtida köp
