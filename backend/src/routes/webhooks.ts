@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import axios from 'axios'
 import { vivaWalletService } from '../services/vivaWalletService'
 import { sendEmail } from '../services/emailService'
 import { logger } from '../utils/logger'
@@ -145,10 +146,36 @@ router.options('/viva-wallet', (_req, res) => {
   res.status(200).send('OK')
 })
 
-router.get('/viva-wallet', (_req, res) => {
-  const validationKey = process.env.VIVA_WALLET_WEBHOOK_SECRET || 'default-validation-key'
-  // Viva Selfcare often expects JSON: { Key: "<validationKey>" }
-  res.status(200).json({ Key: validationKey })
+router.get('/viva-wallet', async (_req, res) => {
+  try {
+    // Viva requires us to echo back the verification Key received from their API
+    const merchantId = process.env.VIVA_MERCHANT_ID
+    const apiKey = process.env.VIVA_API_KEY
+    const baseUrl = process.env.VIVA_BASE_URL?.includes('demo')
+      ? 'https://demo.vivapayments.com'
+      : 'https://www.vivapayments.com'
+
+    if (!merchantId || !apiKey) {
+      // Fallback to env-provided key if merchant creds are not configured
+      const fallbackKey = process.env.VIVA_WALLET_WEBHOOK_SECRET || 'default-validation-key'
+      return res.status(200).json({ Key: fallbackKey })
+    }
+
+    const credentials = Buffer.from(`${merchantId}:${apiKey}`).toString('base64')
+    const resp = await axios.get(`${baseUrl}/api/messages/config/token`, {
+      headers: {
+        Authorization: `Basic ${credentials}`
+      },
+      timeout: 5000
+    })
+
+    const key = resp.data?.Key || process.env.VIVA_WALLET_WEBHOOK_SECRET || 'default-validation-key'
+    res.status(200).json({ Key: key })
+  } catch (err: any) {
+    logger.error('Failed to fetch Viva verification key', { error: err.message })
+    const fallbackKey = process.env.VIVA_WALLET_WEBHOOK_SECRET || 'default-validation-key'
+    res.status(200).json({ Key: fallbackKey })
+  }
 })
 
 export default router 
