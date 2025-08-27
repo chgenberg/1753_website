@@ -238,10 +238,10 @@ router.post('/complete-payment', async (req, res) => {
     })
     
     if (paymentResult.success) {
-      // Send order confirmation email
+      // Fetch order with items for email and response
+      let fullOrder = null
       try {
-        // Fetch order with items for email
-        const fullOrder = await prisma.order.findUnique({
+        fullOrder = await prisma.order.findUnique({
           where: { id: order.id },
           include: {
             items: {
@@ -251,8 +251,13 @@ router.post('/complete-payment', async (req, res) => {
             }
           }
         })
-        
-        if (fullOrder) {
+      } catch (fetchError) {
+        logger.error('Failed to fetch full order details:', fetchError)
+      }
+      
+      // Send order confirmation email
+      if (fullOrder) {
+        try {
           await sendEmail({
             to: fullOrder.email,
             subject: `Orderbekräftelse #${fullOrder.orderNumber}`,
@@ -276,10 +281,10 @@ router.post('/complete-payment', async (req, res) => {
             orderId: order.id,
             email: fullOrder.email
           })
+        } catch (emailError) {
+          // Don't fail the order if email fails
+          logger.error('Failed to send order confirmation email:', emailError)
         }
-      } catch (emailError) {
-        // Don't fail the order if email fails
-        logger.error('Failed to send order confirmation email:', emailError)
       }
       
       // Create order in Ongoing WMS
@@ -292,7 +297,7 @@ router.post('/complete-payment', async (req, res) => {
       res.json({
         success: true,
         transactionId: paymentResult.transactionId,
-        orderCode: fullOrder?.orderNumber
+        orderCode: fullOrder?.orderNumber || order.orderNumber
       })
     } else {
       res.status(400).json({
