@@ -5,7 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { 
   User, Mail, Calendar, Check, ChevronRight, ChevronLeft, 
   Sparkles, Heart, Sun, Moon, Droplets, Leaf, Timer, 
-  AlertCircle, Shield, Home, Info, Camera, ArrowRight
+  AlertCircle, Shield, Home, Info, Camera, ArrowRight,
+  ShoppingBag, X
 } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -14,6 +15,10 @@ import { LoadingAnimation } from '@/components/quiz/LoadingAnimation'
 import FacePhotoAnalyzer, { ImageMetricsResult } from '@/components/quiz/FacePhotoAnalyzer'
 import confetti from 'canvas-confetti'
 import { Header } from '@/components/layout/Header'
+import { useCart } from '@/contexts/CartContext'
+import { useAuth } from '@/contexts/AuthContext'
+import { usePathname } from 'next/navigation'
+import { CartDrawer } from '@/components/cart/CartDrawer'
 
 interface UserInfo {
   email: string
@@ -41,6 +46,12 @@ export default function QuizPage() {
   const [activeDescendantId, setActiveDescendantId] = useState<string | undefined>(undefined)
   const [imageMetrics, setImageMetrics] = useState<ImageMetricsResult | null>(null)
   const [isMobile, setIsMobile] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  
+  const pathname = usePathname()
+  const currentLocale = pathname.split('/')[1] || 'sv'
+  const { cartCount, openCart } = useCart()
+  const { user } = useAuth()
 
   // Check if mobile
   useEffect(() => {
@@ -49,6 +60,18 @@ export default function QuizPage() {
     window.addEventListener('resize', checkMobile)
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
+
+  // Prevent body scroll when menu is open
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [isMenuOpen])
 
   // Focus heading on question change for better accessibility
   const questionHeadingRef = useRef<HTMLHeadingElement | null>(null)
@@ -394,6 +417,69 @@ export default function QuizPage() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent" />
       </div>
 
+      {/* Navigation */}
+      <nav className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between p-4 md:p-6">
+        {/* Logo */}
+        <Link href={`/${currentLocale}`} className="hover:opacity-90 transition-opacity">
+          <Image
+            src="/1753_white.png"
+            alt="1753 Skincare"
+            width={200}
+            height={80}
+            className="h-16 md:h-24 w-auto"
+            priority
+          />
+        </Link>
+
+        {/* Right side icons */}
+        <div className="flex items-center gap-4">
+          {/* Cart Icon */}
+          <button
+            onClick={openCart}
+            className="relative p-2 hover:opacity-70 transition-opacity"
+          >
+            <ShoppingBag className="w-6 h-6 text-white" />
+            {cartCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-[#FCB237] text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                {cartCount}
+              </span>
+            )}
+          </button>
+
+          {/* Profile Icon */}
+          <Link
+            href={user ? `/${currentLocale}/dashboard` : `/${currentLocale}/auth/login`}
+            className="p-2 hover:opacity-70 transition-opacity"
+          >
+            <User className="w-6 h-6 text-white" />
+          </Link>
+
+          {/* Hamburger Menu */}
+          <button 
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="p-2 hover:opacity-70 transition-opacity"
+          >
+            {isMenuOpen ? (
+              <X className="w-6 h-6 text-white" />
+            ) : (
+              <svg
+                className="w-6 h-6 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            )}
+          </button>
+        </div>
+      </nav>
+
       {/* Content */}
       <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
         <motion.div
@@ -491,6 +577,153 @@ export default function QuizPage() {
           </motion.div>
         </motion.div>
       </div>
+
+      {/* Slide-in Menu from Right */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <>
+            {/* Background overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+              onClick={() => setIsMenuOpen(false)}
+            />
+            
+            {/* Menu panel */}
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'tween', duration: 0.3 }}
+              className="fixed right-0 top-0 h-full w-80 md:w-96 bg-white z-50 overflow-y-auto"
+            >
+              {/* Close button */}
+              <button
+                onClick={() => setIsMenuOpen(false)}
+                className="absolute top-6 right-6 p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <X className="w-6 h-6 text-gray-600" />
+              </button>
+
+              {/* Menu content */}
+              <div className="pt-20 px-8 pb-8">
+                {/* Main menu items */}
+                <div className="space-y-6">
+                  <Link
+                    href={`/${currentLocale}/produkter`}
+                    className="block text-lg font-medium text-gray-800 hover:text-[#8B6B47] transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Produkter
+                  </Link>
+                  
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-800 mb-3">
+                      Om oss
+                    </h3>
+                    <div className="space-y-2 pl-4">
+                      <Link
+                        href={`/${currentLocale}/om-oss`}
+                        className="block text-gray-600 hover:text-[#8B6B47] transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Vår historia
+                      </Link>
+                      <Link
+                        href={`/${currentLocale}/om-oss#team`}
+                        className="block text-gray-600 hover:text-[#8B6B47] transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Teamet
+                      </Link>
+                      <Link
+                        href={`/${currentLocale}/om-oss#values`}
+                        className="block text-gray-600 hover:text-[#8B6B47] transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Våra värderingar
+                      </Link>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-800 mb-3">
+                      Kunskap
+                    </h3>
+                    <div className="space-y-2 pl-4">
+                      <Link
+                        href={`/${currentLocale}/kunskap/funktionella-ravaror`}
+                        className="block text-gray-600 hover:text-[#8B6B47] transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Funktionella råvaror
+                      </Link>
+                      <Link
+                        href={`/${currentLocale}/kunskap/forskning`}
+                        className="block text-gray-600 hover:text-[#8B6B47] transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Forskning
+                      </Link>
+                      <Link
+                        href={`/${currentLocale}/kunskap/e-bok`}
+                        className="block text-gray-600 hover:text-[#8B6B47] transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        E-bok
+                      </Link>
+                    </div>
+                  </div>
+
+                  <Link
+                    href={`/${currentLocale}/kontakt`}
+                    className="block text-lg font-medium text-gray-800 hover:text-[#8B6B47] transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Kontakt
+                  </Link>
+
+                  <Link
+                    href={`/${currentLocale}/quiz`}
+                    className="block text-lg font-medium text-[#8B6B47] hover:text-[#6B5337] transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Hudanalys
+                  </Link>
+                </div>
+
+                {/* Bottom section */}
+                <div className="mt-12 pt-8 border-t border-gray-200">
+                  <div className="space-y-4">
+                    <Link
+                      href={`/${currentLocale}/dashboard`}
+                      className="flex items-center gap-3 text-gray-600 hover:text-[#8B6B47] transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <User className="w-5 h-5" />
+                      <span>Mitt konto</span>
+                    </Link>
+                    
+                    <button
+                      onClick={() => {
+                        openCart()
+                        setIsMenuOpen(false)
+                      }}
+                      className="flex items-center gap-3 text-gray-600 hover:text-[#8B6B47] transition-colors w-full text-left"
+                    >
+                      <ShoppingBag className="w-5 h-5" />
+                      <span>Varukorg ({cartCount})</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   )
 
@@ -955,9 +1188,10 @@ export default function QuizPage() {
       {currentStep === 'userInfo' && renderUserInfo()}
       {currentStep === 'photo' && renderPhoto()}
       {currentStep === 'questions' && renderQuestions()}
-      {currentStep === 'review' && renderReview()}
-      {currentStep === 'loading' && renderLoading()}
-      {currentStep === 'results' && renderResults()}
+           {currentStep === 'review' && renderReview()}
+     {currentStep === 'loading' && renderLoading()}
+     {currentStep === 'results' && renderResults()}
+     <CartDrawer />
     </>
   )
 } 
