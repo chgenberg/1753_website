@@ -1,328 +1,430 @@
-import express from 'express'
-import { param, query } from 'express-validator'
+import { Router } from 'express'
 import { prisma } from '../lib/prisma'
+import { authenticateToken as auth } from '../middleware/auth'
 import { logger } from '../utils/logger'
-import { Request, Response } from 'express'
+import { z } from 'zod'
 
-const router = express.Router()
+const router = Router()
 
-// Validation middleware
-const handleValidation = (req: any, res: any, next: any) => {
-  const errors = require('express-validator').validationResult(req)
-  if (!errors.isEmpty()) {
-    return res.status(400).json({
-      success: false,
-      message: 'Validation failed',
-      errors: errors.array()
-    })
-  }
-  next()
-}
+// Validation schemas
+const createReviewSchema = z.object({
+  productId: z.string(),
+  rating: z.number().min(1).max(5),
+  title: z.string().min(1).max(100),
+  body: z.string().min(10).max(2000),
+  reviewerName: z.string().min(1).max(50),
+  reviewerEmail: z.string().email(),
+  reviewerLocation: z.string().optional(),
+  skinType: z.string().optional(),
+  ageRange: z.string().optional(),
+  usageDuration: z.string().optional(),
+  skinConcerns: z.array(z.string()).optional(),
+  photos: z.array(z.object({
+    url: z.string(),
+    alt: z.string().optional()
+  })).optional()
+})
 
-/**
- * GET /api/reviews/product/:productSlug
- * Hämta recensioner för en specifik produkt baserat på slug
- */
-router.get('/product/:productSlug', 
-  [
-    param('productSlug').isString().withMessage('Invalid product slug'),
-    query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
-    query('limit').optional().isInt({ min: 1, max: 50 }).withMessage('Limit must be between 1 and 50'),
-    query('rating').optional().isInt({ min: 1, max: 5 }).withMessage('Rating must be between 1 and 5'),
-    query('sortBy').optional().isIn(['newest', 'oldest', 'highest', 'lowest', 'helpful']).withMessage('Invalid sort option')
-  ],
-  handleValidation,
-  async (req, res) => {
-    try {
-      const { productSlug } = req.params
-      const { 
-        page = 1, 
-        limit = 10, 
-        rating, 
-        sortBy = 'newest' 
-      } = req.query
-
-      // First find the product by slug
-      const product = await prisma.product.findUnique({
-        where: { slug: productSlug },
-        select: { id: true }
-      })
-
-      if (!product) {
-        return res.status(404).json({
-          success: false,
-          message: 'Product not found'
-        })
-      }
-
-      // Build where clause for reviews
-      const where: any = {
-        productId: product.id,
-        status: 'APPROVED'
-      }
-
-      if (rating) {
-        where.rating = parseInt(rating as string)
-      }
-
-      // Build orderBy
-      let orderBy: any = {}
-      switch (sortBy) {
-        case 'newest':
-          orderBy = { createdAt: 'desc' }
-          break
-        case 'oldest':
-          orderBy = { createdAt: 'asc' }
-          break
-        case 'highest':
-          orderBy = [{ rating: 'desc' }, { createdAt: 'desc' }]
-          break
-        case 'lowest':
-          orderBy = [{ rating: 'asc' }, { createdAt: 'desc' }]
-          break
-        case 'helpful':
-          orderBy = [{ helpfulVotes: 'desc' }, { createdAt: 'desc' }]
-          break
-      }
-
-      const skip = (parseInt(page as string) - 1) * parseInt(limit as string)
-
-      // Get reviews and stats
-      const [rawReviews, totalReviews, stats] = await Promise.all([
-        prisma.review.findMany({
-          where,
-          orderBy,
-          skip,
-          take: parseInt(limit as string)
-        }),
-        prisma.review.count({ where }),
-        getProductStats(product.id)
-      ])
-
-      // Map reviewerName to author for frontend compatibility
-      const reviews = rawReviews.map(review => ({
-        ...review,
-        author: review.reviewerName
-      }))
-
-      const pagination = {
-        page: parseInt(page as string),
-        limit: parseInt(limit as string),
-        total: totalReviews,
-        pages: Math.ceil(totalReviews / parseInt(limit as string)),
-        hasNext: parseInt(page as string) < Math.ceil(totalReviews / parseInt(limit as string)),
-        hasPrev: parseInt(page as string) > 1
-      }
-
-      res.json({
-        success: true,
-        data: {
-          reviews,
-          pagination,
-          stats
-        }
-      })
-    } catch (error: any) {
-      logger.error('Error fetching product reviews:', error)
-      res.status(500).json({
-        success: false,
-        message: error.message || 'Failed to fetch reviews'
-      })
-    }
-  }
-)
+const replySchema = z.object({
+  body: z.string().min(1).max(1000),
+  authorName: z.string().min(1).max(50)
+})
 
 /**
- * GET /api/reviews/product/:productSlug/stats
- * Hämta statistik för en produkt baserat på slug
+ * GET /api/reviews/product/:productId
+ * Get all approved reviews for a product
  */
-router.get('/product/:productSlug/stats',
-  [
-    param('productSlug').isString().withMessage('Invalid product slug')
-  ],
-  handleValidation,
-  async (req, res) => {
-    try {
-      const { productSlug } = req.params
-
-      // First find the product by slug
-      const product = await prisma.product.findUnique({
-        where: { slug: productSlug },
-        select: { id: true }
-      })
-
-      if (!product) {
-        return res.status(404).json({
-          success: false,
-          message: 'Product not found'
-        })
-      }
-
-      const stats = await getProductStats(product.id)
-
-      res.json({
-        success: true,
-        data: stats
-      })
-    } catch (error: any) {
-      logger.error('Error fetching product stats:', error)
-      res.status(500).json({
-        success: false,
-        message: error.message || 'Failed to fetch stats'
-      })
-    }
-  }
-)
-
-/**
- * GET /api/reviews/featured
- * Hämta utvalda recensioner för startsidan
- */
-router.get('/featured', async (req, res) => {
+router.get('/product/:productId', async (req, res) => {
   try {
-    const limit = parseInt(req.query.limit as string) || 6
+    const { productId } = req.params
+    const { page = 1, limit = 10, sortBy = 'newest' } = req.query
 
-    const rawReviews = await prisma.review.findMany({
-      where: {
-        status: 'APPROVED',
-        rating: { gte: 4 } // Endast 4-5 stjärnor
-      },
-      orderBy: [
-        { helpfulVotes: 'desc' },
-        { createdAt: 'desc' }
-      ],
-      take: limit,
-      include: {
-        product: {
-          select: {
-            name: true,
-            slug: true
+    const pageNum = parseInt(page as string)
+    const limitNum = parseInt(limit as string)
+    const skip = (pageNum - 1) * limitNum
+
+    // Determine sort order
+    let orderBy: any = { createdAt: 'desc' } // newest
+    if (sortBy === 'oldest') orderBy = { createdAt: 'asc' }
+    if (sortBy === 'highest') orderBy = { rating: 'desc' }
+    if (sortBy === 'lowest') orderBy = { rating: 'asc' }
+    if (sortBy === 'helpful') orderBy = { helpfulVotes: 'desc' }
+
+    const [reviews, totalCount, averageRating] = await Promise.all([
+      prisma.review.findMany({
+        where: {
+          productId,
+          status: 'APPROVED'
+        },
+        include: {
+          replies: {
+            orderBy: { createdAt: 'asc' }
           }
+        },
+        orderBy,
+        skip,
+        take: limitNum
+      }),
+      prisma.review.count({
+        where: {
+          productId,
+          status: 'APPROVED'
         }
+      }),
+      prisma.review.aggregate({
+        where: {
+          productId,
+          status: 'APPROVED'
+        },
+        _avg: {
+          rating: true
+        },
+        _count: {
+          rating: true
+        }
+      })
+    ])
+
+    // Calculate rating distribution
+    const ratingDistribution = await prisma.review.groupBy({
+      by: ['rating'],
+      where: {
+        productId,
+        status: 'APPROVED'
+      },
+      _count: {
+        rating: true
       }
     })
 
-    // Map reviewerName to author for frontend compatibility
-    const reviews = rawReviews.map(review => ({
-      ...review,
-      author: review.reviewerName
+    const distribution = [1, 2, 3, 4, 5].map(rating => ({
+      rating,
+      count: ratingDistribution.find(r => r.rating === rating)?._count.rating || 0
     }))
 
     res.json({
-      success: true,
-      data: reviews
+      reviews,
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total: totalCount,
+        pages: Math.ceil(totalCount / limitNum)
+      },
+      stats: {
+        averageRating: averageRating._avg.rating || 0,
+        totalReviews: averageRating._count.rating || 0,
+        distribution
+      }
     })
   } catch (error: any) {
-    logger.error('Error fetching featured reviews:', error)
-    res.status(500).json({
-      success: false,
-      message: error.message || 'Failed to fetch featured reviews'
-    })
+    logger.error('Error fetching product reviews', { error: error.message, productId: req.params.productId })
+    res.status(500).json({ error: 'Failed to fetch reviews' })
   }
 })
 
 /**
- * GET /api/reviews
- * Hämta alla godkända recensioner med filtrering
+ * POST /api/reviews
+ * Create a new review
  */
-router.get('/', async (req: Request, res: Response) => {
-  const { page = 1, limit = 10, includePending } = req.query;
-  const pageNum = parseInt(page as string, 10);
-  const limitNum = parseInt(limit as string, 10);
-
-  const where: any = {};
-  if (!includePending || includePending !== 'true') {
-    where.status = 'APPROVED';
-  }
-
+router.post('/', async (req, res) => {
   try {
-    const rawReviews = await prisma.review.findMany({
-      where,
-      take: limitNum,
-      skip: (pageNum - 1) * limitNum,
-      orderBy: {
-        createdAt: 'desc',
+    const validatedData = createReviewSchema.parse(req.body)
+
+    // Check if product exists
+    const product = await prisma.product.findUnique({
+      where: { id: validatedData.productId }
+    })
+
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' })
+    }
+
+    // Check if user already reviewed this product (if email provided)
+    const existingReview = await prisma.review.findFirst({
+      where: {
+        productId: validatedData.productId,
+        reviewerEmail: validatedData.reviewerEmail
+      }
+    })
+
+    if (existingReview) {
+      return res.status(400).json({ error: 'You have already reviewed this product' })
+    }
+
+    // Create review
+    const review = await prisma.review.create({
+      data: {
+        productId: validatedData.productId,
+        rating: validatedData.rating,
+        title: validatedData.title,
+        body: validatedData.body,
+        reviewerName: validatedData.reviewerName,
+        reviewerEmail: validatedData.reviewerEmail,
+        reviewerLocation: validatedData.reviewerLocation,
+        skinType: validatedData.skinType,
+        ageRange: validatedData.ageRange,
+        usageDuration: validatedData.usageDuration,
+        photos: validatedData.photos || [],
+        skinConcerns: validatedData.skinConcerns || [],
+        status: 'PENDING' // Reviews need approval
       },
       include: {
-        product: {
-          select: {
-            name: true,
-            slug: true,
-            images: true,
-            price: true,
-          }
+        replies: true
+      }
+    })
+
+    logger.info('Review created', { reviewId: review.id, productId: validatedData.productId })
+
+    res.status(201).json({
+      message: 'Review submitted successfully. It will be published after moderation.',
+      review
+    })
+  } catch (error: any) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ error: 'Invalid data', details: error.errors })
+    }
+    logger.error('Error creating review', { error: error.message })
+    res.status(500).json({ error: 'Failed to create review' })
+  }
+})
+
+/**
+ * POST /api/reviews/:reviewId/reply
+ * Add a reply to a review (admin only)
+ */
+router.post('/:reviewId/reply', auth, async (req, res) => {
+  try {
+    const { reviewId } = req.params
+    const validatedData = replySchema.parse(req.body)
+
+    // Check if review exists
+    const review = await prisma.review.findUnique({
+      where: { id: reviewId }
+    })
+
+    if (!review) {
+      return res.status(404).json({ error: 'Review not found' })
+    }
+
+    // Create reply
+    const reply = await prisma.reviewReply.create({
+      data: {
+        reviewId,
+        authorType: 'ADMIN',
+        authorName: validatedData.authorName,
+        body: validatedData.body
+      }
+    })
+
+    logger.info('Review reply created', { replyId: reply.id, reviewId })
+
+    res.status(201).json({
+      message: 'Reply added successfully',
+      reply
+    })
+  } catch (error: any) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ error: 'Invalid data', details: error.errors })
+    }
+    logger.error('Error creating review reply', { error: error.message })
+    res.status(500).json({ error: 'Failed to create reply' })
+  }
+})
+
+/**
+ * PUT /api/reviews/:reviewId/helpful
+ * Mark a review as helpful
+ */
+router.put('/:reviewId/helpful', async (req, res) => {
+  try {
+    const { reviewId } = req.params
+
+    const review = await prisma.review.update({
+      where: { id: reviewId },
+      data: {
+        helpfulVotes: {
+          increment: 1
         }
       }
-    });
+    })
 
-    // Map reviewerName to author for frontend compatibility
-    const reviews = rawReviews.map(review => ({
-      ...review,
-      author: review.reviewerName
-    }))
+    res.json({
+      message: 'Review marked as helpful',
+      helpfulVotes: review.helpfulVotes
+    })
+  } catch (error: any) {
+    logger.error('Error marking review as helpful', { error: error.message })
+    res.status(500).json({ error: 'Failed to mark review as helpful' })
+  }
+})
 
-    const total = await prisma.review.count({ where });
-    const hasMore = (pageNum * limitNum) < total;
+/**
+ * PUT /api/reviews/:reviewId/report
+ * Report a review
+ */
+router.put('/:reviewId/report', async (req, res) => {
+  try {
+    const { reviewId } = req.params
+
+    const review = await prisma.review.update({
+      where: { id: reviewId },
+      data: {
+        reportedCount: {
+          increment: 1
+        }
+      }
+    })
+
+    // Auto-hide if too many reports
+    if (review.reportedCount >= 5) {
+      await prisma.review.update({
+        where: { id: reviewId },
+        data: { status: 'HIDDEN' }
+      })
+    }
+
+    res.json({
+      message: 'Review reported successfully'
+    })
+  } catch (error: any) {
+    logger.error('Error reporting review', { error: error.message })
+    res.status(500).json({ error: 'Failed to report review' })
+  }
+})
+
+/**
+ * Admin endpoints
+ */
+
+/**
+ * GET /api/reviews/admin/pending
+ * Get all pending reviews (admin only)
+ */
+router.get('/admin/pending', auth, async (req, res) => {
+  try {
+    const { page = 1, limit = 20 } = req.query
+
+    const pageNum = parseInt(page as string)
+    const limitNum = parseInt(limit as string)
+    const skip = (pageNum - 1) * limitNum
+
+    const [reviews, totalCount] = await Promise.all([
+      prisma.review.findMany({
+        where: { status: 'PENDING' },
+        include: {
+          product: {
+            select: { name: true, slug: true }
+          }
+        },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limitNum
+      }),
+      prisma.review.count({
+        where: { status: 'PENDING' }
+      })
+    ])
 
     res.json({
       reviews,
-      total,
-      hasMore,
-      currentPage: pageNum,
-      totalPages: Math.ceil(total / limitNum)
-    });
-  } catch (error) {
-    console.error('Error fetching reviews:', error);
-    res.status(500).json({ error: 'Failed to fetch reviews' });
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total: totalCount,
+        pages: Math.ceil(totalCount / limitNum)
+      }
+    })
+  } catch (error: any) {
+    logger.error('Error fetching pending reviews', { error: error.message })
+    res.status(500).json({ error: 'Failed to fetch pending reviews' })
   }
-});
+})
 
 /**
- * @swagger
+ * PUT /api/reviews/admin/:reviewId/approve
+ * Approve a review (admin only)
  */
+router.put('/admin/:reviewId/approve', auth, async (req, res) => {
+  try {
+    const { reviewId } = req.params
 
+    const review = await prisma.review.update({
+      where: { id: reviewId },
+      data: { status: 'APPROVED' }
+    })
+
+    logger.info('Review approved', { reviewId })
+
+    res.json({
+      message: 'Review approved successfully',
+      review
+    })
+  } catch (error: any) {
+    logger.error('Error approving review', { error: error.message })
+    res.status(500).json({ error: 'Failed to approve review' })
+  }
+})
 
 /**
- * Helper function to get product statistics
+ * PUT /api/reviews/admin/:reviewId/reject
+ * Reject a review (admin only)
  */
-async function getProductStats(productId: string) {
-  const reviews = await prisma.review.findMany({
-    where: {
-      productId,
-      status: 'APPROVED'
-    },
-    select: {
-      rating: true
-    }
-  })
+router.put('/admin/:reviewId/reject', auth, async (req, res) => {
+  try {
+    const { reviewId } = req.params
+    const { moderatorNotes } = req.body
 
-  const totalReviews = reviews.length
-  const averageRating = totalReviews > 0 
-    ? reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews 
-    : 0
+    const review = await prisma.review.update({
+      where: { id: reviewId },
+      data: { 
+        status: 'REJECTED',
+        moderatorNotes: moderatorNotes || null
+      }
+    })
 
-  // Calculate rating distribution
-  const ratingDistribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
-  reviews.forEach(review => {
-    ratingDistribution[review.rating as keyof typeof ratingDistribution]++
-  })
+    logger.info('Review rejected', { reviewId })
 
-  // Get recent reviews
-  const recentReviews = await prisma.review.findMany({
-    where: {
-      productId,
-      status: 'APPROVED'
-    },
-    orderBy: { createdAt: 'desc' },
-    take: 3
-  })
-
-  return {
-    averageRating: Math.round(averageRating * 10) / 10,
-    totalReviews,
-    ratingDistribution,
-    recentReviews
+    res.json({
+      message: 'Review rejected successfully',
+      review
+    })
+  } catch (error: any) {
+    logger.error('Error rejecting review', { error: error.message })
+    res.status(500).json({ error: 'Failed to reject review' })
   }
-}
+})
+
+/**
+ * GET /api/reviews/stats
+ * Get review statistics
+ */
+router.get('/stats', async (req, res) => {
+  try {
+    const stats = await prisma.review.groupBy({
+      by: ['status'],
+      _count: {
+        id: true
+      }
+    })
+
+    const totalReviews = await prisma.review.count()
+    const averageRating = await prisma.review.aggregate({
+      where: { status: 'APPROVED' },
+      _avg: { rating: true }
+    })
+
+    res.json({
+      totalReviews,
+      averageRating: averageRating._avg.rating || 0,
+      byStatus: stats.reduce((acc, stat) => {
+        acc[stat.status] = stat._count.id
+        return acc
+      }, {} as Record<string, number>)
+    })
+  } catch (error: any) {
+    logger.error('Error fetching review stats', { error: error.message })
+    res.status(500).json({ error: 'Failed to fetch review stats' })
+  }
+})
 
 export default router 

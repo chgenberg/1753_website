@@ -6,7 +6,6 @@ import { motion } from 'framer-motion'
 
 interface ProductReviewsProps {
   productId: string
-  productSlug: string
 }
 
 interface Review {
@@ -19,32 +18,27 @@ interface Review {
   status: string
 }
 
-export default function ProductReviews({ productId, productSlug }: ProductReviewsProps) {
+export default function ProductReviews({ productId }: ProductReviewsProps) {
   const [reviews, setReviews] = useState<Review[]>([])
   const [stats, setStats] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [displayCount, setDisplayCount] = useState(3)
 
   useEffect(() => {
-    console.log('ProductReviews: Component mounted/updated with productSlug:', productSlug)
-    console.log('ProductReviews: productId:', productId)
-    if (productSlug) {
+    console.log('ProductReviews: Component mounted/updated with productId:', productId)
+    if (productId) {
       fetchReviews()
-      fetchStats()
     } else {
-      console.log('ProductReviews: No productSlug provided, skipping fetch')
+      console.log('ProductReviews: No productId provided, skipping fetch')
     }
-  }, [productSlug])
+  }, [productId])
 
   const fetchReviews = async () => {
     try {
-      console.log('ProductReviews: Fetching reviews for productSlug:', productSlug)
-      console.log('ProductReviews: API URL:', `/api/reviews/product/${productSlug}`)
+      console.log('ProductReviews: Fetching reviews for productId:', productId)
       
-      const response = await fetch(`/api/reviews/product/${productSlug}`)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002'}/api/reviews/product/${productId}`)
       console.log('ProductReviews: Response status:', response.status)
-      console.log('ProductReviews: Response OK:', response.ok)
-      console.log('ProductReviews: Response headers:', Object.fromEntries(response.headers.entries()))
       
       if (!response.ok) {
         const errorText = await response.text()
@@ -55,17 +49,21 @@ export default function ProductReviews({ productId, productSlug }: ProductReview
       const data = await response.json()
       console.log('ProductReviews: Full response data:', data)
       
-      // Handle the API response format: { success: true, data: { reviews, stats } }
-      if (data.success && data.data) {
-        console.log('ProductReviews: Found reviews:', data.data.reviews?.length || 0)
-        console.log('ProductReviews: Found stats:', data.data.stats)
-        setReviews(data.data.reviews || [])
-        // Also set stats if included in the same response
-        if (data.data.stats) {
-          setStats(data.data.stats)
-        }
+      // Handle the new API response format: { reviews, stats, pagination }
+      if (data.reviews) {
+        console.log('ProductReviews: Found reviews:', data.reviews.length)
+        console.log('ProductReviews: Found stats:', data.stats)
+        
+        // Map reviews to match existing component interface
+        const mappedReviews = data.reviews.map((review: any) => ({
+          ...review,
+          author: review.reviewerName // Map for compatibility
+        }))
+        
+        setReviews(mappedReviews)
+        setStats(data.stats)
       } else {
-        console.log('ProductReviews: No success or data in response')
+        console.log('ProductReviews: No reviews found')
         setReviews([])
       }
     } catch (error) {
@@ -76,34 +74,7 @@ export default function ProductReviews({ productId, productSlug }: ProductReview
     }
   }
 
-  const fetchStats = async () => {
-    try {
-      console.log('ProductReviews: Fetching stats for productSlug:', productSlug)
-      const response = await fetch(`/api/reviews/product/${productSlug}/stats`)
-      console.log('ProductReviews Stats: Response status:', response.status)
-      
-      if (!response.ok) {
-        const errorText = await response.text()
-        console.error('ProductReviews Stats: Response error:', errorText)
-        throw new Error(`Failed to fetch stats: ${response.status} - ${errorText}`)
-      }
-      
-      const data = await response.json()
-      console.log('ProductReviews Stats: Full response data:', data)
-      
-      // Handle the API response format: { success: true, data: stats }
-      if (data.success && data.data) {
-        console.log('ProductReviews Stats: Setting stats:', data.data)
-        setStats(data.data)
-      } else {
-        console.log('ProductReviews Stats: No success or data in response')
-        setStats(null)
-      }
-    } catch (error) {
-      console.error('ProductReviews Stats: Error fetching stats:', error)
-      setStats(null)
-    }
-  }
+
 
   const renderStars = (rating: number, size: 'sm' | 'md' = 'sm') => {
     const sizes = size === 'sm' ? 'w-4 h-4' : 'w-5 h-5'
