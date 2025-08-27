@@ -140,6 +140,10 @@ export class VivaWalletService {
         disableWallet: false,
         // Enable Swish for Swedish customers
         enableSwish: true,
+        // Return URLs for external checkout
+        successUrl: `${process.env.FRONTEND_URL || 'https://1753website-production.up.railway.app'}/checkout/success`,
+        cancelUrl: `${process.env.FRONTEND_URL || 'https://1753website-production.up.railway.app'}/checkout`,
+        failureUrl: `${process.env.FRONTEND_URL || 'https://1753website-production.up.railway.app'}/checkout?error=payment_failed`,
         sourceCode: this.subscriptionSourceCode || this.config.sourceCode,
         merchantTrns: `Order-${Date.now()}`
       }

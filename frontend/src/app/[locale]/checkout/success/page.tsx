@@ -35,8 +35,11 @@ function SuccessContent() {
   const [orderData, setOrderData] = useState<any>(null)
   const [showShareMenu, setShowShareMenu] = useState(false)
   
-  const transactionId = searchParams.get('transactionId')
-  const orderCode = searchParams.get('orderCode')
+  // Get parameters from URL (from Viva Wallet or our internal redirect)
+  const transactionId = searchParams.get('transactionId') || searchParams.get('t')
+  const orderCode = searchParams.get('orderCode') || searchParams.get('orderid')
+  const eventId = searchParams.get('eventId') // From Viva Wallet
+  const eci = searchParams.get('eci') // From Viva Wallet
   
   useEffect(() => {
     // Multiple confetti bursts for extra celebration

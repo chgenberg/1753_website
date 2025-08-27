@@ -1,121 +1,145 @@
 import { Router } from 'express'
-import axios from 'axios'
+import { vivaWalletService } from '../services/vivaWalletService'
+import { sendEmail } from '../services/emailService'
 import { logger } from '../utils/logger'
-import { subscriptionService } from '../services/subscriptionService'
-import { env } from '../config/env'
+import prisma from '../lib/prisma'
 
 const router = Router()
 
 /**
- * Viva Wallet webhook validation endpoint (GET/HEAD/OPTIONS)
- * /api/webhooks/viva-wallet
- */
-router.head('/viva-wallet', (req, res) => {
-  logger.info('Received Viva Wallet webhook HEAD check')
-  res.status(200).send('OK')
-})
-
-router.options('/viva-wallet', (req, res) => {
-  logger.info('Received Viva Wallet webhook OPTIONS check')
-  res.setHeader('Allow', 'GET,POST,HEAD,OPTIONS')
-  res.status(200).send('OK')
-})
-
-/**
- * Viva Wallet webhook validation endpoint (GET)
- * GET /api/webhooks/viva-wallet
- */
-router.get('/viva-wallet', (req, res) => {
-  logger.info('Received Viva Wallet webhook validation request (GET)', {
-    headers: req.headers,
-    query: req.query,
-    body: req.body
-  })
-  
-  const validationKey = (process.env.VIVA_WALLET_WEBHOOK_SECRET || (env as any).VIVA_WALLET_WEBHOOK_SECRET || 'B3248222FDCD1885AEAFE51CCC1B5607F00903F6') as string
-
-  if (!process.env.VIVA_WALLET_WEBHOOK_SECRET) {
-    logger.warn('VIVA_WALLET_WEBHOOK_SECRET is not set. Using fallback key for validation response.')
-  }
-
-  logger.info('Responding with validation key:', { Key: validationKey })
-
-  // According to Viva Wallet docs, return just the key as they expect
-  res.status(200).json({ 
-    Key: validationKey
-  })
-})
-
-/**
  * Viva Wallet webhook endpoint
- * POST /api/webhooks/viva-wallet
+ * Called when payment status changes
  */
 router.post('/viva-wallet', async (req, res) => {
   try {
-    // Always respond with 200 OK first for Viva Wallet validation
-    res.status(200).send('OK')
-    
-    const { OrderCode, StateId, Amount, TransactionId } = req.body
-    
-    // If this is just a validation ping (empty body), return early
-    if (!OrderCode && !StateId) {
-      logger.info('Received Viva Wallet validation ping')
-      return
+    const payload = req.body
+    logger.info('Received Viva Wallet webhook', { payload })
+
+    // Verify webhook signature if configured
+    const signature = req.headers['x-viva-signature'] as string
+    if (signature && process.env.VIVA_WALLET_WEBHOOK_SECRET) {
+      const isValid = vivaWalletService.verifyWebhookSignature(
+        JSON.stringify(payload),
+        signature
+      )
+      
+      if (!isValid) {
+        logger.warn('Invalid Viva Wallet webhook signature')
+        return res.status(401).json({ error: 'Invalid signature' })
+      }
     }
+
+    // Process the webhook
+    const webhookData = vivaWalletService.processWebhook(payload)
     
-    logger.info('Received Viva Wallet webhook', { 
-      orderCode: OrderCode,
-      stateId: StateId,
-      amount: Amount,
-      transactionId: TransactionId
+    if (!webhookData.orderId) {
+      logger.warn('No order ID in webhook payload')
+      return res.status(400).json({ error: 'No order ID' })
+    }
+
+    // Find the order by payment reference (Viva orderCode)
+    const order = await prisma.order.findFirst({
+      where: { 
+        paymentReference: webhookData.orderId 
+      },
+      include: {
+        items: {
+          include: {
+            product: true
+          }
+        }
+      }
     })
 
-    // Map Viva Wallet status to our internal status
-    let status = 'pending'
-    switch (StateId) {
-      case 1: // Completed
-        status = 'completed'
-        break
-      case 2: // Cancelled
-        status = 'cancelled'
-        break
-      case 3: // Failed
-      case 4: // Declined
-        status = 'failed'
-        break
-      case 5: // Refunded
-        status = 'refunded'
-        break
-      default:
-        status = 'pending'
+    if (!order) {
+      logger.warn('Order not found for webhook', { orderId: webhookData.orderId })
+      return res.status(404).json({ error: 'Order not found' })
     }
-    
-    // Process the webhook asynchronously
-    subscriptionService.processPaymentWebhook(OrderCode?.toString() || '', status)
-      .then(() => {
-        logger.info('Viva Wallet webhook processed successfully', {
-          orderCode: OrderCode,
-          status: status
-        })
-      })
-      .catch((error) => {
-        logger.error('Error processing Viva Wallet webhook:', {
-          error: error.message,
-          orderCode: OrderCode
-        })
-      })
 
-  } catch (error: any) {
-    logger.error('Error in Viva Wallet webhook handler:', {
-      error: error.message,
-      body: req.body
-    })
-    
-    // Still respond with 200 OK
-    if (!res.headersSent) {
-      res.status(200).send('OK')
+    // Update order status based on payment status
+    let orderStatus = 'PENDING'
+    let paymentStatus = 'PENDING'
+
+    switch (webhookData.status) {
+      case 'completed':
+        orderStatus = 'PROCESSING'
+        paymentStatus = 'PAID'
+        break
+      case 'cancelled':
+        orderStatus = 'CANCELLED'
+        paymentStatus = 'CANCELLED'
+        break
+      case 'failed':
+        orderStatus = 'CANCELLED'
+        paymentStatus = 'FAILED'
+        break
+      case 'refunded':
+        orderStatus = 'REFUNDED'
+        paymentStatus = 'REFUNDED'
+        break
     }
+
+    // Update order in database
+    await prisma.order.update({
+      where: { id: order.id },
+      data: {
+        status: orderStatus as any,
+        paymentStatus: paymentStatus as any,
+        transactionId: webhookData.transactionId
+      }
+    })
+
+    // Send order confirmation email if payment was successful
+    if (paymentStatus === 'PAID') {
+      try {
+        await sendEmail({
+          to: order.email,
+          subject: `Orderbekräftelse #${order.orderNumber}`,
+          template: 'orderConfirmation',
+          data: {
+            firstName: order.customerName?.split(' ')[0] || 'Kund',
+            orderNumber: order.orderNumber,
+            orderDate: new Date().toLocaleDateString('sv-SE'),
+            items: order.items.map(item => ({
+              name: item.product.name,
+              quantity: item.quantity,
+              total: item.price * item.quantity
+            })),
+            total: order.totalAmount,
+            currency: 'kr',
+            shippingAddress: order.shippingAddress as any
+          }
+        })
+        
+        logger.info('Order confirmation email sent via webhook', {
+          orderId: order.id,
+          email: order.email
+        })
+      } catch (emailError) {
+        logger.error('Failed to send order confirmation email via webhook:', emailError)
+      }
+    }
+
+    logger.info('Webhook processed successfully', {
+      orderId: order.id,
+      status: webhookData.status,
+      paymentStatus
+    })
+
+    res.json({ success: true })
+  } catch (error) {
+    logger.error('Error processing Viva Wallet webhook:', error)
+    res.status(500).json({ error: 'Internal server error' })
   }
+})
+
+/**
+ * Webhook validation endpoint for Viva Wallet
+ * Viva Wallet calls this to verify the webhook URL
+ */
+router.get('/viva-wallet', (req, res) => {
+  const validationKey = process.env.VIVA_WALLET_WEBHOOK_SECRET || 'default-validation-key'
+  res.send(validationKey)
 })
 
 export default router 

@@ -299,19 +299,22 @@ export default function CheckoutPage() {
         throw new Error(data.error || 'Failed to create order')
       }
 
-      // Store order details for payment processing
-      setOrderDetails({
-        orderId: data.orderId,
-        orderCode: data.orderCode,
-        amount: finalTotal
-      })
+      // Clear cart before redirecting to payment
+      clearCart()
 
-      // Move to payment step
-      setCurrentStep(4) // Add new step for payment processing
+      // Redirect directly to Viva Wallet external checkout
+      const vivaBaseUrl = process.env.NEXT_PUBLIC_VIVA_BASE_URL?.includes('demo') 
+        ? 'https://demo.vivapayments.com' 
+        : 'https://www.vivapayments.com'
+      
+      const checkoutUrl = `${vivaBaseUrl}/web/checkout?ref=${data.orderCode}&s=${process.env.NEXT_PUBLIC_VIVA_SOURCE_CODE}`
+      
+      // Redirect to Viva Wallet
+      window.location.href = checkoutUrl
+      
     } catch (error: any) {
       console.error('Error creating order:', error)
       toast.error(error.message || 'Ett fel uppstod vid beställningen')
-    } finally {
       setIsProcessing(false)
     }
   }
@@ -1078,65 +1081,7 @@ export default function CheckoutPage() {
                 </motion.div>
               )}
               
-              {/* Step 4: Smart Checkout Payment */}
-              {currentStep === 4 && orderDetails && (
-                <motion.div
-                  key="step4"
-                  initial={{ opacity: 0, x: 50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -50 }}
-                  transition={{ duration: 0.3, ease: "easeOut" }}
-                  className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl p-8 md:p-10 border border-[#E5D5C7]/30"
-                >
-                  <div className="flex items-center gap-3 mb-8">
-                    <motion.div
-                      initial={{ rotate: -180 }}
-                      animate={{ rotate: 0 }}
-                      transition={{ duration: 0.5 }}
-                      className="w-12 h-12 bg-[#E79C1A] rounded-full flex items-center justify-center shadow-lg"
-                    >
-                      <CreditCard className="w-6 h-6 text-white" />
-                    </motion.div>
-                    <h2 className="text-2xl md:text-3xl font-light tracking-[0.2em] uppercase" style={{ fontFamily: "'Inter', sans-serif" }}>
-                      Säker betalning
-                    </h2>
-                  </div>
 
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="bg-[#FFF9F3] rounded-2xl p-6 mb-6"
-                  >
-                    <VivaSmartCheckout
-                      orderCode={orderDetails.orderCode}
-                      amount={orderDetails.amount}
-                      onSuccess={handlePaymentSuccess}
-                      onError={handlePaymentError}
-                      publicKey={process.env.NEXT_PUBLIC_VIVA_PUBLIC_KEY || ''}
-                      sourceCode={process.env.NEXT_PUBLIC_VIVA_SOURCE_CODE || ''}
-                      baseURL={process.env.NEXT_PUBLIC_VIVA_BASE_URL}
-                    />
-                  </motion.div>
-
-                  {/* Payment security info */}
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.4 }}
-                    className="flex items-center justify-center gap-6 text-sm text-gray-600"
-                  >
-                    <div className="flex items-center gap-2">
-                      <Lock className="w-4 h-4 text-green-600" />
-                      <span>256-bit SSL</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Shield className="w-4 h-4 text-green-600" />
-                      <span>PCI-DSS</span>
-                    </div>
-                  </motion.div>
-                </motion.div>
-              )}
             </AnimatePresence>
           </div>
 
