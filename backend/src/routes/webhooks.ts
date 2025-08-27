@@ -134,12 +134,21 @@ router.post('/viva-wallet', async (req, res) => {
 })
 
 /**
- * Webhook validation endpoint for Viva Wallet
- * Viva Wallet calls this to verify the webhook URL
+ * Validation endpoints used by Viva Wallet UI when adding the webhook
  */
-router.get('/viva-wallet', (req, res) => {
+router.head('/viva-wallet', (_req, res) => {
+  res.status(200).send('OK')
+})
+
+router.options('/viva-wallet', (_req, res) => {
+  res.setHeader('Allow', 'GET,POST,HEAD,OPTIONS')
+  res.status(200).send('OK')
+})
+
+router.get('/viva-wallet', (_req, res) => {
   const validationKey = process.env.VIVA_WALLET_WEBHOOK_SECRET || 'default-validation-key'
-  res.send(validationKey)
+  // Viva Selfcare often expects JSON: { Key: "<validationKey>" }
+  res.status(200).json({ Key: validationKey })
 })
 
 export default router 
