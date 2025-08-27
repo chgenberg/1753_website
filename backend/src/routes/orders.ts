@@ -131,7 +131,7 @@ router.post('/create', optionalAuth, async (req: any, res) => {
     // Create payment order in Viva Wallet
     const paymentOrderParams: any = {
       amount: validatedData.total,
-      customerTrns: `Order #${order.id}`,
+      customerTrns: `Order ${order.orderNumber} - 1753 Skincare`,
       customer: {
         email: validatedData.customer.email,
         fullName: `${validatedData.customer.firstName} ${validatedData.customer.lastName}`,
@@ -139,8 +139,8 @@ router.post('/create', optionalAuth, async (req: any, res) => {
         countryCode: getCountryCode(validatedData.shippingAddress.country),
         requestLang: getRequestLang(validatedData.currency)
       },
-      merchantTrns: order.id,
-      tags: ['ecommerce', 'webshop']
+      merchantTrns: order.orderNumber,
+      tags: ['ecommerce', 'webshop', '1753']
     }
 
     // If it's a subscription order, create a recurring payment
