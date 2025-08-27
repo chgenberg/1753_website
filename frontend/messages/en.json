@@ -5,7 +5,7 @@
     "success": "Success",
     "save": "Save",
     "cancel": "Cancel",
-    "delete": "Delete",
+    "delete": "Remove",
     "edit": "Edit",
     "add": "Add",
     "continue": "Continue",
@@ -20,58 +20,49 @@
   "navigation": {
     "home": "Home",
     "products": "Products",
-    "skinConditions": "Skin Conditions",
-    "about": "About Us",
+    "skinConditions": "Skin condition",
+    "about": "About us",
     "blog": "Blog",
     "knowledge": "Knowledge",
-    "contact": "Contact",
-    "account": "My Account",
-    "cart": "Cart",
+    "contact": "Contact us",
+    "account": "My account",
+    "cart": "Shopping cart",
     "checkout": "Checkout",
-    "login": "Login",
-    "register": "Register",
-    "logout": "Logout",
+    "login": "Log in",
+    "register": "Sign up",
+    "logout": "Log out",
     "privacyPolicy": "Privacy Policy",
     "terms": "Terms",
     "cookies": "Cookies"
   },
   "headerTopBar": {
-    "bannerPrefix": "FREE SHIPPING OVER 500 SEK",
-    "freeShipping": "Personal and free",
-    "naturalIngredients": "Natural ingredients",
-    "openPurchase": "30-day open purchase"
-  },
-  "menu": {
-    "products": {
-      "skincare": "Skincare",
-      "skincareDesc": "Natural skincare with CBD & adaptogens",
-      "duo": "Duos",
-      "duoDesc": "Perfect combinations for your skin",
-      "allDesc": "See our full assortment"
-    }
+    "bannerPrefix": "FREE SHIPPING ON ORDERS OVER 500 KR",
+    "freeShipping": "FREE & PERSONAL",
+    "naturalIngredients": "NATURAL INGREDIENTS",
+    "openPurchase": "30-day return policy"
   },
   "hero": {
     "title": "Discover the power of CBD for your skin",
-    "subtitle": "Natural skincare products that support your skin's own healing process",
+    "subtitle": "Natural skincare products that support the skin's own healing process.",
     "cta": "Shop now",
-    "learnMore": "Learn more"
+    "learnMore": "Read more"
   },
   "products": {
-    "title": "Our amazing products",
+    "title": "Our fantastic products",
     "subtitle": "All our products contain CBD and CBG for optimal skin health",
     "addToCart": "Add to cart",
-    "outOfStock": "Out of stock",
+    "outOfStock": "Sold out",
     "quickView": "Quick view",
-    "comparePrice": "Compare at price",
-    "salePrice": "Sale price",
+    "comparePrice": "Regular price",
+    "salePrice": "Relearned",
     "bestseller": "Bestseller",
-    "new": "New",
+    "new": "News",
     "featured": "Featured"
   },
   "skinJourney": {
-    "title": "Your skin journey",
-    "subtitle": "Track your skin's progress with our personal tools",
-    "startJourney": "Start your skin journey",
+    "title": "Your skincare journey.",
+    "subtitle": "Track your skin's progress with our personalized tools.",
+    "startJourney": "Start your skincare journey",
     "progress": "Progress",
     "photos": "Photos",
     "notes": "Notes",
@@ -84,52 +75,52 @@
     "worsened": "Worsened"
   },
   "account": {
-    "dashboard": "Dashboard",
+    "dashboard": "Overview",
     "profile": "Profile",
     "orders": "Orders",
     "addresses": "Addresses",
-    "preferences": "Preferences",
-    "skinJourney": "Skin Journey",
+    "preferences": "Settings",
+    "skinJourney": "Skin journey",
     "personalInfo": "Personal information",
     "firstName": "First name",
     "lastName": "Last name",
     "email": "Email",
-    "phone": "Phone",
+    "phone": "Telephone",
     "dateOfBirth": "Date of birth",
     "skinType": "Skin type",
-    "skinConcerns": "Skin concerns"
+    "skinConcerns": "Skin problems"
   },
   "cart": {
-    "title": "Cart",
-    "empty": "Your cart is empty",
-    "quantity": "Quantity",
+    "title": "Shopping cart",
+    "empty": "Your shopping cart is empty.",
+    "quantity": "Number",
     "price": "Price",
     "total": "Total",
     "subtotal": "Subtotal",
     "shipping": "Shipping",
-    "tax": "Tax",
+    "tax": "VAT",
     "remove": "Remove",
     "updateQuantity": "Update quantity",
-    "proceedToCheckout": "Proceed to checkout",
+    "proceedToCheckout": "Go to checkout",
     "continueShopping": "Continue shopping"
   },
   "checkout": {
     "title": "Checkout",
-    "shippingAddress": "Shipping address",
+    "shippingAddress": "Delivery address",
     "billingAddress": "Billing address",
     "paymentMethod": "Payment method",
     "orderSummary": "Order summary",
-    "placeOrder": "Place order",
+    "placeOrder": "Complete order",
     "processing": "Processing...",
-    "success": "Order placed successfully!",
-    "error": "An error occurred while placing the order"
+    "success": "Order completed!",
+    "error": "An error occurred while placing the order."
   },
   "forms": {
-    "required": "This field is required",
-    "email": "Please enter a valid email address",
-    "password": "Password must be at least 8 characters",
-    "confirmPassword": "Passwords do not match",
-    "phone": "Please enter a valid phone number",
+    "required": "This field is required.",
+    "email": "Enter a valid email address",
+    "password": "The password must be at least 8 characters.",
+    "confirmPassword": "The passwords do not match.",
+    "phone": "Enter a valid phone number",
     "firstName": "First name",
     "lastName": "Last name",
     "company": "Company (optional)",
@@ -144,7 +135,7 @@
     "combination": "Combination skin",
     "sensitive": "Sensitive skin",
     "normal": "Normal skin",
-    "acne": "Acne-prone skin",
+    "acne": "Acne",
     "mature": "Mature skin"
   },
   "footer": {
@@ -159,24 +150,62 @@
     "copyright": "© 2024 1753 Skincare. All rights reserved.",
     "help": "Help"
   },
+  "productsPage": {
+    "badgeCBD": "CBD-enriched skincare",
+    "title": "OUR PRODUCTS",
+    "subtitle": "Discover the power of natural skincare with our carefully selected CBD and CBG products",
+    "filter": "FILTER",
+    "categories": {
+      "all": "Everyone",
+      "bestseller": "Bestseller",
+      "new": "New"
+    },
+    "sort": {
+      "featured": "Featured first",
+      "name": "Names A–Z",
+      "priceLow": "Price: Low to high",
+      "priceHigh": "Price: High to low"
+    },
+    "activeFilters": "{count} active filter",
+    "resetFilters": "Clear filters",
+    "loading": "Loading products...",
+    "empty": {
+      "title": "No products were found with the current filter.",
+      "showAll": "Show all products"
+    },
+    "quickView": "Quick look",
+    "addToCart": "Add to cart",
+    "newsletter": {
+      "title": "Don't miss our news",
+      "description": "Subscribe to our newsletter for exclusive offers and skincare tips",
+      "placeholderEmail": "Your email address",
+      "subscribe": "Subscribe"
+    },
+    "quizCta": "Take our skin analysis",
+    "badges": {
+      "recommended": "RECOMMENDED",
+      "bestseller": "BESTSELLER",
+      "new": "NEW"
+    }
+  },
   "Reviews": {
     "pageTitle": "Reviews - 1753 Skincare",
-    "pageDescription": "Read what our customers say about 1753 Skincare. Genuine reviews from people who discovered the power of natural skincare.",
+    "pageDescription": "Read what our customers say about 1753 Skincare. Genuine reviews from people who have discovered the power of natural skincare.",
     "title": "What our customers say",
-    "subtitle": "Real stories from people who discovered the power of natural skincare",
+    "subtitle": "Real stories from people who have discovered the power of natural skincare.",
     "totalReviews": "Based on",
     "averageRating": "Average rating",
     "fiveStarPercentage": "5-star ratings",
-    "allRatings": "All ratings",
+    "allRatings": "All grades",
     "allProducts": "All products",
     "sortNewest": "Newest first",
     "sortOldest": "Oldest first",
-    "sortHighest": "Highest rating first",
+    "sortHighest": "Highest rated first",
     "sortLowest": "Lowest rating first",
     "resetFilters": "Reset filters",
     "verifiedPurchase": "Verified",
     "loading": "Loading...",
-    "loadMore": "Load more",
+    "loadMore": "Show more",
     "noReviews": "No reviews found",
     "readAllReviews": "READ ALL REVIEWS",
     "prevAria": "Previous review",
@@ -195,8 +224,8 @@
     "progress": "Question {current} of {total}",
     "results": {
       "title": "Your results",
-      "loading": "Preparing your personalized skin analysis...",
-      "error": "Could not load results. Please try again."
+      "loading": "Preparing your personal skin analysis...",
+      "error": "Could not load the results. Please try again."
     }
   },
   "Blog": {
@@ -207,7 +236,7 @@
     "readMore": "Read more",
     "shareArticle": "Share article",
     "relatedArticles": "Related articles",
-    "backToBlog": "Back to blog",
+    "backToBlog": "Back to the blog",
     "noArticles": "No articles published yet",
     "loading": "Loading articles..."
   },
@@ -215,111 +244,103 @@
     "hero": {
       "coverAlt": "Cover image for 1753 Skincare 2025",
       "headingLine1": "Natural skincare for",
-      "headingLine2": "the skin’s ecosystem",
-      "subtitle": "Scientifically developed skincare that works in harmony with your skin cells, microbiome and endocannabinoid system",
+      "headingLine2": "the skin's ecosystem",
+      "subtitle": "Scientifically developed skincare that works in harmony with the skin's cells, microbiome and endocannabinoid system",
       "authorAlt": "Portrait of Christopher Genberg",
-      "authorTagline": "Founder • 12+ years experience • Skincare rebel",
+      "authorTagline": "Founder • 12+ years of experience • Skincare rebel",
       "ctaQuiz": "Take the skin quiz",
       "ctaProducts": "See products",
-      "timelineTitle": "Your path to perfect skin",
+      "timelineTitle": "Your journey to perfect skin",
       "steps": {
-        "step1": { "title": "Take the skin quiz", "badge": "2 minutes" },
-        "step2": { "title": "Get recommendations", "badge": "Personal plan" },
-        "step3": { "title": "Follow up", "badge": "Weekly improvement" },
-        "step4": { "title": "Perfect skin!", "badge": "Within 3 months" }
+        "step1": {
+          "title": "Take the skin quiz",
+          "badge": "2 minutes"
+        },
+        "step2": {
+          "title": "Get a recommendation",
+          "badge": "Personal plan"
+        },
+        "step3": {
+          "title": "Follow up",
+          "badge": "Weekly improvement"
+        },
+        "step4": {
+          "title": "Perfect skin!",
+          "badge": "Within 3 months"
+        }
       },
       "modal": {
         "step1": {
-          "title": "📝 Take the skin quiz",
-          "description": "Our skincare quiz takes just 2 minutes and helps us understand your unique skin type and specific needs.\n\nBy answering a few simple questions about your skin, lifestyle and preferences, we can create a tailored routine just for you.\n\nThe quiz analyzes factors like skin type, concerns, age and environment to give the most relevant recommendations." 
+          "title": "📝 Take skin quiz",
+          "description": "Our skincare quiz takes just 2 minutes and helps us understand your unique skin type and your specific needs.\n\nBy answering a few simple questions about your skin, lifestyle and preferences, we can create a tailored skincare routine just for you.\n\nThe quiz analyzes factors such as skin type, any skin concerns, age and environmental factors to give you the most relevant product recommendations."
         },
         "step2": {
-          "title": "🎯 Get recommendations",
-          "description": "Based on your answers, you receive a personal skincare plan with product recommendations specifically selected for your skin type and needs.\n\nOur approach combines traditional skincare knowledge with modern science to create a complete routine.\n\nYou’ll also get tips on how to use the products for optimal results." 
+          "title": "🎯 Get a recommendation",
+          "description": "Based on your quiz answers, you'll receive a personalized skincare plan with product recommendations specifically selected for your skin type and needs.\n\nOur algorithm combines traditional skincare knowledge with modern science to create a complete routine that includes cleansing, treatment, and protection.\n\nYou'll also get tips on how to best use the products for optimal results."
         },
         "step3": {
           "title": "📈 Follow up",
-          "description": "We support your journey every week to ensure continuous improvements.\n\nWith regular check-ins we can adjust your routine and give you personalised tips.\n\nYou’ll get reminders and can document your progress to clearly see improvements over time." 
+          "description": "We follow your skincare journey every week to ensure you see continuous improvements.\n\nThrough regular check-ins we can adjust your routine as needed and give you personalized tips based on how your skin develops.\n\nYou will receive reminders about when it's time to apply the products and can document your progress with photos to clearly see the improvements over time."
         },
         "step4": {
           "title": "✨ Perfect skin!",
-          "description": "Within 3 months you will see a noticeable improvement in your skin’s quality and appearance.\n\nWith our natural CBD and CBG products and a personalised routine, your skin becomes balanced, clearer and radiant." 
+          "description": "Within 3 months you will see a noticeable improvement in your skin's quality and appearance.\n\nWith our natural products containing CBD and CBG, combined with your personal skincare routine, your skin will become more balanced, clearer and more radiant.\n\nMany of our customers report visible results after just a few weeks, but the full effect is usually achieved within 3 months of consistent use."
         }
       }
     },
     "about": {
       "title": "OUR PHILOSOPHY",
-      "subtitle": "A timeless tradition of natural skincare, grounded in science and a love for nature",
-      "heading": "SINCE 1753, WE’VE UNDERSTOOD SKIN’S NATURAL NEEDS",
-      "p1": "In the heart of Swedish nature, our vision was born: to create skincare that works in harmony with your skin’s natural processes. We combine traditional knowledge with modern research.",
-      "p2": "Our products contain carefully selected ingredients like CBD and CBG, known for their calming and balancing properties. Every formula is developed to give your skin exactly what it needs—nothing more, nothing less.",
+      "subtitle": "A timeless tradition of natural skincare, founded on science and a love of nature.",
+      "heading": "Since 1753 we have understood the skin's natural needs.",
+      "p1": "In the heart of Swedish nature, our vision was born to create skincare that works in harmony with your skin's natural processes. We combine traditional knowledge with modern research.",
+      "p2": "Our products contain carefully selected ingredients such as CBD and CBG, known for their soothing and balancing properties. Each formula is developed to give your skin what it needs - nothing more, nothing less.",
       "values": {
-        "natural": { "title": "Natural", "desc": "Only natural ingredients from nature" },
-        "loving": { "title": "Loving", "desc": "Created with care for your skin" },
-        "safe": { "title": "Safe", "desc": "Tested and certified skincare" }
+        "natural": {
+          "title": "Natural",
+          "desc": "Only natural ingredients from nature"
+        },
+        "loving": {
+          "title": "Loving",
+          "desc": "Made with care for your skin."
+        },
+        "safe": {
+          "title": "Safe",
+          "desc": "Tested and certified skincare"
+        }
       },
-      "cta": "Read more about our story",
+      "cta": "Read more about our history",
       "imageAlt": "Natural skincare",
-      "foundersAlt": "Founders",
+      "foundersAlt": "Founder",
       "foundersHeading": "A PASSION FOR NATURAL BEAUTY",
-      "foundersQuote": "\"Our journey began with a simple belief—that nature holds all the answers for healthy, radiant skin. After years of research and development, we’ve created products we love to use every day.\"",
+      "foundersQuote": "Our journey began with a simple belief — that nature holds all the answers for healthy, radiant skin. After years of research and development, we have created products that we ourselves love to use every day.",
       "foundersNames": "Christopher & Ebba",
-      "foundersTitle": "Founders, 1753 Skincare"
+      "foundersTitle": "Founder, 1753 Skincare"
     }
   },
-  "productsPage": {
-    "badgeCBD": "CBD-INFUSED SKINCARE",
-    "title": "OUR PRODUCTS",
-    "subtitle": "Discover the power of natural skincare with our carefully selected CBD and CBG products",
-    "filter": "FILTER",
-    "categories": {
-      "all": "All",
-      "bestseller": "Bestsellers",
-      "new": "New"
-    },
-    "sort": {
-      "featured": "Featured first",
-      "name": "Name A–Z",
-      "priceLow": "Price: Low to high",
-      "priceHigh": "Price: High to low"
-    },
-    "activeFilters": "{count} active filter",
-    "resetFilters": "Reset filters",
-    "loading": "Loading products...",
-    "empty": {
-      "title": "No products found with the current filters.",
-      "showAll": "Show all products"
-    },
-    "quickView": "Quick view",
-    "addToCart": "Add to cart",
-    "newsletter": {
-      "title": "Don’t miss our updates",
-      "description": "Subscribe to our newsletter for exclusive offers and skincare tips",
-      "placeholderEmail": "Your email address",
-      "subscribe": "Subscribe"
-    },
-    "quizCta": "Take our skin analysis",
-    "badges": {
-      "recommended": "RECOMMENDED",
-      "bestseller": "BESTSELLER",
-      "new": "NEW"
+  "menu": {
+    "products": {
+      "skincare": "Skincare",
+      "skincareDesc": "Natural skincare with CBD & adaptogens",
+      "duo": "Duo-kit",
+      "duoDesc": "Perfect combinations for your skin",
+      "allDesc": "See our full range"
     }
   },
   "productDetail": {
-    "notFound": "Product could not be found.",
+    "notFound": "The product could not be found.",
     "saved": "You save {amount} kr",
     "skinTypesTitle": "Suitable for skin types:",
     "quantity": "Quantity:",
     "addedToCart": "Added to cart",
     "trust": {
-      "freeShipping": "Free shipping over 500 kr",
+      "freeShipping": "Free shipping on orders over 500 kr",
       "securePayment": "100% secure payment",
       "natural": "100% natural"
     },
     "tabs": {
       "description": "Description",
       "ingredients": "Ingredients",
-      "usage": "How to use",
+      "usage": "Usage",
       "reviews": "Reviews"
     },
     "benefitsTitle": "Benefits",
@@ -328,28 +349,28 @@
     "mushroomShowcase": "Four powerful medicinal mushrooms"
   },
   "cookieBanner": {
-    "title": "We value your privacy 🍪",
-    "description": "We use cookies to improve your experience, analyze traffic and personalize content. You can choose which cookies to accept.",
+    "title": "We care about your privacy 🍪",
+    "description": "We use cookies to improve your experience on our website, analyze traffic, and tailor content. You can choose which cookies you accept.",
     "acceptAll": "Accept all",
     "onlyNecessary": "Only necessary",
     "customize": "Customize",
-    "learnMore": "Learn more in our",
+    "learnMore": "Read more in our",
     "and": "and",
     "saveSettings": "Save settings",
     "settings": {
       "title": "Cookie settings",
       "necessary": {
         "title": "Necessary cookies",
-        "desc": "These cookies are essential for the website to function properly. They cannot be turned off."
+        "desc": "These cookies are necessary for the website to function properly. They cannot be disabled."
       },
       "analytics": {
-        "title": "Analytics cookies",
-        "desc": "Help us understand how visitors use the site by collecting and reporting anonymous information."
+        "title": "Analytical cookies",
+        "desc": "Helps us understand how visitors use the website by collecting and reporting anonymous information."
       },
       "marketing": {
         "title": "Marketing cookies",
-        "desc": "Used to show relevant ads and measure the effectiveness of our marketing campaigns."
+        "desc": "Used to display relevant ads and measure the effectiveness of our marketing campaigns."
       }
     }
   }
-} 
+}

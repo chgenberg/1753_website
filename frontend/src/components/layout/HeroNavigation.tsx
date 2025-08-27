@@ -8,6 +8,7 @@ import { useCart } from '@/contexts/CartContext'
 import { useAuth } from '@/contexts/AuthContext'
 import { usePathname } from 'next/navigation'
 import { MobileMenu } from './MobileMenu'
+import { LanguageSelector } from './LanguageSelector'
 
 export function HeroNavigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -66,6 +67,9 @@ export function HeroNavigation() {
           >
             <User className="w-6 h-6 text-white" />
           </Link>
+
+          {/* Language Selector */}
+          <LanguageSelector variant="light" />
 
           {/* Hamburger Menu */}
           <button 

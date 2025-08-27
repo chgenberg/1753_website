@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Product } from '@/types'
 import { useCart } from '@/contexts/CartContext'
+import { useCurrency } from '@/contexts/CurrencyContext'
 import { ShoppingBag, Star, Sparkles, ChevronRight, Heart, Package } from 'lucide-react'
 import Image from 'next/image'
 
@@ -17,6 +18,7 @@ export default function RelatedProducts({ currentProductSlug, locale }: RelatedP
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const { addToCart } = useCart()
+  const { formatMoney } = useCurrency()
   const [addedToCart, setAddedToCart] = useState<string[]>([])
   const [favorites, setFavorites] = useState<string[]>([])
 
@@ -203,11 +205,11 @@ export default function RelatedProducts({ currentProductSlug, locale }: RelatedP
                   <div className="flex items-center justify-between mb-3">
                     <div>
                       <span className="text-lg font-bold text-[#FCB237]">
-                        {product.price} kr
+                        {formatMoney(product.price)}
                       </span>
                       {product.compareAtPrice && product.compareAtPrice > product.price && (
                         <span className="text-sm text-gray-500 line-through ml-2">
-                          {product.compareAtPrice} kr
+                          {formatMoney(product.compareAtPrice)}
                         </span>
                       )}
                     </div>

@@ -7,6 +7,7 @@ import Image from 'next/image'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { useCart } from '@/contexts/CartContext'
+import { useCurrency } from '@/contexts/CurrencyContext'
 import VivaSmartCheckout from '@/components/checkout/VivaSmartCheckout'
 import ExpressCheckout from '@/components/checkout/ExpressCheckout'
 import { 
@@ -73,6 +74,7 @@ interface AddressSuggestion {
 export default function CheckoutPage() {
   const router = useRouter()
   const { items, total, subtotal, shipping, clearCart } = useCart()
+  const { formatMoney, currency } = useCurrency()
   const [isProcessing, setIsProcessing] = useState(false)
   const [currentStep, setCurrentStep] = useState(1) // 1: Info, 2: Shipping, 3: Payment, 4: Card Details
   const [isMobile, setIsMobile] = useState(false)
@@ -283,6 +285,7 @@ export default function CheckoutPage() {
         subtotal,
         shippingCost: shipping,
         total: finalTotal,
+        currency: currency,
         newsletter: form.newsletter
       }
 
@@ -308,7 +311,12 @@ export default function CheckoutPage() {
         ? 'https://demo.vivapayments.com' 
         : 'https://www.vivapayments.com'
       
-      const checkoutUrl = `${vivaBaseUrl}/web/checkout?ref=${data.orderCode}&s=${process.env.NEXT_PUBLIC_VIVA_SOURCE_CODE}`
+      const sourceCodeByCurrency: Record<string, string> = {
+        'SEK': process.env.NEXT_PUBLIC_VIVA_SOURCE_CODE_SEK || process.env.NEXT_PUBLIC_VIVA_SOURCE_CODE || '',
+        'EUR': process.env.NEXT_PUBLIC_VIVA_SOURCE_CODE_EUR || process.env.NEXT_PUBLIC_VIVA_SOURCE_CODE || ''
+      }
+      const selectedSource = sourceCodeByCurrency[currency] || process.env.NEXT_PUBLIC_VIVA_SOURCE_CODE || ''
+      const checkoutUrl = `${vivaBaseUrl}/web/checkout?ref=${data.orderCode}&s=${selectedSource}`
       
       // Redirect to Viva Wallet
       window.location.href = checkoutUrl
@@ -904,7 +912,7 @@ export default function CheckoutPage() {
                           </p>
                           <div className="flex items-center gap-2 text-[#E79C1A]">
                             <Sparkles className="w-4 h-4" />
-                            <span className="text-sm font-medium">Fri frakt över 500 kr!</span>
+                                                          <span className="text-sm font-medium">Fri frakt över {formatMoney(500)}!</span>
                           </div>
                         </div>
                       </div>
@@ -1000,11 +1008,11 @@ export default function CheckoutPage() {
                       <div className="space-y-3">
                         <div className="flex justify-between text-gray-700">
                           <span>Delsumma</span>
-                          <span className="font-medium">{subtotal} kr</span>
+                                                        <span className="font-medium">{formatMoney(subtotal)}</span>
                         </div>
                         <div className="flex justify-between text-gray-700">
                           <span>Frakt</span>
-                          <span className="font-medium">{shipping === 0 ? 'Gratis' : `${shipping} kr`}</span>
+                                                        <span className="font-medium">{shipping === 0 ? 'Gratis' : formatMoney(shipping)}</span>
                         </div>
                         {appliedDiscount && (
                           <div className="flex justify-between text-green-600">
@@ -1012,13 +1020,13 @@ export default function CheckoutPage() {
                               <Gift className="w-4 h-4" />
                               Rabatt ({appliedDiscount.code})
                             </span>
-                            <span className="font-medium">-{calculateDiscount()} kr</span>
+                                                            <span className="font-medium">-{formatMoney(calculateDiscount())}</span>
                           </div>
                         )}
                         <div className="pt-3 border-t border-[#E5D5C7]">
                           <div className="flex justify-between text-lg">
                             <span className="font-medium">Totalt</span>
-                            <span className="font-semibold text-[#E79C1A]">{finalTotal} kr</span>
+                                                          <span className="font-semibold text-[#E79C1A]">{formatMoney(finalTotal)}</span>
                           </div>
                         </div>
                       </div>
@@ -1084,7 +1092,7 @@ export default function CheckoutPage() {
                       ) : (
                         <>
                           <Zap className="w-4 h-4 sm:w-5 sm:h-5" />
-                          <span className="text-sm sm:text-base">SLUTFÖR KÖP ({finalTotal} kr)</span>
+                                                      <span className="text-sm sm:text-base">SLUTFÖR KÖP ({formatMoney(finalTotal)})</span>
                           <Lock className="w-3 h-3 sm:w-4 sm:h-4 opacity-60" />
                         </>
                       )}
@@ -1144,7 +1152,7 @@ export default function CheckoutPage() {
                     </div>
                     <div className="flex-1">
                       <h4 className="font-medium text-gray-800">{item.product.name}</h4>
-                      <p className="text-sm text-gray-600 mt-1">{item.price} kr</p>
+                                                            <p className="text-sm text-gray-600 mt-1">{formatMoney(item.price)}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -1224,7 +1232,7 @@ export default function CheckoutPage() {
               >
                 <div className="flex justify-between text-gray-700">
                   <span>Delsumma</span>
-                  <span>{subtotal} kr</span>
+                                              <span>{formatMoney(subtotal)}</span>
                 </div>
                 {appliedDiscount && (
                   <motion.div
@@ -1236,12 +1244,12 @@ export default function CheckoutPage() {
                       <Gift className="w-4 h-4" />
                       Rabatt
                     </span>
-                    <span>-{calculateDiscount()} kr</span>
+                                                  <span>-{formatMoney(calculateDiscount())}</span>
                   </motion.div>
                 )}
                 <div className="flex justify-between text-gray-700">
                   <span>Frakt</span>
-                  <span>{shipping === 0 ? 'Gratis' : `${shipping} kr`}</span>
+                                              <span>{shipping === 0 ? 'Gratis' : formatMoney(shipping)}</span>
                 </div>
                 <div className="flex justify-between text-xl font-medium pt-3 border-t border-[#E5D5C7]">
                   <span>Totalt</span>
@@ -1251,7 +1259,7 @@ export default function CheckoutPage() {
                     animate={{ scale: 1 }}
                     className="text-[#E79C1A]"
                   >
-                    {finalTotal} kr
+                    {formatMoney(finalTotal)}
                   </motion.span>
                 </div>
               </motion.div>
@@ -1265,7 +1273,7 @@ export default function CheckoutPage() {
               >
                 {[
                   { icon: Shield, text: 'Säker betalning', color: 'text-green-600' },
-                  { icon: Package, text: 'Fri frakt över 500 kr', color: 'text-blue-600' },
+                  { icon: Package, text: `Fri frakt över ${formatMoney(500)}`, color: 'text-blue-600' },
                   { icon: Heart, text: '30 dagars öppet köp', color: 'text-red-600' }
                 ].map((badge, index) => (
                   <motion.div

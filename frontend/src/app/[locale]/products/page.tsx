@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { useCart } from '@/contexts/CartContext'
+import { useCurrency } from '@/contexts/CurrencyContext'
 import { Filter, ChevronDown, ShoppingBag, Star, Heart, Eye, Sparkles } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { ProductImageDisplay } from '@/components/products/ProductImageDisplay'
@@ -35,6 +36,7 @@ interface Product {
 export default function ProductsPage() {
   const t = useTranslations()
   const { addToCart } = useCart()
+  const { formatMoney } = useCurrency()
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
@@ -331,12 +333,12 @@ export default function ProductsPage() {
                         
                         <div className="flex items-baseline gap-2 pt-2">
                           <span className="text-2xl font-bold text-gray-900">
-                            {product.price} kr
+                            {formatMoney(product.price)}
                           </span>
                           {product.compareAtPrice && (
                             <>
                               <span className="text-base text-gray-400 line-through">
-                                {product.compareAtPrice} kr
+                                {formatMoney(product.compareAtPrice)}
                               </span>
                               <span className="text-xs font-medium text-red-500">
                                 -{Math.round((1 - product.price / product.compareAtPrice) * 100)}%

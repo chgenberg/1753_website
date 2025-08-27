@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useCart } from '@/contexts/CartContext'
+import { useCurrency } from '@/contexts/CurrencyContext'
 import { 
   X, 
   Plus, 
@@ -30,6 +31,7 @@ export const CartDrawer = () => {
     shipping,
     total 
   } = useCart()
+  const { formatMoney } = useCurrency()
 
   const freeShippingThreshold = 500
   const remainingForFreeShipping = Math.max(0, freeShippingThreshold - subtotal)
@@ -85,7 +87,7 @@ export const CartDrawer = () => {
                       <div className="px-4 sm:px-6 py-3 bg-[#F5F3F0] border-b">
                         <div className="flex items-center justify-between mb-2 gap-2">
                           <span className="text-xs sm:text-sm text-gray-700 flex-1">
-                            {remainingForFreeShipping} kr kvar till fri frakt!
+                                                            {formatMoney(remainingForFreeShipping)} kvar till fri frakt!
                           </span>
                           <Truck className="h-4 w-4 text-[#FCB237] flex-shrink-0" />
                         </div>
@@ -160,14 +162,14 @@ export const CartDrawer = () => {
                                       </Link>
                                       
                                       <div className="mt-1 text-sm text-gray-500">
-                                        {item.price} kr/st
+                                        {formatMoney(item.price)}/st
                                       </div>
                                     </div>
 
                                     {/* Item Total - Mobile */}
                                     <div className="text-right sm:hidden">
                                       <div className="font-medium text-gray-900">
-                                        {item.price * item.quantity} kr
+                                        {formatMoney(item.price * item.quantity)}
                                       </div>
                                     </div>
                                   </div>
@@ -204,7 +206,7 @@ export const CartDrawer = () => {
                                 {/* Item Total - Desktop */}
                                 <div className="text-right hidden sm:block min-w-[80px]">
                                   <div className="font-medium text-gray-900">
-                                    {item.price * item.quantity} kr
+                                    {formatMoney(item.price * item.quantity)}
                                   </div>
                                 </div>
                               </div>
@@ -237,15 +239,15 @@ export const CartDrawer = () => {
                         <div className="space-y-2 mb-4">
                           <div className="flex justify-between text-sm">
                             <span>Delsumma</span>
-                            <span>{subtotal} kr</span>
+                            <span>{formatMoney(subtotal)}</span>
                           </div>
                           <div className="flex justify-between text-sm">
                             <span>Frakt</span>
-                            <span>{shipping === 0 ? 'Gratis' : `${shipping} kr`}</span>
+                            <span>{shipping === 0 ? 'Gratis' : formatMoney(shipping)}</span>
                           </div>
                           <div className="flex justify-between text-lg font-semibold pt-2 border-t">
                             <span>Total</span>
-                            <span>{total} kr</span>
+                            <span>{formatMoney(total)}</span>
                           </div>
                           <div className="text-xs text-gray-500 text-right">
                             inkl. moms

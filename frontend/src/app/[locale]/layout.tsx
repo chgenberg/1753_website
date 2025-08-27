@@ -3,6 +3,7 @@ import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
 import type { ReactNode } from 'react'
 import CookieBanner from '@/components/cookies/CookieBanner'
+import { LanguagePopup } from '@/components/layout/LanguagePopup'
 import Script from 'next/script'
 
 export function generateStaticParams() {
@@ -50,6 +51,7 @@ export default async function LocaleLayout({
       </Script>
       {children as any}
       <CookieBanner />
+      <LanguagePopup />
     </NextIntlClientProvider>
   )
 } 

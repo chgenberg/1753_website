@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl'
 import { CartDrawer } from '@/components/cart/CartDrawer'
 import { useCart } from '@/contexts/CartContext'
 import { useAuth } from '@/contexts/AuthContext'
+import { LanguageSelector } from './LanguageSelector'
 import { 
   ShoppingBag, User, X
 } from 'lucide-react'
@@ -114,6 +115,9 @@ export function Header() {
             >
               <User className="w-6 h-6 text-black" />
             </Link>
+
+            {/* Language Selector */}
+            <LanguageSelector variant="dark" />
 
             {/* Hamburger Menu */}
             <button 

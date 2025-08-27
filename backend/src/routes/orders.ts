@@ -31,11 +31,7 @@ function getCountryCode(country: string): string {
 function getRequestLang(currency: string): string {
   const langMap: Record<string, string> = {
     'SEK': 'sv-SE',
-    'EUR': 'en-GB',
-    'USD': 'en-US',
-    'GBP': 'en-GB',
-    'NOK': 'nb-NO',
-    'DKK': 'da-DK'
+    'EUR': 'en-GB'
   }
   return langMap[currency] || 'en-GB'
 }
@@ -65,7 +61,7 @@ const createOrderSchema = z.object({
   subtotal: z.number().positive(),
   shippingCost: z.number().min(0),
   total: z.number().positive(),
-  currency: z.enum(['SEK', 'EUR', 'USD', 'GBP', 'NOK', 'DKK']).default('SEK'),
+  currency: z.enum(['SEK', 'EUR']).default('SEK'),
   newsletter: z.boolean(),
   isSubscription: z.boolean().optional(),
   subscriptionInterval: z.enum(['monthly', 'bimonthly', 'quarterly']).optional()
@@ -131,6 +127,7 @@ router.post('/create', optionalAuth, async (req: any, res) => {
     // Create payment order in Viva Wallet
     const paymentOrderParams: any = {
       amount: validatedData.total,
+      currency: validatedData.currency,
       customerTrns: `Order ${order.orderNumber} - 1753 Skincare`,
       customer: {
         email: validatedData.customer.email,
@@ -157,6 +154,13 @@ router.post('/create', optionalAuth, async (req: any, res) => {
       
       var paymentOrder = subscriptionResult
     } else {
+      // Convert the amount for the payment currency if needed
+      const { convertFromSEK } = await import('../lib/currency')
+      const paymentAmount = validatedData.currency === 'SEK' 
+        ? validatedData.total 
+        : convertFromSEK(validatedData.total, validatedData.currency as any)
+
+      paymentOrderParams.amount = paymentAmount
       var paymentOrder = await vivaWalletService.createPaymentOrder(paymentOrderParams)
     }
     

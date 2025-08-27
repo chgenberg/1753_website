@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useCart } from '@/contexts/CartContext'
+import { useCurrency } from '@/contexts/CurrencyContext'
 import { CreditCard, Smartphone, Zap } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -28,6 +29,7 @@ interface ExpressCheckoutProps {
 
 export default function ExpressCheckout({ onSuccess, onError, className = '' }: ExpressCheckoutProps) {
   const { items, total, subtotal, shipping } = useCart()
+  const { currency, convertFromSEK } = useCurrency()
   const [isApplePayAvailable, setIsApplePayAvailable] = useState(false)
   const [isGooglePayAvailable, setIsGooglePayAvailable] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
@@ -70,17 +72,17 @@ export default function ExpressCheckout({ onSuccess, onError, className = '' }: 
     try {
       const paymentRequest = {
         countryCode: 'SE',
-        currencyCode: 'SEK',
+        currencyCode: currency,
         supportedNetworks: ['visa', 'masterCard', 'amex'],
         merchantCapabilities: ['supports3DS'],
         total: {
           label: '1753 Skincare',
-          amount: total.toString(),
+          amount: convertFromSEK(total).toFixed(2),
           type: 'final'
         },
         lineItems: items.map(item => ({
           label: item.product.name,
-          amount: (item.price * item.quantity).toString(),
+          amount: convertFromSEK(item.price * item.quantity).toFixed(2),
           type: 'final'
         }))
       }
@@ -119,7 +121,8 @@ export default function ExpressCheckout({ onSuccess, onError, className = '' }: 
                 items,
                 total,
                 subtotal,
-                shipping
+                shipping,
+                currency
               }
             })
           })
@@ -182,8 +185,8 @@ export default function ExpressCheckout({ onSuccess, onError, className = '' }: 
         },
         transactionInfo: {
           totalPriceStatus: 'FINAL',
-          totalPrice: total.toString(),
-          currencyCode: 'SEK',
+          totalPrice: convertFromSEK(total).toFixed(2),
+          currencyCode: currency,
           countryCode: 'SE'
         }
       }
@@ -200,7 +203,8 @@ export default function ExpressCheckout({ onSuccess, onError, className = '' }: 
             items,
             total,
             subtotal,
-            shipping
+            shipping,
+            currency
           }
         })
       })

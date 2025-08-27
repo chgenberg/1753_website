@@ -1,6 +1,6 @@
 // Currency configuration and utilities
 
-export type Currency = 'SEK' | 'EUR' | 'USD' | 'GBP' | 'NOK' | 'DKK'
+export type Currency = 'SEK' | 'EUR'
 
 export interface CurrencyConfig {
   code: Currency
@@ -25,46 +25,16 @@ export const currencies: Record<Currency, CurrencyConfig> = {
     name: 'Euro',
     locale: 'de-DE',
     exchangeRate: 0.089 // 1 SEK = 0.089 EUR (example rate)
-  },
-  USD: {
-    code: 'USD',
-    symbol: '$',
-    name: 'US Dollar',
-    locale: 'en-US',
-    exchangeRate: 0.095
-  },
-  GBP: {
-    code: 'GBP',
-    symbol: '£',
-    name: 'British Pound',
-    locale: 'en-GB',
-    exchangeRate: 0.075
-  },
-  NOK: {
-    code: 'NOK',
-    symbol: 'kr',
-    name: 'Norske kroner',
-    locale: 'nb-NO',
-    exchangeRate: 0.95
-  },
-  DKK: {
-    code: 'DKK',
-    symbol: 'kr',
-    name: 'Danske kroner',
-    locale: 'da-DK',
-    exchangeRate: 0.66
   }
 }
 
 // Map locales to currencies
 export const localeToCurrency: Record<string, Currency> = {
   'sv': 'SEK',
-  'en': 'EUR', // English defaults to EUR for European market
+  'en': 'EUR', // Default to EUR for non-Swedish locales in EU
   'de': 'EUR',
   'es': 'EUR',
-  'fr': 'EUR',
-  'no': 'NOK',
-  'da': 'DKK'
+  'fr': 'EUR'
 }
 
 // Get currency based on locale
@@ -79,8 +49,8 @@ export function convertPrice(priceInSEK: number, targetCurrency: Currency): numb
   const currency = currencies[targetCurrency]
   const convertedPrice = priceInSEK * currency.exchangeRate
   
-  // Round to 2 decimal places for most currencies, whole numbers for SEK/NOK/DKK
-  if (['SEK', 'NOK', 'DKK'].includes(targetCurrency)) {
+  // Round to 2 decimal places for EUR, whole numbers for SEK
+  if (targetCurrency === 'SEK') {
     return Math.round(convertedPrice)
   }
   return Math.round(convertedPrice * 100) / 100
@@ -92,8 +62,8 @@ export function formatPrice(price: number, currency: Currency, locale?: string):
   const formatter = new Intl.NumberFormat(locale || config.locale, {
     style: 'currency',
     currency: currency,
-    minimumFractionDigits: ['SEK', 'NOK', 'DKK'].includes(currency) ? 0 : 2,
-    maximumFractionDigits: ['SEK', 'NOK', 'DKK'].includes(currency) ? 0 : 2
+    minimumFractionDigits: currency === 'SEK' ? 0 : 2,
+    maximumFractionDigits: currency === 'SEK' ? 0 : 2
   })
   
   return formatter.format(price)
@@ -106,5 +76,5 @@ export function getCurrencySymbol(currency: Currency): string {
 
 // Check if price should show decimals
 export function shouldShowDecimals(currency: Currency): boolean {
-  return !['SEK', 'NOK', 'DKK'].includes(currency)
+  return currency !== 'SEK'
 } 

@@ -120,6 +120,13 @@ export class VivaWalletService {
     allowRecurring?: boolean
   }): Promise<CreateOrderResponse> {
     try {
+      const sourceCodeByCurrency: Record<string, string> = {
+        SEK: process.env.VIVA_SOURCE_CODE_SEK || '',
+        EUR: process.env.VIVA_SOURCE_CODE_EUR || ''
+      }
+
+      const resolvedSourceCode = sourceCodeByCurrency[params.currency] || this.subscriptionSourceCode || this.config.sourceCode
+
       const orderData = {
         amount: Math.round(params.amount * 100),
         customerTrns: params.description,
@@ -128,7 +135,12 @@ export class VivaWalletService {
           fullName: params.customerName,
           phone: params.customerPhone,
           countryCode: 'SE',
-          requestLang: 'sv-SE'
+          requestLang: (
+            {
+              SEK: 'sv-SE',
+              EUR: 'en-GB'
+            } as Record<string, string>
+          )[params.currency] || 'en-GB'
         },
         paymentTimeout: 300,
         preauth: false,
@@ -138,13 +150,11 @@ export class VivaWalletService {
         disableExactAmount: false,
         disableCash: true,
         disableWallet: false,
-        // Enable Swish for Swedish customers
         enableSwish: true,
-        // Return URLs for external checkout
         successUrl: `${process.env.FRONTEND_URL || 'https://1753website-production.up.railway.app'}/checkout/success`,
         cancelUrl: `${process.env.FRONTEND_URL || 'https://1753website-production.up.railway.app'}/checkout`,
         failureUrl: `${process.env.FRONTEND_URL || 'https://1753website-production.up.railway.app'}/checkout?error=payment_failed`,
-        sourceCode: this.subscriptionSourceCode || this.config.sourceCode,
+        sourceCode: resolvedSourceCode,
         merchantTrns: `Order-${Date.now()}`
       }
 

@@ -9,6 +9,11 @@ const nextConfig = {
     NEXT_PUBLIC_JUDGE_ME_PUBLIC_TOKEN: process.env.NEXT_PUBLIC_JUDGE_ME_PUBLIC_TOKEN || 'BEnXoguHo7hItl0TiV92JC65Rmk',
     JUDGE_ME_PRIVATE_TOKEN: process.env.JUDGE_ME_PRIVATE_TOKEN || '3WoipsmPeFi0aRvUOyqwsw5P21c',
     _next_intl_trailing_slash: 'false',
+    NEXT_PUBLIC_VIVA_SOURCE_CODE: process.env.NEXT_PUBLIC_VIVA_SOURCE_CODE,
+    NEXT_PUBLIC_VIVA_SOURCE_CODE_SEK: process.env.NEXT_PUBLIC_VIVA_SOURCE_CODE_SEK,
+    NEXT_PUBLIC_VIVA_SOURCE_CODE_EUR: process.env.NEXT_PUBLIC_VIVA_SOURCE_CODE_EUR,
+
+    NEXT_PUBLIC_VIVA_BASE_URL: process.env.NEXT_PUBLIC_VIVA_BASE_URL,
   },
   images: {
     remotePatterns: [
