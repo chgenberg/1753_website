@@ -397,6 +397,88 @@ router.get('/test/viva-both', async (req, res) => {
 })
 
 /**
+ * Simple authentication test - just try to get merchant info
+ * GET /api/orders/test/viva-auth
+ */
+router.get('/test/viva-auth', async (req, res) => {
+  try {
+    const axios = require('axios')
+    const merchantId = process.env.VIVA_MERCHANT_ID
+    const apiKey = process.env.VIVA_API_KEY
+
+    if (!merchantId || !apiKey) {
+      return res.json({
+        success: false,
+        error: 'Missing Viva Wallet credentials'
+      })
+    }
+
+    const results: any = {}
+
+    // Test simple GET request to verify auth
+    try {
+      const response = await axios.get(
+        `https://api.vivapayments.com/api/merchants/${merchantId}`,
+        {
+          auth: {
+            username: merchantId,
+            password: apiKey
+          }
+        }
+      )
+      results.merchantInfo = { success: true, data: response.data }
+    } catch (error: any) {
+      results.merchantInfo = { 
+        success: false, 
+        error: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+        headers: error.response?.headers
+      }
+    }
+
+    // Also test a simple order lookup (should give 404 but validate auth)
+    try {
+      const response = await axios.get(
+        'https://api.vivapayments.com/api/orders/999999999',
+        {
+          auth: {
+            username: merchantId,
+            password: apiKey
+          },
+          validateStatus: (status) => status === 404 || status === 200
+        }
+      )
+      results.orderLookup = { success: true, status: response.status, message: '404 expected - auth OK' }
+    } catch (error: any) {
+      results.orderLookup = { 
+        success: false, 
+        error: error.message,
+        status: error.response?.status,
+        data: error.response?.data
+      }
+    }
+
+    res.json({
+      success: true,
+      credentials: {
+        merchantId: merchantId,
+        apiKeyLength: apiKey.length,
+        apiKeyPrefix: apiKey.substring(0, 3) + '...'
+      },
+      results: results,
+      message: 'Authentication test completed'
+    })
+
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    })
+  }
+})
+
+/**
  * Test endpoint for Viva Wallet integration
  */
 router.get('/test/viva-wallet', async (req, res) => {
