@@ -481,6 +481,123 @@ router.get('/test/viva-auth', async (req, res) => {
 })
 
 /**
+ * Test OAuth authentication for Checkout API
+ * GET /api/orders/test/viva-oauth
+ */
+router.get('/test/viva-oauth', async (req, res) => {
+  try {
+    const axios = require('axios')
+    const clientId = process.env.VIVA_CLIENT_ID
+    const clientSecret = process.env.VIVA_CLIENT_SECRET
+    const sourceCode = process.env.VIVA_SOURCE_CODE
+
+    if (!clientId || !clientSecret || !sourceCode) {
+      return res.json({
+        success: false,
+        error: 'Missing OAuth credentials',
+        available: {
+          clientId: !!clientId,
+          clientSecret: !!clientSecret,
+          sourceCode: !!sourceCode
+        }
+      })
+    }
+
+    const results: any = {}
+
+    // First, get OAuth token
+    try {
+      const tokenResponse = await axios.post(
+        'https://accounts.vivapayments.com/connect/token',
+        'grant_type=client_credentials',
+        {
+          auth: {
+            username: clientId,
+            password: clientSecret
+          },
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
+      )
+      
+      const accessToken = tokenResponse.data.access_token
+      results.tokenRequest = { success: true, tokenType: tokenResponse.data.token_type }
+
+      // Now try to create an order with the OAuth token
+      const testOrder = {
+        amount: 100, // 1 SEK in cents
+        customerTrns: 'OAuth Test order',
+        customer: {
+          email: 'test@example.com',
+          fullName: 'Test Customer',
+          phone: '+46701234567',
+          countryCode: 'SE',
+          requestLang: 'sv-SE'
+        },
+        paymentTimeout: 300,
+        preauth: false,
+        allowRecurring: false,
+        maxInstallments: 1,
+        paymentNotification: true,
+        disableExactAmount: false,
+        disableCash: true,
+        disableWallet: false,
+        sourceCode: sourceCode,
+        merchantTrns: `OAuth-Test-${Date.now()}`
+      }
+
+      const orderResponse = await axios.post(
+        'https://api.vivapayments.com/checkout/v2/orders',
+        testOrder,
+        {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+
+      results.orderCreation = { success: true, orderCode: orderResponse.data.orderCode }
+
+    } catch (error: any) {
+      if (error.config?.url?.includes('connect/token')) {
+        results.tokenRequest = { 
+          success: false, 
+          error: error.message,
+          status: error.response?.status,
+          data: error.response?.data
+        }
+      } else {
+        results.orderCreation = { 
+          success: false, 
+          error: error.message,
+          status: error.response?.status,
+          data: error.response?.data
+        }
+      }
+    }
+
+    res.json({
+      success: true,
+      credentials: {
+        clientId: clientId.substring(0, 10) + '...',
+        clientSecretLength: clientSecret.length,
+        sourceCode: sourceCode
+      },
+      results: results,
+      message: 'OAuth test completed'
+    })
+
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    })
+  }
+})
+
+/**
  * Test endpoint for Viva Wallet integration
  */
 router.get('/test/viva-wallet', async (req, res) => {
