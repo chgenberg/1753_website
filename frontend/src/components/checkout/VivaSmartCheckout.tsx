@@ -53,13 +53,15 @@ export default function VivaSmartCheckout({
     : 'https://www.vivapayments.com'
 
   useEffect(() => {
+    // Precompute fallback so user can access the external checkout immediately
+    setFallbackUrl(`${checkoutHost}/web/checkout?ref=${orderCode}${sourceCode ? `&s=${sourceCode}` : ''}`)
+
     // Guard: missing public configuration → fallback to hosted checkout
     if (!publicKey || !sourceCode) {
       const message = 'Betalning är inte korrekt konfigurerad (saknar nycklar).'
       setError(message)
       setIsLoading(false)
       onError(message)
-      setFallbackUrl(`${checkoutHost}/web/checkout?ref=${orderCode}${sourceCode ? `&s=${sourceCode}` : ''}`)
       return
     }
 
@@ -74,7 +76,6 @@ export default function VivaSmartCheckout({
       setError('Kunde inte ladda betalningsskriptet')
       setIsLoading(false)
       onError('Failed to load payment script')
-      setFallbackUrl(`${checkoutHost}/web/checkout?ref=${orderCode}&s=${sourceCode}`)
     }
     document.body.appendChild(script)
 
@@ -145,6 +146,25 @@ export default function VivaSmartCheckout({
 
   return (
     <div className="w-full">
+      {/* Always-visible external checkout link */}
+      {fallbackUrl && (
+        <div className="mb-4 p-4 bg-[#FFF9F3] border border-[#E79C1A]/30 rounded-xl">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <p className="text-sm text-gray-800">
+              Om betalningsformuläret inte laddar eller om din webbläsare blockerar det, kan du gå vidare via vår säkra externa betalning.
+            </p>
+            <a
+              href={fallbackUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-[#E79C1A] text-white hover:opacity-90 transition text-sm font-medium"
+            >
+              Öppna säker betalning
+            </a>
+          </div>
+        </div>
+      )}
+
       {isLoading && (
         <div className="flex items-center justify-center py-8">
           <Loader2 className="w-8 h-8 animate-spin text-[#E79C1A]" />
