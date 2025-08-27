@@ -93,20 +93,20 @@ export default async function RootLayout({ children, params }: Props) {
       <body className="font-sans">
         <AuthProvider>
           <CurrencyProvider>
-            <CartProvider>
-              {children}
-              <CartDrawer />
-              <Toaster 
-                position="top-right"
-                toastOptions={{
-                  duration: 4000,
-                  style: {
-                    background: '#363636',
-                    color: '#fff',
-                  },
-                }}
-              />
-            </CartProvider>
+          <CartProvider>
+            {children}
+            <CartDrawer />
+            <Toaster 
+              position="top-right"
+              toastOptions={{
+                duration: 4000,
+                style: {
+                  background: '#363636',
+                  color: '#fff',
+                },
+              }}
+            />
+          </CartProvider>
           </CurrencyProvider>
         </AuthProvider>
       </body>

@@ -59,7 +59,7 @@ export default function VivaSmartCheckout({
       setError('Failed to load payment script')
       setIsLoading(false)
       onError('Failed to load payment script')
-      setFallbackUrl(`${baseURL}/web/checkout?ref=${orderCode}&s=${sourceCode}`)
+      setFallbackUrl(`https://www.vivapayments.com/web/checkout?ref=${orderCode}&s=${sourceCode}`)
     }
     document.body.appendChild(script)
 
@@ -74,7 +74,7 @@ export default function VivaSmartCheckout({
       setError('Viva Payments SDK not loaded')
       setIsLoading(false)
       onError('Payment system not available')
-      setFallbackUrl(`${baseURL}/web/checkout?ref=${orderCode}&s=${sourceCode}`)
+      setFallbackUrl(`https://www.vivapayments.com/web/checkout?ref=${orderCode}&s=${sourceCode}`)
       return
     }
 
@@ -123,7 +123,7 @@ export default function VivaSmartCheckout({
       setError('Failed to initialize payment')
       setIsLoading(false)
       onError('Failed to initialize payment')
-      setFallbackUrl(`${baseURL}/web/checkout?ref=${orderCode}&s=${sourceCode}`)
+      setFallbackUrl(`https://www.vivapayments.com/web/checkout?ref=${orderCode}&s=${sourceCode}`)
     }
   }
 

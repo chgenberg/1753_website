@@ -169,7 +169,7 @@ router.post('/create', async (req, res) => {
       orderId: order.id,
       vivaOrderCode: paymentOrder.orderCode
     })
-    
+
     res.json({
       success: true,
       orderId: order.id,
@@ -219,7 +219,7 @@ router.post('/complete-payment', async (req, res) => {
         error: 'Order not found'
       })
     }
-    
+
     // Process the payment with Viva Wallet
     const paymentResult = await vivaWalletService.processCardPayment({
       orderCode,
@@ -629,10 +629,10 @@ router.get('/test/viva-wallet', async (req, res) => {
       },
       merchantTrns: `TEST-${Date.now()}`,
       tags: ['test', 'integration']
-    })
-
-    res.json({
-      success: true,
+  })
+  
+  res.json({
+    success: true,
       message: 'Viva Wallet test order created',
       orderCode: testOrder.orderCode,
       checkoutUrl: vivaWalletService.getPaymentUrl(testOrder.orderCode)

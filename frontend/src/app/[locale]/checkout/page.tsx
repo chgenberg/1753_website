@@ -656,7 +656,7 @@ export default function CheckoutPage() {
                         {form.phone}
                       </p>
                     </div>
-                    
+                        
                     <div className="border border-gray-200 rounded-xl p-4">
                       <h3 className="font-medium mb-3">Orderdetaljer</h3>
                       <div className="space-y-2 text-sm">

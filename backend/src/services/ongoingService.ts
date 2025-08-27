@@ -484,7 +484,7 @@ class OngoingService {
       
       if (response.status === 200 && response.data?.includes('Service Web Service')) {
         logger.info('Ongoing WMS SOAP API connection test successful!')
-        return true
+      return true
       } else if (response.status === 401) {
         logger.error('Authentication failed - check credentials')
         return false

@@ -153,7 +153,7 @@ router.post('/', async (req, res) => {
 
     // Create review
     const review = await prisma.review.create({
-      data: {
+        data: {
         productId: validatedData.productId,
         rating: validatedData.rating,
         title: validatedData.title,
@@ -178,14 +178,14 @@ router.post('/', async (req, res) => {
     res.status(201).json({
       message: 'Review submitted successfully. It will be published after moderation.',
       review
-    })
-  } catch (error: any) {
+      })
+    } catch (error: any) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: 'Invalid data', details: error.errors })
     }
     logger.error('Error creating review', { error: error.message })
     res.status(500).json({ error: 'Failed to create review' })
-  }
+    }
 })
 
 /**
@@ -193,18 +193,18 @@ router.post('/', async (req, res) => {
  * Add a reply to a review (admin only)
  */
 router.post('/:reviewId/reply', auth, async (req, res) => {
-  try {
+    try {
     const { reviewId } = req.params
     const validatedData = replySchema.parse(req.body)
 
     // Check if review exists
     const review = await prisma.review.findUnique({
       where: { id: reviewId }
-    })
+      })
 
     if (!review) {
       return res.status(404).json({ error: 'Review not found' })
-    }
+      }
 
     // Create reply
     const reply = await prisma.reviewReply.create({
@@ -221,14 +221,14 @@ router.post('/:reviewId/reply', auth, async (req, res) => {
     res.status(201).json({
       message: 'Reply added successfully',
       reply
-    })
-  } catch (error: any) {
+      })
+    } catch (error: any) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: 'Invalid data', details: error.errors })
     }
     logger.error('Error creating review reply', { error: error.message })
     res.status(500).json({ error: 'Failed to create reply' })
-  }
+    }
 })
 
 /**
@@ -311,10 +311,10 @@ router.get('/admin/pending', auth, async (req, res) => {
     const [reviews, totalCount] = await Promise.all([
       prisma.review.findMany({
         where: { status: 'PENDING' },
-        include: {
-          product: {
+      include: {
+        product: {
             select: { name: true, slug: true }
-          }
+        }
         },
         orderBy: { createdAt: 'desc' },
         skip,
@@ -392,7 +392,7 @@ router.put('/admin/:reviewId/reject', auth, async (req, res) => {
     logger.error('Error rejecting review', { error: error.message })
     res.status(500).json({ error: 'Failed to reject review' })
   }
-})
+  })
 
 /**
  * GET /api/reviews/stats
@@ -411,10 +411,10 @@ router.get('/stats', async (req, res) => {
     const averageRating = await prisma.review.aggregate({
       where: { status: 'APPROVED' },
       _avg: { rating: true }
-    })
+  })
 
     res.json({
-      totalReviews,
+    totalReviews,
       averageRating: averageRating._avg.rating || 0,
       byStatus: stats.reduce((acc, stat) => {
         acc[stat.status] = stat._count.id

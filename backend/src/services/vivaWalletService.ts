@@ -245,7 +245,7 @@ export class VivaWalletService {
    * Get payment URL for checkout
    */
   getPaymentUrl(orderCode: number): string {
-    return `${this.config.baseUrl}/web/checkout?ref=${orderCode}&s=${this.config.sourceCode}`
+    return `https://www.vivapayments.com/web/checkout?ref=${orderCode}&s=${this.config.sourceCode}`
   }
 
   /**
