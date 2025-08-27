@@ -337,6 +337,142 @@ const templates: Record<string, (data: Record<string, any>) => EmailTemplate> = 
       Med vänliga hälsningar,
       Team 1753 Skincare
     `
+  }),
+  reviewRequest: (data) => ({
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <title>Hur var din upplevelse?</title>
+        <style>
+          body { font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: #333; background: #f7f7f7; margin: 0; padding: 0; }
+          .container { max-width: 600px; margin: 20px auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+          .header { background: #E79C1A; padding: 40px 30px; text-align: center; color: white; }
+          .header h1 { margin: 0; font-size: 32px; letter-spacing: 0.1em; font-weight: 300; text-transform: uppercase; }
+          .header p { margin: 10px 0 0; font-size: 18px; opacity: 0.9; }
+          .content { padding: 40px 30px; }
+          .greeting { font-size: 20px; margin-bottom: 20px; }
+          .product-reminder { background: #FFF9F3; padding: 25px; border-radius: 12px; margin: 25px 0; text-align: center; }
+          .stars { font-size: 32px; margin: 20px 0; }
+          .star { color: #ddd; margin: 0 5px; cursor: pointer; }
+          .star.active { color: #E79C1A; }
+          .review-button { display: inline-block; padding: 16px 32px; background: #E79C1A; color: white; text-decoration: none; border-radius: 25px; margin: 25px 0; font-weight: 500; font-size: 16px; }
+          .review-button:hover { opacity: 0.9; }
+          .benefits { background: #f8f8f8; padding: 20px; border-radius: 12px; margin: 25px 0; }
+          .benefit-item { display: flex; align-items: center; margin: 15px 0; }
+          .benefit-icon { width: 40px; height: 40px; background: #E79C1A; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; margin-right: 15px; font-size: 18px; }
+          .footer { padding: 30px; text-align: center; color: #666; font-size: 14px; background: #f8f8f8; }
+          .social-links { margin: 20px 0; }
+          .social-links a { margin: 0 10px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>1753 Skincare</h1>
+            <p>Hur var din upplevelse? ⭐</p>
+          </div>
+          
+          <div class="content">
+            <div class="greeting">
+              <strong>Hej ${data.firstName}! 💛</strong>
+            </div>
+            <p>Det har nu gått några veckor sedan du fick din beställning från oss. Vi hoppas att du är nöjd med dina produkter!</p>
+            
+            <div class="product-reminder">
+              <h3 style="margin-top: 0; color: #E79C1A;">Din beställning #${data.orderNumber}</h3>
+              <p style="color: #666; margin-bottom: 0;">Levererad ${data.deliveryDate}</p>
+            </div>
+            
+            <div style="text-align: center; margin: 30px 0;">
+              <h3>Vad tyckte du om din upplevelse?</h3>
+              <div class="stars">
+                <span class="star">⭐</span>
+                <span class="star">⭐</span>
+                <span class="star">⭐</span>
+                <span class="star">⭐</span>
+                <span class="star">⭐</span>
+              </div>
+              <p style="color: #666; margin-bottom: 25px;">Din recension hjälper andra kunder att hitta rätt produkter</p>
+              
+              <a href="${data.reviewUrl}" class="review-button">Skriv en recension</a>
+            </div>
+            
+            <div class="benefits">
+              <h3 style="margin-top: 0;">Varför är din recension viktig?</h3>
+              <div class="benefit-item">
+                <div class="benefit-icon">👥</div>
+                <div>
+                  <strong>Hjälp andra</strong><br>
+                  <span style="color: #666; font-size: 14px;">Dela din erfarenhet med andra som funderar på samma produkter</span>
+                </div>
+              </div>
+              <div class="benefit-item">
+                <div class="benefit-icon">💡</div>
+                <div>
+                  <strong>Förbättra våra produkter</strong><br>
+                  <span style="color: #666; font-size: 14px;">Din feedback hjälper oss att utveckla ännu bättre hudvård</span>
+                </div>
+              </div>
+              <div class="benefit-item">
+                <div class="benefit-icon">🎁</div>
+                <div>
+                  <strong>Få 10% rabatt</strong><br>
+                  <span style="color: #666; font-size: 14px;">Som tack får du 10% rabatt på nästa beställning</span>
+                </div>
+              </div>
+            </div>
+            
+            <div style="text-align: center; margin: 30px 0; padding: 20px; background: #FFF9F3; border-radius: 12px;">
+              <p style="margin: 0; color: #666;">
+                <strong>Har du frågor om produkterna?</strong><br>
+                Kontakta oss gärna på <a href="mailto:hej@1753skincare.com" style="color: #E79C1A;">hej@1753skincare.com</a>
+              </p>
+            </div>
+          </div>
+          
+          <div class="footer">
+            <p style="margin-bottom: 20px;">
+              <strong>Tack för att du valde 1753 Skincare!</strong><br>
+              Vi uppskattar verkligen din feedback.
+            </p>
+            
+            <div class="social-links">
+              <a href="https://instagram.com/1753skincare" style="color: #E79C1A;">Instagram</a>
+              <a href="https://facebook.com/1753skincare" style="color: #E79C1A;">Facebook</a>
+            </div>
+            
+            <p style="margin-top: 20px; font-size: 12px; color: #999;">
+              © 2025 1753 Skincare | Hållbar hudvård sedan 1753<br>
+              <a href="${data.unsubscribeUrl}" style="color: #999;">Avsluta påminnelser om recensioner</a>
+            </p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `,
+    text: `
+      Hej ${data.firstName}!
+      
+      Det har nu gått några veckor sedan du fick din beställning från oss (#${data.orderNumber}).
+      Vi hoppas att du är nöjd med dina produkter!
+      
+      Vad tyckte du om din upplevelse?
+      
+      Din recension hjälper andra kunder att hitta rätt produkter och hjälper oss att förbättra våra produkter.
+      
+      Som tack för din recension får du 10% rabatt på nästa beställning.
+      
+      Skriv din recension här: ${data.reviewUrl}
+      
+      Tack för att du valde 1753 Skincare!
+      
+      ---
+      Har du frågor? Kontakta oss på hej@1753skincare.com
+      
+      Avsluta påminnelser: ${data.unsubscribeUrl}
+    `
   })
 }
 

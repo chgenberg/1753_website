@@ -25,7 +25,8 @@
     "seed:raw-materials": "ts-node --transpile-only src/scripts/seedRawMaterials.ts",
     "generate:images": "ts-node --transpile-only scripts/generateRawMaterialImages.ts",
     "generate:image": "ts-node --transpile-only scripts/generateRawMaterialImages.ts -- --single",
-    "test:ongoing": "ts-node --transpile-only scripts/testOngoingConnection.ts"
+    "test:ongoing": "ts-node --transpile-only scripts/testOngoingConnection.ts",
+    "send:review-requests": "ts-node --transpile-only scripts/sendReviewRequests.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.12.0",

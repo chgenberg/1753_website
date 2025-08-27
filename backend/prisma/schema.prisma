@@ -532,6 +532,9 @@ model Order {
   customerNotes  String?
   internalNotes  String?
   
+  // Email tracking
+  reviewRequestSent Boolean @default(false)
+  
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
