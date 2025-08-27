@@ -8,6 +8,7 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { useCart } from '@/contexts/CartContext'
 import VivaSmartCheckout from '@/components/checkout/VivaSmartCheckout'
+import ExpressCheckout from '@/components/checkout/ExpressCheckout'
 import { 
   CreditCard,
   Lock,
@@ -456,6 +457,18 @@ export default function CheckoutPage() {
                     </h2>
                   </div>
 
+                  {/* Express Checkout */}
+                  <ExpressCheckout 
+                    onSuccess={(orderData: any) => {
+                      // Handle successful express checkout
+                      router.push(`/checkout/success?orderCode=${orderData.orderCode}`)
+                    }}
+                    onError={(error: string) => {
+                      console.error('Express checkout error:', error)
+                    }}
+                    className="mb-8"
+                  />
+
                   <div className="space-y-6">
                     {/* Email with floating label */}
                     <motion.div
@@ -468,6 +481,8 @@ export default function CheckoutPage() {
                         type="email"
                         value={form.email}
                         onChange={(e) => handleInputChange('email', e.target.value)}
+                        autoComplete="email"
+                        inputMode="email"
                         className={`
                           w-full px-4 sm:px-6 py-3 sm:py-4 bg-[#FFF9F3] border-2 rounded-2xl text-gray-800 
                           focus:ring-0 focus:border-[#E79C1A] outline-none transition-all
@@ -509,6 +524,7 @@ export default function CheckoutPage() {
                           type="text"
                           value={form.firstName}
                           onChange={(e) => handleInputChange('firstName', e.target.value)}
+                          autoComplete="given-name"
                           className={`
                             w-full px-4 sm:px-6 py-3 sm:py-4 bg-[#FFF9F3] border-2 rounded-2xl text-gray-800
                             focus:ring-0 focus:border-[#E79C1A] outline-none transition-all
@@ -547,6 +563,7 @@ export default function CheckoutPage() {
                           type="text"
                           value={form.lastName}
                           onChange={(e) => handleInputChange('lastName', e.target.value)}
+                          autoComplete="family-name"
                           className={`
                             w-full px-4 sm:px-6 py-3 sm:py-4 bg-[#FFF9F3] border-2 rounded-2xl text-gray-800
                             focus:ring-0 focus:border-[#E79C1A] outline-none transition-all
@@ -587,6 +604,9 @@ export default function CheckoutPage() {
                         type="tel"
                         value={form.phone}
                         onChange={(e) => handleInputChange('phone', e.target.value)}
+                        autoComplete="tel"
+                        inputMode="tel"
+                        pattern="[0-9\-\+\s\(\)]+"
                         className={`
                           w-full px-4 sm:px-6 py-3 sm:py-4 bg-[#FFF9F3] border-2 rounded-2xl text-gray-800
                           focus:ring-0 focus:border-[#E79C1A] outline-none transition-all
