@@ -24,7 +24,12 @@ import {
   MapPin,
   ChevronRight,
   Package,
-  ShoppingBag
+  ShoppingBag,
+  Sparkles,
+  Star,
+  Heart,
+  Zap,
+  Gift
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -156,7 +161,7 @@ export default function CheckoutPage() {
 
       if (data.valid) {
         setAppliedDiscount(data.discount)
-        toast.success('Rabattkod tillagd!')
+        toast.success('Rabattkod tillagd! 🎉')
       } else {
         setDiscountError(data.message || 'Ogiltig rabattkod')
       }
@@ -306,18 +311,44 @@ export default function CheckoutPage() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#FAF8F5] via-white to-[#F5F0E8]">
+      <div className="min-h-screen bg-gradient-to-br from-[#FFF9F3] via-white to-[#FFF9F3]">
         <Header />
         <div className="container mx-auto px-4 py-20 text-center">
-          <ShoppingBag className="w-24 h-24 text-gray-300 mx-auto mb-6" />
-          <h1 className="text-3xl font-light mb-4">Din varukorg är tom</h1>
-          <p className="text-gray-600 mb-8">Upptäck våra naturliga hudvårdsprodukter</p>
-          <button
-            onClick={() => router.push('/products')}
-            className="bg-gradient-to-r from-[#8B6B47] to-[#6B5337] text-white px-8 py-4 rounded-full hover:shadow-lg transition-all"
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", duration: 0.6 }}
           >
-            Fortsätt handla
-          </button>
+            <ShoppingBag className="w-32 h-32 text-[#E5D5C7] mx-auto mb-8" />
+          </motion.div>
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-4xl font-light tracking-[0.2em] uppercase mb-4"
+            style={{ fontFamily: "'Inter', sans-serif" }}
+          >
+            Din varukorg är tom
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="text-gray-600 mb-8 tracking-wider"
+          >
+            Upptäck våra naturliga hudvårdsprodukter
+          </motion.p>
+          <motion.button
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => router.push('/products')}
+            className="bg-gradient-to-r from-[#B89B7B] to-[#9A7E5F] text-white px-10 py-4 rounded-full font-light tracking-wider hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
+          >
+            FORTSÄTT HANDLA
+          </motion.button>
         </div>
         <Footer />
       </div>
@@ -325,48 +356,69 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#FAF8F5] via-white to-[#F5F0E8]">
+    <div className="min-h-screen bg-gradient-to-br from-[#FFF9F3] via-white to-[#FFF9F3]">
       <Header />
       
       <div className="container mx-auto px-4 py-6 md:py-12 max-w-6xl">
-        {/* Mobile Progress */}
-        <div className="mb-6 md:mb-8">
-          <div className="flex items-center justify-between mb-4">
+        {/* Header with progress */}
+        <div className="mb-8 md:mb-12">
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center justify-between mb-6"
+          >
             <button
               onClick={() => currentStep > 1 ? setCurrentStep(currentStep - 1) : router.push('/cart')}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+              className="group flex items-center gap-2 text-gray-600 hover:text-[#B89B7B] transition-colors"
             >
-              <ArrowLeft className="w-5 h-5" />
-              <span className="hidden md:inline">Tillbaka</span>
+              <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+              <span className="hidden md:inline font-light tracking-wider">TILLBAKA</span>
             </button>
             
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <span className={currentStep >= 1 ? 'text-[#8B6B47] font-medium' : ''}>Information</span>
-              <ChevronRight className="w-4 h-4" />
-              <span className={currentStep >= 2 ? 'text-[#8B6B47] font-medium' : ''}>Leverans</span>
-              <ChevronRight className="w-4 h-4" />
-              <span className={currentStep >= 3 ? 'text-[#8B6B47] font-medium' : ''}>Översikt</span>
-              {currentStep >= 4 && (
-                <>
-                  <ChevronRight className="w-4 h-4" />
-                  <span className="text-[#8B6B47] font-medium">Betalning</span>
-                </>
-              )}
+            <div className="flex items-center gap-3 text-xs md:text-sm">
+              {[
+                { num: 1, label: 'INFORMATION' },
+                { num: 2, label: 'LEVERANS' },
+                { num: 3, label: 'ÖVERSIKT' },
+                { num: 4, label: 'BETALNING' }
+              ].map((step, index) => (
+                <div key={step.num} className="flex items-center">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: currentStep >= step.num ? 1 : 0.8 }}
+                    className={`
+                      w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center font-light
+                      ${currentStep >= step.num 
+                        ? 'bg-gradient-to-r from-[#B89B7B] to-[#9A7E5F] text-white shadow-lg' 
+                        : 'bg-gray-200 text-gray-500'
+                      }
+                    `}
+                  >
+                    {currentStep > step.num ? <Check className="w-4 h-4" /> : step.num}
+                  </motion.div>
+                  <span className={`hidden md:inline ml-2 tracking-wider ${
+                    currentStep >= step.num ? 'text-[#B89B7B] font-medium' : 'text-gray-400'
+                  }`}>
+                    {step.label}
+                  </span>
+                  {index < 3 && <ChevronRight className="w-4 h-4 mx-2 text-gray-300" />}
+                </div>
+              ))}
             </div>
-          </div>
+          </motion.div>
           
-          {/* Progress bar */}
-          <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
+          {/* Animated progress bar */}
+          <div className="h-1 bg-gray-100 rounded-full overflow-hidden">
             <motion.div
               initial={{ width: '0%' }}
               animate={{ width: `${(currentStep / 4) * 100}%` }}
-              transition={{ duration: 0.5 }}
-              className="h-full bg-gradient-to-r from-[#8B6B47] to-[#6B5337]"
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              className="h-full bg-gradient-to-r from-[#B89B7B] to-[#9A7E5F] shadow-sm"
             />
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid lg:grid-cols-3 gap-8 lg:gap-12">
           {/* Main Form */}
           <div className="lg:col-span-2">
             <AnimatePresence mode="wait">
@@ -374,122 +426,240 @@ export default function CheckoutPage() {
               {currentStep === 1 && (
                 <motion.div
                   key="step1"
-                  initial={{ opacity: 0, x: 20 }}
+                  initial={{ opacity: 0, x: 50 }}
                   animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.3 }}
-                  className="bg-white rounded-2xl shadow-sm p-6 md:p-8"
+                  exit={{ opacity: 0, x: -50 }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                  className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl p-8 md:p-10 border border-[#E5D5C7]/30"
                 >
-                  <h2 className="text-2xl font-light mb-6 flex items-center gap-3">
-                    <User className="w-6 h-6 text-[#8B6B47]" />
-                    Kontaktinformation
-                  </h2>
+                  <div className="flex items-center gap-3 mb-8">
+                    <motion.div
+                      initial={{ rotate: -180 }}
+                      animate={{ rotate: 0 }}
+                      transition={{ duration: 0.5 }}
+                      className="w-12 h-12 bg-gradient-to-r from-[#B89B7B] to-[#9A7E5F] rounded-full flex items-center justify-center shadow-lg"
+                    >
+                      <User className="w-6 h-6 text-white" />
+                    </motion.div>
+                    <h2 className="text-2xl md:text-3xl font-light tracking-[0.2em] uppercase" style={{ fontFamily: "'Inter', sans-serif" }}>
+                      Kontaktinformation
+                    </h2>
+                  </div>
 
-                  <div className="space-y-4">
-                    {/* Email */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <div className="space-y-6">
+                    {/* Email with floating label */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 }}
+                      className="relative"
+                    >
+                      <input
+                        type="email"
+                        value={form.email}
+                        onChange={(e) => handleInputChange('email', e.target.value)}
+                        className={`
+                          w-full px-6 py-4 bg-[#FFF9F3] border-2 rounded-2xl text-gray-800 
+                          focus:ring-0 focus:border-[#B89B7B] outline-none transition-all
+                          ${formErrors.email ? 'border-red-400' : 'border-transparent'}
+                          peer
+                        `}
+                        placeholder=" "
+                        id="email"
+                      />
+                      <label 
+                        htmlFor="email"
+                        className="absolute left-6 top-4 text-gray-500 transition-all duration-200 
+                        peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#B89B7B] peer-focus:text-sm
+                        peer-[:not(:placeholder-shown)]:-translate-y-8 peer-[:not(:placeholder-shown)]:text-sm"
+                      >
                         E-postadress
                       </label>
-                      <div className="relative">
-                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                        <input
-                          type="email"
-                          value={form.email}
-                          onChange={(e) => handleInputChange('email', e.target.value)}
-                          className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-[#8B6B47] focus:border-transparent outline-none transition-all ${
-                            formErrors.email ? 'border-red-500' : 'border-gray-300'
-                          }`}
-                          placeholder="din@email.com"
-                        />
-                      </div>
+                      <Mail className="absolute right-6 top-4 w-5 h-5 text-gray-400" />
                       {formErrors.email && (
-                        <p className="text-red-500 text-sm mt-1">{formErrors.email}</p>
+                        <motion.p
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          className="text-red-500 text-sm mt-2 ml-2"
+                        >
+                          {formErrors.email}
+                        </motion.p>
                       )}
-                    </div>
+                    </motion.div>
 
-                    {/* Name fields */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Förnamn
-                        </label>
+                    {/* Name fields with animation */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="relative"
+                      >
                         <input
                           type="text"
                           value={form.firstName}
                           onChange={(e) => handleInputChange('firstName', e.target.value)}
-                          className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-[#8B6B47] focus:border-transparent outline-none transition-all ${
-                            formErrors.firstName ? 'border-red-500' : 'border-gray-300'
-                          }`}
+                          className={`
+                            w-full px-6 py-4 bg-[#FFF9F3] border-2 rounded-2xl text-gray-800
+                            focus:ring-0 focus:border-[#B89B7B] outline-none transition-all
+                            ${formErrors.firstName ? 'border-red-400' : 'border-transparent'}
+                            peer
+                          `}
+                          placeholder=" "
+                          id="firstName"
                         />
-                        {formErrors.firstName && (
-                          <p className="text-red-500 text-sm mt-1">{formErrors.firstName}</p>
-                        )}
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Efternamn
+                        <label 
+                          htmlFor="firstName"
+                          className="absolute left-6 top-4 text-gray-500 transition-all duration-200 
+                          peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#B89B7B] peer-focus:text-sm
+                          peer-[:not(:placeholder-shown)]:-translate-y-8 peer-[:not(:placeholder-shown)]:text-sm"
+                        >
+                          Förnamn
                         </label>
+                        {formErrors.firstName && (
+                          <motion.p
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="text-red-500 text-sm mt-2 ml-2"
+                          >
+                            {formErrors.firstName}
+                          </motion.p>
+                        )}
+                      </motion.div>
+                      
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                        className="relative"
+                      >
                         <input
                           type="text"
                           value={form.lastName}
                           onChange={(e) => handleInputChange('lastName', e.target.value)}
-                          className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-[#8B6B47] focus:border-transparent outline-none transition-all ${
-                            formErrors.lastName ? 'border-red-500' : 'border-gray-300'
-                          }`}
+                          className={`
+                            w-full px-6 py-4 bg-[#FFF9F3] border-2 rounded-2xl text-gray-800
+                            focus:ring-0 focus:border-[#B89B7B] outline-none transition-all
+                            ${formErrors.lastName ? 'border-red-400' : 'border-transparent'}
+                            peer
+                          `}
+                          placeholder=" "
+                          id="lastName"
                         />
+                        <label 
+                          htmlFor="lastName"
+                          className="absolute left-6 top-4 text-gray-500 transition-all duration-200 
+                          peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#B89B7B] peer-focus:text-sm
+                          peer-[:not(:placeholder-shown)]:-translate-y-8 peer-[:not(:placeholder-shown)]:text-sm"
+                        >
+                          Efternamn
+                        </label>
                         {formErrors.lastName && (
-                          <p className="text-red-500 text-sm mt-1">{formErrors.lastName}</p>
+                          <motion.p
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="text-red-500 text-sm mt-2 ml-2"
+                          >
+                            {formErrors.lastName}
+                          </motion.p>
                         )}
-                      </div>
+                      </motion.div>
                     </div>
 
-                    {/* Phone */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Telefon
+                    {/* Phone with icon */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 }}
+                      className="relative"
+                    >
+                      <input
+                        type="tel"
+                        value={form.phone}
+                        onChange={(e) => handleInputChange('phone', e.target.value)}
+                        className={`
+                          w-full px-6 py-4 bg-[#FFF9F3] border-2 rounded-2xl text-gray-800
+                          focus:ring-0 focus:border-[#B89B7B] outline-none transition-all
+                          ${formErrors.phone ? 'border-red-400' : 'border-transparent'}
+                          peer
+                        `}
+                        placeholder=" "
+                        id="phone"
+                      />
+                      <label 
+                        htmlFor="phone"
+                        className="absolute left-6 top-4 text-gray-500 transition-all duration-200 
+                        peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#B89B7B] peer-focus:text-sm
+                        peer-[:not(:placeholder-shown)]:-translate-y-8 peer-[:not(:placeholder-shown)]:text-sm"
+                      >
+                        Telefonnummer
                       </label>
-                      <div className="relative">
-                        <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                        <input
-                          type="tel"
-                          value={form.phone}
-                          onChange={(e) => handleInputChange('phone', e.target.value)}
-                          className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-[#8B6B47] focus:border-transparent outline-none transition-all ${
-                            formErrors.phone ? 'border-red-500' : 'border-gray-300'
-                          }`}
-                          placeholder="07X-XXX XX XX"
-                        />
-                      </div>
+                      <Phone className="absolute right-6 top-4 w-5 h-5 text-gray-400" />
                       {formErrors.phone && (
-                        <p className="text-red-500 text-sm mt-1">{formErrors.phone}</p>
+                        <motion.p
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          className="text-red-500 text-sm mt-2 ml-2"
+                        >
+                          {formErrors.phone}
+                        </motion.p>
                       )}
-                    </div>
+                    </motion.div>
 
-                    {/* Newsletter */}
-                    <div className="pt-4">
-                      <label className="flex items-start gap-3 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={form.newsletter}
-                          onChange={(e) => handleInputChange('newsletter', e.target.checked)}
-                          className="mt-1 w-5 h-5 text-[#8B6B47] focus:ring-[#8B6B47] border-gray-300 rounded"
-                        />
-                        <span className="text-sm text-gray-700">
-                          Ja, jag vill gärna ta del av utbildande information och erbjudanden via e-post
-                        </span>
+                    {/* Newsletter with custom checkbox */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 }}
+                      className="pt-6"
+                    >
+                      <label className="flex items-start gap-4 cursor-pointer group">
+                        <div className="relative">
+                          <input
+                            type="checkbox"
+                            checked={form.newsletter}
+                            onChange={(e) => handleInputChange('newsletter', e.target.checked)}
+                            className="sr-only"
+                          />
+                          <div className={`
+                            w-6 h-6 rounded-lg border-2 transition-all duration-200
+                            ${form.newsletter ? 'bg-gradient-to-r from-[#B89B7B] to-[#9A7E5F] border-transparent' : 'bg-white border-gray-300'}
+                            group-hover:border-[#B89B7B]
+                          `}>
+                            {form.newsletter && (
+                              <motion.div
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{ type: "spring", stiffness: 300 }}
+                              >
+                                <Check className="w-4 h-4 text-white absolute top-0.5 left-0.5" />
+                              </motion.div>
+                            )}
+                          </div>
+                        </div>
+                        <div>
+                          <span className="text-gray-700 font-light">
+                            Ja, jag vill gärna ta del av nyheter och erbjudanden
+                          </span>
+                          <p className="text-sm text-gray-500 mt-1">
+                            Få 10% rabatt på din första order! 🎁
+                          </p>
+                        </div>
                       </label>
-                    </div>
+                    </motion.div>
 
-                    {/* Continue button */}
+                    {/* Continue button with hover effect */}
                     <motion.button
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.6 }}
                       onClick={handleNextStep}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="w-full py-4 bg-gradient-to-r from-[#8B6B47] to-[#6B5337] text-white rounded-xl font-medium text-lg shadow-lg hover:shadow-xl transition-all duration-300 mt-6"
+                      className="w-full py-5 bg-gradient-to-r from-[#B89B7B] to-[#9A7E5F] text-white rounded-2xl font-light tracking-wider text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-3 group"
                     >
-                      Fortsätt till leverans
+                      <span>FORTSÄTT TILL LEVERANS</span>
+                      <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </motion.button>
                   </div>
                 </motion.div>
@@ -499,226 +669,403 @@ export default function CheckoutPage() {
               {currentStep === 2 && (
                 <motion.div
                   key="step2"
-                  initial={{ opacity: 0, x: 20 }}
+                  initial={{ opacity: 0, x: 50 }}
                   animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.3 }}
-                  className="bg-white rounded-2xl shadow-sm p-6 md:p-8"
+                  exit={{ opacity: 0, x: -50 }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                  className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl p-8 md:p-10 border border-[#E5D5C7]/30"
                 >
-                  <h2 className="text-2xl font-light mb-6 flex items-center gap-3">
-                    <MapPin className="w-6 h-6 text-[#8B6B47]" />
-                    Leveransadress
-                  </h2>
+                  <div className="flex items-center gap-3 mb-8">
+                    <motion.div
+                      initial={{ rotate: -180 }}
+                      animate={{ rotate: 0 }}
+                      transition={{ duration: 0.5 }}
+                      className="w-12 h-12 bg-gradient-to-r from-[#B89B7B] to-[#9A7E5F] rounded-full flex items-center justify-center shadow-lg"
+                    >
+                      <MapPin className="w-6 h-6 text-white" />
+                    </motion.div>
+                    <h2 className="text-2xl md:text-3xl font-light tracking-[0.2em] uppercase" style={{ fontFamily: "'Inter', sans-serif" }}>
+                      Leveransadress
+                    </h2>
+                  </div>
 
-                  <div className="space-y-4">
+                  <div className="space-y-6">
                     {/* Address */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Adress
-                      </label>
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 }}
+                      className="relative"
+                    >
                       <input
                         type="text"
                         value={form.address}
                         onChange={(e) => handleInputChange('address', e.target.value)}
-                        className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-[#8B6B47] focus:border-transparent outline-none transition-all ${
-                          formErrors.address ? 'border-red-500' : 'border-gray-300'
-                        }`}
-                        placeholder="Gatuadress"
+                        className={`
+                          w-full px-6 py-4 bg-[#FFF9F3] border-2 rounded-2xl text-gray-800
+                          focus:ring-0 focus:border-[#B89B7B] outline-none transition-all
+                          ${formErrors.address ? 'border-red-400' : 'border-transparent'}
+                          peer
+                        `}
+                        placeholder=" "
+                        id="address"
                       />
+                      <label 
+                        htmlFor="address"
+                        className="absolute left-6 top-4 text-gray-500 transition-all duration-200 
+                        peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#B89B7B] peer-focus:text-sm
+                        peer-[:not(:placeholder-shown)]:-translate-y-8 peer-[:not(:placeholder-shown)]:text-sm"
+                      >
+                        Gatuadress
+                      </label>
                       {formErrors.address && (
-                        <p className="text-red-500 text-sm mt-1">{formErrors.address}</p>
+                        <motion.p
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          className="text-red-500 text-sm mt-2 ml-2"
+                        >
+                          {formErrors.address}
+                        </motion.p>
                       )}
-                    </div>
+                    </motion.div>
 
                     {/* Apartment */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Lägenhet, svit etc. (valfritt)
-                      </label>
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 }}
+                      className="relative"
+                    >
                       <input
                         type="text"
                         value={form.apartment}
                         onChange={(e) => handleInputChange('apartment', e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#8B6B47] focus:border-transparent outline-none transition-all"
+                        className="w-full px-6 py-4 bg-[#FFF9F3] border-2 border-transparent rounded-2xl text-gray-800 focus:ring-0 focus:border-[#B89B7B] outline-none transition-all peer"
+                        placeholder=" "
+                        id="apartment"
                       />
-                    </div>
+                      <label 
+                        htmlFor="apartment"
+                        className="absolute left-6 top-4 text-gray-500 transition-all duration-200 
+                        peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#B89B7B] peer-focus:text-sm
+                        peer-[:not(:placeholder-shown)]:-translate-y-8 peer-[:not(:placeholder-shown)]:text-sm"
+                      >
+                        Lägenhet, svit etc. (valfritt)
+                      </label>
+                    </motion.div>
 
                     {/* City and Postal Code */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Postnummer
-                        </label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                        className="relative"
+                      >
                         <input
                           type="text"
                           value={form.postalCode}
                           onChange={(e) => handleInputChange('postalCode', e.target.value)}
-                          className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-[#8B6B47] focus:border-transparent outline-none transition-all ${
-                            formErrors.postalCode ? 'border-red-500' : 'border-gray-300'
-                          }`}
-                          placeholder="123 45"
+                          className={`
+                            w-full px-6 py-4 bg-[#FFF9F3] border-2 rounded-2xl text-gray-800
+                            focus:ring-0 focus:border-[#B89B7B] outline-none transition-all
+                            ${formErrors.postalCode ? 'border-red-400' : 'border-transparent'}
+                            peer
+                          `}
+                          placeholder=" "
+                          id="postalCode"
                         />
-                        {formErrors.postalCode && (
-                          <p className="text-red-500 text-sm mt-1">{formErrors.postalCode}</p>
-                        )}
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Stad
+                        <label 
+                          htmlFor="postalCode"
+                          className="absolute left-6 top-4 text-gray-500 transition-all duration-200 
+                          peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#B89B7B] peer-focus:text-sm
+                          peer-[:not(:placeholder-shown)]:-translate-y-8 peer-[:not(:placeholder-shown)]:text-sm"
+                        >
+                          Postnummer
                         </label>
+                        {formErrors.postalCode && (
+                          <motion.p
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="text-red-500 text-sm mt-2 ml-2"
+                          >
+                            {formErrors.postalCode}
+                          </motion.p>
+                        )}
+                      </motion.div>
+                      
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.4 }}
+                        className="relative"
+                      >
                         <input
                           type="text"
                           value={form.city}
                           onChange={(e) => handleInputChange('city', e.target.value)}
-                          className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-[#8B6B47] focus:border-transparent outline-none transition-all ${
-                            formErrors.city ? 'border-red-500' : 'border-gray-300'
-                          }`}
+                          className={`
+                            w-full px-6 py-4 bg-[#FFF9F3] border-2 rounded-2xl text-gray-800
+                            focus:ring-0 focus:border-[#B89B7B] outline-none transition-all
+                            ${formErrors.city ? 'border-red-400' : 'border-transparent'}
+                            peer
+                          `}
+                          placeholder=" "
+                          id="city"
                         />
+                        <label 
+                          htmlFor="city"
+                          className="absolute left-6 top-4 text-gray-500 transition-all duration-200 
+                          peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#B89B7B] peer-focus:text-sm
+                          peer-[:not(:placeholder-shown)]:-translate-y-8 peer-[:not(:placeholder-shown)]:text-sm"
+                        >
+                          Stad
+                        </label>
                         {formErrors.city && (
-                          <p className="text-red-500 text-sm mt-1">{formErrors.city}</p>
+                          <motion.p
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="text-red-500 text-sm mt-2 ml-2"
+                          >
+                            {formErrors.city}
+                          </motion.p>
                         )}
-                      </div>
+                      </motion.div>
                     </div>
 
-                    {/* Country */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Land
-                      </label>
+                    {/* Country with custom select */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 }}
+                      className="relative"
+                    >
                       <select
                         value={form.country}
                         onChange={(e) => handleInputChange('country', e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#8B6B47] focus:border-transparent outline-none transition-all"
+                        className="w-full px-6 py-4 bg-[#FFF9F3] border-2 border-transparent rounded-2xl text-gray-800 focus:ring-0 focus:border-[#B89B7B] outline-none transition-all appearance-none cursor-pointer"
                       >
                         <option value="Sverige">Sverige</option>
                         <option value="Norge">Norge</option>
                         <option value="Danmark">Danmark</option>
                         <option value="Finland">Finland</option>
                       </select>
-                    </div>
+                      <ChevronRight className="absolute right-6 top-4 w-5 h-5 text-gray-400 rotate-90 pointer-events-none" />
+                      <label className="absolute left-6 -top-4 text-sm text-gray-500">
+                        Land
+                      </label>
+                    </motion.div>
 
-                    {/* Shipping method info */}
-                    <div className="bg-[#FAF8F5] rounded-xl p-4 mt-6">
-                      <div className="flex items-center gap-3 text-[#8B6B47]">
-                        <Package className="w-5 h-5" />
-                        <span className="font-medium">Standard leverans</span>
+                    {/* Shipping method info card */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.6 }}
+                      className="bg-gradient-to-r from-[#FFF9F3] to-[#FFF5ED] rounded-2xl p-6 mt-8 border border-[#E5D5C7]/30"
+                    >
+                      <div className="flex items-start gap-4">
+                        <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-md">
+                          <Package className="w-6 h-6 text-[#B89B7B]" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-medium text-gray-800 mb-2">Standard leverans</h3>
+                          <p className="text-sm text-gray-600 mb-3">
+                            Leverans inom 2-4 arbetsdagar
+                          </p>
+                          <div className="flex items-center gap-2 text-[#B89B7B]">
+                            <Sparkles className="w-4 h-4" />
+                            <span className="text-sm font-medium">Fri frakt över 500 kr!</span>
+                          </div>
+                        </div>
                       </div>
-                      <p className="text-sm text-gray-600 mt-2">
-                        Leverans inom 2-4 arbetsdagar. Fri frakt över 500 kr.
-                      </p>
-                    </div>
+                    </motion.div>
 
                     {/* Continue button */}
                     <motion.button
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.7 }}
                       onClick={handleNextStep}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="w-full py-4 bg-gradient-to-r from-[#8B6B47] to-[#6B5337] text-white rounded-xl font-medium text-lg shadow-lg hover:shadow-xl transition-all duration-300 mt-6"
+                      className="w-full py-5 bg-gradient-to-r from-[#B89B7B] to-[#9A7E5F] text-white rounded-2xl font-light tracking-wider text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-3 group"
                     >
-                      Fortsätt till betalning
+                      <span>GRANSKA BESTÄLLNING</span>
+                      <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </motion.button>
                   </div>
                 </motion.div>
               )}
 
-              {/* Step 3: Payment */}
+              {/* Step 3: Order Review */}
               {currentStep === 3 && (
                 <motion.div
                   key="step3"
-                  initial={{ opacity: 0, x: 20 }}
+                  initial={{ opacity: 0, x: 50 }}
                   animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.3 }}
-                  className="bg-white rounded-2xl shadow-sm p-6 md:p-8"
+                  exit={{ opacity: 0, x: -50 }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                  className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl p-8 md:p-10 border border-[#E5D5C7]/30"
                 >
-                  <h2 className="text-2xl font-light mb-6 flex items-center gap-3">
-                    <Check className="w-6 h-6 text-[#8B6B47]" />
-                    Orderöversikt
-                  </h2>
+                  <div className="flex items-center gap-3 mb-8">
+                    <motion.div
+                      initial={{ rotate: -180 }}
+                      animate={{ rotate: 0 }}
+                      transition={{ duration: 0.5 }}
+                      className="w-12 h-12 bg-gradient-to-r from-[#B89B7B] to-[#9A7E5F] rounded-full flex items-center justify-center shadow-lg"
+                    >
+                      <Check className="w-6 h-6 text-white" />
+                    </motion.div>
+                    <h2 className="text-2xl md:text-3xl font-light tracking-[0.2em] uppercase" style={{ fontFamily: "'Inter', sans-serif" }}>
+                      Orderöversikt
+                    </h2>
+                  </div>
 
-                  <div className="space-y-4">
-                    {/* Order summary */}
-                    <div className="border border-gray-200 rounded-xl p-4">
-                      <h3 className="font-medium mb-3">Leveransadress</h3>
-                      <p className="text-sm text-gray-600">
+                  <div className="space-y-6">
+                    {/* Delivery info cards */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 }}
+                      className="bg-[#FFF9F3] rounded-2xl p-6 space-y-4"
+                    >
+                      <div className="flex items-center gap-3 text-[#B89B7B] mb-2">
+                        <MapPin className="w-5 h-5" />
+                        <h3 className="font-medium">Leveransadress</h3>
+                      </div>
+                      <p className="text-gray-700 leading-relaxed">
                         {form.firstName} {form.lastName}<br />
                         {form.address} {form.apartment && `, ${form.apartment}`}<br />
                         {form.postalCode} {form.city}<br />
                         {form.country}
                       </p>
-                    </div>
+                    </motion.div>
                     
-                    <div className="border border-gray-200 rounded-xl p-4">
-                      <h3 className="font-medium mb-3">Kontaktuppgifter</h3>
-                      <p className="text-sm text-gray-600">
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 }}
+                      className="bg-[#FFF9F3] rounded-2xl p-6 space-y-4"
+                    >
+                      <div className="flex items-center gap-3 text-[#B89B7B] mb-2">
+                        <Mail className="w-5 h-5" />
+                        <h3 className="font-medium">Kontaktuppgifter</h3>
+                      </div>
+                      <p className="text-gray-700 leading-relaxed">
                         {form.email}<br />
                         {form.phone}
                       </p>
-                    </div>
+                    </motion.div>
                         
-                    <div className="border border-gray-200 rounded-xl p-4">
-                      <h3 className="font-medium mb-3">Orderdetaljer</h3>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Delsumma</span>
-                          <span>{subtotal} kr</span>
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 }}
+                      className="bg-[#FFF9F3] rounded-2xl p-6"
+                    >
+                      <div className="flex items-center gap-3 text-[#B89B7B] mb-4">
+                        <ShoppingBag className="w-5 h-5" />
+                        <h3 className="font-medium">Orderdetaljer</h3>
+                      </div>
+                      <div className="space-y-3">
+                        <div className="flex justify-between text-gray-700">
+                          <span>Delsumma</span>
+                          <span className="font-medium">{subtotal} kr</span>
                         </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Frakt</span>
-                          <span>{shipping} kr</span>
+                        <div className="flex justify-between text-gray-700">
+                          <span>Frakt</span>
+                          <span className="font-medium">{shipping === 0 ? 'Gratis' : `${shipping} kr`}</span>
                         </div>
                         {appliedDiscount && (
                           <div className="flex justify-between text-green-600">
-                            <span>Rabatt ({appliedDiscount.code})</span>
-                            <span>-{calculateDiscount()} kr</span>
+                            <span className="flex items-center gap-2">
+                              <Gift className="w-4 h-4" />
+                              Rabatt ({appliedDiscount.code})
+                            </span>
+                            <span className="font-medium">-{calculateDiscount()} kr</span>
                           </div>
                         )}
-                        <div className="flex justify-between font-medium text-base pt-2 border-t">
-                          <span>Totalt</span>
-                          <span>{finalTotal} kr</span>
+                        <div className="pt-3 border-t border-[#E5D5C7]">
+                          <div className="flex justify-between text-lg">
+                            <span className="font-medium">Totalt</span>
+                            <span className="font-semibold text-[#B89B7B]">{finalTotal} kr</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    </motion.div>
 
-                    {/* Security info */}
-                    <div className="bg-green-50 rounded-xl p-4 flex items-start gap-3">
-                      <Shield className="w-5 h-5 text-green-600 mt-0.5" />
-                      <div>
-                        <p className="text-sm font-medium text-green-900">Säker betalning</p>
-                        <p className="text-sm text-green-700 mt-1">
-                          Din betalningsinformation är krypterad och säker
-                        </p>
+                    {/* Security badges */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 }}
+                      className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-100"
+                    >
+                      <div className="flex items-start gap-4">
+                        <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-md">
+                          <Shield className="w-6 h-6 text-green-600" />
+                        </div>
+                        <div>
+                          <h3 className="font-medium text-green-900 mb-2">Säker betalning</h3>
+                          <p className="text-sm text-green-700">
+                            Din betalningsinformation är krypterad och säker. Vi lagrar aldrig kortuppgifter.
+                          </p>
+                        </div>
                       </div>
-                    </div>
+                    </motion.div>
+
+                    {/* Trust badges */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 }}
+                      className="grid grid-cols-3 gap-4"
+                    >
+                      {[
+                        { icon: Lock, text: 'SSL-krypterad' },
+                        { icon: Star, text: '4.8/5 betyg' },
+                        { icon: Heart, text: '30 dagars öppet köp' }
+                      ].map((badge, index) => (
+                        <div key={index} className="text-center">
+                          <div className="w-12 h-12 bg-[#FFF9F3] rounded-full flex items-center justify-center mx-auto mb-2">
+                            <badge.icon className="w-6 h-6 text-[#B89B7B]" />
+                          </div>
+                          <p className="text-xs text-gray-600">{badge.text}</p>
+                        </div>
+                      ))}
+                    </motion.div>
 
                     {/* Place order button */}
                     <motion.button
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.6 }}
                       onClick={handleSubmitOrder}
                       disabled={isProcessing}
                       whileHover={{ scale: isProcessing ? 1 : 1.02 }}
                       whileTap={{ scale: isProcessing ? 1 : 0.98 }}
-                      className="w-full py-4 bg-gradient-to-r from-[#FCB237] to-[#E79C1A] text-white rounded-xl font-medium text-lg shadow-lg hover:shadow-xl transition-all duration-300 mt-6 disabled:opacity-75 disabled:cursor-not-allowed"
+                      className="w-full py-5 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-white rounded-2xl font-medium tracking-wider text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-3 group"
                     >
                       {isProcessing ? (
-                        <span className="flex items-center justify-center gap-3">
+                        <>
                           <Loader2 className="w-5 h-5 animate-spin" />
-                          Behandlar beställning...
-                        </span>
+                          <span>BEHANDLAR BESTÄLLNING...</span>
+                        </>
                       ) : (
-                        <span className="flex items-center justify-center gap-3">
-                          <Lock className="w-5 h-5" />
-                          Slutför köp ({finalTotal} kr)
-                        </span>
+                        <>
+                          <Zap className="w-5 h-5" />
+                          <span>SLUTFÖR KÖP ({finalTotal} kr)</span>
+                          <Lock className="w-4 h-4 opacity-60" />
+                        </>
                       )}
                     </motion.button>
 
                     {/* Terms */}
-                    <p className="text-xs text-gray-500 text-center mt-4">
+                    <p className="text-xs text-gray-500 text-center">
                       Genom att slutföra köpet godkänner du våra{' '}
-                      <a href="/villkor" className="text-[#8B6B47] hover:underline">köpvillkor</a>
+                      <a href="/villkor" className="text-[#B89B7B] hover:underline">köpvillkor</a>
                       {' '}och{' '}
-                      <a href="/integritetspolicy" className="text-[#8B6B47] hover:underline">integritetspolicy</a>
+                      <a href="/integritetspolicy" className="text-[#B89B7B] hover:underline">integritetspolicy</a>
                     </p>
                   </div>
                 </motion.div>
@@ -728,91 +1075,143 @@ export default function CheckoutPage() {
               {currentStep === 4 && orderDetails && (
                 <motion.div
                   key="step4"
-                  initial={{ opacity: 0, x: 20 }}
+                  initial={{ opacity: 0, x: 50 }}
                   animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.3 }}
-                  className="bg-white rounded-2xl shadow-sm p-6 md:p-8"
+                  exit={{ opacity: 0, x: -50 }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                  className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl p-8 md:p-10 border border-[#E5D5C7]/30"
                 >
-                  <h2 className="text-2xl font-light mb-6 flex items-center gap-3">
-                    <CreditCard className="w-6 h-6 text-[#8B6B47]" />
-                    Säker betalning
-                  </h2>
+                  <div className="flex items-center gap-3 mb-8">
+                    <motion.div
+                      initial={{ rotate: -180 }}
+                      animate={{ rotate: 0 }}
+                      transition={{ duration: 0.5 }}
+                      className="w-12 h-12 bg-gradient-to-r from-[#B89B7B] to-[#9A7E5F] rounded-full flex items-center justify-center shadow-lg"
+                    >
+                      <CreditCard className="w-6 h-6 text-white" />
+                    </motion.div>
+                    <h2 className="text-2xl md:text-3xl font-light tracking-[0.2em] uppercase" style={{ fontFamily: "'Inter', sans-serif" }}>
+                      Säker betalning
+                    </h2>
+                  </div>
 
-                  <VivaSmartCheckout
-                    orderCode={orderDetails.orderCode}
-                    amount={orderDetails.amount}
-                    onSuccess={handlePaymentSuccess}
-                    onError={handlePaymentError}
-                    publicKey={process.env.NEXT_PUBLIC_VIVA_PUBLIC_KEY || ''}
-                    sourceCode={process.env.NEXT_PUBLIC_VIVA_SOURCE_CODE || ''}
-                    baseURL={process.env.NEXT_PUBLIC_VIVA_BASE_URL}
-                  />
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="bg-[#FFF9F3] rounded-2xl p-6 mb-6"
+                  >
+                    <VivaSmartCheckout
+                      orderCode={orderDetails.orderCode}
+                      amount={orderDetails.amount}
+                      onSuccess={handlePaymentSuccess}
+                      onError={handlePaymentError}
+                      publicKey={process.env.NEXT_PUBLIC_VIVA_PUBLIC_KEY || ''}
+                      sourceCode={process.env.NEXT_PUBLIC_VIVA_SOURCE_CODE || ''}
+                      baseURL={process.env.NEXT_PUBLIC_VIVA_BASE_URL}
+                    />
+                  </motion.div>
 
-                  {/* Terms */}
-                  <p className="text-xs text-gray-500 text-center mt-6">
-                    Genom att slutföra köpet godkänner du våra{' '}
-                    <a href="/villkor" className="text-[#8B6B47] hover:underline">köpvillkor</a>
-                    {' '}och{' '}
-                    <a href="/integritetspolicy" className="text-[#8B6B47] hover:underline">integritetspolicy</a>
-                  </p>
+                  {/* Payment security info */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                    className="flex items-center justify-center gap-6 text-sm text-gray-600"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Lock className="w-4 h-4 text-green-600" />
+                      <span>256-bit SSL</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Shield className="w-4 h-4 text-green-600" />
+                      <span>PCI-DSS</span>
+                    </div>
+                  </motion.div>
                 </motion.div>
               )}
             </AnimatePresence>
           </div>
 
-          {/* Order Summary (Sidebar) */}
+          {/* Order Summary Sidebar - Enhanced */}
           <div className="lg:sticky lg:top-24 h-fit">
-            <div className="bg-white rounded-2xl shadow-sm p-6">
-              <h3 className="text-lg font-medium mb-4">Ordersammanfattning</h3>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl p-6 md:p-8 border border-[#E5D5C7]/30"
+            >
+              <h3 className="text-xl font-light tracking-wider mb-6 uppercase">Ordersammanfattning</h3>
               
-              {/* Items */}
-              <div className="space-y-3 mb-6">
-                {items.map((item) => (
-                  <div key={`${item.productId}-${item.variantId || 'default'}`} className="flex items-center gap-3">
+              {/* Items with animation */}
+              <div className="space-y-4 mb-6">
+                {items.map((item, index) => (
+                  <motion.div
+                    key={`${item.productId}-${item.variantId || 'default'}`}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="flex items-center gap-4 p-3 bg-[#FFF9F3] rounded-2xl"
+                  >
                     <div className="relative">
                       <Image
                         src={item.product.images?.[0]?.url || '/placeholder.jpg'}
                         alt={item.product.name}
-                        width={60}
-                        height={60}
-                        className="rounded-lg object-cover"
+                        width={70}
+                        height={70}
+                        className="rounded-xl object-cover"
                       />
-                      <span className="absolute -top-2 -right-2 w-5 h-5 bg-[#8B6B47] text-white text-xs rounded-full flex items-center justify-center">
+                      <motion.span
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: 0.2 + index * 0.1 }}
+                        className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-[#B89B7B] to-[#9A7E5F] text-white text-xs rounded-full flex items-center justify-center shadow-md"
+                      >
                         {item.quantity}
-                      </span>
+                      </motion.span>
                     </div>
                     <div className="flex-1">
-                      <h4 className="text-sm font-medium">{item.product.name}</h4>
-                      <p className="text-sm text-gray-600">{item.price} kr</p>
+                      <h4 className="font-medium text-gray-800">{item.product.name}</h4>
+                      <p className="text-sm text-gray-600 mt-1">{item.price} kr</p>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
 
-              {/* Discount code */}
-              <div className="mb-6">
+              {/* Discount code input - Enhanced */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                className="mb-6"
+              >
                 <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={discountCode}
-                    onChange={(e) => setDiscountCode(e.target.value)}
-                    placeholder="Rabattkod"
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#8B6B47] focus:border-transparent outline-none"
-                    disabled={!!appliedDiscount}
-                  />
+                  <div className="relative flex-1">
+                    <input
+                      type="text"
+                      value={discountCode}
+                      onChange={(e) => setDiscountCode(e.target.value)}
+                      placeholder="Rabattkod"
+                      className="w-full px-4 py-3 bg-[#FFF9F3] border-2 border-transparent rounded-xl text-sm focus:ring-0 focus:border-[#B89B7B] outline-none transition-all pl-10"
+                      disabled={!!appliedDiscount}
+                    />
+                    <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  </div>
                   {appliedDiscount ? (
-                    <button
+                    <motion.button
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
                       onClick={removeDiscount}
-                      className="px-4 py-2 bg-red-100 text-red-600 rounded-lg text-sm hover:bg-red-200 transition-colors"
+                      className="px-4 py-3 bg-red-100 text-red-600 rounded-xl text-sm hover:bg-red-200 transition-all flex items-center gap-2"
                     >
-                      Ta bort
-                    </button>
+                      <X className="w-4 h-4" />
+                      <span>Ta bort</span>
+                    </motion.button>
                   ) : (
                     <button
                       onClick={validateDiscountCode}
                       disabled={isValidatingDiscount || !discountCode.trim()}
-                      className="px-4 py-2 bg-[#8B6B47] text-white rounded-lg text-sm hover:bg-[#6B5337] transition-colors disabled:opacity-50"
+                      className="px-6 py-3 bg-gradient-to-r from-[#B89B7B] to-[#9A7E5F] text-white rounded-xl text-sm hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isValidatingDiscount ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -823,54 +1222,106 @@ export default function CheckoutPage() {
                   )}
                 </div>
                 {discountError && (
-                  <p className="text-red-500 text-xs mt-1">{discountError}</p>
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-red-500 text-xs mt-2 flex items-center gap-1"
+                  >
+                    <AlertCircle className="w-3 h-3" />
+                    {discountError}
+                  </motion.p>
                 )}
                 {appliedDiscount && (
-                  <p className="text-green-600 text-xs mt-1 flex items-center gap-1">
-                    <Check className="w-3 h-3" />
-                    {appliedDiscount.name} tillagd
-                  </p>
+                  <motion.p
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-green-600 text-xs mt-2 flex items-center gap-2"
+                  >
+                    <Check className="w-4 h-4" />
+                    {appliedDiscount.name} tillagd!
+                  </motion.p>
                 )}
-              </div>
+              </motion.div>
 
-              {/* Totals */}
-              <div className="space-y-2 pt-4 border-t">
-                <div className="flex justify-between text-sm">
+              {/* Totals with animation */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                className="space-y-3 pt-6 border-t border-[#E5D5C7]"
+              >
+                <div className="flex justify-between text-gray-700">
                   <span>Delsumma</span>
                   <span>{subtotal} kr</span>
                 </div>
                 {appliedDiscount && (
-                  <div className="flex justify-between text-sm text-green-600">
-                    <span>Rabatt</span>
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="flex justify-between text-green-600"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Gift className="w-4 h-4" />
+                      Rabatt
+                    </span>
                     <span>-{calculateDiscount()} kr</span>
-                  </div>
+                  </motion.div>
                 )}
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between text-gray-700">
                   <span>Frakt</span>
                   <span>{shipping === 0 ? 'Gratis' : `${shipping} kr`}</span>
                 </div>
-                <div className="flex justify-between font-medium text-lg pt-2 border-t">
+                <div className="flex justify-between text-xl font-medium pt-3 border-t border-[#E5D5C7]">
                   <span>Totalt</span>
-                  <span>{finalTotal} kr</span>
+                  <motion.span
+                    key={finalTotal}
+                    initial={{ scale: 0.8 }}
+                    animate={{ scale: 1 }}
+                    className="text-[#B89B7B]"
+                  >
+                    {finalTotal} kr
+                  </motion.span>
                 </div>
-              </div>
+              </motion.div>
 
-              {/* Trust badges */}
-              <div className="mt-6 pt-6 border-t space-y-3">
-                <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <Shield className="w-4 h-4" />
-                  <span>Säker betalning</span>
-                </div>
-                <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <Package className="w-4 h-4" />
-                  <span>Fri frakt över 500 kr</span>
-                </div>
-                <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <Check className="w-4 h-4" />
-                  <span>30 dagars öppet köp</span>
-                </div>
-              </div>
-            </div>
+              {/* Trust badges with animation */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+                className="mt-8 pt-6 border-t border-[#E5D5C7] space-y-4"
+              >
+                {[
+                  { icon: Shield, text: 'Säker betalning', color: 'text-green-600' },
+                  { icon: Package, text: 'Fri frakt över 500 kr', color: 'text-blue-600' },
+                  { icon: Heart, text: '30 dagars öppet köp', color: 'text-red-600' }
+                ].map((badge, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.7 + index * 0.1 }}
+                    className="flex items-center gap-3 text-sm"
+                  >
+                    <badge.icon className={`w-5 h-5 ${badge.color}`} />
+                    <span className="text-gray-700">{badge.text}</span>
+                  </motion.div>
+                ))}
+              </motion.div>
+
+              {/* Customer support */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.9 }}
+                className="mt-6 p-4 bg-[#FFF9F3] rounded-2xl text-center"
+              >
+                <p className="text-sm text-gray-600 mb-2">Behöver du hjälp?</p>
+                <a href="/kontakt" className="text-[#B89B7B] hover:underline text-sm font-medium">
+                  Kontakta kundservice →
+                </a>
+              </motion.div>
+            </motion.div>
           </div>
         </div>
       </div>
