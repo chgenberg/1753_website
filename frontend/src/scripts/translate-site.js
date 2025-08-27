@@ -52,8 +52,7 @@ async function translateWithOpenAI(text, targetLocale) {
   const completion = await client.chat.completions.create({
     model,
     messages: [{ role: 'user', content: prompt }],
-    temperature: 0.2,
-    // gpt-5 / modern OpenAI models use max_completion_tokens instead of max_tokens
+    // Use default temperature (omit param) to be compatible with gpt-5 models
     max_completion_tokens: 300
   })
   return completion.choices[0]?.message?.content?.trim() || null
