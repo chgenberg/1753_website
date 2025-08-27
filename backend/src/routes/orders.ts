@@ -274,6 +274,8 @@ router.get('/test/env', async (req, res) => {
       VIVA_API_KEY: process.env.VIVA_API_KEY ? '***' + process.env.VIVA_API_KEY.slice(-4) : 'NOT SET',
       VIVA_SOURCE_CODE: process.env.VIVA_SOURCE_CODE || 'NOT SET',
       VIVA_BASE_URL: process.env.VIVA_BASE_URL || 'NOT SET',
+      VIVA_CLIENT_ID: process.env.VIVA_CLIENT_ID ? '***' + process.env.VIVA_CLIENT_ID.slice(-10) : 'NOT SET',
+      VIVA_CLIENT_SECRET: process.env.VIVA_CLIENT_SECRET ? '***' + process.env.VIVA_CLIENT_SECRET.slice(-4) : 'NOT SET',
       NODE_ENV: process.env.NODE_ENV || 'NOT SET'
     }
 
