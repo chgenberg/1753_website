@@ -303,9 +303,6 @@ export default function CheckoutPage() {
         throw new Error(data.error || 'Failed to create order')
       }
 
-      // Clear cart before redirecting to payment
-      clearCart()
-
       // Redirect directly to Viva Wallet external checkout
       const vivaBaseUrl = process.env.NEXT_PUBLIC_VIVA_BASE_URL?.includes('demo') 
         ? 'https://demo.vivapayments.com' 

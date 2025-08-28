@@ -28,12 +28,14 @@ import {
 } from 'lucide-react'
 import confetti from 'canvas-confetti'
 import toast from 'react-hot-toast'
+import { useCart } from '@/contexts/CartContext'
 
 function SuccessContent() {
   const searchParams = useSearchParams()
   const [copied, setCopied] = useState(false)
   const [orderData, setOrderData] = useState<any>(null)
   const [showShareMenu, setShowShareMenu] = useState(false)
+  const { clearCart } = useCart()
   
   // Get parameters from URL (from Viva Wallet or our internal redirect)
   const transactionId = searchParams.get('transactionId') || searchParams.get('t')
@@ -41,6 +43,11 @@ function SuccessContent() {
   const eventId = searchParams.get('eventId') // From Viva Wallet
   const eci = searchParams.get('eci') // From Viva Wallet
   
+  useEffect(() => {
+    // Clear cart after successful payment (idempotent)
+    try { clearCart() } catch {}
+  }, [clearCart])
+
   useEffect(() => {
     // Multiple confetti bursts for extra celebration
     const burst1 = setTimeout(() => {
