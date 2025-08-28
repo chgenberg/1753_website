@@ -610,8 +610,22 @@ model Review {
   product           Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   user              User?    @relation(fields: [userId], references: [id])
   replies           ReviewReply[]
+  translations      ReviewTranslation[]
   
   @@map("reviews")
+}
+
+model ReviewTranslation {
+  id         String   @id @default(cuid())
+  reviewId   String
+  locale     String
+  title      String?
+  body       String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  review     Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  @@unique([reviewId, locale])
+  @@map("review_translations")
 }
 
 // Review replies (normalized)
