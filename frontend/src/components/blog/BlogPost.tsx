@@ -5,6 +5,7 @@ import { Calendar, Clock, User, Tag, ArrowLeft, Share2, BookOpen, Heart, Message
 import Link from 'next/link'
 import { useState } from 'react'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 
 interface BlogPostProps {
   title: string
@@ -33,6 +34,7 @@ export function BlogPost({
 }: BlogPostProps) {
   const [isLiked, setIsLiked] = useState(false)
   const [likeCount, setLikeCount] = useState(likes)
+  const t = useTranslations('blog.post')
 
   const handleLike = () => {
     setIsLiked(!isLiked)
@@ -44,7 +46,7 @@ export function BlogPost({
       try {
         await navigator.share({
           title: title,
-          text: `Läs "${title}" på 1753 Skincare`,
+          text: t('shareText', { title }),
           url: window.location.href,
         })
       } catch (error) {
@@ -172,7 +174,7 @@ export function BlogPost({
         
         elements.push(
           <div key={elements.length} className="mt-12 p-6 bg-gray-50 rounded-xl">
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">Källor</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">{t('sourcesHeading')}</h3>
             <div className="space-y-2">
               {sourceLines.map((sourceLine, idx) => {
                 if (sourceLine.includes('http')) {
@@ -232,7 +234,7 @@ export function BlogPost({
       >
         <Link href="/blogg" className="inline-flex items-center text-[#00937c] hover:text-[#E79C1A] transition-colors duration-300">
           <ArrowLeft className="w-5 h-5 mr-2" />
-          <span className="font-medium">Tillbaka till bloggen</span>
+          <span className="font-medium">{t('backToBlog')}</span>
         </Link>
       </motion.div>
 
@@ -289,7 +291,7 @@ export function BlogPost({
           {readingTime && (
             <div className="flex items-center">
               <Clock className="w-5 h-5 mr-2" />
-              <span>{readingTime} min läsning</span>
+              <span>{t('readingMinutes', { minutes: readingTime })}</span>
             </div>
           )}
         </div>
@@ -343,7 +345,7 @@ export function BlogPost({
 
             <div className="flex items-center gap-2 text-gray-600">
               <MessageCircle className="w-5 h-5" />
-              <span className="font-medium">{comments} kommentarer</span>
+              <span className="font-medium">{t('commentsLabel', { count: comments })}</span>
             </div>
           </div>
 
@@ -352,7 +354,7 @@ export function BlogPost({
             className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-600 rounded-full hover:bg-gray-200 transition-colors duration-300"
           >
             <Share2 className="w-5 h-5" />
-            <span className="font-medium">Dela</span>
+            <span className="font-medium">{t('share')}</span>
           </button>
         </div>
       </motion.div>
@@ -371,14 +373,13 @@ export function BlogPost({
           <div className="flex-1">
             <h3 className="text-xl font-bold text-gray-900 mb-2">{author}</h3>
             <p className="text-gray-600 mb-4">
-              Grundare av 1753 Skincare och expert inom cannabinoid-hudvård. 
-              Passionerad om att revolutionera hudvårdsindustrin genom vetenskap och naturliga ingredienser.
+              {t('authorBio')}
             </p>
             <Link 
               href="/om-oss" 
               className="text-[#00937c] hover:text-[#E79C1A] font-medium transition-colors duration-300"
             >
-              Läs mer om oss →
+              {t('readMoreAboutUs')}
             </Link>
           </div>
         </div>
@@ -391,12 +392,12 @@ export function BlogPost({
         transition={{ duration: 0.6, delay: 1 }}
         className="mt-16"
       >
-        <h2 className="text-3xl font-bold text-gray-900 mb-8">Relaterade artiklar</h2>
+        <h2 className="text-3xl font-bold text-gray-900 mb-8">{t('relatedArticles')}</h2>
         <div className="grid md:grid-cols-3 gap-6">
           {/* Placeholder for related articles */}
           <div className="bg-gray-100 rounded-xl p-6 hover:shadow-lg transition-shadow duration-300">
-            <h3 className="font-semibold text-lg mb-2">Kommer snart...</h3>
-            <p className="text-gray-600 text-sm">Fler spännande artiklar är på väg!</p>
+            <h3 className="font-semibold text-lg mb-2">{t('comingSoon')}</h3>
+            <p className="text-gray-600 text-sm">{t('moreComing')}</p>
           </div>
         </div>
       </motion.div>

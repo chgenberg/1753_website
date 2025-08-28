@@ -109,6 +109,21 @@
       "tapToSelect": "Tryck för att välja"
     }
   },
+  "blog": {
+    "post": {
+      "shareText": "Läs \"{title}\" på 1753 Skincare",
+      "backToBlog": "Tillbaka till bloggen",
+      "readingMinutes": "{minutes} min läsning",
+      "commentsLabel": "{count} kommentarer",
+      "share": "Dela",
+      "authorBio": "Grundare av 1753 Skincare och expert inom cannabinoid-hudvård. Passionerad om att revolutionera hudvårdsindustrin genom vetenskap och naturliga ingredienser.",
+      "readMoreAboutUs": "Läs mer om oss →",
+      "relatedArticles": "Relaterade artiklar",
+      "comingSoon": "Kommer snart...",
+      "moreComing": "Fler spännande artiklar är på väg!",
+      "sourcesHeading": "Källor"
+    }
+  },
   "products": {
     "title": "Våra fantastiska produkter",
     "subtitle": "Alla våra produkter innehåller CBD och CBG för optimal hudhälsa",

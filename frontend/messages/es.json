@@ -434,5 +434,20 @@
     "common": {
       "tapToSelect": "Toca para seleccionar"
     }
+  },
+  "blog": {
+    "post": {
+      "shareText": "Lee \"{title}\" en 1753 Skincare",
+      "backToBlog": "Volver al blog",
+      "readingMinutes": "{minutes} min de lectura",
+      "commentsLabel": "{count} comentarios",
+      "share": "Compartir",
+      "authorBio": "Fundador de 1753 Skincare y experto en cuidado de la piel con cannabinoides. Apasionado por revolucionar la industria del cuidado de la piel mediante la ciencia y los ingredientes naturales.",
+      "readMoreAboutUs": "Leer más sobre nosotros →",
+      "relatedArticles": "Artículos relacionados",
+      "comingSoon": "Próximamente...",
+      "moreComing": "¡Más artículos emocionantes en camino!",
+      "sourcesHeading": "Fuentes"
+    }
   }
 }
