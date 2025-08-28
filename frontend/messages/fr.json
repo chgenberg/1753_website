@@ -1,7 +1,7 @@
 {
   "common": {
     "loading": "Chargement...",
-    "error": "Une erreur s’est produite",
+    "error": "Une erreur est survenue.",
     "success": "Succès",
     "save": "Enregistrer",
     "cancel": "Annuler",
@@ -14,65 +14,56 @@
     "close": "Fermer",
     "search": "Rechercher",
     "filter": "Filtrer",
-    "clear": "Effacer",
+    "clear": "Nettoyer",
     "apply": "Appliquer"
   },
   "navigation": {
-    "home": "Accueil",
+    "home": "Ourlet",
     "products": "Produits",
-    "skinConditions": "Problèmes de peau",
-    "about": "À propos",
+    "skinConditions": "État de la peau",
+    "about": "À propos de nous",
     "blog": "Blog",
-    "knowledge": "Connaissances",
-    "contact": "Contact",
+    "knowledge": "Connaissance",
+    "contact": "Contactez-nous",
     "account": "Mon compte",
     "cart": "Panier",
-    "checkout": "Paiement",
-    "login": "Connexion",
-    "register": "S’inscrire",
-    "logout": "Déconnexion",
+    "checkout": "Caisse",
+    "login": "Se connecter",
+    "register": "Inscrivez-vous",
+    "logout": "Se déconnecter",
     "privacyPolicy": "Politique de confidentialité",
     "terms": "Conditions",
     "cookies": "Cookies"
   },
   "headerTopBar": {
-    "bannerPrefix": "LIVRAISON OFFERTE DÈS 500 SEK",
-    "freeShipping": "Service personnalisé et gratuit",
-    "naturalIngredients": "Ingrédients naturels",
-    "openPurchase": "30 jours de droit de rétractation"
-  },
-  "menu": {
-    "products": {
-      "skincare": "Soin de la peau",
-      "skincareDesc": "Soins naturels avec CBD et adaptogènes",
-      "duo": "Duos",
-      "duoDesc": "Combinaisons parfaites pour votre peau",
-      "allDesc": "Voir toute notre gamme"
-    }
+    "bannerPrefix": "Livraison gratuite à partir de 500 KR",
+    "freeShipping": "GRATUIT & PERSONNALISÉ",
+    "naturalIngredients": "INGRÉDIENTS NATURELS",
+    "openPurchase": "30 jours satisfait ou remboursé"
   },
   "hero": {
     "title": "Découvrez la puissance du CBD pour votre peau",
-    "subtitle": "Produits de soin naturels qui soutiennent le propre processus de guérison de votre peau",
-    "cta": "Acheter maintenant",
+    "subtitle": "Produits de soins naturels qui favorisent le processus de guérison naturel de la peau.",
+    "cta": "Achetez maintenant",
     "learnMore": "En savoir plus"
   },
   "products": {
-    "title": "Nos produits remarquables",
-    "subtitle": "Tous nos produits contiennent du CBD et du CBG pour une peau en pleine santé",
+    "title": "Nos produits fantastiques",
+    "subtitle": "Tous nos produits contiennent du CBD et du CBG pour une santé optimale de la peau.",
     "addToCart": "Ajouter au panier",
-    "outOfStock": "En rupture de stock",
+    "outOfStock": "Épuisé",
     "quickView": "Aperçu rapide",
-    "comparePrice": "Prix conseillé",
-    "salePrice": "Prix promo",
+    "comparePrice": "Prix normal",
+    "salePrice": "Reapris",
     "bestseller": "Meilleure vente",
-    "new": "Nouveau",
-    "featured": "Mis en avant"
+    "new": "Actualité",
+    "featured": "Sélectionné"
   },
   "skinJourney": {
-    "title": "Votre parcours peau",
-    "subtitle": "Suivez l’évolution de votre peau avec nos outils personnalisés",
-    "startJourney": "Commencer votre parcours",
-    "progress": "Progression",
+    "title": "Votre parcours cutané",
+    "subtitle": "Suivez l'évolution de votre peau avec nos outils personnalisés.",
+    "startJourney": "Commencez votre parcours cutané",
+    "progress": "Progrès",
     "photos": "Photos",
     "notes": "Notes",
     "checkIn": "Enregistrement",
@@ -81,19 +72,19 @@
     "skinCondition": "État de la peau",
     "improvement": "Amélioration",
     "noChange": "Aucun changement",
-    "worsened": "Empiré"
+    "worsened": "S'est aggravé"
   },
   "account": {
-    "dashboard": "Tableau de bord",
+    "dashboard": "Aperçu",
     "profile": "Profil",
     "orders": "Commandes",
-    "addresses": "Adresses",
-    "preferences": "Préférences",
-    "skinJourney": "Parcours peau",
+    "addresses": "Adresser",
+    "preferences": "Paramètres",
+    "skinJourney": "Voyage de la peau",
     "personalInfo": "Informations personnelles",
     "firstName": "Prénom",
-    "lastName": "Nom",
-    "email": "E‑mail",
+    "lastName": "Nom de famille",
+    "email": "Courriel",
     "phone": "Téléphone",
     "dateOfBirth": "Date de naissance",
     "skinType": "Type de peau",
@@ -101,38 +92,38 @@
   },
   "cart": {
     "title": "Panier",
-    "empty": "Votre panier est vide",
+    "empty": "Votre panier est vide.",
     "quantity": "Quantité",
     "price": "Prix",
     "total": "Total",
-    "subtotal": "Sous‑total",
-    "shipping": "Livraison",
-    "tax": "TVA",
+    "subtotal": "Sous-total",
+    "shipping": "Expédition",
+    "tax": "Mamans",
     "remove": "Supprimer",
     "updateQuantity": "Mettre à jour la quantité",
-    "proceedToCheckout": "Passer au paiement",
+    "proceedToCheckout": "Passer à la caisse",
     "continueShopping": "Continuer vos achats"
   },
   "checkout": {
-    "title": "Paiement",
+    "title": "Caisse",
     "shippingAddress": "Adresse de livraison",
     "billingAddress": "Adresse de facturation",
-    "paymentMethod": "Moyen de paiement",
-    "orderSummary": "Récapitulatif de commande",
+    "paymentMethod": "Mode de paiement",
+    "orderSummary": "Résumé de la commande",
     "placeOrder": "Passer la commande",
-    "processing": "Traitement...",
-    "success": "Commande passée avec succès !",
-    "error": "Une erreur s’est produite lors du passage de la commande"
+    "processing": "Traitement en cours...",
+    "success": "Commande effectuée !",
+    "error": "Une erreur est survenue lors de la commande."
   },
   "forms": {
     "required": "Ce champ est obligatoire",
-    "email": "Veuillez saisir une adresse e‑mail valide",
-    "password": "Le mot de passe doit contenir au moins 8 caractères",
-    "confirmPassword": "Les mots de passe ne correspondent pas",
-    "phone": "Veuillez saisir un numéro de téléphone valide",
+    "email": "Veuillez saisir une adresse e-mail valide.",
+    "password": "Le mot de passe doit comporter au moins 8 caractères.",
+    "confirmPassword": "Les mots de passe ne correspondent pas.",
+    "phone": "Veuillez saisir un numéro de téléphone valide.",
     "firstName": "Prénom",
-    "lastName": "Nom",
-    "company": "Société (facultatif)",
+    "lastName": "Nom de famille",
+    "company": "Entreprise (facultatif)",
     "address": "Adresse",
     "city": "Ville",
     "postalCode": "Code postal",
@@ -143,176 +134,207 @@
     "oily": "Peau grasse",
     "combination": "Peau mixte",
     "sensitive": "Peau sensible",
-    "normal": "Peau normale",
-    "acne": "Peau à tendance acnéique",
+    "normal": "HUD normal",
+    "acne": "Acné",
     "mature": "Peau mature"
   },
   "footer": {
-    "company": "1753 Skincare",
-    "description": "Soin naturel avec CBD et CBG pour une peau en pleine santé",
+    "company": "1753 Soins de la peau",
+    "description": "Soins naturels de la peau au CBD et au CBG pour une santé cutanée optimale",
     "quickLinks": "Liens rapides",
     "customerService": "Service client",
-    "followUs": "Suivez‑nous",
-    "newsletter": "Newsletter",
-    "newsletterDescription": "Recevez les dernières actualités sur le soin de la peau et le CBD",
-    "subscribe": "S’abonner",
+    "followUs": "Suivez-nous",
+    "newsletter": "Lettre d'information",
+    "newsletterDescription": "Recevez les dernières actualités sur les soins de la peau et le CBD.",
+    "subscribe": "S'abonner",
     "copyright": "© 2024 1753 Skincare. Tous droits réservés.",
     "help": "Aide"
   },
-  "Reviews": {
-    "pageTitle": "Avis - 1753 Skincare",
-    "pageDescription": "Lisez ce que disent nos clients à propos de 1753 Skincare. Des avis authentiques de personnes qui ont découvert la puissance du soin naturel.",
-    "title": "Ce que disent nos clients",
-    "subtitle": "Des témoignages authentiques de personnes qui ont découvert la puissance du soin naturel",
-    "totalReviews": "Avis",
-    "averageRating": "Note moyenne",
-    "fiveStarPercentage": "Notes 5 étoiles",
-    "allRatings": "Toutes les notes",
-    "allProducts": "Tous les produits",
-    "sortNewest": "Plus récents d’abord",
-    "sortHighest": "Meilleure note d’abord",
-    "sortLowest": "Plus faible note d’abord",
-    "resetFilters": "Réinitialiser les filtres",
-          "verifiedPurchase": "Achat vérifié",
-      "prevAria": "Aller à l’avis précédent",
-      "nextAria": "Aller à l’avis suivant",
-      "gotoAria": "Aller à l’avis {index}",
-      "loading": "Chargement...",
-      "loadMore": "Voir plus",
-      "noReviews": "Aucun avis trouvé",
-      "readAllReviews": "LIRE TOUS LES AVIS"
-  },
-  "Quiz": {
-    "title": "Quiz d’analyse de la peau",
-    "subtitle": "Obtenez des recommandations de soin personnalisées basées sur votre profil de peau",
-    "startButton": "Commencer le quiz",
-    "nextButton": "Suivant",
-    "previousButton": "Précédent",
-    "submitButton": "Voir mes résultats",
-    "loading": "Analyse de vos réponses...",
-    "error": "Un problème est survenu. Veuillez réessayer.",
-    "progress": "Question {current} sur {total}",
-    "results": {
-      "title": "Vos résultats",
-      "loading": "Préparation de votre analyse de peau personnalisée...",
-      "error": "Impossible de charger les résultats. Veuillez réessayer."
-    }
-  },
-  "Blog": {
-    "metaTitle": "Blog - 1753 Skincare",
-    "metaDescription": "Lisez nos derniers articles sur le soin de la peau, le CBD et la beauté naturelle. Conseils d’experts pour une peau saine.",
-    "title": "Blog",
-    "subtitle": "Inspiration, conseils et connaissances sur le soin naturel de la peau",
-    "readMore": "Lire la suite",
-    "shareArticle": "Partager l’article",
-    "relatedArticles": "Articles liés",
-    "backToBlog": "Retour au blog",
-    "noArticles": "Aucun article publié pour le moment",
-    "loading": "Chargement des articles..."
-  },
-  "home": {
-    "hero": {
-      "coverAlt": "Image de couverture 1753 Skincare 2025",
-      "headingLine1": "Soin naturel pour",
-      "headingLine2": "l’écosystème de la peau",
-      "subtitle": "Soin développé scientifiquement qui agit en harmonie avec les cellules, le microbiome et le système endocannabinoïde",
-      "authorAlt": "Portrait de Christopher Genberg",
-      "authorTagline": "Fondateur • 12+ ans d’expérience • Rebelle du skincare",
-      "ctaQuiz": "Faire le quiz peau",
-      "ctaProducts": "Voir les produits",
-      "timelineTitle": "Votre chemin vers une peau parfaite",
-      "steps": {
-        "step1": { "title": "Faire le quiz peau", "badge": "2 minutes" },
-        "step2": { "title": "Obtenir des recommandations", "badge": "Plan personnalisé" },
-        "step3": { "title": "Suivi", "badge": "Amélioration hebdomadaire" },
-        "step4": { "title": "Peau parfaite !", "badge": "En 3 mois" }
-      },
-      "modal": {
-        "step1": {
-          "title": "📝 Faire le quiz peau",
-          "description": "Notre quiz prend 2 minutes et nous aide à comprendre votre type de peau et vos besoins.\n\nAvec quelques questions sur votre peau, votre mode de vie et vos préférences, nous créons une routine sur mesure.\n\nLe quiz analyse type de peau, préoccupations, âge et environnement pour des recommandations pertinentes." 
-        },
-        "step2": {
-          "title": "🎯 Obtenir des recommandations",
-          "description": "Selon vos réponses, vous recevez un plan de soin personnel avec des produits adaptés à votre peau.\n\nNous combinons savoir traditionnel et science moderne pour une routine complète.\n\nVous recevrez aussi des conseils d’utilisation pour de meilleurs résultats." 
-        },
-        "step3": {
-          "title": "📈 Suivi",
-          "description": "Nous vous accompagnons chaque semaine pour garantir des améliorations continues.\n\nAvec des suivis réguliers, nous ajustons votre routine et donnons des conseils personnalisés.\n\nVous recevez des rappels et pouvez documenter vos progrès." 
-        },
-        "step4": {
-          "title": "✨ Peau parfaite !",
-          "description": "En 3 mois, vous verrez une nette amélioration de la qualité et de l’aspect de votre peau.\n\nAvec nos produits naturels au CBD et CBG et une routine personnalisée, votre peau devient équilibrée, plus nette et rayonnante." 
-        }
-      }
-    },
-    "about": {
-      "title": "NOTRE PHILOSOPHIE",
-      "subtitle": "Une tradition intemporelle de soins naturels, fondée sur la science et l’amour de la nature",
-      "heading": "DEPUIS 1753, NOUS COMPRENONS LES BESOINS NATURELS DE LA PEAU",
-      "p1": "Au cœur de la nature suédoise est née notre vision : créer des soins qui fonctionnent en harmonie avec les processus naturels de votre peau. Nous allions savoir-faire traditionnel et recherche moderne.",
-      "p2": "Nos produits contiennent des ingrédients soigneusement sélectionnés tels que le CBD et le CBG, reconnus pour leurs propriétés apaisantes et équilibrantes. Chaque formule est élaborée pour offrir à votre peau exactement ce dont elle a besoin—ni plus, ni moins.",
-      "values": {
-        "natural": { "title": "Naturel", "desc": "Uniquement des ingrédients naturels" },
-        "loving": { "title": "Bienveillant", "desc": "Créé avec soin pour votre peau" },
-        "safe": { "title": "Sûr", "desc": "Soins testés et certifiés" }
-      },
-      "cta": "En savoir plus sur notre histoire",
-      "imageAlt": "Soins naturels de la peau",
-      "foundersAlt": "Fondateurs",
-      "foundersHeading": "UNE PASSION POUR LA BEAUTÉ NATURELLE",
-      "foundersQuote": "\"Notre aventure a commencé par une simple conviction : la nature détient toutes les réponses pour une peau saine et éclatante. Après des années de recherche et de développement, nous avons créé des produits que nous adorons utiliser chaque jour.\"",
-      "foundersNames": "Christopher & Ebba",
-      "foundersTitle": "Fondateurs, 1753 Skincare"
-    }
-  },
   "productsPage": {
-    "badgeCBD": "SOINS INFUSÉS AU CBD",
+    "badgeCBD": "Soin de la peau enrichi au CBD",
     "title": "NOS PRODUITS",
-    "subtitle": "Découvrez la puissance du soin naturel avec nos produits au CBD et CBG soigneusement sélectionnés",
+    "subtitle": "Découvrez la puissance des soins naturels pour la peau avec nos produits CBD et CBG soigneusement sélectionnés",
     "filter": "FILTRE",
     "categories": {
-      "all": "Tous",
-      "bestseller": "Meilleures ventes",
+      "all": "Alla",
+      "bestseller": "Meilleure vente",
       "new": "Nouveau"
     },
     "sort": {
-      "featured": "Mise en avant d’abord",
-      "name": "Nom A–Z",
+      "featured": "Sélectionnés en premier",
+      "name": "Noms A–Z",
       "priceLow": "Prix : du plus bas au plus élevé",
       "priceHigh": "Prix : du plus élevé au plus bas"
     },
     "activeFilters": "{count} filtre actif",
-    "resetFilters": "Réinitialiser les filtres",
+    "resetFilters": "Effacer les filtres",
     "loading": "Chargement des produits...",
     "empty": {
-      "title": "Aucun produit trouvé avec les filtres actuels.",
-      "showAll": "Voir tous les produits"
+      "title": "Aucun produit n'a été trouvé avec les filtres actuels.",
+      "showAll": "Afficher tous les produits"
     },
     "quickView": "Aperçu rapide",
     "addToCart": "Ajouter au panier",
     "newsletter": {
       "title": "Ne manquez pas nos nouveautés",
-      "description": "Abonnez‑vous à notre newsletter pour des offres exclusives et des conseils soin",
-      "placeholderEmail": "Votre adresse e‑mail",
-      "subscribe": "S’abonner"
+      "description": "Abonnez-vous à notre newsletter pour des offres exclusives et des conseils pour les soins de la peau.",
+      "placeholderEmail": "Votre adresse e-mail",
+      "subscribe": "S'abonner"
     },
-    "quizCta": "Faire notre analyse de peau",
+    "quizCta": "Faites notre analyse cutanée",
     "badges": {
       "recommended": "RECOMMANDÉ",
       "bestseller": "MEILLEURE VENTE",
       "new": "NOUVEAU"
     }
   },
+  "Reviews": {
+    "pageTitle": "Avis - 1753 Skincare",
+    "pageDescription": "Découvrez ce que nos clients disent de 1753 Skincare. Avis authentiques de personnes qui ont découvert le pouvoir des soins naturels pour la peau.",
+    "title": "Ce que disent nos clients",
+    "subtitle": "Récits authentiques de personnes qui ont découvert le pouvoir des soins naturels pour la peau",
+    "totalReviews": "Basé sur",
+    "averageRating": "Note moyenne",
+    "fiveStarPercentage": "notes 5 étoiles",
+    "allRatings": "Tous les avis",
+    "allProducts": "Tous les produits",
+    "sortNewest": "Les plus récents en premier",
+    "sortOldest": "Du plus ancien au plus récent",
+    "sortHighest": "Les meilleures notes en premier",
+    "sortLowest": "Note la plus basse en premier",
+    "resetFilters": "Réinitialiser les filtres",
+    "verifiedPurchase": "Vérifié",
+    "loading": "Chargement...",
+    "loadMore": "Afficher plus",
+    "noReviews": "Aucun avis trouvé",
+    "readAllReviews": "LIRE TOUS LES AVIS",
+    "prevAria": "Avis précédent",
+    "nextAria": "Avis suivant",
+    "gotoAria": "Aller à l'avis {index}"
+  },
+  "Quiz": {
+    "title": "Quiz d'analyse cutanée",
+    "subtitle": "Obtenez des recommandations personnalisées de soins de la peau basées sur votre profil cutané unique.",
+    "startButton": "Commencer le quiz",
+    "nextButton": "Suivant",
+    "previousButton": "Précédent",
+    "submitButton": "Obtenir mes résultats",
+    "loading": "Analyse de vos réponses...",
+    "error": "Une erreur est survenue. Veuillez réessayer.",
+    "progress": "Question {current} sur {total}",
+    "results": {
+      "title": "Vos résultats",
+      "loading": "Préparation de votre analyse cutanée personnalisée...",
+      "error": "Impossible de charger les résultats. Veuillez réessayer."
+    }
+  },
+  "Blog": {
+    "metaTitle": "Blog - 1753 Skincare",
+    "metaDescription": "Lisez nos derniers articles sur les soins de la peau, le CBD et la beauté naturelle. Conseils d'experts et astuces pour une peau saine.",
+    "title": "Blog",
+    "subtitle": "Inspiration, conseils et connaissances sur les soins naturels de la peau",
+    "readMore": "En savoir plus",
+    "shareArticle": "Partager l'article",
+    "relatedArticles": "Articles connexes",
+    "backToBlog": "Retour au blog",
+    "noArticles": "Aucun article publié pour le moment",
+    "loading": "Chargement des articles..."
+  },
+  "home": {
+    "hero": {
+      "coverAlt": "Image de couverture pour 1753 Skincare 2025",
+      "headingLine1": "Soins naturels pour",
+      "headingLine2": "l'écosystème cutané",
+      "subtitle": "Soins de la peau développés scientifiquement qui agissent en harmonie avec les cellules cutanées, le microbiome et le système endocannabinoïde",
+      "authorAlt": "Portrait de Christopher Genberg",
+      "authorTagline": "Fondateur • 12+ ans d'expérience • Rebelle des soins de la peau",
+      "ctaQuiz": "Faites le quiz sur la peau",
+      "ctaProducts": "Voir les produits",
+      "timelineTitle": "Votre voyage vers une peau parfaite",
+      "steps": {
+        "step1": {
+          "title": "Faites le quiz sur votre peau",
+          "badge": "2 minutes"
+        },
+        "step2": {
+          "title": "Obtenir une recommandation",
+          "badge": "Plan personnel"
+        },
+        "step3": {
+          "title": "Faire le suivi",
+          "badge": "Amélioration hebdomadaire"
+        },
+        "step4": {
+          "title": "Peau parfaite !",
+          "badge": "Dans les 3 mois"
+        }
+      },
+      "modal": {
+        "step1": {
+          "title": "📝 Faites le quiz sur la peau",
+          "description": "Notre quiz sur les soins de la peau ne prend que 2 minutes et nous aide à comprendre votre type de peau unique et vos besoins spécifiques.\n\nEn répondant à quelques questions simples sur votre peau, votre mode de vie et vos préférences, nous pouvons créer une routine de soins sur mesure rien que pour vous.\n\nLe quiz analyse des facteurs tels que le type de peau, d'éventuels problèmes cutanés, l'âge et l'impact de l'environnement pour vous fournir les recommandations de produits les plus pertinentes."
+        },
+        "step2": {
+          "title": "🎯 Obtenir une recommandation",
+          "description": "En fonction de vos réponses au quiz, vous recevrez un plan de soins de la peau personnalisé avec des recommandations de produits spécialement sélectionnées pour votre type de peau et vos besoins.\n\nNotre algorithme combine les connaissances traditionnelles en soins de la peau avec la science moderne pour créer une routine complète qui inclut le nettoyage, le traitement et la protection.\n\nVous recevrez également des conseils sur la meilleure façon d'utiliser les produits pour des résultats optimaux."
+        },
+        "step3": {
+          "title": "📈 Faire le suivi",
+          "description": "Nous suivons votre parcours de soins de la peau chaque semaine pour nous assurer que vous constatez des améliorations continues.\n\nGrâce à des bilans réguliers, nous pouvons ajuster votre routine si nécessaire et vous donner des conseils personnalisés en fonction de l'évolution de votre peau.\n\nVous recevrez des rappels pour savoir quand il est temps d'appliquer les produits et pourrez documenter vos progrès avec des photos pour voir clairement les améliorations au fil du temps."
+        },
+        "step4": {
+          "title": "✨ Peau parfaite !",
+          "description": "Inom 3 månader kommer du att se en märkbar förbättring av din huds kvalitet och utseende.\n\nMed våra naturliga produkter innehållande CBD och CBG, kombinerat med din personliga hudvårdsrutin, kommer din hud att bli mer balanserad, klarare och strålande.\n\nMånga av våra kunder rapporterar synliga resultat redan efter några veckor, men den fulla effekten uppnås vanligtvis inom 3 månader av konsekvent användning."
+        }
+      }
+    },
+    "about": {
+      "title": "NOTRE PHILOSOPHIE",
+      "subtitle": "Une tradition intemporelle de soins naturels pour la peau, fondée sur la science et l'amour de la nature.",
+      "heading": "DEPUIS 1753, NOUS AVONS COMPRIS LES BESOINS NATURELS DE LA PEAU.",
+      "p1": "Au cœur de la nature suédoise est née notre vision de créer des soins de la peau qui agissent en harmonie avec les processus naturels de votre peau. Nous associons le savoir traditionnel à la recherche moderne.",
+      "p2": "Nos produits contiennent des ingrédients soigneusement sélectionnés tels que le CBD et le CBG, connus pour leurs propriétés apaisantes et équilibrantes. Chaque formule est développée pour apporter à votre peau ce dont elle a besoin — pas plus, pas moins.",
+      "values": {
+        "natural": {
+          "title": "Naturel",
+          "desc": "Uniquement des ingrédients naturels issus de la nature"
+        },
+        "loving": {
+          "title": "Aimant",
+          "desc": "Créé avec soin pour votre peau"
+        },
+        "safe": {
+          "title": "Sûr",
+          "desc": "Soins de la peau testés et certifiés"
+        }
+      },
+      "cta": "En savoir plus sur notre histoire",
+      "imageAlt": "Soins naturels pour la peau",
+      "foundersAlt": "Fondateur",
+      "foundersHeading": "UNE PASSION POUR LA BEAUTÉ NATURELLE",
+      "foundersQuote": "Notre voyage a commencé par une conviction simple : que la nature a toutes les réponses pour une peau saine et éclatante. Après des années de recherche et de développement, nous avons créé des produits que nous aimons utiliser nous-mêmes chaque jour.",
+      "foundersNames": "Christopher & Ebba",
+      "foundersTitle": "Fondateur, 1753 Skincare"
+    }
+  },
+  "menu": {
+    "products": {
+      "skincare": "Soins de la peau",
+      "skincareDesc": "Soins naturels de la peau au CBD et aux adaptogènes",
+      "duo": "Duo-kit",
+      "duoDesc": "Combinaisons parfaites pour votre peau",
+      "allDesc": "Voir toute notre gamme"
+    }
+  },
   "productDetail": {
-    "notFound": "Le produit est introuvable.",
+    "notFound": "Le produit n'a pas pu être trouvé.",
     "saved": "Vous économisez {amount} kr",
     "skinTypesTitle": "Convient aux types de peau :",
-    "quantity": "Quantité :",
+    "quantity": "Nombre :",
     "addedToCart": "Ajouté au panier",
     "trust": {
-      "freeShipping": "Livraison gratuite dès 500 kr",
-      "securePayment": "Paiement 100% sécurisé",
+      "freeShipping": "Livraison gratuite à partir de 500 kr",
+      "securePayment": "Paiement 100 % sécurisé",
       "natural": "100% naturel"
     },
     "tabs": {
@@ -321,33 +343,33 @@
       "usage": "Utilisation",
       "reviews": "Avis"
     },
-    "benefitsTitle": "Bénéfices",
-    "benefitsLabel": "Bénéfices :",
-    "usageTitle": "Comment utiliser {name}",
+    "benefitsTitle": "Avantages",
+    "benefitsLabel": "Avantages :",
+    "usageTitle": "Voici comment utiliser {name}",
     "mushroomShowcase": "Quatre puissants champignons médicinaux"
   },
   "cookieBanner": {
-    "title": "Nous respectons votre vie privée 🍪",
-    "description": "Nous utilisons des cookies pour améliorer votre expérience, analyser le trafic et personnaliser le contenu. Vous pouvez choisir les cookies à accepter.",
+    "title": "Nous protégeons votre vie privée 🍪",
+    "description": "Nous utilisons des cookies pour améliorer votre expérience sur notre site Web, analyser le trafic et personnaliser le contenu. Vous pouvez choisir quels cookies vous acceptez.",
     "acceptAll": "Tout accepter",
-    "onlyNecessary": "Essentiels uniquement",
+    "onlyNecessary": "Uniquement nécessaires",
     "customize": "Personnaliser",
-    "learnMore": "En savoir plus dans notre",
+    "learnMore": "En savoir plus ce printemps",
     "and": "et",
     "saveSettings": "Enregistrer les paramètres",
     "settings": {
       "title": "Paramètres des cookies",
       "necessary": {
-        "title": "Cookies essentiels",
-        "desc": "Ces cookies sont indispensables au bon fonctionnement du site. Ils ne peuvent pas être désactivés."
+        "title": "Cookies nécessaires",
+        "desc": "Ces cookies sont nécessaires au bon fonctionnement du site. Ils ne peuvent pas être désactivés."
       },
       "analytics": {
-        "title": "Cookies d’analyse",
-        "desc": "Nous aident à comprendre comment les visiteurs utilisent le site en recueillant et en rapportant des informations anonymes."
+        "title": "Cookies analytiques",
+        "desc": "Nous aide à comprendre comment les visiteurs utilisent le site web en collectant et en rapportant des informations anonymes."
       },
       "marketing": {
         "title": "Cookies marketing",
-        "desc": "Utilisés pour afficher des publicités pertinentes et mesurer l’efficacité de nos campagnes."
+        "desc": "Utilisé pour afficher des annonces pertinentes et mesurer l'efficacité de nos campagnes marketing."
       }
     }
   }

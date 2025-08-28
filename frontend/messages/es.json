@@ -1,13 +1,13 @@
 {
   "common": {
     "loading": "Cargando...",
-    "error": "Ocurrió un error",
+    "error": "Ocurrió un error.",
     "success": "Éxito",
     "save": "Guardar",
     "cancel": "Cancelar",
     "delete": "Eliminar",
     "edit": "Editar",
-    "add": "Añadir",
+    "add": "Agregar",
     "continue": "Continuar",
     "back": "Atrás",
     "next": "Siguiente",
@@ -20,58 +20,49 @@
   "navigation": {
     "home": "Inicio",
     "products": "Productos",
-    "skinConditions": "Afecciones de la piel",
+    "skinConditions": "Estado de la piel",
     "about": "Sobre nosotros",
     "blog": "Blog",
     "knowledge": "Conocimiento",
-    "contact": "Contacto",
+    "contact": "Contáctanos",
     "account": "Mi cuenta",
     "cart": "Carrito",
-    "checkout": "Pago",
+    "checkout": "Caja",
     "login": "Iniciar sesión",
-    "register": "Registrarse",
+    "register": "Regístrate",
     "logout": "Cerrar sesión",
     "privacyPolicy": "Política de privacidad",
-    "terms": "Términos",
-    "cookies": "Cookies"
+    "terms": "Condiciones",
+    "cookies": "Galletas"
   },
   "headerTopBar": {
-    "bannerPrefix": "ENVÍO GRATIS A PARTIR DE 500 SEK",
-    "freeShipping": "Atención personal y gratuita",
-    "naturalIngredients": "Ingredientes naturales",
-    "openPurchase": "30 días de derecho de devolución"
-  },
-  "menu": {
-    "products": {
-      "skincare": "Cuidado de la piel",
-      "skincareDesc": "Cuidado natural con CBD y adaptógenos",
-      "duo": "Dúos",
-      "duoDesc": "Combinaciones perfectas para tu piel",
-      "allDesc": "Ver toda nuestra gama"
-    }
+    "bannerPrefix": "ENVÍO GRATIS A PARTIR DE 500 KR",
+    "freeShipping": "GRATIS Y PERSONAL",
+    "naturalIngredients": "INGREDIENTES NATURALES",
+    "openPurchase": "30 DÍAS DE DEVOLUCIÓN"
   },
   "hero": {
     "title": "Descubre el poder del CBD para tu piel",
-    "subtitle": "Productos de cuidado de la piel naturales que apoyan el propio proceso de curación de tu piel",
+    "subtitle": "Productos naturales para el cuidado de la piel que apoyan su propio proceso de curación.",
     "cta": "Comprar ahora",
-    "learnMore": "Más información"
+    "learnMore": "Leer más"
   },
   "products": {
-    "title": "Nuestros productos increíbles",
-    "subtitle": "Todos nuestros productos contienen CBD y CBG para una salud óptima de la piel",
+    "title": "Nuestros productos fantásticos",
+    "subtitle": "Todos nuestros productos contienen CBD y CBG para una salud óptima de la piel.",
     "addToCart": "Añadir al carrito",
     "outOfStock": "Agotado",
     "quickView": "Vista rápida",
-    "comparePrice": "Precio original",
-    "salePrice": "Precio de oferta",
-    "bestseller": "Más vendido",
-    "new": "Nuevo",
-    "featured": "Destacado"
+    "comparePrice": "Precio habitual",
+    "salePrice": "Reapris",
+    "bestseller": "Más vendidos",
+    "new": "Noticia",
+    "featured": "Seleccionado"
   },
   "skinJourney": {
-    "title": "Tu viaje de piel",
-    "subtitle": "Sigue el progreso de tu piel con nuestras herramientas personales",
-    "startJourney": "Comienza tu viaje de piel",
+    "title": "Tu viaje de cuidado de la piel",
+    "subtitle": "Sigue la evolución de tu piel con nuestras herramientas personalizadas",
+    "startJourney": "Comienza tu viaje de cuidado de la piel",
     "progress": "Progreso",
     "photos": "Fotos",
     "notes": "Notas",
@@ -84,206 +75,99 @@
     "worsened": "Empeorado"
   },
   "account": {
-    "dashboard": "Panel",
+    "dashboard": "Visión general",
     "profile": "Perfil",
     "orders": "Pedidos",
     "addresses": "Direcciones",
-    "preferences": "Preferencias",
-    "skinJourney": "Viaje de piel",
+    "preferences": "Ajustes",
+    "skinJourney": "Viaje de la piel",
     "personalInfo": "Información personal",
     "firstName": "Nombre",
-    "lastName": "Apellidos",
+    "lastName": "Apellido",
     "email": "Correo electrónico",
     "phone": "Teléfono",
     "dateOfBirth": "Fecha de nacimiento",
     "skinType": "Tipo de piel",
-    "skinConcerns": "Preocupaciones de la piel"
+    "skinConcerns": "Problemas de la piel"
   },
   "cart": {
-    "title": "Carrito",
+    "title": "Carrito de compras",
     "empty": "Tu carrito está vacío",
     "quantity": "Cantidad",
     "price": "Precio",
     "total": "Total",
     "subtotal": "Subtotal",
     "shipping": "Envío",
-    "tax": "Impuestos",
+    "tax": "Mamás",
     "remove": "Eliminar",
     "updateQuantity": "Actualizar cantidad",
-    "proceedToCheckout": "Ir al pago",
-    "continueShopping": "Seguir comprando"
+    "proceedToCheckout": "Ir a la caja",
+    "continueShopping": "Continuar comprando"
   },
   "checkout": {
-    "title": "Pago",
-    "shippingAddress": "Dirección de envío",
+    "title": "Caja",
+    "shippingAddress": "Dirección de entrega",
     "billingAddress": "Dirección de facturación",
     "paymentMethod": "Método de pago",
     "orderSummary": "Resumen del pedido",
     "placeOrder": "Realizar pedido",
     "processing": "Procesando...",
-    "success": "¡Pedido realizado con éxito!",
-    "error": "Ocurrió un error al realizar el pedido"
+    "success": "¡Pedido realizado!",
+    "error": "Se produjo un error al realizar el pedido"
   },
   "forms": {
     "required": "Este campo es obligatorio",
-    "email": "Introduce un correo electrónico válido",
-    "password": "La contraseña debe tener al menos 8 caracteres",
+    "email": "Introduce una dirección de correo electrónico válida.",
+    "password": "La contraseña debe tener al menos 8 caracteres.",
     "confirmPassword": "Las contraseñas no coinciden",
-    "phone": "Introduce un número de teléfono válido",
+    "phone": "Ingrese un número de teléfono válido",
     "firstName": "Nombre",
-    "lastName": "Apellidos",
+    "lastName": "Apellido",
     "company": "Empresa (opcional)",
     "address": "Dirección",
     "city": "Ciudad",
     "postalCode": "Código postal",
-    "country": "País"
+    "country": "Tierra"
   },
   "skinTypes": {
     "dry": "Piel seca",
     "oily": "Piel grasa",
-    "combination": "Piel mixta",
+    "combination": "piel mixta",
     "sensitive": "Piel sensible",
-    "normal": "Piel normal",
-    "acne": "Piel con acné",
+    "normal": "HUD normal",
+    "acne": "acné",
     "mature": "Piel madura"
   },
   "footer": {
-    "company": "1753 Skincare",
-    "description": "Cuidado de la piel natural con CBD y CBG para una salud óptima de la piel",
+    "company": "1753 Cuidado de la piel",
+    "description": "Cuidado natural de la piel con CBD y CBG para una salud cutánea óptima.",
     "quickLinks": "Enlaces rápidos",
     "customerService": "Atención al cliente",
     "followUs": "Síguenos",
     "newsletter": "Boletín",
-    "newsletterDescription": "Recibe las últimas noticias sobre cuidado de la piel y CBD",
+    "newsletterDescription": "Obtén las últimas noticias sobre el cuidado de la piel y el CBD.",
     "subscribe": "Suscribirse",
     "copyright": "© 2024 1753 Skincare. Todos los derechos reservados.",
     "help": "Ayuda"
   },
-  "Reviews": {
-    "pageTitle": "Reseñas - 1753 Skincare",
-    "pageDescription": "Lee lo que nuestros clientes dicen sobre 1753 Skincare. Reseñas reales de personas que han descubierto el poder del cuidado natural de la piel.",
-    "title": "Lo que dicen nuestros clientes",
-    "subtitle": "Historias reales de personas que han descubierto el poder del cuidado natural de la piel",
-    "totalReviews": "Reseñas",
-    "averageRating": "Calificación promedio",
-    "fiveStarPercentage": "Calificaciones de 5 estrellas",
-    "allRatings": "Todas las calificaciones",
-    "allProducts": "Todos los productos",
-    "sortNewest": "Más recientes primero",
-    "sortHighest": "Mejor calificación primero",
-    "sortLowest": "Peor calificación primero",
-    "resetFilters": "Restablecer filtros",
-          "verifiedPurchase": "Compra verificada",
-      "prevAria": "Ir a la reseña anterior",
-      "nextAria": "Ir a la siguiente reseña",
-      "gotoAria": "Ir a la reseña {index}",
-      "loading": "Cargando...",
-      "loadMore": "Ver más",
-      "noReviews": "No se encontraron reseñas",
-      "readAllReviews": "LEER TODAS LAS RESEÑAS"
-  },
-  "Quiz": {
-    "title": "Cuestionario de análisis de la piel",
-    "subtitle": "Obtén recomendaciones de cuidado personalizadas basadas en tu perfil de piel",
-    "startButton": "Comenzar cuestionario",
-    "nextButton": "Siguiente",
-    "previousButton": "Anterior",
-    "submitButton": "Ver mis resultados",
-    "loading": "Analizando tus respuestas...",
-    "error": "Algo salió mal. Inténtalo de nuevo.",
-    "progress": "Pregunta {current} de {total}",
-    "results": {
-      "title": "Tus resultados",
-      "loading": "Preparando tu análisis de piel personalizado...",
-      "error": "No se pudieron cargar los resultados. Inténtalo de nuevo."
-    }
-  },
-  "Blog": {
-    "metaTitle": "Blog - 1753 Skincare",
-    "metaDescription": "Lee nuestros últimos artículos sobre cuidado de la piel, CBD y belleza natural. Consejos de expertos para una piel saludable.",
-    "title": "Blog",
-    "subtitle": "Inspiración, consejos y conocimiento sobre cuidado natural de la piel",
-    "readMore": "Leer más",
-    "shareArticle": "Compartir artículo",
-    "relatedArticles": "Artículos relacionados",
-    "backToBlog": "Volver al blog",
-    "noArticles": "Aún no hay artículos publicados",
-    "loading": "Cargando artículos..."
-  },
-  "home": {
-    "hero": {
-      "coverAlt": "Imagen de portada de 1753 Skincare 2025",
-      "headingLine1": "Cuidado natural para",
-      "headingLine2": "el ecosistema de la piel",
-      "subtitle": "Cuidado de la piel desarrollado científicamente que trabaja en armonía con tus células, el microbioma y el sistema endocannabinoide",
-      "authorAlt": "Retrato de Christopher Genberg",
-      "authorTagline": "Fundador • 12+ años de experiencia • Rebelde del skincare",
-      "ctaQuiz": "Haz el quiz de piel",
-      "ctaProducts": "Ver productos",
-      "timelineTitle": "Tu camino hacia una piel perfecta",
-      "steps": {
-        "step1": { "title": "Haz el quiz de piel", "badge": "2 minutos" },
-        "step2": { "title": "Obtén recomendaciones", "badge": "Plan personal" },
-        "step3": { "title": "Seguimiento", "badge": "Mejora semanal" },
-        "step4": { "title": "¡Piel perfecta!", "badge": "En 3 meses" }
-      },
-      "modal": {
-        "step1": {
-          "title": "📝 Haz el quiz de piel",
-          "description": "Nuestro cuestionario tarda solo 2 minutos y nos ayuda a entender tu tipo de piel y tus necesidades.\n\nCon unas preguntas sobre tu piel, estilo de vida y preferencias, creamos una rutina personalizada.\n\nAnalizamos tipo de piel, preocupaciones, edad y entorno para ofrecerte recomendaciones relevantes." 
-        },
-        "step2": {
-          "title": "🎯 Obtén recomendaciones",
-          "description": "Con tus respuestas, recibirás un plan de cuidado personal con productos específicos para tu piel.\n\nCombinamos conocimiento tradicional y ciencia moderna para crear una rutina completa.\n\nTambién recibirás consejos para usar los productos con los mejores resultados." 
-        },
-        "step3": {
-          "title": "📈 Seguimiento",
-          "description": "Te acompañamos cada semana para asegurar mejoras continuas.\n\nCon revisiones regulares podemos ajustar tu rutina y darte consejos personalizados.\n\nRecibirás recordatorios y podrás documentar tu progreso para ver claramente la mejora." 
-        },
-        "step4": {
-          "title": "✨ ¡Piel perfecta!",
-          "description": "En 3 meses notarás una mejora visible en la calidad y el aspecto de tu piel.\n\nCon nuestros productos naturales con CBD y CBG y una rutina personalizada, tu piel estará más equilibrada, clara y radiante." 
-        }
-      }
-    },
-    "about": {
-      "title": "NUESTRA FILOSOFÍA",
-      "subtitle": "Una tradición atemporal de cuidado natural, basada en la ciencia y el amor por la naturaleza",
-      "heading": "DESDE 1753, ENTENDEMOS LAS NECESIDADES NATURALES DE LA PIEL",
-      "p1": "En el corazón de la naturaleza sueca nació nuestra visión: crear cuidado que funcione en armonía con los procesos naturales de tu piel. Combinamos conocimiento tradicional con investigación moderna.",
-      "p2": "Nuestros productos contienen ingredientes cuidadosamente seleccionados como CBD y CBG, conocidos por sus propiedades calmantes y equilibrantes. Cada fórmula está desarrollada para dar a tu piel exactamente lo que necesita—ni más, ni menos.",
-      "values": {
-        "natural": { "title": "Natural", "desc": "Solo ingredientes naturales de la naturaleza" },
-        "loving": { "title": "Con cariño", "desc": "Creado con cuidado para tu piel" },
-        "safe": { "title": "Seguro", "desc": "Cuidado probado y certificado" }
-      },
-      "cta": "Leer más sobre nuestra historia",
-      "imageAlt": "Cuidado natural de la piel",
-      "foundersAlt": "Fundadores",
-      "foundersHeading": "UNA PASIÓN POR LA BELLEZA NATURAL",
-      "foundersQuote": "\"Nuestro camino empezó con una creencia sencilla: la naturaleza tiene todas las respuestas para una piel sana y radiante. Tras años de investigación y desarrollo, hemos creado productos que nos encanta usar cada día.\"",
-      "foundersNames": "Christopher & Ebba",
-      "foundersTitle": "Fundadores, 1753 Skincare"
-    }
-  },
   "productsPage": {
-    "badgeCBD": "CUIDADO INFUNDIDO CON CBD",
+    "badgeCBD": "Cuidado de la piel enriquecido con CBD",
     "title": "NUESTROS PRODUCTOS",
-    "subtitle": "Descubre el poder del cuidado natural con nuestros productos de CBD y CBG",
+    "subtitle": "Descubre el poder del cuidado de la piel natural con nuestros productos de CBD y CBG cuidadosamente seleccionados",
     "filter": "FILTRO",
     "categories": {
       "all": "Todos",
-      "bestseller": "Más vendidos",
+      "bestseller": "Más vendido",
       "new": "Nuevo"
     },
     "sort": {
       "featured": "Destacados primero",
-      "name": "Nombre A–Z",
+      "name": "Nombres A–Ö",
       "priceLow": "Precio: de menor a mayor",
       "priceHigh": "Precio: de mayor a menor"
     },
     "activeFilters": "{count} filtro activo",
-    "resetFilters": "Restablecer filtros",
+    "resetFilters": "Limpiar filtros",
     "loading": "Cargando productos...",
     "empty": {
       "title": "No se encontraron productos con los filtros actuales.",
@@ -293,15 +177,153 @@
     "addToCart": "Añadir al carrito",
     "newsletter": {
       "title": "No te pierdas nuestras novedades",
-      "description": "Suscríbete a nuestro boletín para ofertas exclusivas y consejos de cuidado",
-      "placeholderEmail": "Tu correo electrónico",
+      "description": "Suscríbete a nuestro boletín para ofertas exclusivas y consejos sobre el cuidado de la piel.",
+      "placeholderEmail": "Tu dirección de correo electrónico",
       "subscribe": "Suscribirse"
     },
-    "quizCta": "Haz nuestro análisis de piel",
+    "quizCta": "Realiza nuestro análisis de la piel",
     "badges": {
       "recommended": "RECOMENDADO",
       "bestseller": "MÁS VENDIDO",
       "new": "NUEVO"
+    }
+  },
+  "Reviews": {
+    "pageTitle": "Reseñas - 1753 Skincare",
+    "pageDescription": "Lee lo que dicen nuestros clientes sobre 1753 Skincare. Reseñas auténticas de personas que han descubierto el poder del cuidado natural de la piel.",
+    "title": "Lo que dicen nuestros clientes",
+    "subtitle": "Historias auténticas de personas que han descubierto el poder del cuidado natural de la piel",
+    "totalReviews": "Basado en",
+    "averageRating": "Calificación promedio",
+    "fiveStarPercentage": "valoraciones de 5 estrellas",
+    "allRatings": "Todas las calificaciones",
+    "allProducts": "Todos los productos",
+    "sortNewest": "Más recientes primero",
+    "sortOldest": "Más antiguos primero",
+    "sortHighest": "Calificación más alta primero",
+    "sortLowest": "Calificación más baja primero",
+    "resetFilters": "Restablecer filtros",
+    "verifiedPurchase": "Verificado",
+    "loading": "Cargando...",
+    "loadMore": "Mostrar más",
+    "noReviews": "No se encontraron reseñas",
+    "readAllReviews": "LEER TODAS LAS RESEÑAS",
+    "prevAria": "Reseña anterior",
+    "nextAria": "Siguiente reseña",
+    "gotoAria": "Ir a la reseña {index}"
+  },
+  "Quiz": {
+    "title": "Cuestionario de análisis de piel",
+    "subtitle": "Obtén recomendaciones de cuidado de la piel personalizadas basadas en tu perfil único de piel.",
+    "startButton": "Iniciar cuestionario",
+    "nextButton": "Siguiente",
+    "previousButton": "Anterior",
+    "submitButton": "Obtener mis resultados",
+    "loading": "Analizando tus respuestas...",
+    "error": "Algo salió mal. Por favor, inténtelo de nuevo.",
+    "progress": "Pregunta {current} de {total}",
+    "results": {
+      "title": "Tus resultados",
+      "loading": "Preparando tu análisis personal de la piel...",
+      "error": "No se pudieron cargar los resultados. Por favor, inténtelo de nuevo."
+    }
+  },
+  "Blog": {
+    "metaTitle": "Blog - 1753 Skincare",
+    "metaDescription": "Lee nuestros últimos artículos sobre cuidado de la piel, CBD y belleza natural. Consejos de expertos y recomendaciones para una piel saludable.",
+    "title": "Blog",
+    "subtitle": "Inspiración, consejos y conocimientos sobre el cuidado natural de la piel",
+    "readMore": "Leer más",
+    "shareArticle": "Compartir artículo",
+    "relatedArticles": "Artículos relacionados",
+    "backToBlog": "Volver al blog",
+    "noArticles": "No hay artículos publicados aún",
+    "loading": "Cargando artículos..."
+  },
+  "home": {
+    "hero": {
+      "coverAlt": "Imagen de portada para 1753 Skincare 2025",
+      "headingLine1": "Cuidado natural de la piel para",
+      "headingLine2": "el ecosistema de la piel",
+      "subtitle": "Cuidado de la piel desarrollado científicamente que actúa en armonía con las células de la piel, el microbioma y el sistema endocannabinoide.",
+      "authorAlt": "Retrato de Christopher Genberg",
+      "authorTagline": "Fundador/a • 12+ años de experiencia • Rebelde del cuidado de la piel",
+      "ctaQuiz": "Haz el QUIZ sobre la piel",
+      "ctaProducts": "Ver productos",
+      "timelineTitle": "Tu viaje hacia la piel perfecta",
+      "steps": {
+        "step1": {
+          "title": "Haz el QUIZ de piel",
+          "badge": "2 minutos"
+        },
+        "step2": {
+          "title": "Obtener recomendación",
+          "badge": "Plan personal"
+        },
+        "step3": {
+          "title": "Hacer seguimiento",
+          "badge": "Mejora semanal"
+        },
+        "step4": {
+          "title": "¡Piel perfecta!",
+          "badge": "Dentro de 3 meses"
+        }
+      },
+      "modal": {
+        "step1": {
+          "title": "📝 Haz el QUIZ de la piel",
+          "description": "Nuestro cuestionario de cuidado de la piel solo tarda 2 minutos y nos ayuda a comprender tu tipo de piel único y tus necesidades específicas.\n\nAl responder algunas preguntas sencillas sobre tu piel, tu estilo de vida y tus preferencias, podemos crear una rutina de cuidado de la piel a medida para ti.\n\nEl cuestionario analiza factores como el tipo de piel, posibles problemas cutáneos, la edad y la influencia del entorno para ofrecerte las recomendaciones de productos más relevantes."
+        },
+        "step2": {
+          "title": "🎯 Obtener recomendación",
+          "description": "Basado en tus respuestas del cuestionario, recibirás un plan de cuidado de la piel personalizado con recomendaciones de productos seleccionadas específicamente para tu tipo de piel y tus necesidades.\n\nNuestro algoritmo combina conocimientos tradicionales del cuidado de la piel con la ciencia moderna para crear una rutina completa que incluye limpieza, tratamiento y protección.\n\nTambién recibirás consejos sobre cómo usar mejor los productos para obtener resultados óptimos."
+        },
+        "step3": {
+          "title": "📈 Hacer seguimiento",
+          "description": "Seguimos tu viaje de cuidado de la piel cada semana para asegurarnos de que veas mejoras continuas.\n\nA través de seguimientos periódicos podemos ajustar tu rutina según sea necesario y darte consejos personalizados basados en la evolución de tu piel.\n\nRecibirás recordatorios sobre cuándo es momento de aplicar los productos y podrás documentar tu progreso con fotos para ver claramente las mejoras a lo largo del tiempo."
+        },
+        "step4": {
+          "title": "✨ ¡Piel perfecta!",
+          "description": "Inom 3 månader kommer du att se en märkbar förbättring av din huds kvalitet och utseende.\n\nMed våra naturliga produkter innehållande CBD och CBG, kombinerat med din personliga hudvårdsrutin, kommer din hud att bli mer balanserad, klarare och strålande.\n\nMånga av våra kunder rapporterar synliga resultat redan efter några veckor, men den fulla effekten uppnås vanligtvis inom 3 månader av konsekvent användning."
+        }
+      }
+    },
+    "about": {
+      "title": "NUESTRA FILOSOFÍA",
+      "subtitle": "Una tradición atemporal de cuidado natural para la piel, fundada en la ciencia y el amor por la naturaleza.",
+      "heading": "DESDE 1753 HEMOS ENTENDIDO LAS NECESIDADES NATURALES DE LA PIEL",
+      "p1": "En el corazón de la naturaleza sueca nació nuestra visión de crear cuidado de la piel que trabaje en armonía con los procesos naturales de tu piel. Combinamos el conocimiento tradicional con la investigación moderna.",
+      "p2": "Nuestros productos contienen ingredientes cuidadosamente seleccionados como CBD y CBG, conocidos por sus propiedades calmantes y equilibrantes. Cada fórmula está desarrollada para darle a tu piel lo que necesita - nada más, nada menos.",
+      "values": {
+        "natural": {
+          "title": "Natural",
+          "desc": "Solo ingredientes naturales procedentes de la naturaleza"
+        },
+        "loving": {
+          "title": "Cariñoso",
+          "desc": "Creado con cuidado para tu piel"
+        },
+        "safe": {
+          "title": "Seguro",
+          "desc": "Cuidado de la piel probado y certificado"
+        }
+      },
+      "cta": "Leer más sobre nuestra historia",
+      "imageAlt": "Cuidado natural de la piel",
+      "foundersAlt": "Fundador",
+      "foundersHeading": "UNA PASIÓN POR LA BELLEZA NATURAL",
+      "foundersQuote": "Nuestro viaje comenzó con una simple creencia: que la naturaleza tiene todas las respuestas para una piel sana y radiante. Tras años de investigación y desarrollo, hemos creado productos que nosotros mismos amamos usar cada día.",
+      "foundersNames": "Christopher y Ebba",
+      "foundersTitle": "Fundador, 1753 Cuidado de la piel"
+    }
+  },
+  "menu": {
+    "products": {
+      "skincare": "Cuidado de la piel",
+      "skincareDesc": "Cuidado natural de la piel con CBD y adaptógenos",
+      "duo": "Kit dúo",
+      "duoDesc": "Combinaciones perfectas para tu piel",
+      "allDesc": "Ver todo nuestro surtido"
     }
   },
   "productDetail": {
@@ -311,7 +333,7 @@
     "quantity": "Cantidad:",
     "addedToCart": "Añadido al carrito",
     "trust": {
-      "freeShipping": "Envío gratis a partir de 500 kr",
+      "freeShipping": "Envío gratis en compras superiores a 500 kr",
       "securePayment": "Pago 100% seguro",
       "natural": "100% natural"
     },
@@ -321,33 +343,33 @@
       "usage": "Uso",
       "reviews": "Reseñas"
     },
-    "benefitsTitle": "Beneficios",
-    "benefitsLabel": "Beneficios:",
-    "usageTitle": "Cómo usar {name}",
-    "mushroomShowcase": "Cuatro poderosos hongos medicinales"
+    "benefitsTitle": "Ventajas",
+    "benefitsLabel": "Ventajas:",
+    "usageTitle": "Así se usa {name}",
+    "mushroomShowcase": "Cuatro potentes hongos medicinales"
   },
   "cookieBanner": {
-    "title": "Valoramos tu privacidad 🍪",
-    "description": "Usamos cookies para mejorar tu experiencia, analizar el tráfico y personalizar el contenido. Puedes elegir qué cookies aceptar.",
+    "title": "Protegemos tu privacidad 🍪",
+    "description": "Utilizamos cookies para mejorar tu experiencia en nuestro sitio web, analizar el tráfico y personalizar el contenido. Puedes elegir qué cookies aceptas.",
     "acceptAll": "Aceptar todo",
-    "onlyNecessary": "Solo necesarias",
+    "onlyNecessary": "Solo lo necesario",
     "customize": "Personalizar",
-    "learnMore": "Lee más en nuestra",
+    "learnMore": "Leer mer en nuestro",
     "and": "y",
-    "saveSettings": "Guardar configuración",
+    "saveSettings": "Guardar ajustes",
     "settings": {
       "title": "Configuración de cookies",
       "necessary": {
         "title": "Cookies necesarias",
-        "desc": "Estas cookies son esenciales para que el sitio funcione correctamente. No se pueden desactivar."
+        "desc": "Estas cookies son necesarias para que el sitio web funcione correctamente. No se pueden desactivar."
       },
       "analytics": {
-        "title": "Cookies de analítica",
-        "desc": "Nos ayudan a entender cómo los visitantes usan el sitio recopilando y reportando información anónima."
+        "title": "Cookies analíticas",
+        "desc": "Nos ayuda a comprender cómo los visitantes utilizan el sitio web al recopilar y reportar información anónima."
       },
       "marketing": {
         "title": "Cookies de marketing",
-        "desc": "Se utilizan para mostrar anuncios relevantes y medir la efectividad de nuestras campañas."
+        "desc": "Se utiliza para mostrar anuncios relevantes y medir la efectividad de nuestras campañas de marketing."
       }
     }
   }

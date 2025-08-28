@@ -1,11 +1,11 @@
 {
   "common": {
-    "loading": "Wird geladen...",
-    "error": "Es ist ein Fehler aufgetreten",
+    "loading": "Lädt...",
+    "error": "Ein Fehler ist aufgetreten",
     "success": "Erfolg",
     "save": "Speichern",
     "cancel": "Abbrechen",
-    "delete": "Löschen",
+    "delete": "Entfernen",
     "edit": "Bearbeiten",
     "add": "Hinzufügen",
     "continue": "Weiter",
@@ -14,63 +14,54 @@
     "close": "Schließen",
     "search": "Suchen",
     "filter": "Filtern",
-    "clear": "Zurücksetzen",
+    "clear": "Leeren",
     "apply": "Anwenden"
   },
   "navigation": {
-    "home": "Startseite",
+    "home": "Saum",
     "products": "Produkte",
-    "skinConditions": "Hautzustände",
+    "skinConditions": "Hautzustand",
     "about": "Über uns",
     "blog": "Blog",
     "knowledge": "Wissen",
-    "contact": "Kontakt",
+    "contact": "Kontaktieren Sie uns",
     "account": "Mein Konto",
     "cart": "Warenkorb",
     "checkout": "Kasse",
     "login": "Anmelden",
-    "register": "Registrieren",
+    "register": "Registriere dich",
     "logout": "Abmelden",
-    "privacyPolicy": "Datenschutz",
-    "terms": "AGB",
+    "privacyPolicy": "Datenschutzerklärung",
+    "terms": "Bedingungen",
     "cookies": "Cookies"
   },
   "headerTopBar": {
-    "bannerPrefix": "KOSTENLOSER VERSAND ÜBER 500 SEK",
-    "freeShipping": "Persönlich und kostenlos",
+    "bannerPrefix": "KOSTENLOSER VERSAND AB 500 KR",
+    "freeShipping": "KOSTENLOS & PERSÖNLICH",
     "naturalIngredients": "Natürliche Inhaltsstoffe",
     "openPurchase": "30 Tage Rückgaberecht"
   },
-  "menu": {
-    "products": {
-      "skincare": "Hautpflege",
-      "skincareDesc": "Natürliche Hautpflege mit CBD & Adaptogenen",
-      "duo": "Duos",
-      "duoDesc": "Perfekte Kombinationen für deine Haut",
-      "allDesc": "Unser gesamtes Sortiment ansehen"
-    }
-  },
   "hero": {
     "title": "Entdecke die Kraft von CBD für deine Haut",
-    "subtitle": "Natürliche Hautpflegeprodukte, die den natürlichen Heilungsprozess deiner Haut unterstützen",
-    "cta": "Jetzt shoppen",
+    "subtitle": "Natürliche Hautpflegeprodukte, die den eigenen Heilungsprozess der Haut unterstützen.",
+    "cta": "Jetzt einkaufen",
     "learnMore": "Mehr erfahren"
   },
   "products": {
-    "title": "Unsere großartigen Produkte",
-    "subtitle": "Alle unsere Produkte enthalten CBD und CBG für optimale Hautgesundheit",
+    "title": "Unsere fantastischen Produkte",
+    "subtitle": "Alle unsere Produkte enthalten CBD und CBG für optimale Hautgesundheit.",
     "addToCart": "In den Warenkorb",
     "outOfStock": "Ausverkauft",
     "quickView": "Schnellansicht",
-    "comparePrice": "Stattpreis",
-    "salePrice": "Angebotspreis",
+    "comparePrice": "Regulärer Preis",
+    "salePrice": "Reapris",
     "bestseller": "Bestseller",
-    "new": "Neu",
-    "featured": "Empfohlen"
+    "new": "Nachricht",
+    "featured": "Ausgewählt"
   },
   "skinJourney": {
     "title": "Deine Hautreise",
-    "subtitle": "Verfolge den Fortschritt deiner Haut mit unseren persönlichen Tools",
+    "subtitle": "Verfolge die Entwicklung deiner Haut mit unseren persönlichen Tools",
     "startJourney": "Starte deine Hautreise",
     "progress": "Fortschritt",
     "photos": "Fotos",
@@ -80,11 +71,11 @@
     "month": "Monat",
     "skinCondition": "Hautzustand",
     "improvement": "Verbesserung",
-    "noChange": "Keine Veränderung",
-    "worsened": "Verschlechtert"
+    "noChange": "Keine Änderung",
+    "worsened": "Verschlimmert"
   },
   "account": {
-    "dashboard": "Dashboard",
+    "dashboard": "Übersicht",
     "profile": "Profil",
     "orders": "Bestellungen",
     "addresses": "Adressen",
@@ -93,7 +84,7 @@
     "personalInfo": "Persönliche Informationen",
     "firstName": "Vorname",
     "lastName": "Nachname",
-    "email": "E‑Mail",
+    "email": "E-Mail",
     "phone": "Telefon",
     "dateOfBirth": "Geburtsdatum",
     "skinType": "Hauttyp",
@@ -102,14 +93,14 @@
   "cart": {
     "title": "Warenkorb",
     "empty": "Dein Warenkorb ist leer",
-    "quantity": "Menge",
+    "quantity": "Anzahl",
     "price": "Preis",
     "total": "Gesamt",
     "subtotal": "Zwischensumme",
     "shipping": "Versand",
-    "tax": "Steuer",
+    "tax": "Mütter",
     "remove": "Entfernen",
-    "updateQuantity": "Menge aktualisieren",
+    "updateQuantity": "Anzahl aktualisieren",
     "proceedToCheckout": "Zur Kasse",
     "continueShopping": "Weiter einkaufen"
   },
@@ -119,17 +110,17 @@
     "billingAddress": "Rechnungsadresse",
     "paymentMethod": "Zahlungsmethode",
     "orderSummary": "Bestellübersicht",
-    "placeOrder": "Bestellung aufgeben",
-    "processing": "Wird bearbeitet...",
-    "success": "Bestellung erfolgreich aufgegeben!",
-    "error": "Beim Aufgeben der Bestellung ist ein Fehler aufgetreten"
+    "placeOrder": "Bestellung durchführen",
+    "processing": "Wird verarbeitet...",
+    "success": "Bestellung abgeschlossen!",
+    "error": "Bei der Bestellung ist ein Fehler aufgetreten."
   },
   "forms": {
-    "required": "Dieses Feld ist erforderlich",
-    "email": "Bitte gib eine gültige E‑Mail-Adresse ein",
-    "password": "Das Passwort muss mindestens 8 Zeichen lang sein",
-    "confirmPassword": "Die Passwörter stimmen nicht überein",
-    "phone": "Bitte gib eine gültige Telefonnummer ein",
+    "required": "Dieses Feld ist erforderlich.",
+    "email": "Geben Sie eine gültige E-Mail-Adresse ein.",
+    "password": "Das Passwort muss mindestens 8 Zeichen lang sein.",
+    "confirmPassword": "Die Passwörter stimmen nicht überein.",
+    "phone": "Geben Sie eine gültige Telefonnummer ein.",
     "firstName": "Vorname",
     "lastName": "Nachname",
     "company": "Unternehmen (optional)",
@@ -143,66 +134,105 @@
     "oily": "Fettige Haut",
     "combination": "Mischhaut",
     "sensitive": "Empfindliche Haut",
-    "normal": "Normale Haut",
-    "acne": "Aknehaut",
+    "normal": "Normales HUD",
+    "acne": "Akne",
     "mature": "Reife Haut"
   },
   "footer": {
-    "company": "1753 Skincare",
+    "company": "1753 Hautpflege",
     "description": "Natürliche Hautpflege mit CBD und CBG für optimale Hautgesundheit",
-    "quickLinks": "Schnellzugriff",
-    "customerService": "Kundenservice",
-    "followUs": "Folge uns",
+    "quickLinks": "Schnellzugriffe",
+    "customerService": "Kundservice",
+    "followUs": "Folgen Sie uns",
     "newsletter": "Newsletter",
-    "newsletterDescription": "Erhalte die neuesten Neuigkeiten über Hautpflege und CBD",
+    "newsletterDescription": "Erhalten Sie die neuesten Informationen zu Hautpflege und CBD.",
     "subscribe": "Abonnieren",
     "copyright": "© 2024 1753 Skincare. Alle Rechte vorbehalten.",
     "help": "Hilfe"
   },
+  "productsPage": {
+    "badgeCBD": "CBD-angereicherte Hautpflege",
+    "title": "UNSERE PRODUKTE",
+    "subtitle": "Entdecken Sie die Kraft natürlicher Hautpflege mit unseren sorgfältig ausgewählten CBD- und CBG-Produkten",
+    "filter": "Filter",
+    "categories": {
+      "all": "Alla",
+      "bestseller": "Bestseller",
+      "new": "Neu"
+    },
+    "sort": {
+      "featured": "Ausgewählte zuerst",
+      "name": "Namen A–Z",
+      "priceLow": "Preis: Niedrig bis hoch",
+      "priceHigh": "Preis: Hoch bis Niedrig"
+    },
+    "activeFilters": "{count} aktiver Filter",
+    "resetFilters": "Filter löschen",
+    "loading": "Produkte werden geladen...",
+    "empty": {
+      "title": "Für die aktuellen Filter wurden keine Produkte gefunden.",
+      "showAll": "Alle Produkte anzeigen"
+    },
+    "quickView": "Schnellansicht",
+    "addToCart": "In den Warenkorb legen",
+    "newsletter": {
+      "title": "Verpassen Sie nicht unsere Neuigkeiten",
+      "description": "Abonnieren Sie unseren Newsletter für exklusive Angebote und Hautpflegetipps.",
+      "placeholderEmail": "Deine E‑Mail‑Adresse",
+      "subscribe": "Abonnieren"
+    },
+    "quizCta": "Machen Sie unsere Hautanalyse",
+    "badges": {
+      "recommended": "EMPFOHLEN",
+      "bestseller": "Bestseller",
+      "new": "NEU"
+    }
+  },
   "Reviews": {
-    "pageTitle": "Bewertungen - 1753 Skincare",
-    "pageDescription": "Lies, was unsere Kundinnen und Kunden über 1753 Skincare sagen. Echte Bewertungen von Menschen, die die Kraft natürlicher Hautpflege entdeckt haben.",
-    "title": "Das sagen unsere Kundinnen und Kunden",
-    "subtitle": "Echte Geschichten von Menschen, die die Kraft natürlicher Hautpflege entdeckt haben",
-    "totalReviews": "Bewertungen",
-    "averageRating": "Durchschnittsbewertung",
-    "fiveStarPercentage": "5‑Sterne‑Bewertungen",
+    "pageTitle": "Rezensionen - 1753 Skincare",
+    "pageDescription": "Lesen Sie, was unsere Kunden über 1753 Skincare sagen. Echte Bewertungen von Menschen, die die Kraft natürlicher Hautpflege entdeckt haben.",
+    "title": "Was unsere Kunden sagen",
+    "subtitle": "Authentische Geschichten von Menschen, die die Kraft natürlicher Hautpflege entdeckt haben.",
+    "totalReviews": "Basierend auf",
+    "averageRating": "Durchschnittliche Bewertung",
+    "fiveStarPercentage": "5-Sterne-Bewertungen",
     "allRatings": "Alle Bewertungen",
     "allProducts": "Alle Produkte",
     "sortNewest": "Neueste zuerst",
+    "sortOldest": "Älteste zuerst",
     "sortHighest": "Höchste Bewertung zuerst",
     "sortLowest": "Niedrigste Bewertung zuerst",
     "resetFilters": "Filter zurücksetzen",
-          "verifiedPurchase": "Verifizierter Kauf",
-      "prevAria": "Zum vorherigen Erfahrungsbericht",
-      "nextAria": "Zum nächsten Erfahrungsbericht",
-      "gotoAria": "Gehe zu Erfahrungsbericht {index}",
-      "loading": "Wird geladen...",
-      "loadMore": "Mehr anzeigen",
-      "noReviews": "Keine Bewertungen gefunden",
-      "readAllReviews": "ALLE BEWERTUNGEN LESEN"
+    "verifiedPurchase": "Verifiziert",
+    "loading": "Lädt...",
+    "loadMore": "Mehr anzeigen",
+    "noReviews": "Es wurden keine Bewertungen gefunden.",
+    "readAllReviews": "ALLE BEWERTUNGEN LESEN",
+    "prevAria": "Vorherige Rezension",
+    "nextAria": "Nächste Bewertung",
+    "gotoAria": "Zur Rezension {index} gehen"
   },
   "Quiz": {
-    "title": "Hautanalyse‑Quiz",
-    "subtitle": "Erhalte personalisierte Hautpflegeempfehlungen basierend auf deinem individuellen Hautprofil",
+    "title": "Hautanalyse-Quiz",
+    "subtitle": "Erhalte personalisierte Hautpflegeempfehlungen basierend auf deinem individuellen Hautprofil.",
     "startButton": "Quiz starten",
     "nextButton": "Weiter",
-    "previousButton": "Zurück",
-    "submitButton": "Meine Ergebnisse anzeigen",
-    "loading": "Analysiere deine Antworten...",
-    "error": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+    "previousButton": "Vorherige",
+    "submitButton": "Meine Ergebnisse abrufen",
+    "loading": "Ich analysiere deine Antworten...",
+    "error": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
     "progress": "Frage {current} von {total}",
     "results": {
       "title": "Deine Ergebnisse",
-      "loading": "Deine personalisierte Hautanalyse wird vorbereitet...",
-      "error": "Ergebnisse konnten nicht geladen werden. Bitte versuche es erneut."
+      "loading": "Deine persönliche Hautanalyse wird vorbereitet...",
+      "error": "Die Ergebnisse konnten nicht geladen werden. Bitte versuchen Sie es erneut."
     }
   },
   "Blog": {
     "metaTitle": "Blog - 1753 Skincare",
-    "metaDescription": "Lies unsere neuesten Artikel über Hautpflege, CBD und natürliche Schönheit. Expertenrat und Tipps für eine gesunde Haut.",
+    "metaDescription": "Lesen Sie unsere neuesten Artikel über Hautpflege, CBD und natürliche Schönheit. Expertenrat und Tipps für gesunde Haut.",
     "title": "Blog",
-    "subtitle": "Inspiration, Tipps und Wissen über natürliche Hautpflege",
+    "subtitle": "Inspiration, Tipps und Wissen zur natürlichen Hautpflege",
     "readMore": "Weiterlesen",
     "shareArticle": "Artikel teilen",
     "relatedArticles": "Verwandte Artikel",
@@ -214,112 +244,104 @@
     "hero": {
       "coverAlt": "Titelbild für 1753 Skincare 2025",
       "headingLine1": "Natürliche Hautpflege für",
-      "headingLine2": "das Ökosystem der Haut",
-      "subtitle": "Wissenschaftlich entwickelte Hautpflege, die im Einklang mit Hautzellen, Mikrobiom und Endocannabinoid-System wirkt",
+      "headingLine2": "Hautökosystem",
+      "subtitle": "Wissenschaftlich entwickelte Hautpflege, die im Einklang mit den Hautzellen, dem Mikrobiom und dem Endocannabinoid-System arbeitet.",
       "authorAlt": "Porträt von Christopher Genberg",
-      "authorTagline": "Gründer • 12+ Jahre Erfahrung • Skincare-Rebell",
-      "ctaQuiz": "Haut-Quiz starten",
+      "authorTagline": "Gründer • 12+ Jahre Erfahrung • Hautpflege-Rebell",
+      "ctaQuiz": "Mach Haut-QUIZ",
       "ctaProducts": "Produkte ansehen",
-      "timelineTitle": "Dein Weg zur perfekten Haut",
+      "timelineTitle": "Deine Reise zur perfekten Haut",
       "steps": {
-        "step1": { "title": "Haut-Quiz starten", "badge": "2 Minuten" },
-        "step2": { "title": "Empfehlungen erhalten", "badge": "Persönlicher Plan" },
-        "step3": { "title": "Nachverfolgen", "badge": "Wöchentliche Verbesserung" },
-        "step4": { "title": "Perfekte Haut!", "badge": "In 3 Monaten" }
+        "step1": {
+          "title": "Mache das Haut-Quiz",
+          "badge": "2 Minuten"
+        },
+        "step2": {
+          "title": "Empfehlung erhalten",
+          "badge": "Persönlicher Plan"
+        },
+        "step3": {
+          "title": "Nachfassen",
+          "badge": "Wöchentliche Verbesserung"
+        },
+        "step4": {
+          "title": "Perfekte Haut!",
+          "badge": "Innerhalb von 3 Monaten"
+        }
       },
       "modal": {
         "step1": {
-          "title": "📝 Haut-Quiz starten",
-          "description": "Unser Quiz dauert nur 2 Minuten und hilft uns, deinen Hauttyp und deine Bedürfnisse zu verstehen.\n\nMit ein paar Fragen zu Haut, Lebensstil und Vorlieben erstellen wir eine maßgeschneiderte Routine.\n\nDas Quiz analysiert Hauttyp, Probleme, Alter und Umfeld für relevante Empfehlungen." 
+          "title": "📝 Haut-QUIZ machen",
+          "description": "Vårt hudvårdsquiz tar bara 2 minuter och hjälper oss förstå din unika hudtyp och dina specifika behov.\n\nGenom att svara på några enkla frågor om din hud, livsstil och preferenser kan vi skapa en skräddarsydd hudvårdsrutin just för dig.\n\nQuizet analyserar faktorer som hudtyp, eventuella hudproblem, ålder och miljöpåverkan för att ge dig de mest relevanta produktrekommendationerna."
         },
         "step2": {
-          "title": "🎯 Empfehlungen erhalten",
-          "description": "Auf Basis deiner Antworten erhältst du einen persönlichen Pflegeplan mit Produkten, die zu deinem Hauttyp passen.\n\nWir kombinieren traditionelles Wissen mit moderner Wissenschaft für eine vollständige Routine.\n\nDu erhältst zudem Tipps zur optimalen Anwendung." 
+          "title": "🎯 Empfehlung erhalten",
+          "description": "Basierend auf deinen Quiz-Antworten erhältst du einen persönlichen Hautpflegeplan mit Produktempfehlungen, die speziell auf deinen Hauttyp und deine Bedürfnisse abgestimmt sind.\n\nUnser Algorithmus kombiniert traditionelle Hautpflegekenntnisse mit moderner Wissenschaft, um eine komplette Routine zu erstellen, die Reinigung, Behandlung und Schutz umfasst.\n\nDu erhältst außerdem Tipps, wie du die Produkte am besten anwendest, um optimale Ergebnisse zu erzielen."
         },
         "step3": {
           "title": "📈 Nachverfolgen",
-          "description": "Wir begleiten dich wöchentlich, um kontinuierliche Verbesserungen sicherzustellen.\n\nMit regelmäßigen Check-ins passen wir deine Routine an und geben persönliche Tipps.\n\nDu erhältst Erinnerungen und kannst deinen Fortschritt dokumentieren." 
+          "description": "Wir begleiten deine Hautpflege-Reise jede Woche, um sicherzustellen, dass du kontinuierliche Verbesserungen bemerkst.\n\nDurch regelmäßige Check-ins können wir deine Routine bei Bedarf anpassen und dir persönliche Tipps geben, die auf der Entwicklung deiner Haut basieren.\n\nDu erhältst Erinnerungen daran, wann es Zeit ist, die Produkte aufzutragen, und kannst deinen Fortschritt mit Bildern dokumentieren, um die Verbesserungen im Laufe der Zeit deutlich zu sehen."
         },
         "step4": {
           "title": "✨ Perfekte Haut!",
-          "description": "Innerhalb von 3 Monaten wirst du eine deutliche Verbesserung der Hautqualität sehen.\n\nMit unseren natürlichen CBD- und CBG-Produkten und einer persönlichen Routine wird deine Haut ausgeglichener, klarer und strahlender." 
+          "description": "Innerhalb von 3 Monaten werden Sie eine deutliche Verbesserung der Qualität und des Erscheinungsbildes Ihrer Haut sehen.\n\nMit unseren natürlichen Produkten, die CBD und CBG enthalten, in Kombination mit Ihrer persönlichen Hautpflegeroutine, wird Ihre Haut ausgeglichener, klarer und strahlender.\n\nViele unserer Kunden berichten von sichtbaren Ergebnissen bereits nach einigen Wochen, aber die volle Wirkung wird normalerweise innerhalb von 3 Monaten bei konsequenter Anwendung erreicht."
         }
       }
     },
     "about": {
       "title": "UNSERE PHILOSOPHIE",
-      "subtitle": "Eine zeitlose Tradition natürlicher Pflege, basierend auf Wissenschaft und Liebe zur Natur",
-      "heading": "SEIT 1753 VERSTEHEN WIR DIE NATÜRLICHEN BEDÜRFNISSE DER HAUT",
-      "p1": "Im Herzen der schwedischen Natur entstand unsere Vision: Pflege zu schaffen, die im Einklang mit den natürlichen Prozessen deiner Haut wirkt. Wir verbinden traditionelles Wissen mit moderner Forschung.",
-      "p2": "Unsere Produkte enthalten sorgfältig ausgewählte Inhaltsstoffe wie CBD und CBG, bekannt für ihre beruhigenden und ausgleichenden Eigenschaften. Jede Formel wurde entwickelt, um deiner Haut genau das zu geben, was sie braucht—nicht mehr und nicht weniger.",
+      "subtitle": "Eine zeitlose Tradition natürlicher Hautpflege, gegründet auf Wissenschaft und Liebe zur Natur.",
+      "heading": "Seit 1753 verstehen wir die natürlichen Bedürfnisse der Haut.",
+      "p1": "Im Herzen der schwedischen Natur entstand unsere Vision, Hautpflege zu schaffen, die im Einklang mit den natürlichen Prozessen deiner Haut arbeitet. Wir verbinden traditionelles Wissen mit moderner Forschung.",
+      "p2": "Unsere Produkte enthalten sorgfältig ausgewählte Inhaltsstoffe wie CBD und CBG, die für ihre beruhigenden und ausgleichenden Eigenschaften bekannt sind. Jede Formel wurde entwickelt, um deiner Haut das zu geben, was sie braucht - nicht mehr, nicht weniger.",
       "values": {
-        "natural": { "title": "Natürlich", "desc": "Nur natürliche Inhaltsstoffe aus der Natur" },
-        "loving": { "title": "Mit Liebe", "desc": "Mit Sorgfalt für deine Haut entwickelt" },
-        "safe": { "title": "Sicher", "desc": "Geprüfte und zertifizierte Pflege" }
+        "natural": {
+          "title": "Natürlich",
+          "desc": "Nur natürliche Inhaltsstoffe aus der Natur"
+        },
+        "loving": {
+          "title": "Liebevoll",
+          "desc": "Mit Sorgfalt für Ihre Haut hergestellt."
+        },
+        "safe": {
+          "title": "Sicher",
+          "desc": "Getestete und zertifizierte Hautpflege"
+        }
       },
-      "cta": "Mehr über unsere Geschichte",
+      "cta": "Erfahren Sie mehr über unsere Geschichte",
       "imageAlt": "Natürliche Hautpflege",
       "foundersAlt": "Gründer",
-      "foundersHeading": "LEIDENSCHAFT FÜR NATÜRLICHE SCHÖNHEIT",
-      "foundersQuote": "\"Unsere Reise begann mit dem einfachen Glauben, dass die Natur alle Antworten für gesunde, strahlende Haut bereithält. Nach Jahren der Forschung und Entwicklung haben wir Produkte geschaffen, die wir selbst täglich lieben.\"",
+      "foundersHeading": "Eine Leidenschaft für natürliche Schönheit",
+      "foundersQuote": "Unsere Reise begann mit einer einfachen Überzeugung – dass die Natur alle Antworten für eine gesunde und strahlende Haut bereithält. Nach Jahren der Forschung und Entwicklung haben wir Produkte entwickelt, die wir selbst lieben und täglich verwenden.",
       "foundersNames": "Christopher & Ebba",
       "foundersTitle": "Gründer, 1753 Skincare"
     }
   },
-  "productsPage": {
-    "badgeCBD": "CBD-ANGEREICHERTE HAUTPFLEGE",
-    "title": "UNSERE PRODUKTE",
-    "subtitle": "Entdecke die Kraft natürlicher Hautpflege mit unseren sorgfältig ausgewählten CBD- und CBG-Produkten",
-    "filter": "FILTER",
-    "categories": {
-      "all": "Alle",
-      "bestseller": "Bestseller",
-      "new": "Neu"
-    },
-    "sort": {
-      "featured": "Empfohlen zuerst",
-      "name": "Name A–Z",
-      "priceLow": "Preis: Niedrig bis hoch",
-      "priceHigh": "Preis: Hoch bis niedrig"
-    },
-    "activeFilters": "{count} aktiver Filter",
-    "resetFilters": "Filter zurücksetzen",
-    "loading": "Produkte werden geladen...",
-    "empty": {
-      "title": "Mit den aktuellen Filtern wurden keine Produkte gefunden.",
-      "showAll": "Alle Produkte anzeigen"
-    },
-    "quickView": "Schnellansicht",
-    "addToCart": "In den Warenkorb",
-    "newsletter": {
-      "title": "Verpasse keine Neuigkeiten",
-      "description": "Abonniere unseren Newsletter für exklusive Angebote und Pflegetipps",
-      "placeholderEmail": "Deine E‑Mail‑Adresse",
-      "subscribe": "Abonnieren"
-    },
-    "quizCta": "Mache unsere Hautanalyse",
-    "badges": {
-      "recommended": "EMPFOHLEN",
-      "bestseller": "BESTSELLER",
-      "new": "NEU"
+  "menu": {
+    "products": {
+      "skincare": "Hautpflege",
+      "skincareDesc": "Natürliche Hautpflege mit CBD & Adaptogenen",
+      "duo": "Duo-kit",
+      "duoDesc": "Perfekte Kombinationen für deine Haut",
+      "allDesc": "Unser gesamtes Sortiment ansehen"
     }
   },
   "productDetail": {
-    "notFound": "Produkt konnte nicht gefunden werden.",
+    "notFound": "Das Produkt konnte nicht gefunden werden.",
     "saved": "Du sparst {amount} kr",
     "skinTypesTitle": "Geeignet für Hauttypen:",
-    "quantity": "Menge:",
-    "addedToCart": "Zum Warenkorb hinzugefügt",
+    "quantity": "Anzahl:",
+    "addedToCart": "In den Warenkorb gelegt",
     "trust": {
-      "freeShipping": "Kostenloser Versand über 500 kr",
+      "freeShipping": "Kostenloser Versand ab 500 kr",
       "securePayment": "100% sichere Zahlung",
       "natural": "100% natürlich"
     },
     "tabs": {
       "description": "Beschreibung",
-      "ingredients": "Inhaltsstoffe",
-      "usage": "Anwendung",
-      "reviews": "Bewertungen"
+      "ingredients": "Zutaten",
+      "usage": "Verwendung",
+      "reviews": "Rezensionen"
     },
     "benefitsTitle": "Vorteile",
     "benefitsLabel": "Vorteile:",
@@ -327,27 +349,27 @@
     "mushroomShowcase": "Vier kraftvolle medizinische Pilze"
   },
   "cookieBanner": {
-    "title": "Wir respektieren deine Privatsphäre 🍪",
-    "description": "Wir verwenden Cookies, um deine Erfahrung zu verbessern, den Verkehr zu analysieren und Inhalte zu personalisieren. Du kannst wählen, welche Cookies du akzeptierst.",
+    "title": "Wir legen Wert auf Ihre Privatsphäre 🍪",
+    "description": "Wir verwenden Cookies, um Ihre Erfahrung auf unserer Website zu verbessern, den Datenverkehr zu analysieren und Inhalte anzupassen. Sie können auswählen, welche Cookies Sie akzeptieren.",
     "acceptAll": "Alle akzeptieren",
     "onlyNecessary": "Nur notwendige",
     "customize": "Anpassen",
-    "learnMore": "Mehr erfahren in unserer",
+    "learnMore": "Läs mer i vår",
     "and": "und",
     "saveSettings": "Einstellungen speichern",
     "settings": {
       "title": "Cookie-Einstellungen",
       "necessary": {
         "title": "Notwendige Cookies",
-        "desc": "Diese Cookies sind für das einwandfreie Funktionieren der Website erforderlich. Sie können nicht deaktiviert werden."
+        "desc": "Diese Cookies sind notwendig, damit die Website korrekt funktioniert. Sie können nicht deaktiviert werden."
       },
       "analytics": {
-        "title": "Analyse-Cookies",
-        "desc": "Helfen uns zu verstehen, wie Besucher die Website nutzen, indem sie anonyme Informationen sammeln und berichten."
+        "title": "Analytische Cookies",
+        "desc": "Hilft uns zu verstehen, wie Besucher die Website nutzen, indem anonyme Informationen gesammelt und gemeldet werden."
       },
       "marketing": {
         "title": "Marketing-Cookies",
-        "desc": "Werden verwendet, um relevante Anzeigen anzuzeigen und die Wirksamkeit unserer Kampagnen zu messen."
+        "desc": "Wird verwendet, um relevante Anzeigen zu schalten und die Effektivität unserer Marketingkampagnen zu messen."
       }
     }
   }
