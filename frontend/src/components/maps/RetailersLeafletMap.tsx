@@ -2,9 +2,10 @@
 
 import 'leaflet/dist/leaflet.css'
 import { MapContainer, TileLayer, Popup, CircleMarker, useMap } from 'react-leaflet'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import type { FC } from 'react'
 import L from 'leaflet'
+import { useTranslations } from 'next-intl'
 
 // Fix marker icon paths for SSR/build
 L.Icon.Default.mergeOptions({
@@ -60,6 +61,8 @@ const RetailersLeafletMap: FC<{ points: CityPoint[] }> = ({ points }) => {
     return null
   }
 
+  const t = useTranslations('map.retailers')
+
   return (
     <MapContainer className="w-full h-full" center={[62, 16]} zoom={5} scrollWheelZoom={true} style={{ background: '#F5F3F0' }}>
       <TileLayer
@@ -78,7 +81,7 @@ const RetailersLeafletMap: FC<{ points: CityPoint[] }> = ({ points }) => {
                     <div className="text-gray-600">{r.address}, {r.postalCode}</div>
                     {r.phone && <div className="text-gray-600">{r.phone}</div>}
                     {r.website && r.website !== 'Hemsida' && (
-                      <a className="text-[#FCB237] underline" href={r.website.startsWith('http') ? r.website : `https://${r.website}`} target="_blank" rel="noopener noreferrer">Besök webbplats</a>
+                      <a className="text-[#FCB237] underline" href={r.website.startsWith('http') ? r.website : `https://${r.website}`} target="_blank" rel="noopener noreferrer">{t('visitWebsite')}</a>
                     )}
                   </li>
                 ))}

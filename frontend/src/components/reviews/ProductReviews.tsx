@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Star, StarHalf, Check } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { useTranslations } from 'next-intl'
 
 interface ProductReviewsProps {
   productId: string
@@ -23,6 +24,7 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
   const [stats, setStats] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [displayCount, setDisplayCount] = useState(3)
+  const t = useTranslations('reviews.product')
 
   useEffect(() => {
     console.log('ProductReviews: Component mounted/updated with productId:', productId)
@@ -96,15 +98,15 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
   }
 
   if (loading) {
-    return <div className="py-8 text-center">Laddar recensioner...</div>
+    return <div className="py-8 text-center">{t('loading')}</div>
   }
 
   if (!reviews.length) {
     return (
       <div className="py-12 text-center">
-        <p className="text-gray-500 mb-4">Inga recensioner än. Bli den första att recensera denna produkt!</p>
+        <p className="text-gray-500 mb-4">{t('noReviewsYet')}</p>
         <button className="px-6 py-2 bg-[#FCB237] text-white rounded-full hover:bg-[#6B5D54] transition-colors">
-          Skriv en recension
+          {t('writeReview')}
         </button>
       </div>
     )
@@ -115,7 +117,7 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
       <div className="py-8">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FCB237] mx-auto mb-4"></div>
-          <p className="text-gray-500">Laddar recensioner...</p>
+          <p className="text-gray-500">{t('loading')}</p>
         </div>
       </div>
     )
@@ -125,9 +127,9 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
     return (
       <div className="py-8">
         <div className="text-center">
-          <p className="text-gray-500 mb-4">Inga recensioner än. Bli den första att recensera denna produkt!</p>
+          <p className="text-gray-500 mb-4">{t('noReviewsYet')}</p>
           <button className="px-6 py-2 bg-[#FCB237] text-white rounded-full hover:bg-[#E79C1A] transition-colors">
-            Skriv en recension
+            {t('writeReview')}
           </button>
         </div>
       </div>
@@ -143,7 +145,7 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
             <div className="flex items-center gap-3">
               <span className="text-4xl font-light text-[#FCB237]">{stats.averageRating.toFixed(1)}</span>
               {renderStars(stats.averageRating, 'md')}
-              <span className="text-gray-600">({stats.totalReviews} recensioner)</span>
+              <span className="text-gray-600">({stats.totalReviews} {t('reviewsLabel')})</span>
             </div>
             
             {/* Rating Distribution */}
@@ -199,7 +201,7 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
               {review.status === 'APPROVED' && (
                 <div className="flex items-center gap-1 text-green-600">
                   <Check className="w-3 h-3" />
-                  <span>Verifierad köpare</span>
+                  <span>{t('verifiedBuyer')}</span>
                 </div>
               )}
             </div>
@@ -214,7 +216,7 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
             onClick={() => setDisplayCount(prev => prev + 3)}
             className="px-6 py-2 border border-[#FCB237] text-[#FCB237] rounded-full hover:bg-[#FCB237] hover:text-white transition-colors"
           >
-            Visa fler recensioner
+            {t('loadMore')}
           </button>
         </div>
       )}

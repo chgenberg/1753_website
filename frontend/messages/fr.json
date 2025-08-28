@@ -400,5 +400,37 @@
       "imageAlt": "E-book Weed Your Skin",
       "freeBadge": "GRATUIT !"
     }
+  },
+  "reviews": {
+    "judgeme": {
+      "marketingRequired": "Activez les cookies marketing pour voir les avis."
+    },
+    "floating": {
+      "prevReview": "Avis précédent",
+      "nextReview": "Avis suivant",
+      "verifiedPurchase": "Achat vérifié",
+      "goToReview": "Aller à l’avis {index}"
+    },
+    "product": {
+      "loading": "Chargement des avis...",
+      "noReviewsYet": "Pas encore d’avis. Soyez le premier à donner votre avis !",
+      "writeReview": "Écrire un avis",
+      "reviewsLabel": "avis",
+      "verifiedBuyer": "Acheteur vérifié",
+      "loadMore": "Charger plus d’avis"
+    }
+  },
+  "map": {
+    "retailers": {
+      "visitWebsite": "Visiter le site"
+    }
+  },
+  "errorBoundary": {
+    "title": "Un problème est survenu",
+    "description": "Désolé pour le dérangement. Une erreur inattendue s’est produite.",
+    "retry": "Réessayer",
+    "reload": "Recharger la page",
+    "goHome": "Aller à l’accueil",
+    "contactPrefix": "Si le problème persiste, contactez-nous à"
   }
 }

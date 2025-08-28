@@ -75,6 +75,38 @@
       "freeBadge": "GRATIS!"
     }
   },
+  "reviews": {
+    "judgeme": {
+      "marketingRequired": "Aktivera marknadsföringskakor för att se recensioner."
+    },
+    "floating": {
+      "prevReview": "Föregående recension",
+      "nextReview": "Nästa recension",
+      "verifiedPurchase": "Verifierat köp",
+      "goToReview": "Gå till recension {index}"
+    },
+    "product": {
+      "loading": "Laddar recensioner...",
+      "noReviewsYet": "Inga recensioner än. Bli den första att recensera denna produkt!",
+      "writeReview": "Skriv en recension",
+      "reviewsLabel": "recensioner",
+      "verifiedBuyer": "Verifierad köpare",
+      "loadMore": "Visa fler recensioner"
+    }
+  },
+  "map": {
+    "retailers": {
+      "visitWebsite": "Besök webbplats"
+    }
+  },
+  "errorBoundary": {
+    "title": "Något gick fel",
+    "description": "Vi ber om ursäkt för besväret. Ett oväntat fel har inträffat.",
+    "retry": "Försök igen",
+    "reload": "Ladda om sidan",
+    "goHome": "Gå till startsidan",
+    "contactPrefix": "Om problemet kvarstår, kontakta oss på"
+  },
   "products": {
     "title": "Våra fantastiska produkter",
     "subtitle": "Alla våra produkter innehåller CBD och CBG för optimal hudhälsa",

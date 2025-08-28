@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 
 interface JudgeMeWidgetProps {
   shopDomain: string
@@ -24,6 +25,7 @@ export const JudgeMeWidget: React.FC<JudgeMeWidgetProps> = ({
       return false
     }
   })
+  const t = useTranslations('reviews.judgeme')
 
   useEffect(() => {
     const onConsent = (e: Event) => {
@@ -70,7 +72,7 @@ export const JudgeMeWidget: React.FC<JudgeMeWidgetProps> = ({
     if (!allowed) {
       return (
         <div className={className}>
-          <div className="text-sm text-gray-500">Aktivera marknadsföringskakor för att se recensioner.</div>
+          <div className="text-sm text-gray-500">{t('marketingRequired')}</div>
         </div>
       )
     }

@@ -2,10 +2,20 @@
 
 import React, { Component, ErrorInfo, ReactNode } from 'react'
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 interface Props {
   children: ReactNode
   fallback?: ReactNode
+}
+
+interface Labels {
+  title: string
+  description: string
+  retry: string
+  reload: string
+  goHome: string
+  contactPrefix: string
 }
 
 interface State {
@@ -14,8 +24,8 @@ interface State {
   errorInfo?: ErrorInfo
 }
 
-class ErrorBoundary extends Component<Props, State> {
-  constructor(props: Props) {
+class InnerErrorBoundary extends Component<Props & { labels: Labels }, State> {
+  constructor(props: Props & { labels: Labels }) {
     super(props)
     this.state = { hasError: false }
   }
@@ -33,20 +43,16 @@ class ErrorBoundary extends Component<Props, State> {
       errorInfo
     })
 
-    // Log error to console in development
     if (process.env.NODE_ENV === 'development') {
       console.error('Error Boundary caught an error:', error, errorInfo)
     }
 
-    // In production, you could send this to an error reporting service
     if (process.env.NODE_ENV === 'production') {
-      // Example: Send to error reporting service
       this.logErrorToService(error, errorInfo)
     }
   }
 
   private logErrorToService = (error: Error, errorInfo: ErrorInfo) => {
-    // This would typically send to Sentry, LogRocket, etc.
     const errorData = {
       message: error.message,
       stack: error.stack,
@@ -56,7 +62,6 @@ class ErrorBoundary extends Component<Props, State> {
       url: window.location.href
     }
 
-    // Example API call to log error
     fetch('/api/errors', {
       method: 'POST',
       headers: {
@@ -82,12 +87,12 @@ class ErrorBoundary extends Component<Props, State> {
 
   render() {
     if (this.state.hasError) {
-      // Custom fallback UI
       if (this.props.fallback) {
         return this.props.fallback
       }
 
-      // Default error UI
+      const { labels } = this.props
+
       return (
         <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50 flex items-center justify-center p-4">
           <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
@@ -96,10 +101,10 @@ class ErrorBoundary extends Component<Props, State> {
                 <AlertTriangle className="w-8 h-8 text-red-600" />
               </div>
               <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                Något gick fel
+                {labels.title}
               </h1>
               <p className="text-gray-600">
-                Vi ber om ursäkt för besväret. Ett oväntat fel har inträffat.
+                {labels.description}
               </p>
             </div>
 
@@ -128,7 +133,7 @@ class ErrorBoundary extends Component<Props, State> {
                 className="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
               >
                 <RefreshCw className="w-4 h-4" />
-                Försök igen
+                {labels.retry}
               </button>
 
               <button
@@ -136,7 +141,7 @@ class ErrorBoundary extends Component<Props, State> {
                 className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
               >
                 <RefreshCw className="w-4 h-4" />
-                Ladda om sidan
+                {labels.reload}
               </button>
 
               <button
@@ -144,13 +149,13 @@ class ErrorBoundary extends Component<Props, State> {
                 className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
               >
                 <Home className="w-4 h-4" />
-                Gå till startsidan
+                {labels.goHome}
               </button>
             </div>
 
             <div className="mt-6 pt-6 border-t border-gray-200">
               <p className="text-sm text-gray-500">
-                Om problemet kvarstår, kontakta oss på{' '}
+                {labels.contactPrefix}{' '}
                 <a 
                   href="mailto:hej@1753skincare.com" 
                   className="text-amber-600 hover:underline"
@@ -168,14 +173,25 @@ class ErrorBoundary extends Component<Props, State> {
   }
 }
 
-// Hook version for functional components
+export default function ErrorBoundary(props: Props) {
+  const t = useTranslations('errorBoundary')
+  const labels: Labels = {
+    title: t('title'),
+    description: t('description'),
+    retry: t('retry'),
+    reload: t('reload'),
+    goHome: t('goHome'),
+    contactPrefix: t('contactPrefix')
+  }
+  return <InnerErrorBoundary {...props} labels={labels} />
+}
+
 export const useErrorHandler = () => {
   return (error: Error, errorInfo?: ErrorInfo) => {
     if (process.env.NODE_ENV === 'development') {
       console.error('Error caught by useErrorHandler:', error, errorInfo)
     }
 
-    // In production, log to error service
     if (process.env.NODE_ENV === 'production') {
       const errorData = {
         message: error.message,
@@ -197,6 +213,4 @@ export const useErrorHandler = () => {
       })
     }
   }
-}
-
-export default ErrorBoundary 
+} 

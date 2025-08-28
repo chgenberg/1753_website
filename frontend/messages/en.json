@@ -400,5 +400,37 @@
         "desc": "Used to display relevant ads and measure the effectiveness of our marketing campaigns."
       }
     }
+  },
+  "reviews": {
+    "judgeme": {
+      "marketingRequired": "Enable marketing cookies to view reviews."
+    },
+    "floating": {
+      "prevReview": "Previous review",
+      "nextReview": "Next review",
+      "verifiedPurchase": "Verified purchase",
+      "goToReview": "Go to review {index}"
+    },
+    "product": {
+      "loading": "Loading reviews...",
+      "noReviewsYet": "No reviews yet. Be the first to review this product!",
+      "writeReview": "Write a review",
+      "reviewsLabel": "reviews",
+      "verifiedBuyer": "Verified buyer",
+      "loadMore": "Load more reviews"
+    }
+  },
+  "map": {
+    "retailers": {
+      "visitWebsite": "Visit website"
+    }
+  },
+  "errorBoundary": {
+    "title": "Something went wrong",
+    "description": "Sorry for the inconvenience. An unexpected error occurred.",
+    "retry": "Try again",
+    "reload": "Reload page",
+    "goHome": "Go to homepage",
+    "contactPrefix": "If the problem persists, contact us at"
   }
 }

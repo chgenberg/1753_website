@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Star, ChevronLeft, ChevronRight } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 interface Review {
   id: string
@@ -21,6 +22,7 @@ export default function FloatingReviews({ productSlug, productName }: FloatingRe
   const [reviews, setReviews] = useState<Review[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isHovered, setIsHovered] = useState(false)
+  const t = useTranslations('reviews.floating')
 
   // Mock reviews - in production these would come from the API
   const mockReviews: Review[] = [
@@ -124,14 +126,14 @@ export default function FloatingReviews({ productSlug, productName }: FloatingRe
             <button
               onClick={goToPrevious}
               className="p-1 hover:bg-white/20 rounded-full transition-colors"
-              aria-label="Föregående recension"
+              aria-label={t('prevReview')}
             >
               <ChevronLeft className="w-4 h-4 text-[#FCB237]" />
             </button>
             <button
               onClick={goToNext}
               className="p-1 hover:bg-white/20 rounded-full transition-colors"
-              aria-label="Nästa recension"
+              aria-label={t('nextReview')}
             >
               <ChevronRight className="w-4 h-4 text-[#FCB237]" />
             </button>
@@ -159,7 +161,7 @@ export default function FloatingReviews({ productSlug, productName }: FloatingRe
                   <svg className="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
-                  Verifierat köp
+                  {t('verifiedPurchase')}
                 </span>
               )}
             </div>
@@ -177,7 +179,7 @@ export default function FloatingReviews({ productSlug, productName }: FloatingRe
                   ? 'bg-[#FCB237] w-4' 
                   : 'bg-[#FCB237]/30 hover:bg-[#FCB237]/50'
               }`}
-              aria-label={`Gå till recension ${index + 1}`}
+              aria-label={t('goToReview', { index: index + 1 })}
             />
           ))}
         </div>
