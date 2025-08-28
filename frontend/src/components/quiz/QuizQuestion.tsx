@@ -3,6 +3,8 @@
 import { motion } from 'framer-motion'
 import { QuizQuestionData } from './quizData'
 import { Check } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 
 interface QuizQuestionProps {
   question: QuizQuestionData
@@ -15,6 +17,13 @@ export const QuizQuestion: React.FC<QuizQuestionProps> = ({
   selectedValue,
   onAnswer
 }) => {
+  const [selected, setSelected] = useState<string | null>(null)
+  const t = useTranslations('quiz.common')
+
+  useEffect(() => {
+    setSelected(selectedValue ?? null)
+  }, [selectedValue])
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -114,7 +123,7 @@ export const QuizQuestion: React.FC<QuizQuestionProps> = ({
         transition={{ delay: 0.5 }}
         className="text-center text-xs text-gray-500 mt-4 md:hidden"
       >
-        Tryck för att välja
+        {t('tapToSelect')}
       </motion.p>
     </motion.div>
   )

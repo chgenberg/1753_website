@@ -104,6 +104,11 @@
     "goHome": "Gå till startsidan",
     "contactPrefix": "Om problemet kvarstår, kontakta oss på"
   },
+  "quiz": {
+    "common": {
+      "tapToSelect": "Tryck för att välja"
+    }
+  },
   "products": {
     "title": "Våra fantastiska produkter",
     "subtitle": "Alla våra produkter innehåller CBD och CBG för optimal hudhälsa",

@@ -429,5 +429,10 @@
     "reload": "Recargar página",
     "goHome": "Ir a la página principal",
     "contactPrefix": "Si el problema persiste, contáctanos en"
+  },
+  "quiz": {
+    "common": {
+      "tapToSelect": "Toca para seleccionar"
+    }
   }
 }
