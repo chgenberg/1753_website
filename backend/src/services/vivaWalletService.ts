@@ -470,16 +470,84 @@ export class VivaWalletService {
    * Create payment order (legacy method for compatibility)
    */
   async createPaymentOrder(orderData: any): Promise<CreateOrderResponse> {
-    // orderData.amount is already in major units (e.g., SEK), we should NOT divide by 100
-    return this.createSubscriptionOrder({
-      amount: orderData.amount,
-      currency: orderData.currency || 'SEK',
-      customerEmail: orderData.customer.email,
-      customerName: orderData.customer.fullName,
-      customerPhone: orderData.customer.phone,
-      description: orderData.customerTrns,
-      allowRecurring: orderData.allowRecurring
-    })
+    try {
+      const sourceCodeByCurrency: Record<string, string> = {
+        SEK: process.env.VIVA_SOURCE_CODE_SEK || '',
+        EUR: process.env.VIVA_SOURCE_CODE_EUR || ''
+      }
+
+      const currency = orderData.currency || 'SEK'
+      const resolvedSourceCode = sourceCodeByCurrency[currency] || this.config.sourceCode
+
+      const vivaOrderData = {
+        amount: Math.round(orderData.amount * 100), // Convert to cents for Viva API
+        customerTrns: orderData.customerTrns,
+        customer: {
+          email: orderData.customer.email,
+          fullName: orderData.customer.fullName,
+          phone: orderData.customer.phone,
+          countryCode: orderData.customer.countryCode || 'SE',
+          requestLang: orderData.customer.requestLang || 'sv-SE'
+        },
+        paymentTimeout: orderData.paymentTimeout || 1800,
+        preauth: orderData.preauth || false,
+        allowRecurring: orderData.allowRecurring || false,
+        maxInstallments: orderData.maxInstallments || 1,
+        paymentNotification: false,
+        disableExactAmount: orderData.disableExactAmount || false,
+        disableCash: orderData.disableCash || false,
+        disableWallet: orderData.disableWallet || false,
+        enableSwish: orderData.enableSwish || true, // Enable Swish by default
+        successUrl: `${process.env.FRONTEND_URL || 'https://1753website-production.up.railway.app'}/checkout/success`,
+        cancelUrl: `${process.env.FRONTEND_URL || 'https://1753website-production.up.railway.app'}/checkout`,
+        failureUrl: `${process.env.FRONTEND_URL || 'https://1753website-production.up.railway.app'}/checkout?error=payment_failed`,
+        sourceCode: resolvedSourceCode,
+        merchantTrns: orderData.merchantTrns || `Order-${Date.now()}`
+      }
+
+      const accessToken = await this.getAccessToken()
+
+      const response = await axios.post(
+        `${this.config.baseUrl}/checkout/v2/orders`,
+        vivaOrderData,
+        {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+
+             logger.info('Viva Wallet order created', { 
+         orderCode: response.data.orderCode,
+         amount: orderData.amount,
+         currency,
+         enableSwish: vivaOrderData.enableSwish,
+         sourceCode: resolvedSourceCode,
+         requestData: {
+           amount: vivaOrderData.amount,
+           enableSwish: vivaOrderData.enableSwish,
+           disableCash: vivaOrderData.disableCash,
+           disableWallet: vivaOrderData.disableWallet
+         }
+       })
+
+             return {
+         orderCode: response.data.orderCode,
+         errorCode: 0,
+         errorText: '',
+         timeStamp: new Date().toISOString(),
+         correlationId: ''
+       }
+
+    } catch (error: any) {
+      logger.error('Failed to create Viva Wallet order', { 
+        error: error.response?.data || error.message,
+        amount: orderData.amount,
+        currency: orderData.currency
+      })
+      throw new Error(`Failed to create payment order: ${error.response?.data?.message || error.message}`)
+    }
   }
 
   /**

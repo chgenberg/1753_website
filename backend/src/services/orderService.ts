@@ -73,7 +73,8 @@ class OrderService {
       logger.info(`Creating payment for order: ${orderData.orderId}`)
       
       const paymentOrder = {
-        amount: Math.round(orderData.total * 100), // Convert to cents
+        amount: orderData.total, // Amount in major units (SEK), not cents
+        currency: 'SEK',
         customerTrns: `Order ${orderData.orderId} - 1753 Skincare`,
         customer: {
           email: orderData.customer.email,
@@ -89,7 +90,8 @@ class OrderService {
         maxInstallments: 1,
         disableExactAmount: false,
         disableCash: false,
-        disableWallet: false
+        disableWallet: false,
+        enableSwish: true // Enable Swish payments
       }
 
       const result = await vivaWalletService.createPaymentOrder(paymentOrder)

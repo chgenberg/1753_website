@@ -10,6 +10,7 @@ import { performanceMiddleware } from './middleware/performance'
 import { logInfo, logError, logger } from './utils/logger'
 
 // Routes
+import adminRoutes from './routes/admin'
 import authRoutes from './routes/auth'
 import blogRoutes from './routes/blog'
 import cacheRoutes from './routes/cache'
@@ -106,6 +107,7 @@ app.get('/health', (req, res) => {
 })
 
 // API routes
+app.use('/api/admin', adminRoutes)
 app.use('/api/auth', authRoutes)
 app.use('/api/blog', blogRoutes)
 app.use('/api/cache', cacheRoutes)

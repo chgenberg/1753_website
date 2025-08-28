@@ -7,6 +7,7 @@ export interface User {
   phone?: string
   dateOfBirth?: string
   avatar?: string
+  role?: 'USER' | 'ADMIN' | 'SUPER_ADMIN'
   skinJourney?: SkinJourney
   preferences: UserPreferences
   addresses: Address[]
@@ -26,6 +27,99 @@ export interface UserPreferences {
     skinJourneyReminders: boolean
   }
 }
+
+// Admin types
+export interface AdminOrder {
+  id: string
+  orderNumber: string
+  userId?: string
+  email: string
+  phone?: string
+  status: OrderStatus
+  paymentStatus: PaymentStatus
+  fulfillmentStatus: FulfillmentStatus
+  subtotal: number
+  taxAmount: number
+  shippingAmount: number
+  discountAmount: number
+  totalAmount: number
+  currency: string
+  shippingAddress: any
+  billingAddress: any
+  paymentMethod?: string
+  paymentReference?: string
+  transactionId?: string
+  customerName?: string
+  customerPhone?: string
+  trackingNumber?: string
+  trackingCompany?: string
+  shippedAt?: string
+  deliveredAt?: string
+  customerNotes?: string
+  internalNotes?: string
+  createdAt: string
+  updatedAt: string
+  user?: {
+    id: string
+    firstName: string
+    lastName: string
+    email: string
+  }
+  items: AdminOrderItem[]
+  discounts?: AdminOrderDiscount[]
+}
+
+export interface AdminOrderItem {
+  id: string
+  orderId: string
+  productId: string
+  variantId?: string
+  quantity: number
+  price: number
+  title: string
+  variantTitle?: string
+  sku?: string
+  product: {
+    name: string
+    slug: string
+    images: any[]
+    price: number
+    sku?: string
+  }
+}
+
+export interface AdminOrderDiscount {
+  id: string
+  discountCode: string
+  discountAmount: number
+  discount: {
+    code: string
+    type: string
+    value?: number
+  }
+}
+
+export interface OrderStatistics {
+  period: number
+  statistics: {
+    totalOrders: number
+    totalRevenue: number
+    pendingOrders: number
+    shippedOrders: number
+    refundedOrders: number
+  }
+  recentOrders: {
+    id: string
+    orderNumber: string
+    email: string
+    totalAmount: number
+    status: string
+    paymentStatus: string
+    createdAt: string
+  }[]
+}
+
+export type FulfillmentStatus = 'UNFULFILLED' | 'PARTIAL' | 'FULFILLED'
 
 export interface SkinJourney {
   id: string

@@ -43,6 +43,9 @@ function SuccessContent() {
   const eventId = searchParams.get('eventId') // From Viva Wallet
   const eci = searchParams.get('eci') // From Viva Wallet
   
+  // Generate fallback order number only once
+  const [fallbackOrderNumber] = useState(() => `1753-${Date.now()}`)
+  
   useEffect(() => {
     // Clear cart after successful payment (idempotent)
     try { clearCart() } catch {}
@@ -94,7 +97,7 @@ function SuccessContent() {
   }, [])
 
   const copyOrderNumber = () => {
-    const orderNumber = orderCode || `1753-${Date.now()}`
+    const orderNumber = orderCode || fallbackOrderNumber
     navigator.clipboard.writeText(orderNumber)
     setCopied(true)
     toast.success('Ordernummer kopierat!')
@@ -220,7 +223,7 @@ function SuccessContent() {
                 <div>
                   <p className="text-sm text-gray-500 uppercase tracking-wider mb-1">Ordernummer</p>
                   <p className="text-2xl font-semibold text-gray-900">
-                    #{orderCode || `1753-${Date.now()}`}
+                    #{orderCode || fallbackOrderNumber}
                   </p>
                 </div>
                 <div className="flex gap-3">
