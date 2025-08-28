@@ -13,6 +13,7 @@ import Image from 'next/image'
 import { useCart } from '@/contexts/CartContext'
 import type { ImageMetricsResult } from './FacePhotoAnalyzer'
 import React from 'react'
+import { useTranslations } from 'next-intl'
 
 interface QuizResultsProps {
   results: any
@@ -48,6 +49,7 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
   const [tier, setTier] = useState<'budget' | 'standard' | 'premium'>('standard')
   const { addToCart } = useCart()
   const [metric, setMetric] = useState<'rednessIndex' | 'highlightRatio' | 'textureVariance'>('rednessIndex')
+  const t = useTranslations('QuizResults')
 
   // Map results.products into a flat list for selected tier
   const getRecommendedProducts = () => {
@@ -117,7 +119,7 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
       <div className="mt-6">
         <div className="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-6 border border-gray-100 shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">Hudanalys</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{t('heatmap.title')}</h3>
             <div className="flex items-center gap-1">
               {(['rednessIndex', 'highlightRatio', 'textureVariance'] as const).map((m) => (
                 <button
@@ -129,7 +131,7 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
                 >
-                  {m === 'rednessIndex' ? 'Rodnad' : m === 'highlightRatio' ? 'Glans' : 'Textur'}
+                  {m === 'rednessIndex' ? t('heatmap.redness') : m === 'highlightRatio' ? t('heatmap.highlight') : t('heatmap.texture')}
                 </button>
               ))}
             </div>
@@ -201,7 +203,7 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
             {/* Zone labels on hover */}
             <div className="absolute inset-0 pointer-events-none">
               <div className="absolute top-[70px] left-1/2 -translate-x-1/2 text-xs font-medium text-gray-700 bg-white/90 px-2 py-1 rounded shadow-sm opacity-0 hover:opacity-100 transition-opacity">
-                Panna: {getZone(z.forehead, metric).toFixed(1)}
+                {t('heatmap.panna')}: {getZone(z.forehead, metric).toFixed(1)}
               </div>
             </div>
           </div>
@@ -209,11 +211,11 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
           {/* Color scale legend */}
           <div className="mt-6">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs text-gray-500">Låg</span>
+              <span className="text-xs text-gray-500">{t('heatmap.low')}</span>
               <span className="text-xs font-medium text-gray-700">
-                {metric === 'rednessIndex' ? 'Rodnadsnivå' : metric === 'highlightRatio' ? 'Glansnivå' : 'Texturvariation'}
+                {metric === 'rednessIndex' ? t('heatmap.rednessLevel') : metric === 'highlightRatio' ? t('heatmap.highlightLevel') : t('heatmap.textureVariation')}
               </span>
-              <span className="text-xs text-gray-500">Hög</span>
+              <span className="text-xs text-gray-500">{t('heatmap.high')}</span>
             </div>
             <div className="h-3 rounded-full bg-gradient-to-r from-green-400 via-yellow-400 via-orange-400 to-red-500" />
           </div>
@@ -224,10 +226,10 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
               <div key={zone} className="bg-gray-50 rounded-lg p-3">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-xs font-medium text-gray-700 capitalize">
-                    {zone === 'forehead' ? 'Panna' : 
-                     zone === 'leftCheek' ? 'Vänster kind' :
-                     zone === 'rightCheek' ? 'Höger kind' :
-                     zone === 'nose' ? 'Näsa' : 'Haka'}
+                    {zone === 'forehead' ? t('heatmap.panna') : 
+                     zone === 'leftCheek' ? t('heatmap.leftCheek') :
+                     zone === 'rightCheek' ? t('heatmap.rightCheek') :
+                     zone === 'nose' ? t('heatmap.nose') : t('heatmap.haka')}
                   </span>
                   <span className="text-sm font-semibold" style={{ color: heatColor(getZone(metrics, metric), max) }}>
                     {getZone(metrics, metric).toFixed(1)}
@@ -251,12 +253,12 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
   }
 
   const tabs = [
-    { id: 'summary', label: 'Översikt', icon: Sparkles },
-    { id: 'products', label: 'Produkter', icon: ShoppingBag, notification: true },
-    { id: 'lifestyle', label: 'Livsstil', icon: Heart },
-    { id: 'nutrition', label: 'Nutrition', icon: Utensils },
-    { id: 'protocol', label: 'Protokoll', icon: Calendar },
-    { id: 'education', label: 'Lär mer', icon: Book }
+    { id: 'summary', label: t('tabs.summary'), icon: Sparkles },
+    { id: 'products', label: t('tabs.products'), icon: ShoppingBag, notification: true },
+    { id: 'lifestyle', label: t('tabs.lifestyle'), icon: Heart },
+    { id: 'nutrition', label: t('tabs.nutrition'), icon: Utensils },
+    { id: 'protocol', label: t('tabs.protocol'), icon: Calendar },
+    { id: 'education', label: t('tabs.education'), icon: Book }
   ]
 
   const copyToClipboard = () => {
@@ -288,7 +290,7 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
               >
                 <Mail className="w-4 h-4" />
                 {copiedEmail ? (
-                  <span className="text-green-600">Kopierat!</span>
+                  <span className="text-green-600">{t('email.copied')}</span>
                 ) : (
                   userInfo.email
                 )}
@@ -297,7 +299,7 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                 href="/"
                 className="px-5 py-2.5 bg-gradient-to-r from-[#FCB237] to-[#E79C1A] text-white rounded-full text-sm font-medium hover:shadow-lg transition-all duration-300 transform hover:scale-105"
               >
-                Till startsidan
+                {t('header.homePage')}
               </Link>
             </div>
           </div>
@@ -315,17 +317,17 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
         >
           <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FCB237]/10 to-[#00937C]/10 px-4 py-2 rounded-full mb-4">
             <Sparkles className="w-4 h-4 text-[#FCB237]" />
-            <span className="text-sm font-medium text-gray-700">Personlig hudanalys klar</span>
+            <span className="text-sm font-medium text-gray-700">{t('greeting.analysisComplete')}</span>
           </div>
           
           <h1 className="text-4xl md:text-5xl font-light text-gray-900 mb-6 leading-tight">
-            {results.summary?.greeting || `Välkommen ${userInfo.name}!`}
+            {results.summary?.greeting || `${t('greeting.welcome')} ${userInfo.name}!`}
           </h1>
           
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Din personliga hudvårdsplan är klar! Baserat på din unika profil har vi skapat en 
-            <span className="text-primary-700 font-medium"> holistisk plan</span> som kombinerar 
-            naturlig hudvård med livsstilsoptimering.
+            {t('greeting.planComplete')}
+            <span className="text-primary-700 font-medium">{t('greeting.holisticPlan')}</span>
+            {t('greeting.combine')}
           </p>
         </motion.div>
 
@@ -346,7 +348,7 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                   <div className="text-7xl font-light bg-gradient-to-r from-[#FCB237] to-[#00937C] bg-clip-text text-transparent mb-2">
                     {results.summary.holisticScore}
                   </div>
-                  <div className="text-lg text-gray-600 font-medium">Din holistiska hudpoäng</div>
+                  <div className="text-lg text-gray-600 font-medium">{t('score.holisticScore')}</div>
                   
                   {/* Decorative circle */}
                   <svg className="absolute -top-4 -right-4 w-24 h-24 opacity-20" viewBox="0 0 100 100">
@@ -449,12 +451,12 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                       {tabs.find(t => t.id === activeTab)?.label}
                     </h2>
                     <p className="text-sm text-gray-500 mt-1">
-                      {activeTab === 'summary' && 'Din personliga hudanalys och översikt'}
-                      {activeTab === 'products' && 'Rekommenderade produkter för din hudtyp'}
-                      {activeTab === 'lifestyle' && 'Livsstilsförändringar för optimal hudhälsa'}
-                      {activeTab === 'nutrition' && 'Nutritionsråd för strålande hud'}
-                      {activeTab === 'protocol' && 'Din 4-veckors transformationsplan'}
-                      {activeTab === 'education' && 'Fördjupad kunskap om hudvård'}
+                      {activeTab === 'summary' && t('tabs.summaryDescription')}
+                      {activeTab === 'products' && t('tabs.productsDescription')}
+                      {activeTab === 'lifestyle' && t('tabs.lifestyleDescription')}
+                      {activeTab === 'nutrition' && t('tabs.nutritionDescription')}
+                      {activeTab === 'protocol' && t('tabs.protocolDescription')}
+                      {activeTab === 'education' && t('tabs.educationDescription')}
                     </p>
                   </div>
                 </div>
@@ -472,7 +474,7 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                           <Activity className="w-6 h-6 text-[#FCB237]" />
                         </div>
                         <div className="flex-1">
-                          <h3 className="text-xl font-semibold text-gray-900 mb-3">Din hudanalys</h3>
+                          <h3 className="text-xl font-semibold text-gray-900 mb-3">{t('summary.skinAnalysisTitle')}</h3>
                           <p className="text-gray-600 leading-relaxed">
                             {results.summary.skinAnalysis}
                           </p>
@@ -484,7 +486,7 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                       <div className="bg-white rounded-2xl p-6 border border-gray-100">
                         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                           <Target className="w-5 h-5 text-[#00937C]" />
-                          Huvudfokus
+                          {t('summary.primaryConcernsTitle')}
                         </h3>
                         <div className="flex flex-wrap gap-2">
                           {results.summary.primaryConcerns.map((concern: string, index: number) => (
@@ -506,7 +508,7 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                             <Leaf className="w-5 h-5 text-green-700" />
                           </div>
                           <div>
-                            <h3 className="font-semibold text-gray-900 mb-2">Evolutionär insikt</h3>
+                            <h3 className="font-semibold text-gray-900 mb-2">{t('summary.evolutionaryInsightTitle')}</h3>
                             <p className="text-gray-600 leading-relaxed">
                               {results.summary.evolutionaryInsight}
                             </p>
@@ -519,7 +521,7 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                       <div>
                         <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
                           <Zap className="w-6 h-6 text-[#FCB237]" />
-                          Snabba tips
+                          {t('summary.quickTipsTitle')}
                         </h3>
                         <div className="grid gap-4">
                           {results.quickTips.slice(0, 5).map((tip: any, index: number) => (
@@ -559,24 +561,24 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                   <div className="space-y-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h2 className="text-2xl font-light text-gray-900 mb-1">Dina produktrekommendationer</h2>
-                        <p className="text-gray-600">Baserat på din hudanalys har vi valt ut de perfekta produkterna för dig.</p>
+                        <h2 className="text-2xl font-light text-gray-900 mb-1">{t('products.productRecommendationsTitle')}</h2>
+                        <p className="text-gray-600">{t('products.productRecommendationsDescription')}</p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <button onClick={() => setTier('budget')} className={`px-3 py-1 rounded-full text-sm ${tier==='budget'?'bg-[#FCB237] text-white':'bg-gray-100'}`}>Budget</button>
-                        <button onClick={() => setTier('standard')} className={`px-3 py-1 rounded-full text-sm ${tier==='standard'?'bg-[#FCB237] text-white':'bg-gray-100'}`}>Standard</button>
-                        <button onClick={() => setTier('premium')} className={`px-3 py-1 rounded-full text-sm ${tier==='premium'?'bg-[#FCB237] text-white':'bg-gray-100'}`}>Premium</button>
+                        <button onClick={() => setTier('budget')} className={`px-3 py-1 rounded-full text-sm ${tier==='budget'?'bg-[#FCB237] text-white':'bg-gray-100'}`}>{t('products.budgetOption')}</button>
+                        <button onClick={() => setTier('standard')} className={`px-3 py-1 rounded-full text-sm ${tier==='standard'?'bg-[#FCB237] text-white':'bg-gray-100'}`}>{t('products.standardOption')}</button>
+                        <button onClick={() => setTier('premium')} className={`px-3 py-1 rounded-full text-sm ${tier==='premium'?'bg-[#FCB237] text-white':'bg-gray-100'}`}>{t('products.premiumOption')}</button>
                       </div>
                     </div>
 
                     {/* Add full routine CTA */}
                     <div className="flex items-center justify-between p-4 border rounded-xl bg-[#FAF8F5]">
                       <div>
-                        <div className="font-medium text-gray-900">Lägg hela rutinen i varukorgen</div>
-                        <div className="text-sm text-gray-600">Välj nivå ovan. Du kan justera i varukorgen.</div>
+                        <div className="font-medium text-gray-900">{t('products.addFullRoutine')}</div>
+                        <div className="text-sm text-gray-600">{t('products.adjustInCart')}</div>
                       </div>
                       <button onClick={addRoutineToCart} className="inline-flex items-center gap-2 px-4 py-2 bg-[#FCB237] text-white rounded-full">
-                        <ShoppingBag className="w-4 h-4" /> Lägg till allt
+                        <ShoppingBag className="w-4 h-4" /> {t('products.addAllToCart')}
                       </button>
                     </div>
 
@@ -585,7 +587,7 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                       <div className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-6">
                         <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
                           <Sun className="w-5 h-5 text-orange-500" />
-                          Morgonrutin ({results.products.morning.totalTime})
+                          {t('products.morningRoutineTitle')} ({results.products.morning.totalTime})
                         </h3>
                         <div className="space-y-3">
                           {results.products.morning.routine.map((step: any) => (
@@ -606,7 +608,7 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                         {results.products.morning.proTip && (
                           <div className="mt-4 p-3 bg-white/50 rounded-lg">
                             <p className="text-sm text-gray-700">
-                              <strong>💡 Tips:</strong> {results.products.morning.proTip}
+                              <strong>💡 {t('products.proTip')}:</strong> {results.products.morning.proTip}
                             </p>
                           </div>
                         )}
@@ -618,7 +620,7 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                       <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-6">
                         <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
                           <Moon className="w-5 h-5 text-indigo-600" />
-                          Kvällsrutin ({results.products.evening.totalTime})
+                          {t('products.eveningRoutineTitle')} ({results.products.evening.totalTime})
                         </h3>
                         <div className="space-y-3">
                           {results.products.evening.routine.map((step: any) => (
@@ -639,7 +641,7 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                         {results.products.evening.proTip && (
                           <div className="mt-4 p-3 bg-white/50 rounded-lg">
                             <p className="text-sm text-gray-700">
-                              <strong>💡 Tips:</strong> {results.products.evening.proTip}
+                              <strong>💡 {t('products.proTip')}:</strong> {results.products.evening.proTip}
                             </p>
                           </div>
                         )}
@@ -649,7 +651,7 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                     {/* Product Recommendations */}
                     {results.products.recommendations && (
                       <div>
-                        <h3 className="text-lg font-medium text-gray-900 mb-4">Rekommenderade produkter</h3>
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">{t('products.recommendedProductsTitle')}</h3>
                         <div className="grid gap-4">
                           {results.products.recommendations.map((product: any) => (
                             <motion.div
@@ -661,7 +663,7 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                                 <div>
                                   <div className="flex items-center gap-2 mb-2">
                                     <span className="px-2 py-1 bg-[#8B6B47] text-white text-xs rounded-full">
-                                      Prioritet {product.priority}
+                                      {t('products.priority')} {product.priority}
                                     </span>
                                     {product.savings && (
                                       <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">
@@ -676,23 +678,23 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                                   href="/products"
                                   className="px-4 py-2 bg-[#FCB237] text-white rounded-full text-sm hover:bg-[#E79C1A] transition-colors"
                                 >
-                                  Se produkt
+                                  {t('sections.products.viewProduct')}
                                 </Link>
                               </div>
                               
                               <div className="space-y-3">
                                 <div>
-                                  <h5 className="text-sm font-medium text-gray-700 mb-1">Varför denna produkt?</h5>
+                                  <h5 className="text-sm font-medium text-gray-700 mb-1">{t('products.whyThisProduct')}</h5>
                                   <p className="text-sm text-gray-600">{product.why}</p>
                                 </div>
                                 
                                 <div>
-                                  <h5 className="text-sm font-medium text-gray-700 mb-1">Användning</h5>
+                                  <h5 className="text-sm font-medium text-gray-700 mb-1">{t('products.usage')}</h5>
                                   <p className="text-sm text-gray-600">{product.usage}</p>
                                 </div>
                                 
                                 <div>
-                                  <h5 className="text-sm font-medium text-gray-700 mb-1">Förväntade resultat</h5>
+                                  <h5 className="text-sm font-medium text-gray-700 mb-1">{t('products.expectedResults')}</h5>
                                   <p className="text-sm text-gray-600">{product.expectedResults}</p>
                                 </div>
                               </div>
@@ -703,7 +705,7 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                         {results.products.budgetOption && (
                           <div className="mt-4 p-4 bg-gray-50 rounded-lg">
                             <p className="text-sm text-gray-700">
-                              <strong>Budget-alternativ:</strong> {results.products.budgetOption}
+                              <strong>{t('products.budgetAlternative')}:</strong> {results.products.budgetOption}
                             </p>
                           </div>
                         )}
@@ -714,7 +716,7 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                             className="inline-flex items-center gap-2 px-6 py-3 bg-[#FCB237] text-white rounded-full hover:bg-[#E79C1A] transition-colors"
                           >
                             <ShoppingBag className="w-5 h-5" />
-                            Se alla produkter
+                            {t('sections.products.ctaAllProducts')}
                             <ChevronRight className="w-4 h-4" />
                           </Link>
                         </div>
@@ -727,9 +729,9 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                 {activeTab === 'lifestyle' && results.lifestyle && (
                   <div className="space-y-6">
                     <div>
-                      <h2 className="text-2xl font-light text-gray-900 mb-4">Livsstilsoptimering</h2>
+                      <h2 className="text-2xl font-light text-gray-900 mb-4">{t('lifestyle.lifestyleOptimizationTitle')}</h2>
                       <p className="text-gray-600">
-                        Din livsstil har en enorm påverkan på din hud. Här är dina personliga rekommendationer.
+                        {t('lifestyle.lifestyleImpact')}
                       </p>
                     </div>
 
@@ -738,17 +740,17 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                       <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6">
                         <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
                           <Moon className="w-5 h-5 text-blue-600" />
-                          Sömn
+                          {t('lifestyle.sleepTitle')}
                         </h3>
                         <div className="space-y-3">
                           <div>
-                            <h4 className="font-medium text-gray-700">Rekommendation</h4>
+                            <h4 className="font-medium text-gray-700">{t('lifestyle.recommendation')}</h4>
                             <p className="text-gray-600">{results.lifestyle.sleep.target || results.lifestyle.sleep.recommendation}</p>
                           </div>
                           
                           {results.lifestyle.sleep.protocol && (
                             <div>
-                              <h4 className="font-medium text-gray-700 mb-2">Kvällsprotokoll</h4>
+                              <h4 className="font-medium text-gray-700 mb-2">{t('lifestyle.eveningProtocol')}</h4>
                               <div className="space-y-1">
                                 {results.lifestyle.sleep.protocol.map((step: string, index: number) => (
                                   <div key={index} className="flex items-center gap-2 text-sm text-gray-600">
@@ -768,14 +770,14 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                       <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6">
                         <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
                           <Activity className="w-5 h-5 text-green-600" />
-                          Rörelse
+                          {t('lifestyle.movementTitle')}
                         </h3>
                         <div className="space-y-3">
                           <p className="text-gray-600">{results.lifestyle.movement.principle}</p>
                           
                           {results.lifestyle.movement.daily && (
                             <div>
-                              <h4 className="font-medium text-gray-700 mb-2">Daglig rutin</h4>
+                              <h4 className="font-medium text-gray-700 mb-2">{t('lifestyle.dailyRoutine')}</h4>
                               <div className="space-y-1">
                                 {results.lifestyle.movement.daily.map((activity: string, index: number) => (
                                   <div key={index} className="flex items-center gap-2 text-sm text-gray-600">
@@ -795,13 +797,13 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                       <div className="bg-gradient-to-br from-yellow-50 to-amber-50 rounded-xl p-6">
                         <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
                           <Sun className="w-5 h-5 text-amber-600" />
-                          Solexponering
+                          {t('lifestyle.sunExposureTitle')}
                         </h3>
                         <div className="space-y-3">
                           <p className="text-gray-600 font-medium">{results.lifestyle.sunExposure.philosophy}</p>
                           
                           <div>
-                            <h4 className="font-medium text-gray-700 mb-2">Riktlinjer</h4>
+                            <h4 className="font-medium text-gray-700 mb-2">{t('lifestyle.guidelines')}</h4>
                             <div className="space-y-1">
                               {results.lifestyle.sunExposure.guidelines.map((guideline: string, index: number) => (
                                 <div key={index} className="flex items-center gap-2 text-sm text-gray-600">
@@ -820,20 +822,20 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                       <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6">
                         <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
                           <Brain className="w-5 h-5 text-purple-600" />
-                          Stresshantering
+                          {t('lifestyle.stressManagementTitle')}
                         </h3>
                         <div className="space-y-3">
                           <p className="text-gray-600">{results.lifestyle.stress.impact}</p>
                           
                           {results.lifestyle.stress.techniques && (
                             <div>
-                              <h4 className="font-medium text-gray-700 mb-2">Tekniker</h4>
+                              <h4 className="font-medium text-gray-700 mb-2">{t('lifestyle.techniques')}</h4>
                               <div className="grid gap-3">
                                 {results.lifestyle.stress.techniques.map((technique: any, index: number) => (
                                   <div key={index} className="bg-white/50 rounded-lg p-3">
                                     <h5 className="font-medium text-gray-800">{technique.name}</h5>
                                     <p className="text-sm text-gray-600 mt-1">{technique.how}</p>
-                                    <p className="text-xs text-purple-600 mt-1">När: {technique.when}</p>
+                                    <p className="text-xs text-purple-600 mt-1">{t('lifestyle.when')}: {technique.when}</p>
                                   </div>
                                 ))}
                               </div>
@@ -849,7 +851,7 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                 {activeTab === 'nutrition' && results.lifestyle?.nutrition && (
                   <div className="space-y-6">
                     <div>
-                      <h2 className="text-2xl font-light text-gray-900 mb-4">Nutritionsplan</h2>
+                      <h2 className="text-2xl font-light text-gray-900 mb-4">{t('nutrition.nutritionPlanTitle')}</h2>
                       <p className="text-gray-600">
                         {results.lifestyle.nutrition.philosophy}
                       </p>
@@ -857,7 +859,7 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
 
                     {results.lifestyle.nutrition.skinFoods && (
                       <div>
-                        <h3 className="text-lg font-medium text-gray-900 mb-4">Hudvänlig mat</h3>
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">{t('nutrition.skinFriendlyFoodsTitle')}</h3>
                         <div className="grid gap-4">
                           {results.lifestyle.nutrition.skinFoods.map((category: any, index: number) => (
                             <div key={index} className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4">
@@ -870,7 +872,7 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                                 ))}
                               </div>
                               <p className="text-sm text-emerald-700">
-                                Frekvens: {category.frequency}
+                                {t('nutrition.frequency')}: {category.frequency}
                               </p>
                             </div>
                           ))}
@@ -882,7 +884,7 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                       <div className="bg-red-50 rounded-xl p-4">
                         <h4 className="font-medium text-gray-900 mb-2 flex items-center gap-2">
                           <Shield className="w-5 h-5 text-red-600" />
-                          Undvik
+                          {t('nutrition.avoidTitle')}
                         </h4>
                         <div className="space-y-1">
                           {results.lifestyle.nutrition.avoid.map((item: string, index: number) => (
@@ -898,9 +900,9 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                 {activeTab === 'protocol' && results.holisticProtocol && (
                   <div className="space-y-6">
                     <div>
-                      <h2 className="text-2xl font-light text-gray-900 mb-4">Ditt protokoll</h2>
+                      <h2 className="text-2xl font-light text-gray-900 mb-4">{t('protocol.yourProtocolTitle')}</h2>
                       <p className="text-gray-600">
-                        En steg-för-steg plan för att implementera dina nya rutiner.
+                        {t('protocol.stepByStepPlan')}
                       </p>
                     </div>
 
@@ -911,7 +913,7 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                             {phase.replace(/_/g, ' ')}
                           </h3>
                           {details.focus && (
-                            <p className="text-gray-700 font-medium mb-2">Fokus: {details.focus}</p>
+                            <p className="text-gray-700 font-medium mb-2">{t('protocol.focus')}: {details.focus}</p>
                           )}
                           {Object.entries(details).map(([key, value]: [string, any]) => {
                             if (key === 'focus') return null
@@ -934,9 +936,9 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                 {activeTab === 'education' && results.education && (
                   <div className="space-y-6">
                     <div>
-                      <h2 className="text-2xl font-light text-gray-900 mb-4">Fördjupning</h2>
+                      <h2 className="text-2xl font-light text-gray-900 mb-4">{t('education.deepeningTitle')}</h2>
                       <p className="text-gray-600">
-                        Lär dig mer om vetenskapen bakom dina rekommendationer.
+                        {t('education.learnMore')}
                       </p>
                     </div>
 
@@ -945,7 +947,7 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                         if (topic === 'bookRecommendations') {
                           return (
                             <div key={topic} className="bg-gray-50 rounded-xl p-6">
-                              <h3 className="text-lg font-medium text-gray-900 mb-3">Rekommenderad läsning</h3>
+                              <h3 className="text-lg font-medium text-gray-900 mb-3">{t('education.recommendedReadingTitle')}</h3>
                               <div className="space-y-2">
                                 {content.map((book: string, index: number) => (
                                   <div key={index} className="flex items-center gap-2 text-gray-700">
@@ -982,11 +984,11 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
             transition={{ delay: 0.3 }}
             className="mt-8 bg-gradient-to-r from-[#8B6B47] to-[#6B5337] text-white rounded-2xl p-6 md:p-8"
           >
-            <h2 className="text-2xl font-light mb-4">Nästa steg</h2>
+            <h2 className="text-2xl font-light mb-4">{t('nextSteps.nextStepsTitle')}</h2>
             <div className="grid md:grid-cols-3 gap-6">
               {results.nextSteps.immediate && (
                 <div>
-                  <h3 className="font-medium mb-2">Idag</h3>
+                  <h3 className="font-medium mb-2">{t('nextSteps.today')}</h3>
                   <ul className="space-y-1">
                     {results.nextSteps.immediate.map((step: string, index: number) => (
                       <li key={index} className="text-sm opacity-90">• {step}</li>
@@ -996,7 +998,7 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
               )}
               {results.nextSteps.thisWeek && (
                 <div>
-                  <h3 className="font-medium mb-2">Denna vecka</h3>
+                  <h3 className="font-medium mb-2">{t('nextSteps.thisWeek')}</h3>
                   <ul className="space-y-1">
                     {results.nextSteps.thisWeek.map((step: string, index: number) => (
                       <li key={index} className="text-sm opacity-90">• {step}</li>
@@ -1005,7 +1007,7 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
                 </div>
               )}
               <div>
-                <h3 className="font-medium mb-2">Support</h3>
+                <h3 className="font-medium mb-2">{t('nextSteps.support')}</h3>
                 <p className="text-sm opacity-90 mb-3">{results.nextSteps.support}</p>
                 <div className="flex gap-2">
                   <Link href="/kontakt" className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors">
@@ -1026,13 +1028,13 @@ export default function ImprovedQuizResults({ results, userInfo, imageMetrics }:
         {/* Save Results */}
         <div className="mt-8 text-center">
           <p className="text-gray-600 mb-4">
-            Vi har skickat din kompletta plan till {userInfo.email}
+            {t('saveResults.sentPlan')} {userInfo.email}
           </p>
           <button
             onClick={() => window.print()}
             className="text-[#8B6B47] hover:text-[#6B5337] underline text-sm"
           >
-            Skriv ut din plan
+            {t('saveResults.printPlan')}
           </button>
         </div>
       </div>

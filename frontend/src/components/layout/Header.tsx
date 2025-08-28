@@ -45,33 +45,33 @@ export function Header() {
 
   const menuItems = [
     { 
-      href: '/', 
+      href: `/${(pathname?.split('/')?.[1] || 'sv')}`, 
       label: t('home')
     },
     { 
-      href: '/products', 
+      href: `/${(pathname?.split('/')?.[1] || 'sv')}/products`, 
       label: t('products')
     },
-    { href: '/quiz', label: t('quiz') },
+    { href: `/${(pathname?.split('/')?.[1] || 'sv')}/quiz`, label: t('quiz') },
     { 
-      href: '/om-oss', 
+      href: `/${(pathname?.split('/')?.[1] || 'sv')}/om-oss`, 
       label: t('about'),
       children: [
-        { href: '/om-oss/ingredienser', label: t('ingredients') },
-        { href: '/om-oss/faq', label: t('faq') },
-        { href: '/om-oss/aterforsaljare', label: t('retailers') },
+        { href: `/${(pathname?.split('/')?.[1] || 'sv')}/om-oss/ingredienser`, label: t('ingredients') },
+        { href: `/${(pathname?.split('/')?.[1] || 'sv')}/om-oss/faq`, label: t('faq') },
+        { href: `/${(pathname?.split('/')?.[1] || 'sv')}/om-oss/aterforsaljare`, label: t('retailers') },
       ]
     },
     { 
-      href: '/kunskap', 
+      href: `/${(pathname?.split('/')?.[1] || 'sv')}/kunskap`, 
       label: t('knowledge'),
       children: [
-        { href: '/kunskap/e-bok', label: t('ebook') },
-        { href: '/kunskap/funktionella-ravaror', label: t('functionalRawMaterials') },
-        { href: '/blogg', label: t('blog') },
+        { href: `/${(pathname?.split('/')?.[1] || 'sv')}/kunskap/e-bok`, label: t('ebook') },
+        { href: `/${(pathname?.split('/')?.[1] || 'sv')}/kunskap/funktionella-ravaror`, label: t('functionalRawMaterials') },
+        { href: `/${(pathname?.split('/')?.[1] || 'sv')}/blogg`, label: t('blog') },
       ]
     },
-    { href: '/kontakt', label: t('contact') },
+    { href: `/${(pathname?.split('/')?.[1] || 'sv')}/kontakt`, label: t('contact') },
   ]
 
   return (

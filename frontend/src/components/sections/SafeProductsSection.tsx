@@ -258,7 +258,7 @@ export function SafeProductsSection() {
                         href={`/products/${product.slug}`}
                         className="block w-full text-center bg-[#FCB237] hover:bg-[#3A2A1E] text-white px-4 py-3 rounded-full font-semibold transition-all transform hover:scale-105"
                       >
-                        Se produkt
+                        {t('viewProduct')}
                       </Link>
                     </div>
                   </div>
