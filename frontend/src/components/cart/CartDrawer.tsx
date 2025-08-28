@@ -18,8 +18,10 @@ import {
   Truck,
   Shield
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 export const CartDrawer = () => {
+  const t = useTranslations()
   const { 
     items, 
     isOpen, 
@@ -70,7 +72,7 @@ export const CartDrawer = () => {
                       <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                         <ShoppingBag className="h-5 w-5 sm:h-6 sm:w-6 text-[#FCB237] flex-shrink-0" />
                         <h2 className="text-lg sm:text-xl font-semibold truncate">
-                          Din varukorg ({cartCount})
+                          {t('cart.title')} ({cartCount})
                         </h2>
                       </div>
                       <button
@@ -87,7 +89,7 @@ export const CartDrawer = () => {
                       <div className="px-4 sm:px-6 py-3 bg-[#F5F3F0] border-b">
                         <div className="flex items-center justify-between mb-2 gap-2">
                           <span className="text-xs sm:text-sm text-gray-700 flex-1">
-                                                            {formatMoney(remainingForFreeShipping)} kvar till fri frakt!
+                            {t('cart.drawer.freeShippingProgress', { amount: formatMoney(remainingForFreeShipping) })}
                           </span>
                           <Truck className="h-4 w-4 text-[#FCB237] flex-shrink-0" />
                         </div>
@@ -108,17 +110,17 @@ export const CartDrawer = () => {
                         <div className="flex flex-col items-center justify-center h-full px-6 py-12">
                           <ShoppingBag className="h-16 w-16 text-gray-300 mb-4" />
                           <h3 className="text-lg font-medium text-gray-900 mb-2">
-                            Din varukorg är tom
+                            {t('cart.empty.title')}
                           </h3>
                           <p className="text-sm text-gray-500 text-center mb-6">
-                            Upptäck våra fantastiska produkter och börja handla!
+                            {t('cart.empty.description')}
                           </p>
                           <Link
                             href="/products"
                             onClick={closeCart}
                             className="bg-[#FCB237] text-white px-6 py-3 rounded-lg hover:bg-[#E79C1A] transition-colors flex items-center gap-2"
                           >
-                            Börja handla
+                            {t('cart.empty.cta')}
                             <ArrowRight className="h-4 w-4" />
                           </Link>
                         </div>
@@ -223,34 +225,34 @@ export const CartDrawer = () => {
                         <div className="flex flex-wrap justify-center gap-3 sm:gap-6 mb-4 py-3 border-b">
                           <div className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-600">
                             <Truck className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
-                            <span className="whitespace-nowrap">Snabb leverans</span>
+                            <span className="whitespace-nowrap">{t('cart.drawer.badges.fastShipping')}</span>
                           </div>
                           <div className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-600">
                             <Shield className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
-                            <span className="whitespace-nowrap">Säker betalning</span>
+                            <span className="whitespace-nowrap">{t('cart.drawer.badges.securePayment')}</span>
                           </div>
                           <div className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-600">
                             <Package className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
-                            <span className="whitespace-nowrap">30 dagars retur</span>
+                            <span className="whitespace-nowrap">{t('cart.drawer.badges.returns30days')}</span>
                           </div>
                         </div>
 
                         {/* Summary */}
                         <div className="space-y-2 mb-4">
                           <div className="flex justify-between text-sm">
-                            <span>Delsumma</span>
+                            <span>{t('cart.subtotal')}</span>
                             <span>{formatMoney(subtotal)}</span>
                           </div>
                           <div className="flex justify-between text-sm">
-                            <span>Frakt</span>
-                            <span>{shipping === 0 ? 'Gratis' : formatMoney(shipping)}</span>
+                            <span>{t('cart.shipping')}</span>
+                            <span>{shipping === 0 ? t('cart.freeShipping') : formatMoney(shipping)}</span>
                           </div>
                           <div className="flex justify-between text-lg font-semibold pt-2 border-t">
-                            <span>Total</span>
+                            <span>{t('cart.total')}</span>
                             <span>{formatMoney(total)}</span>
                           </div>
                           <div className="text-xs text-gray-500 text-right">
-                            inkl. moms
+                            {t('cart.includesTax')}
                           </div>
                         </div>
 
@@ -261,14 +263,14 @@ export const CartDrawer = () => {
                             onClick={closeCart}
                             className="w-full bg-gray-100 text-gray-900 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
                           >
-                            Visa varukorg
+                            {t('cart.viewCart')}
                           </Link>
                           <Link
                             href="/checkout"
                             onClick={closeCart}
                             className="w-full bg-[#FCB237] text-white py-3 rounded-lg font-medium hover:bg-[#E79C1A] transition-colors flex items-center justify-center gap-2"
                           >
-                            Till kassan
+                            {t('cart.proceedToCheckout')}
                             <ArrowRight className="h-4 w-4" />
                           </Link>
                         </div>

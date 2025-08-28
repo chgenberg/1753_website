@@ -623,5 +623,62 @@
       "moreComing": "More exciting articles are on the way!",
       "sourcesHeading": "Sources"
     }
+  },
+  "newsletter": {
+    "title": "Join our skincare family",
+    "subtitle": "Get personalized skincare tips, exclusive offers and be first to try our new products.",
+    "minimal": {
+      "title": "Get our latest news",
+      "subtitle": "Exclusive offers and skincare tips straight to your inbox"
+    },
+    "benefits": {
+      "welcomeDiscount": "20% welcome discount",
+      "personalTips": "Personal tips",
+      "exclusiveProducts": "Exclusive products"
+    },
+    "form": {
+      "emailLabel": "Email address *",
+      "emailPlaceholder": "your@email.com",
+      "firstNameLabel": "First name (optional)",
+      "firstNamePlaceholder": "Your first name",
+      "skinTypeLabel": "My skin type",
+      "skinTypePlaceholder": "Choose your skin type",
+      "interestsLabel": "What are you interested in? (select multiple)",
+      "customizePreferences": "Customize your preferences for better content →",
+      "submitButton": "Join now and get 20% off!",
+      "subscribeButton": "Subscribe",
+      "terms": "By subscribing you agree to our {termsLink} and {privacyLink}. You can unsubscribe at any time."
+    },
+    "success": {
+      "title": "Welcome to the family! 🎉",
+      "message": "Thank you {name} for your subscription! We'll send your welcome email with an exclusive discount code soon.",
+      "messageNoName": "Thank you for your subscription! We'll send your welcome email with an exclusive discount code soon.",
+      "checkEmail": "Check your inbox within a few minutes for your 20% welcome discount!",
+      "minimal": {
+        "title": "Thank you!",
+        "message": "We'll send our welcome email to you soon."
+      }
+    },
+    "errors": {
+      "emailRequired": "Email address is required",
+      "somethingWrong": "Something went wrong",
+      "technicalError": "Technical error. Please try again later."
+    },
+    "skinTypes": {
+      "dry": "Dry skin",
+      "oily": "Oily skin",
+      "combination": "Combination skin",
+      "sensitive": "Sensitive skin",
+      "normal": "Normal skin",
+      "acne": "Acne-prone skin",
+      "mature": "Mature skin"
+    },
+    "interests": {
+      "skincareTips": "🌿 Skincare tips",
+      "productLaunches": "✨ New products",
+      "exclusiveOffers": "🎁 Exclusive offers",
+      "ingredientEducation": "🧪 Ingredient education",
+      "routineAdvice": "💆‍♀️ Routine advice"
+    }
   }
 }

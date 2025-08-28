@@ -286,6 +286,63 @@
       "tagline": "cultivating living skin since Linné",
       "imageAlt": "Weed Your Skin E-bok",
       "freeBadge": "GRATIS!"
+    },
+    "blog": {
+      "title": "Senaste från bloggen",
+      "subtitle": "Utforska tips, guider och nyheter om naturlig hudvård",
+      "readMore": "Läs mer",
+      "viewAll": "Visa alla artiklar",
+      "mock": {
+        "1": {
+          "title": "10 tips för akne",
+          "excerpt": "Upptäck de bästa metoderna för att hantera akne naturligt med CBD och CBG. Lär dig hur cannabinoider kan hjälpa din hud..."
+        },
+        "2": {
+          "title": "CBD och CBG - Cellförnyelseprocessen",
+          "excerpt": "Förstå hur CBD och CBG påverkar hudens naturliga cellförnyelse och kan hjälpa till att återställa hudens balans..."
+        },
+        "3": {
+          "title": "Endocannabinoidsystemet i huden",
+          "excerpt": "En djupgående guide till hur endocannabinoidsystemet fungerar i huden och varför det är så viktigt för hudhälsa..."
+        }
+      }
+    },
+    "relatedProducts": {
+      "title": "Du kanske också gillar",
+      "subtitle": "Handplockade rekommendationer för din hudvårdsrutin",
+      "seeMore": "Se mer",
+      "added": "Tillagd!",
+      "add": "Lägg till",
+      "viewAll": "Se alla produkter"
+    },
+    "testimonials": {
+      "badge": "Kundrecensioner",
+      "title": "Vad våra kunder säger",
+      "subtitle": "Tusentals nöjda kunder har upplevt den transformerande kraften i våra CBD-berikade hudvårdsprodukter",
+      "uses": "Använder",
+      "list": {
+        "1": {
+          "name": "Anna Lindberg",
+          "age": "34 år",
+          "location": "Stockholm",
+          "text": "Jag har kämpat med torr hud i åratal, men efter att ha använt DUO-kit i bara två veckor är min hud helt förvandlad. Den känns mjuk, återfuktad och ser strålande ut!",
+          "product": "DUO-kit"
+        },
+        "2": {
+          "name": "Erik Johansson",
+          "age": "28 år",
+          "location": "Göteborg",
+          "text": "Som man var jag skeptisk till hudvård, men The ONE Facial Oil har blivit en del av min dagliga rutin. Min hud har aldrig sett bättre ut och jag får komplimanger hela tiden.",
+          "product": "The ONE Facial Oil"
+        },
+        "3": {
+          "name": "Maria Svensson",
+          "age": "45 år",
+          "location": "Malmö",
+          "text": "Fungtastic har gjort underverk för min mogna hud. Fina linjer har minskat och min hud känns fastare. Jag älskar att det är helt naturligt!",
+          "product": "Fungtastic Mushroom Extract"
+        }
+      }
     }
   },
   "reviews": {
@@ -302,6 +359,33 @@
       "reviewsLabel": "recensioner",
       "verifiedBuyer": "Verifierad köpare",
       "loadMore": "Visa fler recensioner"
+    },
+    "homeStats": {
+      "averageLabel": "Genomsnittligt betyg",
+      "total": "Baserat på {count}+ recensioner",
+      "wouldRecommend": "Skulle rekommendera",
+      "happyCustomers": "Nöjda kunder"
+    },
+    "homeDefaults": {
+      "1": {
+        "author": "Anna L.",
+        "content": "Fantastiska produkter som verkligen levererar resultat. Min hud har aldrig mått bättre! Rekommenderar varmt till alla som vill ha naturlig hudvård.",
+        "product": "DUO-KIT TA-DA SERUM"
+      },
+      "2": {
+        "author": "Maria S.",
+        "content": "Naturliga ingredienser av högsta kvalitet. Känns som att ge min hud det allra bästa. Älskar särskilt TA-DA serumet!",
+        "product": "TA-DA SERUM"
+      },
+      "3": {
+        "author": "Sofia K.",
+        "content": "Snabb leverans och otrolig kundservice. Produkterna överträffade alla mina förväntningar. Kommer definitivt beställa igen!"
+      },
+      "4": {
+        "author": "Emma H.",
+        "content": "Jag älskar I LOVE facial oil! Den är så närande och min hud känns mjuk och len hela dagen. Bästa ansiktsoljan jag testat!",
+        "product": "I LOVE FACIAL OIL"
+      }
     }
   },
   "map": {
@@ -615,6 +699,63 @@
         "title": "Marknadsföringscookies",
         "desc": "Används för att visa relevanta annonser och mäta effektiviteten av våra marknadsföringskampanjer."
       }
+    }
+  },
+  "newsletter": {
+    "title": "Bli en del av vår hudvårdsfamilj",
+    "subtitle": "Få personliga hudvårdstips, exklusiva erbjudanden och var först med att prova våra nya produkter.",
+    "minimal": {
+      "title": "Få våra senaste nyheter",
+      "subtitle": "Exklusiva erbjudanden och hudvårdstips direkt till din inbox"
+    },
+    "benefits": {
+      "welcomeDiscount": "20% välkomstrabatt",
+      "personalTips": "Personliga tips",
+      "exclusiveProducts": "Exklusiva produkter"
+    },
+    "form": {
+      "emailLabel": "E-postadress *",
+      "emailPlaceholder": "din@email.com",
+      "firstNameLabel": "Förnamn (valfritt)",
+      "firstNamePlaceholder": "Ditt förnamn",
+      "skinTypeLabel": "Min hudtyp",
+      "skinTypePlaceholder": "Välj din hudtyp",
+      "interestsLabel": "Vad är du intresserad av? (välj flera)",
+      "customizePreferences": "Anpassa dina preferenser för bättre innehåll →",
+      "submitButton": "Gå med nu och få 20% rabatt!",
+      "subscribeButton": "Prenumerera",
+      "terms": "Genom att prenumerera godkänner du våra {termsLink} och {privacyLink}. Du kan avregistrera dig när som helst."
+    },
+    "success": {
+      "title": "Välkommen till familjen! 🎉",
+      "message": "Tack {name} för din prenumeration! Vi skickar snart ditt välkomstmail med en exklusiv rabattkod.",
+      "messageNoName": "Tack för din prenumeration! Vi skickar snart ditt välkomstmail med en exklusiv rabattkod.",
+      "checkEmail": "Kolla din inkorg inom några minuter för din 20% välkomstrabatt!",
+      "minimal": {
+        "title": "Tack!",
+        "message": "Vi skickar snart vårt välkomstmail till dig."
+      }
+    },
+    "errors": {
+      "emailRequired": "E-postadress krävs",
+      "somethingWrong": "Något gick fel",
+      "technicalError": "Tekniskt fel. Försök igen senare."
+    },
+    "skinTypes": {
+      "dry": "Torr hud",
+      "oily": "Fet hud",
+      "combination": "Kombinationshud",
+      "sensitive": "Känslig hud",
+      "normal": "Normal hud",
+      "acne": "Aknebenägen hud",
+      "mature": "Mogen hud"
+    },
+    "interests": {
+      "skincareTips": "🌿 Hudvårdstips",
+      "productLaunches": "✨ Nya produkter",
+      "exclusiveOffers": "🎁 Exklusiva erbjudanden",
+      "ingredientEducation": "🧪 Ingredienslära",
+      "routineAdvice": "💆‍♀️ Rutinråd"
     }
   }
 } 

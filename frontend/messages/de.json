@@ -623,5 +623,62 @@
       "makeupRemover": "MAKEUP REMOVER TECHNIK",
       "comingSoon": "Video kommt bald..."
     }
+  },
+  "newsletter": {
+    "title": "Werden Sie Teil unserer Hautpflege-Familie",
+    "subtitle": "Erhalten Sie personalisierte Hautpflegetipps, exklusive Angebote und seien Sie die Ersten, die unsere neuen Produkte testen.",
+    "minimal": {
+      "title": "Erhalten Sie unsere neuesten Nachrichten",
+      "subtitle": "Exklusive Angebote und Hautpflegetipps direkt in Ihren Posteingang"
+    },
+    "benefits": {
+      "welcomeDiscount": "20% Willkommensrabatt",
+      "personalTips": "Persönliche Tipps",
+      "exclusiveProducts": "Exklusive Produkte"
+    },
+    "form": {
+      "emailLabel": "E-Mail-Adresse *",
+      "emailPlaceholder": "ihre@email.com",
+      "firstNameLabel": "Vorname (optional)",
+      "firstNamePlaceholder": "Ihr Vorname",
+      "skinTypeLabel": "Mein Hauttyp",
+      "skinTypePlaceholder": "Wählen Sie Ihren Hauttyp",
+      "interestsLabel": "Wofür interessieren Sie sich? (mehrere auswählen)",
+      "customizePreferences": "Passen Sie Ihre Präferenzen für bessere Inhalte an →",
+      "submitButton": "Jetzt beitreten und 20% sparen!",
+      "subscribeButton": "Abonnieren",
+      "terms": "Mit der Anmeldung stimmen Sie unseren {termsLink} und {privacyLink} zu. Sie können sich jederzeit abmelden."
+    },
+    "success": {
+      "title": "Willkommen in der Familie! 🎉",
+      "message": "Danke {name} für Ihr Abonnement! Wir senden Ihnen bald Ihre Willkommens-E-Mail mit einem exklusiven Rabattcode.",
+      "messageNoName": "Danke für Ihr Abonnement! Wir senden Ihnen bald Ihre Willkommens-E-Mail mit einem exklusiven Rabattcode.",
+      "checkEmail": "Überprüfen Sie Ihren Posteingang in wenigen Minuten für Ihren 20% Willkommensrabatt!",
+      "minimal": {
+        "title": "Danke!",
+        "message": "Wir senden Ihnen bald unsere Willkommens-E-Mail."
+      }
+    },
+    "errors": {
+      "emailRequired": "E-Mail-Adresse ist erforderlich",
+      "somethingWrong": "Etwas ist schiefgelaufen",
+      "technicalError": "Technischer Fehler. Bitte versuchen Sie es später erneut."
+    },
+    "skinTypes": {
+      "dry": "Trockene Haut",
+      "oily": "Fettige Haut",
+      "combination": "Mischhaut",
+      "sensitive": "Empfindliche Haut",
+      "normal": "Normale Haut",
+      "acne": "Zu Akne neigende Haut",
+      "mature": "Reife Haut"
+    },
+    "interests": {
+      "skincareTips": "🌿 Hautpflegetipps",
+      "productLaunches": "✨ Neue Produkte",
+      "exclusiveOffers": "🎁 Exklusive Angebote",
+      "ingredientEducation": "🧪 Inhaltsstoff-Bildung",
+      "routineAdvice": "💆‍♀️ Routine-Beratung"
+    }
   }
 }

@@ -13,6 +13,7 @@ import {
   Gift
 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { useTranslations } from 'next-intl'
 
 interface NewsletterFormData {
   email: string
@@ -26,28 +27,32 @@ interface NewsletterSectionProps {
   className?: string
 }
 
-const skinTypes = [
-  { value: 'dry', label: 'Torr hud' },
-  { value: 'oily', label: 'Fet hud' },
-  { value: 'combination', label: 'Kombinationshud' },
-  { value: 'sensitive', label: 'Känslig hud' },
-  { value: 'normal', label: 'Normal hud' },
-  { value: 'acne', label: 'Aknebenägen hud' },
-  { value: 'mature', label: 'Mogen hud' }
-]
-
-const interests = [
-  { value: 'skincare_tips', label: '🌿 Hudvårdstips' },
-  { value: 'product_launches', label: '✨ Nya produkter' },
-  { value: 'exclusive_offers', label: '🎁 Exklusiva erbjudanden' },
-  { value: 'ingredient_education', label: '🧪 Ingredienslära' },
-  { value: 'routine_advice', label: '💆‍♀️ Rutinråd' }
-]
-
 export default function NewsletterSection({ 
   variant = 'default', 
   className = '' 
 }: NewsletterSectionProps) {
+  const t = useTranslations('newsletter')
+  const tSkinTypes = useTranslations('skinTypes')
+  const tNavigation = useTranslations('navigation')
+  
+  const skinTypes = [
+    { value: 'dry', label: t('skinTypes.dry') },
+    { value: 'oily', label: t('skinTypes.oily') },
+    { value: 'combination', label: t('skinTypes.combination') },
+    { value: 'sensitive', label: t('skinTypes.sensitive') },
+    { value: 'normal', label: t('skinTypes.normal') },
+    { value: 'acne', label: t('skinTypes.acne') },
+    { value: 'mature', label: t('skinTypes.mature') }
+  ]
+
+  const interests = [
+    { value: 'skincare_tips', label: t('interests.skincareTips') },
+    { value: 'product_launches', label: t('interests.productLaunches') },
+    { value: 'exclusive_offers', label: t('interests.exclusiveOffers') },
+    { value: 'ingredient_education', label: t('interests.ingredientEducation') },
+    { value: 'routine_advice', label: t('interests.routineAdvice') }
+  ]
+
   const [formData, setFormData] = useState<NewsletterFormData>({
     email: '',
     firstName: '',
@@ -76,7 +81,7 @@ export default function NewsletterSection({
     e.preventDefault()
     
     if (!formData.email) {
-      toast.error('E-postadress krävs')
+      toast.error(t('errors.emailRequired'))
       return
     }
 
@@ -111,11 +116,11 @@ export default function NewsletterSection({
           setShowExtended(false)
         }, 3000)
       } else {
-        toast.error(data.message || 'Något gick fel')
+        toast.error(data.message || t('errors.somethingWrong'))
       }
     } catch (error) {
       console.error('Newsletter subscription error:', error)
-      toast.error('Tekniskt fel. Försök igen senare.')
+      toast.error(t('errors.technicalError'))
     } finally {
       setIsSubmitting(false)
     }
@@ -128,9 +133,9 @@ export default function NewsletterSection({
           <div className="inline-flex items-center justify-center w-12 h-12 bg-[#E5DDD5] rounded-full mb-4">
             <Mail className="w-6 h-6 text-[#FCB237]" />
           </div>
-          <h3 className="text-xl font-bold text-gray-900 mb-2">Få våra senaste nyheter</h3>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">{t('minimal.title')}</h3>
           <p className="text-gray-600">
-            Exklusiva erbjudanden och hudvårdstips direkt till din inbox
+            {t('minimal.subtitle')}
           </p>
         </div>
 
@@ -143,8 +148,8 @@ export default function NewsletterSection({
             <div className="inline-flex items-center justify-center w-16 h-16 bg-[#E5DDD5] rounded-full mb-4">
               <Check className="w-8 h-8 text-[#FCB237]" />
             </div>
-            <h4 className="text-lg font-semibold text-gray-900 mb-2">Tack!</h4>
-            <p className="text-gray-600">Vi skickar snart vårt välkomstmail till dig.</p>
+            <h4 className="text-lg font-semibold text-gray-900 mb-2">{t('success.minimal.title')}</h4>
+            <p className="text-gray-600">{t('success.minimal.message')}</p>
           </motion.div>
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
@@ -153,7 +158,7 @@ export default function NewsletterSection({
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              placeholder="Din e-postadress"
+              placeholder={t('form.emailPlaceholder')}
               className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F5F3F0]0 focus:border-transparent"
               required
               disabled={isSubmitting}
@@ -170,7 +175,7 @@ export default function NewsletterSection({
               ) : (
                 <>
                   <Send className="w-5 h-5 mr-2" />
-                  Prenumerera
+                  {t('form.subscribeButton')}
                 </>
               )}
             </motion.button>
@@ -194,24 +199,24 @@ export default function NewsletterSection({
             <Sparkles className="w-8 h-8 text-orange-600" />
           </div>
           <h2 className="text-4xl font-bold text-gray-900 mb-4">
-            Bli en del av vår hudvårdsfamilj
+            {t('title')}
           </h2>
           <p className="text-xl text-gray-600 mb-6 max-w-2xl mx-auto">
-            Få personliga hudvårdstips, exklusiva erbjudanden och var först med att prova våra nya produkter.
+            {t('subtitle')}
           </p>
           
           <div className="flex flex-wrap justify-center gap-4 mb-8">
             <div className="flex items-center bg-white rounded-full px-4 py-2 shadow-sm">
               <Gift className="w-5 h-5 text-orange-500 mr-2" />
-              <span className="text-sm font-medium">20% välkomstrabatt</span>
+              <span className="text-sm font-medium">{t('benefits.welcomeDiscount')}</span>
             </div>
             <div className="flex items-center bg-white rounded-full px-4 py-2 shadow-sm">
               <Heart className="w-5 h-5 text-pink-500 mr-2" />
-              <span className="text-sm font-medium">Personliga tips</span>
+              <span className="text-sm font-medium">{t('benefits.personalTips')}</span>
             </div>
             <div className="flex items-center bg-white rounded-full px-4 py-2 shadow-sm">
               <Sparkles className="w-5 h-5 text-[#F5F3F0]0 mr-2" />
-              <span className="text-sm font-medium">Exklusiva produkter</span>
+              <span className="text-sm font-medium">{t('benefits.exclusiveProducts')}</span>
             </div>
           </div>
         </motion.div>
@@ -225,13 +230,16 @@ export default function NewsletterSection({
             <div className="inline-flex items-center justify-center w-20 h-20 bg-[#E5DDD5] rounded-full mb-6">
               <Check className="w-10 h-10 text-[#FCB237]" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">Välkommen till familjen! 🎉</h3>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">{t('success.title')}</h3>
             <p className="text-gray-600 mb-6">
-              Tack {formData.firstName || 'för din prenumeration'}! Vi skickar snart ditt välkomstmail med en exklusiv rabattkod.
+              {formData.firstName 
+                ? t('success.message', { name: formData.firstName })
+                : t('success.messageNoName')
+              }
             </p>
             <div className="bg-[#F5F3F0] rounded-xl p-4">
               <p className="text-[#2A1A14] font-medium">
-                Kolla din inkorg inom några minuter för din 20% välkomstrabatt!
+                {t('success.checkEmail')}
               </p>
             </div>
           </motion.div>
@@ -247,7 +255,7 @@ export default function NewsletterSection({
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                    E-postadress *
+                    {t('form.emailLabel')}
                   </label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -258,7 +266,7 @@ export default function NewsletterSection({
                       value={formData.email}
                       onChange={handleInputChange}
                       className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-colors"
-                      placeholder="din@email.com"
+                      placeholder={t('form.emailPlaceholder')}
                       required
                       disabled={isSubmitting}
                     />
@@ -267,7 +275,7 @@ export default function NewsletterSection({
 
                 <div>
                   <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">
-                    Förnamn (valfritt)
+                    {t('form.firstNameLabel')}
                   </label>
                   <input
                     type="text"
@@ -276,7 +284,7 @@ export default function NewsletterSection({
                     value={formData.firstName}
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-colors"
-                    placeholder="Ditt förnamn"
+                    placeholder={t('form.firstNamePlaceholder')}
                     disabled={isSubmitting}
                   />
                 </div>
@@ -289,7 +297,7 @@ export default function NewsletterSection({
                     onClick={() => setShowExtended(true)}
                     className="text-orange-600 hover:text-orange-700 font-medium text-sm"
                   >
-                    Anpassa dina preferenser för bättre innehåll →
+                    {t('form.customizePreferences')}
                   </button>
                 </div>
               )}
@@ -303,7 +311,7 @@ export default function NewsletterSection({
                 >
                   <div>
                     <label htmlFor="skinType" className="block text-sm font-medium text-gray-700 mb-2">
-                      Min hudtyp
+                      {t('form.skinTypeLabel')}
                     </label>
                     <select
                       id="skinType"
@@ -313,7 +321,7 @@ export default function NewsletterSection({
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-colors"
                       disabled={isSubmitting}
                     >
-                      <option value="">Välj din hudtyp</option>
+                      <option value="">{t('form.skinTypePlaceholder')}</option>
                       {skinTypes.map(type => (
                         <option key={type.value} value={type.value}>
                           {type.label}
@@ -324,7 +332,7 @@ export default function NewsletterSection({
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-3">
-                      Vad är du intresserad av? (välj flera)
+                      {t('form.interestsLabel')}
                     </label>
                     <div className="grid grid-cols-2 gap-3">
                       {interests.map(interest => (
@@ -356,21 +364,24 @@ export default function NewsletterSection({
                 ) : (
                   <>
                     <Send className="w-6 h-6 mr-2" />
-                    Gå med nu och få 20% rabatt!
+                    {t('form.submitButton')}
                   </>
                 )}
               </motion.button>
 
               <p className="text-xs text-gray-500 text-center">
-                Genom att prenumerera godkänner du våra{' '}
-                <a href="/privacy" className="text-brand hover:underline">
-                  villkor
-                </a>{' '}
-                och{' '}
-                <a href="/privacy" className="text-brand hover:underline">
-                  integritetspolicy
-                </a>
-                . Du kan avregistrera dig när som helst.
+                {t.rich('form.terms', {
+                  termsLink: (chunks) => (
+                    <a href="/privacy" className="text-brand hover:underline">
+                      {tNavigation('terms')}
+                    </a>
+                  ),
+                  privacyLink: (chunks) => (
+                    <a href="/privacy" className="text-brand hover:underline">
+                      {tNavigation('privacyPolicy')}
+                    </a>
+                  )
+                })}
               </p>
             </form>
           </motion.div>

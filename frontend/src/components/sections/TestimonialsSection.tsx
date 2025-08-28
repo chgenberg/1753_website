@@ -3,41 +3,46 @@
 import { motion } from 'framer-motion'
 import { Star, Quote } from 'lucide-react'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 
-const testimonials = [
-  {
-    id: 1,
-    name: 'Anna Lindberg',
-    age: '34 år',
-    location: 'Stockholm',
-    rating: 5,
-    text: 'Jag har kämpat med torr hud i åratal, men efter att ha använt DUO-kit i bara två veckor är min hud helt förvandlad. Den känns mjuk, återfuktad och ser strålande ut!',
-          product: 'DUO-kit',
-    image: '/images/testimonials/anna.jpg'
-  },
-  {
-    id: 2,
-    name: 'Erik Johansson',
-    age: '28 år',
-    location: 'Göteborg',
-    rating: 5,
-    text: 'Som man var jag skeptisk till hudvård, men The ONE Facial Oil har blivit en del av min dagliga rutin. Min hud har aldrig sett bättre ut och jag får komplimanger hela tiden.',
-    product: 'The ONE Facial Oil',
-    image: '/images/testimonials/erik.jpg'
-  },
-  {
-    id: 3,
-    name: 'Maria Svensson',
-    age: '45 år',
-    location: 'Malmö',
-    rating: 5,
-    text: 'Fungtastic har gjort underverk för min mogna hud. Fina linjer har minskat och min hud känns fastare. Jag älskar att det är helt naturligt!',
-    product: 'Fungtastic Mushroom Extract',
-    image: '/images/testimonials/maria.jpg'
-  }
-]
+function buildTestimonials(t: ReturnType<typeof useTranslations>) {
+  return [
+    {
+      id: 1,
+      name: t('sections.testimonials.list.1.name'),
+      age: t('sections.testimonials.list.1.age'),
+      location: t('sections.testimonials.list.1.location'),
+      rating: 5,
+      text: t('sections.testimonials.list.1.text'),
+      product: t('sections.testimonials.list.1.product'),
+      image: '/images/testimonials/anna.jpg'
+    },
+    {
+      id: 2,
+      name: t('sections.testimonials.list.2.name'),
+      age: t('sections.testimonials.list.2.age'),
+      location: t('sections.testimonials.list.2.location'),
+      rating: 5,
+      text: t('sections.testimonials.list.2.text'),
+      product: t('sections.testimonials.list.2.product'),
+      image: '/images/testimonials/erik.jpg'
+    },
+    {
+      id: 3,
+      name: t('sections.testimonials.list.3.name'),
+      age: t('sections.testimonials.list.3.age'),
+      location: t('sections.testimonials.list.3.location'),
+      rating: 5,
+      text: t('sections.testimonials.list.3.text'),
+      product: t('sections.testimonials.list.3.product'),
+      image: '/images/testimonials/maria.jpg'
+    }
+  ]
+}
 
 export function TestimonialsSection() {
+  const t = useTranslations()
+  const testimonials = buildTestimonials(t)
   return (
     <section className="py-20 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden">
       {/* Background image with overlay */}
@@ -71,12 +76,12 @@ export function TestimonialsSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <span className="text-[#00937c] font-medium text-sm uppercase tracking-wider">Kundrecensioner</span>
+          <span className="text-[#00937c] font-medium text-sm uppercase tracking-wider">{t('sections.testimonials.badge')}</span>
           <h2 className="text-4xl md:text-5xl font-bold mt-4 mb-6">
-            Vad våra kunder säger
+            {t('sections.testimonials.title')}
           </h2>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            Tusentals nöjda kunder har upplevt den transformerande kraften i våra CBD-berikade hudvårdsprodukter
+            {t('sections.testimonials.subtitle')}
           </p>
         </motion.div>
 
@@ -109,7 +114,7 @@ export function TestimonialsSection() {
 
                 {/* Product */}
                 <p className="text-sm text-[#00937c] font-medium mb-4">
-                  Använder: {testimonial.product}
+                  {t('sections.testimonials.uses')}: {testimonial.product}
                 </p>
 
                 {/* Author */}
@@ -135,15 +140,15 @@ export function TestimonialsSection() {
         >
           <div className="text-center">
             <div className="text-3xl font-bold text-[#00937c]">4.9/5</div>
-            <p className="text-gray-600">Genomsnittligt betyg</p>
+            <p className="text-gray-600">{t('reviews.homeStats.averageLabel')}</p>
           </div>
           <div className="text-center">
             <div className="text-3xl font-bold text-[#00937c]">50,000+</div>
-            <p className="text-gray-600">Nöjda kunder</p>
+            <p className="text-gray-600">{t('reviews.homeStats.happyCustomers')}</p>
           </div>
           <div className="text-center">
             <div className="text-3xl font-bold text-[#00937c]">98%</div>
-            <p className="text-gray-600">Skulle rekommendera</p>
+            <p className="text-gray-600">{t('reviews.homeStats.wouldRecommend')}</p>
           </div>
         </motion.div>
       </div>

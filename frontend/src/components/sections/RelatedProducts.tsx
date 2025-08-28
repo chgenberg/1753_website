@@ -8,6 +8,7 @@ import { useCart } from '@/contexts/CartContext'
 import { useCurrency } from '@/contexts/CurrencyContext'
 import { ShoppingBag, Star, Sparkles, ChevronRight, Heart, Package } from 'lucide-react'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 
 interface RelatedProductsProps {
   currentProductSlug: string
@@ -15,6 +16,7 @@ interface RelatedProductsProps {
 }
 
 export default function RelatedProducts({ currentProductSlug, locale }: RelatedProductsProps) {
+  const t = useTranslations('sections.relatedProducts')
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const { addToCart } = useCart()
@@ -107,11 +109,11 @@ export default function RelatedProducts({ currentProductSlug, locale }: RelatedP
           <div className="flex items-center justify-center gap-3 mb-4">
             <Sparkles className="w-6 h-6 text-[#FCB237]" />
             <h2 className="text-3xl md:text-4xl font-bold text-[#FCB237]">
-              Du kanske också gillar
+              {t('title')}
             </h2>
             <Sparkles className="w-6 h-6 text-[#FCB237]" />
           </div>
-          <p className="text-gray-600">Handplockade rekommendationer för din hudvårdsrutin</p>
+          <p className="text-gray-600">{t('subtitle')}</p>
         </motion.div>
         
         {/* Products Grid */}
@@ -166,7 +168,7 @@ export default function RelatedProducts({ currentProductSlug, locale }: RelatedP
                     {/* Hover Overlay */}
                     <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                       <span className="text-white font-medium flex items-center gap-2">
-                        Se mer <ChevronRight className="w-4 h-4" />
+                        {t('seeMore')} <ChevronRight className="w-4 h-4" />
                       </span>
                     </div>
                   </div>
@@ -226,7 +228,7 @@ export default function RelatedProducts({ currentProductSlug, locale }: RelatedP
                   >
                     <ShoppingBag className="w-4 h-4" />
                     <span className="text-sm">
-                      {addedToCart.includes(product.id) ? 'Tillagd!' : 'Lägg till'}
+                      {addedToCart.includes(product.id) ? t('added') : t('add')}
                     </span>
                   </button>
                 </div>
@@ -246,7 +248,7 @@ export default function RelatedProducts({ currentProductSlug, locale }: RelatedP
             href={`/${locale}/products`}
             className="inline-flex items-center gap-2 px-6 py-3 bg-white text-[#FCB237] rounded-full shadow-md hover:shadow-lg transition-all duration-300 font-medium"
           >
-            Se alla produkter
+            {t('viewAll')}
             <ChevronRight className="w-5 h-5" />
           </Link>
         </motion.div>

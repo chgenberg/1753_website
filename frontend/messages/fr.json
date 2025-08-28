@@ -623,5 +623,62 @@
       "makeupRemover": "TECHNIQUE DÉMAQUILLANT",
       "comingSoon": "Vidéo bientôt disponible..."
     }
+  },
+  "newsletter": {
+    "title": "Rejoignez notre famille de soins de la peau",
+    "subtitle": "Recevez des conseils personnalisés de soins de la peau, des offres exclusives et soyez les premiers à essayer nos nouveaux produits.",
+    "minimal": {
+      "title": "Recevez nos dernières actualités",
+      "subtitle": "Offres exclusives et conseils de soins de la peau directement dans votre boîte de réception"
+    },
+    "benefits": {
+      "welcomeDiscount": "20% de remise de bienvenue",
+      "personalTips": "Conseils personnels",
+      "exclusiveProducts": "Produits exclusifs"
+    },
+    "form": {
+      "emailLabel": "Adresse e-mail *",
+      "emailPlaceholder": "votre@email.com",
+      "firstNameLabel": "Prénom (optionnel)",
+      "firstNamePlaceholder": "Votre prénom",
+      "skinTypeLabel": "Mon type de peau",
+      "skinTypePlaceholder": "Choisissez votre type de peau",
+      "interestsLabel": "Qu'est-ce qui vous intéresse ? (sélectionnez plusieurs)",
+      "customizePreferences": "Personnalisez vos préférences pour un meilleur contenu →",
+      "submitButton": "Rejoignez maintenant et obtenez 20% de réduction !",
+      "subscribeButton": "S'abonner",
+      "terms": "En vous abonnant, vous acceptez nos {termsLink} et {privacyLink}. Vous pouvez vous désabonner à tout moment."
+    },
+    "success": {
+      "title": "Bienvenue dans la famille ! 🎉",
+      "message": "Merci {name} pour votre abonnement ! Nous vous enverrons bientôt votre e-mail de bienvenue avec un code de réduction exclusif.",
+      "messageNoName": "Merci pour votre abonnement ! Nous vous enverrons bientôt votre e-mail de bienvenue avec un code de réduction exclusif.",
+      "checkEmail": "Vérifiez votre boîte de réception dans quelques minutes pour votre réduction de bienvenue de 20% !",
+      "minimal": {
+        "title": "Merci !",
+        "message": "Nous vous enverrons bientôt notre e-mail de bienvenue."
+      }
+    },
+    "errors": {
+      "emailRequired": "L'adresse e-mail est requise",
+      "somethingWrong": "Quelque chose s'est mal passé",
+      "technicalError": "Erreur technique. Veuillez réessayer plus tard."
+    },
+    "skinTypes": {
+      "dry": "Peau sèche",
+      "oily": "Peau grasse",
+      "combination": "Peau mixte",
+      "sensitive": "Peau sensible",
+      "normal": "Peau normale",
+      "acne": "Peau sujette à l'acné",
+      "mature": "Peau mature"
+    },
+    "interests": {
+      "skincareTips": "🌿 Conseils de soins de la peau",
+      "productLaunches": "✨ Nouveaux produits",
+      "exclusiveOffers": "🎁 Offres exclusives",
+      "ingredientEducation": "🧪 Éducation sur les ingrédients",
+      "routineAdvice": "💆‍♀️ Conseils de routine"
+    }
   }
 }

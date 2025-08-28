@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowRight, Calendar, Clock } from 'lucide-react'
+import { useTranslations, useLocale } from 'next-intl'
 
 // Blog post type definition
 interface BlogPost {
@@ -17,34 +18,47 @@ interface BlogPost {
   readingTime?: string
 }
 
-// Fallback blog data that matches real API blog posts
-const mockBlogPosts: BlogPost[] = [
-  {
-    slug: '10-tips-for-akne',
-    title: '10 tips för akne',
-    excerpt: 'Upptäck de bästa metoderna för att hantera akne naturligt med CBD och CBG. Lär dig hur cannabinoider kan hjälpa din hud...',
-    date: '2024-01-15',
-    readingTime: '5 min'
-  },
-  {
-    slug: 'cbd-och-cbg-cellfornyelse',
-    title: 'CBD och CBG - Cellförnyelseprocessen',
-    excerpt: 'Förstå hur CBD och CBG påverkar hudens naturliga cellförnyelse och kan hjälpa till att återställa hudens balans...',
-    date: '2024-01-12',
-    readingTime: '7 min'
-  },
-  {
-    slug: 'endocannabinoidsystemet-i-huden',
-    title: 'Endocannabinoidsystemet i huden',
-    excerpt: 'En djupgående guide till hur endocannabinoidsystemet fungerar i huden och varför det är så viktigt för hudhälsa...',
-    date: '2024-01-10',
-    readingTime: '6 min'
-  }
-]
+// Mock posts will be composed from translation keys to support all locales
+function buildMockPosts(t: ReturnType<typeof useTranslations>): BlogPost[] {
+  return [
+    {
+      slug: '10-tips-for-akne',
+      title: t('sections.blog.mock.1.title'),
+      excerpt: t('sections.blog.mock.1.excerpt'),
+      date: '2024-01-15',
+      readingTime: '5'
+    },
+    {
+      slug: 'cbd-och-cbg-cellfornyelse',
+      title: t('sections.blog.mock.2.title'),
+      excerpt: t('sections.blog.mock.2.excerpt'),
+      date: '2024-01-12',
+      readingTime: '7'
+    },
+    {
+      slug: 'endocannabinoidsystemet-i-huden',
+      title: t('sections.blog.mock.3.title'),
+      excerpt: t('sections.blog.mock.3.excerpt'),
+      date: '2024-01-10',
+      readingTime: '6'
+    }
+  ]
+}
 
 export function BlogSection() {
   const [posts, setPosts] = useState<BlogPost[]>([])
   const [loading, setLoading] = useState(true)
+  const t = useTranslations()
+  const locale = useLocale()
+
+  const dateLocaleMap: Record<string, string> = {
+    sv: 'sv-SE',
+    en: 'en-GB',
+    de: 'de-DE',
+    es: 'es-ES',
+    fr: 'fr-FR'
+  }
+  const resolvedLocale = dateLocaleMap[locale] || 'en-GB'
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -58,12 +72,12 @@ export function BlogSection() {
         } else {
           // Fallback to mock posts if API fails
           console.warn('Blog API not available, using mock posts')
-          setPosts(mockBlogPosts)
+          setPosts(buildMockPosts(t))
         }
       } catch (error) {
         console.error('Error fetching blog posts:', error)
         // Fallback to mock posts
-        setPosts(mockBlogPosts)
+        setPosts(buildMockPosts(t))
       } finally {
         setLoading(false)
       }
@@ -163,7 +177,7 @@ export function BlogSection() {
                     <div className="flex items-center gap-4 text-sm text-[var(--color-gray-500)] mb-3">
                       <span className="flex items-center gap-1">
                         <Calendar className="w-4 h-4" />
-                        {new Date(post.publishedAt || post.date || post.createdAt || new Date()).toLocaleDateString('sv-SE', {
+                        {new Date(post.publishedAt || post.date || post.createdAt || new Date()).toLocaleDateString(resolvedLocale, {
                           year: 'numeric',
                           month: 'short',
                           day: 'numeric'

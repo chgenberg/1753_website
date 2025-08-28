@@ -15,65 +15,47 @@ interface Review {
   createdAt: string
 }
 
-const defaultReviews: Review[] = [
+const buildDefaultReviews = (t: ReturnType<typeof useTranslations>): Review[] => ([
   {
     id: '1',
-    author: 'Anna L.',
+    author: t('reviews.homeDefaults.1.author'),
     rating: 5,
-    content: 'Fantastiska produkter som verkligen levererar resultat. Min hud har aldrig mått bättre! Rekommenderar varmt till alla som vill ha naturlig hudvård.',
-    product: 'DUO-KIT TA-DA SERUM',
+    content: t('reviews.homeDefaults.1.content'),
+    product: t('reviews.homeDefaults.1.product'),
     verified: true,
     createdAt: new Date().toISOString()
   },
   {
     id: '2',
-    author: 'Maria S.',
+    author: t('reviews.homeDefaults.2.author'),
     rating: 5,
-    content: 'Naturliga ingredienser av högsta kvalitet. Känns som att ge min hud det allra bästa. Älskar särskilt TA-DA serumet!',
-    product: 'TA-DA SERUM',
+    content: t('reviews.homeDefaults.2.content'),
+    product: t('reviews.homeDefaults.2.product'),
     verified: true,
     createdAt: new Date().toISOString()
   },
   {
     id: '3',
-    author: 'Sofia K.',
+    author: t('reviews.homeDefaults.3.author'),
     rating: 5,
-    content: 'Snabb leverans och otrolig kundservice. Produkterna överträffade alla mina förväntningar. Kommer definitivt beställa igen!',
+    content: t('reviews.homeDefaults.3.content'),
     verified: true,
     createdAt: new Date().toISOString()
   },
   {
     id: '4',
-    author: 'Emma H.',
+    author: t('reviews.homeDefaults.4.author'),
     rating: 5,
-    content: 'Jag älskar I LOVE facial oil! Den är så närande och min hud känns mjuk och len hela dagen. Bästa ansiktsoljan jag testat!',
-    product: 'I LOVE FACIAL OIL',
-    verified: true,
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: '5',
-    author: 'Lisa M.',
-    rating: 4,
-    content: 'Mycket bra produkter med naturliga ingredienser. Doften är underbar och konsistensen perfekt. Ger min hud en fin lyster.',
-    product: 'THE ONE FACIAL OIL',
-    verified: true,
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: '6',
-    author: 'Karin J.',
-    rating: 5,
-    content: 'Äntligen hudvård som fungerar! Jag har känslig hud och dessa produkter irriterar inte alls. Tvärtom känns huden lugn och balanserad.',
-    product: 'DUO-KIT THE ONE',
+    content: t('reviews.homeDefaults.4.content'),
+    product: t('reviews.homeDefaults.4.product'),
     verified: true,
     createdAt: new Date().toISOString()
   }
-]
+])
 
 export function SafeReviewsCarousel() {
   const t = useTranslations()
-  const [reviews, setReviews] = useState<Review[]>(defaultReviews)
+  const [reviews, setReviews] = useState<Review[]>(buildDefaultReviews(t))
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isAutoPlaying, setIsAutoPlaying] = useState(true)
   const [stats, setStats] = useState({
@@ -160,7 +142,7 @@ export function SafeReviewsCarousel() {
             {t('Reviews.title')}
           </motion.h2>
           
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="flex items-center justify-center gap-4 mb-4">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="flex items-center justify-center gap-4 mb-1">
             <div className="flex items-center gap-1">
               {[...Array(5)].map((_, i) => (
                 <Star key={i} className="w-6 h-6 fill-yellow-400 text-yellow-400" />
@@ -168,10 +150,13 @@ export function SafeReviewsCarousel() {
             </div>
             <span className="text-2xl font-semibold text-gray-900">{stats.averageRating.toFixed(1)}/5</span>
           </motion.div>
-          
-          <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.2 }} className="text-gray-600">
-            {t('Reviews.totalReviews')}: {stats.totalReviews}+
-          </motion.p>
+          <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.15 }} className="text-gray-600 flex items-center justify-center gap-6">
+            <span>{t('reviews.homeStats.averageLabel')}</span>
+            <span>·</span>
+            <span>{t('reviews.homeStats.total', { count: stats.totalReviews })}</span>
+            <span>·</span>
+            <span>{t('reviews.homeStats.wouldRecommend')}</span>
+          </motion.div>
         </div>
 
         <div className="relative max-w-4xl mx-auto">
