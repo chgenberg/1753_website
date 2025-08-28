@@ -15,7 +15,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion'
 
 export function Header() {
-  const t = useTranslations()
+  const t = useTranslations('navigation')
   const pathname = usePathname()
   const { user, logout } = useAuth()
   const { cartCount, openCart } = useCart()
@@ -46,32 +46,32 @@ export function Header() {
   const menuItems = [
     { 
       href: '/', 
-      label: 'HEM'
+      label: t('home')
     },
     { 
       href: '/products', 
-      label: 'PRODUKTER'
+      label: t('products')
     },
-    { href: '/quiz', label: 'HUDANALYS' },
+    { href: '/quiz', label: t('quiz') },
     { 
       href: '/om-oss', 
-      label: 'OM OSS',
+      label: t('about'),
       children: [
-        { href: '/om-oss/ingredienser', label: 'Ingredienser' },
-        { href: '/om-oss/faq', label: 'Vanliga frågor' },
-        { href: '/om-oss/aterforsaljare', label: 'Återförsäljare' },
+        { href: '/om-oss/ingredienser', label: t('ingredients') },
+        { href: '/om-oss/faq', label: t('faq') },
+        { href: '/om-oss/aterforsaljare', label: t('retailers') },
       ]
     },
     { 
       href: '/kunskap', 
-      label: 'KUNSKAP',
+      label: t('knowledge'),
       children: [
-        { href: '/kunskap/e-bok', label: 'E-bok' },
-        { href: '/kunskap/funktionella-ravaror', label: 'Funktionella råvaror' },
-        { href: '/blogg', label: 'Blogg' },
+        { href: '/kunskap/e-bok', label: t('ebook') },
+        { href: '/kunskap/funktionella-ravaror', label: t('functionalRawMaterials') },
+        { href: '/blogg', label: t('blog') },
       ]
     },
-    { href: '/kontakt', label: 'KONTAKT' },
+    { href: '/kontakt', label: t('contact') },
   ]
 
   return (
