@@ -140,57 +140,72 @@ router.post('/create', upload.array('images', 3), async (req, res) => {
 router.get('/product/:productId', async (req, res) => {
   try {
     const { productId } = req.params
-    const { page = '1', limit = '10', sort = 'newest' } = req.query
+    const { page = '1', limit = '10', sort = 'newest', locale } = req.query as any
     
     const pageNum = parseInt(page as string)
     const limitNum = parseInt(limit as string)
     const skip = (pageNum - 1) * limitNum
+    const loc = typeof locale === 'string' ? locale.toLowerCase() : undefined
     
     // Sort options
     const orderBy = sort === 'helpful' 
       ? { helpfulVotes: 'desc' as const }
       : { createdAt: 'desc' as const }
     
-         const [reviews, total] = await Promise.all([
-       prisma.review.findMany({
-         where: {
-           productId,
-           status: 'APPROVED'
-         },
-         orderBy,
-         skip,
-         take: limitNum,
-         select: {
-           id: true,
-           rating: true,
-           title: true,
-           body: true,
-           reviewerName: true,
-           isVerifiedPurchase: true,
-           photos: true,
-           helpfulVotes: true,
-           createdAt: true
-         }
-       }),
-       prisma.review.count({
-         where: {
-           productId,
-           status: 'APPROVED'
-         }
-       })
-     ])
+    const [reviews, total] = await Promise.all([
+      prisma.review.findMany({
+        where: {
+          productId,
+          status: 'APPROVED'
+        },
+        orderBy,
+        skip,
+        take: limitNum,
+        select: {
+          id: true,
+          rating: true,
+          title: true,
+          body: true,
+          reviewerName: true,
+          isVerifiedPurchase: true,
+          photos: true,
+          helpfulVotes: true,
+          createdAt: true,
+          translations: loc ? {
+            where: { locale: loc },
+            select: { title: true, body: true }
+          } : false as any
+        }
+      }),
+      prisma.review.count({
+        where: {
+          productId,
+          status: 'APPROVED'
+        }
+      })
+    ])
     
-         // Get rating distribution
-     const ratingDistribution = await prisma.review.groupBy({
-       by: ['rating'],
-       where: {
-         productId,
-         status: 'APPROVED'
-       },
-       _count: {
-         rating: true
-       }
-     })
+    const mapped = reviews.map((r: any) => {
+      const tr = Array.isArray(r.translations) && r.translations[0]
+      return {
+        ...r,
+        title: tr?.title || r.title,
+        body: tr?.body || r.body,
+        translations: undefined
+      }
+    })
+    
+    // Get rating distribution
+    const ratingDistribution = await prisma.review.groupBy({
+      by: ['rating'],
+      where: {
+        productId,
+        status: 'APPROVED'
+      },
+      _count: {
+        rating: true
+      }
+    })
     
     const distribution = {
       1: 0,
@@ -206,7 +221,7 @@ router.get('/product/:productId', async (req, res) => {
     
     res.json({
       success: true,
-      reviews,
+      reviews: mapped,
       pagination: {
         total,
         page: pageNum,
@@ -261,22 +276,48 @@ router.post('/:reviewId/helpful', async (req, res) => {
  */
 router.get('/', async (req, res) => {
   try {
-    const { page = '1', limit = '10' } = req.query
+    const { page = '1', limit = '10', locale } = req.query as any
     const pageNum = parseInt(page as string)
     const limitNum = parseInt(limit as string)
     const skip = (pageNum - 1) * limitNum
+    const loc = typeof locale === 'string' ? locale.toLowerCase() : undefined
 
     const [reviews, total] = await Promise.all([
       prisma.review.findMany({
         where: { status: 'APPROVED' },
         orderBy: { createdAt: 'desc' },
         skip,
-        take: limitNum
+        take: limitNum,
+        select: {
+          id: true,
+          rating: true,
+          title: true,
+          body: true,
+          reviewerName: true,
+          isVerifiedPurchase: true,
+          photos: true,
+          helpfulVotes: true,
+          createdAt: true,
+          translations: loc ? {
+            where: { locale: loc },
+            select: { title: true, body: true }
+          } : false as any
+        }
       }),
       prisma.review.count({ where: { status: 'APPROVED' } })
     ])
 
-    res.json({ success: true, reviews, total })
+    const mapped = reviews.map((r: any) => {
+      const tr = Array.isArray(r.translations) && r.translations[0]
+      return {
+        ...r,
+        title: tr?.title || r.title,
+        body: tr?.body || r.body,
+        translations: undefined
+      }
+    })
+
+    res.json({ success: true, reviews: mapped, total })
   } catch (error) {
     logger.error('Error listing reviews:', error)
     res.status(500).json({ success: false, error: 'Failed to list reviews' })

@@ -28,15 +28,16 @@
     "functionalRawMaterials": "Matières premières fonctionnelles",
     "faq": "FAQ",
     "ingredients": "Ingrédients",
-    "retailers": "Revendeurs",
-    "quiz": "Analyse de la peau",
-    "contact": "Contactez-nous",
+    "retailers": "Détaillants",
+    "quiz": "Analyse de peau",
+    "contact": "Contact",
     "account": "Mon compte",
     "cart": "Panier",
-    "checkout": "Paiement",
+    "checkout": "Commande",
     "login": "Se connecter",
     "register": "S'inscrire",
     "logout": "Se déconnecter",
+    "profile": "Mon profil",
     "privacyPolicy": "Politique de confidentialité",
     "terms": "Conditions",
     "cookies": "Cookies"
@@ -97,29 +98,121 @@
     "skinConcerns": "Problèmes de peau"
   },
   "cart": {
-    "title": "Panier",
-    "empty": "Votre panier est vide.",
-    "quantity": "Quantité",
-    "price": "Prix",
-    "total": "Total",
+    "title": "Panier d'achat",
+    "empty": {
+      "title": "Votre panier est vide",
+      "description": "Il semble que vous n'ayez pas encore ajouté de produits à votre panier. Découvrez notre gamme de produits naturels de soins de la peau !",
+      "cta": "Continuer les achats"
+    },
+    "pricePerUnit": "Prix par unité : {price} kr",
+    "clearCart": "Vider le panier",
+    "orderSummary": "Résumé de la commande",
+    "discountCode": "Code de réduction",
+    "discountCodePlaceholder": "Entrer le code",
+    "applyDiscount": "Appliquer",
     "subtotal": "Sous-total",
-    "shipping": "Expédition",
-    "tax": "Mamans",
-    "remove": "Supprimer",
-    "updateQuantity": "Mettre à jour la quantité",
-    "proceedToCheckout": "Passer à la caisse",
-    "continueShopping": "Continuer vos achats"
+    "discount": "Réduction",
+    "shipping": "Livraison",
+    "freeShipping": "Gratuit",
+    "total": "Total",
+    "includesTax": "TTC",
+    "proceedToCheckout": "Procéder au paiement",
+    "continueShopping": "Continuer les achats",
+    "trustBadges": {
+      "securePayment": "Paiement sécurisé avec Viva Wallet",
+      "freeShippingOver500": "Livraison gratuite au-dessus de 500 kr",
+      "paymentMethods": "Payer par carte ou Swish"
+    }
   },
   "checkout": {
-    "title": "Caisse",
-    "shippingAddress": "Adresse de livraison",
-    "billingAddress": "Adresse de facturation",
-    "paymentMethod": "Mode de paiement",
+    "emptyCart": {
+      "title": "Votre panier est vide",
+      "description": "Découvrez nos produits naturels de soins de la peau",
+      "cta": "CONTINUER LES ACHATS"
+    },
+    "steps": {
+      "back": "RETOUR",
+      "information": "INFORMATIONS",
+      "delivery": "LIVRAISON",
+      "overview": "APERÇU",
+      "payment": "PAIEMENT"
+    },
+    "contactInformation": "Informations de contact",
+    "deliveryAddress": "Adresse de livraison",
+    "orderOverview": "Aperçu de la commande",
+    "contactDetails": "Coordonnées",
+    "orderDetails": "Détails de la commande",
     "orderSummary": "Résumé de la commande",
-    "placeOrder": "Passer la commande",
-    "processing": "Traitement en cours...",
-    "success": "Commande effectuée !",
-    "error": "Une erreur est survenue lors de la commande."
+    "fields": {
+      "email": "Adresse e-mail",
+      "firstName": "Prénom",
+      "lastName": "Nom de famille",
+      "phone": "Numéro de téléphone",
+      "streetAddress": "Adresse",
+      "apartment": "Appartement, suite, etc. (optionnel)",
+      "postalCode": "Code postal",
+      "city": "Ville",
+      "country": "Pays"
+    },
+    "countries": {
+      "sweden": "Suède",
+      "norway": "Norvège",
+      "denmark": "Danemark",
+      "finland": "Finlande"
+    },
+    "validation": {
+      "emailRequired": "L'e-mail est requis",
+      "emailInvalid": "Adresse e-mail invalide",
+      "firstNameRequired": "Le prénom est requis",
+      "lastNameRequired": "Le nom de famille est requis",
+      "phoneRequired": "Le téléphone est requis",
+      "addressRequired": "L'adresse est requise",
+      "cityRequired": "La ville est requise",
+      "postalCodeRequired": "Le code postal est requis"
+    },
+    "newsletter": {
+      "text": "Oui, j'aimerais recevoir des nouvelles et des offres",
+      "discount": "Obtenez 10% de réduction sur votre première commande ! 🎁"
+    },
+    "buttons": {
+      "continueToDelivery": "CONTINUER VERS LA LIVRAISON",
+      "reviewOrder": "RÉVISER LA COMMANDE"
+    },
+    "shipping": {
+      "standardDelivery": "Livraison standard",
+      "deliveryTime": "Livraison sous 2-4 jours ouvrables",
+      "freeShippingOver": "Livraison gratuite au-dessus de {amount} !"
+    },
+    "subtotal": "Sous-total",
+    "shipping": "Livraison",
+    "freeShipping": "Gratuit",
+    "discount": "Réduction ({code})",
+    "total": "Total",
+    "securePayment": "Paiement sécurisé",
+    "securePaymentDescription": "Vos informations de paiement sont cryptées et sécurisées. Nous ne stockons jamais les détails de carte.",
+    "trustBadges": {
+      "sslEncrypted": "Crypté SSL",
+      "rating": "Note 4,8/5",
+      "returnPolicy": "Politique de retour de 30 jours",
+      "securePayment": "Paiement sécurisé",
+      "freeShippingOver": "Livraison gratuite au-dessus de {amount}"
+    },
+    "processing": "TRAITEMENT DE LA COMMANDE...",
+    "completeOrder": "FINALISER LA COMMANDE ({total})",
+    "terms": {
+      "prefix": "En finalisant l'achat, vous acceptez nos",
+      "terms": "conditions d'achat",
+      "and": "et",
+      "privacy": "politique de confidentialité"
+    },
+    "discountCode": "Code de réduction",
+    "removeDiscount": "Supprimer",
+    "applyDiscount": "Appliquer",
+    "discountApplied": "{name} appliqué !",
+    "support": {
+      "needHelp": "Besoin d'aide ?",
+      "contactSupport": "Contacter le service client →"
+    }
   },
   "forms": {
     "required": "Ce champ est obligatoire",
@@ -157,40 +250,40 @@
     "help": "Aide"
   },
   "productsPage": {
-    "badgeCBD": "Soin de la peau enrichi au CBD",
+    "badgeCBD": "SOINS DE LA PEAU ENRICHIS AU CBD",
     "title": "NOS PRODUITS",
-    "subtitle": "Découvrez la puissance des soins naturels pour la peau avec nos produits CBD et CBG soigneusement sélectionnés",
+    "subtitle": "Découvrez la puissance des soins naturels avec nos produits CBD et CBG soigneusement sélectionnés",
     "filter": "FILTRE",
     "categories": {
-      "all": "Alla",
-      "bestseller": "Meilleure vente",
+      "all": "Tous",
+      "bestseller": "Bestseller",
       "new": "Nouveau"
     },
     "sort": {
-      "featured": "Sélectionnés en premier",
-      "name": "Noms A–Z",
-      "priceLow": "Prix : du plus bas au plus élevé",
-      "priceHigh": "Prix : du plus élevé au plus bas"
+      "featured": "Mis en avant d'abord",
+      "name": "Nom A–Z",
+      "priceLow": "Prix : Bas à élevé",
+      "priceHigh": "Prix : Élevé à bas"
     },
     "activeFilters": "{count} filtre actif",
     "resetFilters": "Effacer les filtres",
     "loading": "Chargement des produits...",
     "empty": {
-      "title": "Aucun produit n'a été trouvé avec les filtres actuels.",
+      "title": "Aucun produit trouvé avec les filtres actuels.",
       "showAll": "Afficher tous les produits"
     },
     "quickView": "Aperçu rapide",
     "addToCart": "Ajouter au panier",
     "newsletter": {
-      "title": "Ne manquez pas nos nouveautés",
-      "description": "Abonnez-vous à notre newsletter pour des offres exclusives et des conseils pour les soins de la peau.",
+      "title": "Ne manquez pas nos actualités",
+      "description": "Abonnez-vous à notre newsletter pour des offres exclusives et des conseils de soins de la peau",
       "placeholderEmail": "Votre adresse e-mail",
       "subscribe": "S'abonner"
     },
-    "quizCta": "Faites notre analyse cutanée",
+    "quizCta": "Faites notre analyse de peau",
     "badges": {
       "recommended": "RECOMMANDÉ",
-      "bestseller": "MEILLEURE VENTE",
+      "bestseller": "BESTSELLER",
       "new": "NOUVEAU"
     }
   },
@@ -249,48 +342,36 @@
   "home": {
     "hero": {
       "coverAlt": "Image de couverture pour 1753 Skincare 2025",
-      "headingLine1": "Soins naturels pour",
-      "headingLine2": "l'écosystème cutané",
-      "subtitle": "Soins de la peau développés scientifiquement qui agissent en harmonie avec les cellules cutanées, le microbiome et le système endocannabinoïde",
+      "headingLine1": "Ce n'est pas le soin de la peau que vous connaissez.",
+      "headingLine2": "C'est le soin de la peau qui change tout.",
+      "subtitle": "Soins de la peau développés scientifiquement qui travaillent en harmonie avec les cellules cutanées, le microbiome et le système endocannabinoïde",
       "authorAlt": "Portrait de Christopher Genberg",
-      "authorTagline": "Fondateur • 12+ ans d'expérience • Rebelle des soins de la peau",
-      "ctaQuiz": "Faites le quiz sur la peau",
+      "authorTagline": "Fondateur • 12+ années d'expérience • Rebelle des soins de la peau",
+      "ctaQuiz": "Faire le QUIZ peau",
       "ctaProducts": "Voir les produits",
       "timelineTitle": "Votre voyage vers une peau parfaite",
       "steps": {
-        "step1": {
-          "title": "Faites le quiz sur votre peau",
-          "badge": "2 minutes"
-        },
-        "step2": {
-          "title": "Obtenir une recommandation",
-          "badge": "Plan personnel"
-        },
-        "step3": {
-          "title": "Faire le suivi",
-          "badge": "Amélioration hebdomadaire"
-        },
-        "step4": {
-          "title": "Peau parfaite !",
-          "badge": "Dans les 3 mois"
-        }
+        "step1": { "title": "Faire le QUIZ peau", "badge": "2 minutes" },
+        "step2": { "title": "Obtenir une recommandation", "badge": "Plan personnel" },
+        "step3": { "title": "Suivi", "badge": "Amélioration hebdomadaire" },
+        "step4": { "title": "Peau parfaite !", "badge": "En 3 mois" }
       },
       "modal": {
         "step1": {
-          "title": "📝 Faites le quiz sur la peau",
-          "description": "Notre quiz sur les soins de la peau ne prend que 2 minutes et nous aide à comprendre votre type de peau unique et vos besoins spécifiques.\n\nEn répondant à quelques questions simples sur votre peau, votre mode de vie et vos préférences, nous pouvons créer une routine de soins sur mesure rien que pour vous.\n\nLe quiz analyse des facteurs tels que le type de peau, d'éventuels problèmes cutanés, l'âge et l'impact de l'environnement pour vous fournir les recommandations de produits les plus pertinentes."
+          "title": "📝 Faire le QUIZ peau",
+          "description": "Notre quiz de soins de la peau ne prend que 2 minutes et nous aide à comprendre votre type de peau unique et vos besoins spécifiques.\n\nEn répondant à quelques questions simples sur votre peau, votre style de vie et vos préférences, nous pouvons créer une routine de soins personnalisée juste pour vous.\n\nLe quiz analyse des facteurs comme le type de peau, les problèmes de peau éventuels, l'âge et l'impact environnemental pour vous donner les recommandations de produits les plus pertinentes." 
         },
         "step2": {
           "title": "🎯 Obtenir une recommandation",
-          "description": "En fonction de vos réponses au quiz, vous recevrez un plan de soins de la peau personnalisé avec des recommandations de produits spécialement sélectionnées pour votre type de peau et vos besoins.\n\nNotre algorithme combine les connaissances traditionnelles en soins de la peau avec la science moderne pour créer une routine complète qui inclut le nettoyage, le traitement et la protection.\n\nVous recevrez également des conseils sur la meilleure façon d'utiliser les produits pour des résultats optimaux."
+          "description": "Basé sur vos réponses au quiz, vous recevrez un plan personnel de soins de la peau avec des recommandations de produits spécifiquement sélectionnés pour votre type de peau et vos besoins.\n\nNotre algorithme combine les connaissances traditionnelles des soins de la peau avec la science moderne pour créer une routine complète qui inclut nettoyage, traitement et protection.\n\nVous obtiendrez aussi des conseils sur comment utiliser au mieux les produits pour des résultats optimaux." 
         },
         "step3": {
-          "title": "📈 Faire le suivi",
-          "description": "Nous suivons votre parcours de soins de la peau chaque semaine pour nous assurer que vous constatez des améliorations continues.\n\nGrâce à des bilans réguliers, nous pouvons ajuster votre routine si nécessaire et vous donner des conseils personnalisés en fonction de l'évolution de votre peau.\n\nVous recevrez des rappels pour savoir quand il est temps d'appliquer les produits et pourrez documenter vos progrès avec des photos pour voir clairement les améliorations au fil du temps."
+          "title": "📈 Suivi",
+          "description": "Nous suivons votre voyage de soins de la peau chaque semaine pour nous assurer que vous voyez des améliorations continues.\n\nGrâce à des contrôles réguliers, nous pouvons ajuster votre routine au besoin et vous donner des conseils personnels basés sur l'évolution de votre peau.\n\nVous recevrez des rappels quand il est temps d'appliquer les produits et pouvez documenter vos progrès avec des photos pour voir clairement les améliorations au fil du temps." 
         },
         "step4": {
           "title": "✨ Peau parfaite !",
-          "description": "Inom 3 månader kommer du att se en märkbar förbättring av din huds kvalitet och utseende.\n\nMed våra naturliga produkter innehållande CBD och CBG, kombinerat med din personliga hudvårdsrutin, kommer din hud att bli mer balanserad, klarare och strålande.\n\nMånga av våra kunder rapporterar synliga resultat redan efter några veckor, men den fulla effekten uppnås vanligtvis inom 3 månader av konsekvent användning."
+          "description": "En 3 mois, vous verrez une amélioration notable de la qualité et de l'apparence de votre peau.\n\nAvec nos produits naturels contenant du CBD et du CBG, combinés à votre routine personnelle de soins de la peau, votre peau deviendra plus équilibrée, plus claire et radieuse.\n\nBeaucoup de nos clients rapportent des résultats visibles après seulement quelques semaines, mais l'effet complet est généralement atteint en 3 mois d'utilisation constante." 
         }
       }
     },
@@ -352,7 +433,22 @@
     "benefitsTitle": "Avantages",
     "benefitsLabel": "Avantages :",
     "usageTitle": "Voici comment utiliser {name}",
-    "mushroomShowcase": "Quatre puissants champignons médicinaux"
+    "mushroomShowcase": "Quatre puissants champignons médicinaux",
+    "fallbackDescription": "Un produit fantastique de 1753 Skincare.",
+    "imageAlt": "{name} image {number}",
+    "defaultCategory": "Soins de la peau",
+    "ingredientDescription": "{ingredient} est un ingrédient puissant pour la peau.",
+    "benefits": {
+      "nourishing": "Nourrissant",
+      "moisturizing": "Hydratant",
+      "soothing": "Apaisant"
+    },
+    "defaultBenefits": {
+      "deepMoisturizing": "Fournit une hydratation profonde",
+      "strengthensBarrier": "Renforce la barrière cutanée",
+      "naturalGlow": "Donne un éclat naturel"
+    },
+    "defaultUsage": "Appliquer sur une peau propre matin et soir. Masser délicatement jusqu'à absorption."
   },
   "cookieBanner": {
     "title": "Nous protégeons votre vie privée 🍪",
@@ -454,6 +550,77 @@
       "comingSoon": "Bientôt disponible...",
       "moreComing": "Plus d’articles passionnants arrivent !",
       "sourcesHeading": "Sources"
+    }
+  },
+  "dashboard": {
+    "welcome": {
+      "title": "Bon retour",
+      "withEmail": "{email}",
+      "toAccount": "à votre compte"
+    },
+    "tabs": {
+      "overview": "Aperçu",
+      "orders": "Mes commandes",
+      "knowledge": "Centre de connaissances",
+      "videos": "Guides vidéo",
+      "quiz": "Analyse de peau"
+    },
+    "actions": {
+      "orders": {
+        "title": "MES COMMANDES",
+        "description": "Voir et gérer vos commandes"
+      },
+      "knowledge": {
+        "title": "CENTRE DE CONNAISSANCES",
+        "description": "Explorez nos guides et conseils"
+      },
+      "videos": {
+        "title": "GUIDES VIDÉO",
+        "description": "Regarder des vidéos instructives"
+      },
+      "quiz": {
+        "title": "ANALYSE DE PEAU",
+        "description": "Refaire votre analyse de peau"
+      }
+    },
+    "stats": {
+      "orders": "Commandes",
+      "skinScore": "Score de peau",
+      "favorites": "Favoris"
+    },
+    "backToOverview": "Retour à l'aperçu",
+    "orders": {
+      "empty": {
+        "title": "Aucune commande pour le moment",
+        "description": "Lorsque vous passerez votre première commande, elle apparaîtra ici.",
+        "cta": "Explorer les produits"
+      },
+      "orderNumber": "Commande #{number}",
+      "tracking": "Suivi : {number}",
+      "reorder": "Recommander",
+      "viewDetails": "Voir les détails"
+    },
+    "knowledge": {
+      "cbdGuide": "GUIDE CBD & CBG",
+      "cbdGuideDesc": "En savoir plus sur les cannabinoïdes",
+      "skinRoutines": "ROUTINES DE SOINS",
+      "skinRoutinesDesc": "Créez votre routine parfaite",
+      "ingredientLexicon": "LEXIQUE DES INGRÉDIENTS",
+      "ingredientLexiconDesc": "Comprendre nos ingrédients",
+      "faq": "FAQ",
+      "faqDesc": "Questions fréquemment posées",
+      "ebook": "E-BOOK",
+      "ebookDesc": "Télécharger notre livre gratuit",
+      "blog": "BLOG",
+      "blogDesc": "Dernières nouvelles",
+      "readMore": "Lire plus"
+    },
+    "videos": {
+      "morningRoutine": "ROUTINE MATINALE AVEC DUO-KIT",
+      "applyTheOne": "APPLIQUER THE ONE",
+      "tadaFinish": "TA-DA POUR UNE FINITION PARFAITE",
+      "makeupRemover": "TECHNIQUE DÉMAQUILLANT",
+      "comingSoon": "Vidéo bientôt disponible..."
     }
   }
 }

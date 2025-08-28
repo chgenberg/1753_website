@@ -37,9 +37,215 @@
     "login": "Logga in",
     "register": "Registrera dig",
     "logout": "Logga ut",
+    "profile": "Min profil",
     "privacyPolicy": "Integritetspolicy",
     "terms": "Villkor",
     "cookies": "Cookies"
+  },
+  "dashboard": {
+    "welcome": {
+      "title": "Välkommen tillbaka",
+      "withEmail": "{email}",
+      "toAccount": "till ditt konto"
+    },
+    "tabs": {
+      "overview": "Översikt",
+      "orders": "Mina ordrar",
+      "knowledge": "Kunskapscentral",
+      "videos": "Videoguider",
+      "quiz": "Hudanalys"
+    },
+    "actions": {
+      "orders": {
+        "title": "MINA ORDRAR",
+        "description": "Se och hantera dina beställningar"
+      },
+      "knowledge": {
+        "title": "KUNSKAPSCENTRAL",
+        "description": "Utforska våra guider och tips"
+      },
+      "videos": {
+        "title": "VIDEOGUIDER",
+        "description": "Se instruktionsvideor"
+      },
+      "quiz": {
+        "title": "HUDANALYS",
+        "description": "Gör om din hudanalys"
+      }
+    },
+    "stats": {
+      "orders": "Ordrar",
+      "skinScore": "Hudpoäng",
+      "favorites": "Favoriter"
+    },
+    "backToOverview": "Tillbaka till översikt",
+    "orders": {
+      "empty": {
+        "title": "Inga ordrar ännu",
+        "description": "När du gör din första beställning kommer den synas här.",
+        "cta": "Utforska produkter"
+      },
+      "orderNumber": "Order #{number}",
+      "tracking": "Spårning: {number}",
+      "reorder": "Beställ igen",
+      "viewDetails": "Visa detaljer"
+    },
+    "knowledge": {
+      "cbdGuide": "CBD & CBG GUIDE",
+      "cbdGuideDesc": "Lär dig mer om cannabinoider",
+      "skinRoutines": "HUDVÅRDSRUTINER",
+      "skinRoutinesDesc": "Skapa din perfekta rutin",
+      "ingredientLexicon": "INGREDIENSLEXIKON",
+      "ingredientLexiconDesc": "Förstå våra ingredienser",
+      "faq": "FAQ",
+      "faqDesc": "Vanliga frågor och svar",
+      "ebook": "E-BOK",
+      "ebookDesc": "Ladda ner vår gratisbok",
+      "blog": "BLOGG",
+      "blogDesc": "Senaste nyheterna",
+      "readMore": "Läs mer"
+    },
+    "videos": {
+      "morningRoutine": "MORGONRUTIN MED DUO-KIT",
+      "applyTheOne": "APPLICERA THE ONE",
+      "tadaFinish": "TA-DA FÖR PERFEKT FINISH",
+      "makeupRemover": "MAKEUP REMOVER TEKNIKEN",
+      "comingSoon": "Video kommer snart..."
+    }
+  },
+  "cart": {
+    "title": "Varukorg",
+    "empty": {
+      "title": "Din varukorg är tom",
+      "description": "Det verkar som att du inte har lagt till några produkter i varukorgen än. Upptäck vårt utbud av naturliga hudvårdsprodukter!",
+      "cta": "Fortsätt handla"
+    },
+    "pricePerUnit": "Pris per styck: {price} kr",
+    "clearCart": "Töm varukorg",
+    "orderSummary": "Ordersammanfattning",
+    "discountCode": "Rabattkod",
+    "discountCodePlaceholder": "Ange kod",
+    "applyDiscount": "Använd",
+    "subtotal": "Delsumma",
+    "discount": "Rabatt",
+    "shipping": "Frakt",
+    "freeShipping": "Gratis",
+    "total": "Total",
+    "includesTax": "inkl. moms",
+    "proceedToCheckout": "Gå till kassan",
+    "continueShopping": "Fortsätt handla",
+    "trustBadges": {
+      "securePayment": "Säker betalning med Viva Wallet",
+      "freeShippingOver500": "Fri frakt över 500 kr",
+      "paymentMethods": "Betala med kort eller Swish"
+    }
+  },
+  "checkout": {
+    "emptyCart": {
+      "title": "Din varukorg är tom",
+      "description": "Upptäck våra naturliga hudvårdsprodukter",
+      "cta": "FORTSÄTT HANDLA"
+    },
+    "steps": {
+      "back": "TILLBAKA",
+      "information": "INFORMATION",
+      "delivery": "LEVERANS",
+      "overview": "ÖVERSIKT",
+      "payment": "BETALNING"
+    },
+    "contactInformation": "Kontaktinformation",
+    "deliveryAddress": "Leveransadress",
+    "orderOverview": "Orderöversikt",
+    "contactDetails": "Kontaktuppgifter",
+    "orderDetails": "Orderdetaljer",
+    "orderSummary": "Ordersammanfattning",
+    "fields": {
+      "email": "E-postadress",
+      "firstName": "Förnamn",
+      "lastName": "Efternamn",
+      "phone": "Telefonnummer",
+      "streetAddress": "Gatuadress",
+      "apartment": "Lägenhet, svit etc. (valfritt)",
+      "postalCode": "Postnummer",
+      "city": "Stad",
+      "country": "Land"
+    },
+    "countries": {
+      "sweden": "Sverige",
+      "norway": "Norge",
+      "denmark": "Danmark",
+      "finland": "Finland"
+    },
+    "validation": {
+      "emailRequired": "E-post krävs",
+      "emailInvalid": "Ogiltig e-postadress",
+      "firstNameRequired": "Förnamn krävs",
+      "lastNameRequired": "Efternamn krävs",
+      "phoneRequired": "Telefon krävs",
+      "addressRequired": "Adress krävs",
+      "cityRequired": "Stad krävs",
+      "postalCodeRequired": "Postnummer krävs"
+    },
+    "newsletter": {
+      "text": "Ja, jag vill gärna ta del av nyheter och erbjudanden",
+      "discount": "Få 10% rabatt på din första order! 🎁"
+    },
+    "buttons": {
+      "continueToDelivery": "FORTSÄTT TILL LEVERANS",
+      "reviewOrder": "GRANSKA BESTÄLLNING"
+    },
+    "shipping": {
+      "standardDelivery": "Standard leverans",
+      "deliveryTime": "Leverans inom 2-4 arbetsdagar",
+      "freeShippingOver": "Fri frakt över {amount}!"
+    },
+    "subtotal": "Delsumma",
+    "shipping": "Frakt",
+    "freeShipping": "Gratis",
+    "discount": "Rabatt ({code})",
+    "total": "Totalt",
+    "securePayment": "Säker betalning",
+    "securePaymentDescription": "Din betalningsinformation är krypterad och säker. Vi lagrar aldrig kortuppgifter.",
+    "trustBadges": {
+      "sslEncrypted": "SSL-krypterad",
+      "rating": "4.8/5 betyg",
+      "returnPolicy": "30 dagars öppet köp",
+      "securePayment": "Säker betalning",
+      "freeShippingOver": "Fri frakt över {amount}"
+    },
+    "processing": "BEHANDLAR BESTÄLLNING...",
+    "completeOrder": "SLUTFÖR KÖP ({total})",
+    "terms": {
+      "prefix": "Genom att slutföra köpet godkänner du våra",
+      "terms": "köpvillkor",
+      "and": "och",
+      "privacy": "integritetspolicy"
+    },
+    "discountCode": "Rabattkod",
+    "removeDiscount": "Ta bort",
+    "applyDiscount": "Använd",
+    "discountApplied": "{name} tillagd!",
+    "support": {
+      "needHelp": "Behöver du hjälp?",
+      "contactSupport": "Kontakta kundservice →"
+    }
+  },
+  "productDetail": {
+    "fallbackDescription": "En fantastisk produkt från 1753 Skincare.",
+    "imageAlt": "{name} bild {number}",
+    "defaultCategory": "Hudvård",
+    "ingredientDescription": "{ingredient} är en kraftfull ingrediens för huden.",
+    "benefits": {
+      "nourishing": "Närande",
+      "moisturizing": "Återfuktande",
+      "soothing": "Lugnande"
+    },
+    "defaultBenefits": {
+      "deepMoisturizing": "Ger djup återfuktning",
+      "strengthensBarrier": "Stärker hudbarriären",
+      "naturalGlow": "Ger naturlig lyster"
+    },
+    "defaultUsage": "Applicera på ren hud morgon och kväll. Massera försiktigt tills produkten absorberats."
   },
   "headerTopBar": {
     "bannerPrefix": "FRI FRAKT ÖVER 500 KR",
@@ -173,31 +379,6 @@
     "skinType": "Hudtyp",
     "skinConcerns": "Hudproblem"
   },
-  "cart": {
-    "title": "Varukorg",
-    "empty": "Din varukorg är tom",
-    "quantity": "Antal",
-    "price": "Pris",
-    "total": "Totalt",
-    "subtotal": "Delsumma",
-    "shipping": "Frakt",
-    "tax": "Moms",
-    "remove": "Ta bort",
-    "updateQuantity": "Uppdatera antal",
-    "proceedToCheckout": "Gå till kassan",
-    "continueShopping": "Fortsätt handla"
-  },
-  "checkout": {
-    "title": "Kassa",
-    "shippingAddress": "Leveransadress",
-    "billingAddress": "Faktureringsadress",
-    "paymentMethod": "Betalningsmetod",
-    "orderSummary": "Ordersammanfattning",
-    "placeOrder": "Genomför beställning",
-    "processing": "Bearbetar...",
-    "success": "Beställning genomförd!",
-    "error": "Ett fel uppstod vid beställningen"
-  },
   "forms": {
     "required": "Detta fält är obligatoriskt",
     "email": "Ange en giltig e-postadress",
@@ -267,8 +448,8 @@
     "quizCta": "Gör vår hudanalys",
     "badges": {
       "recommended": "REKOMMENDERAT",
-      "bestseller": "BESTSELLER",
-      "new": "NYTT"
+      "bestseller": "BÄSTSÄLJARE",
+      "new": "NYHET"
     }
   },
   "Reviews": {
@@ -326,8 +507,8 @@
   "home": {
     "hero": {
       "coverAlt": "Omslagsbild för 1753 Skincare 2025",
-      "headingLine1": "Naturlig hudvård för",
-      "headingLine2": "hudens ekosystem",
+      "headingLine1": "Detta är inte hudvård som du känner den.",
+      "headingLine2": "Detta är hudvård som förändrar allt.",
       "subtitle": "Vetenskapligt utvecklad hudvård som arbetar i harmoni med hudens celler, mikrobiom och endocannabinoidsystem",
       "authorAlt": "Porträtt av Christopher Genberg",
       "authorTagline": "Grundare • 12+ års erfarenhet • Hudvårdsrebell",

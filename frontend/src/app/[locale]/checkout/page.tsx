@@ -34,6 +34,7 @@ import {
   Gift
 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { useTranslations } from 'next-intl'
 
 interface CheckoutForm {
   // Personal info
@@ -72,6 +73,7 @@ interface AddressSuggestion {
 }
 
 export default function CheckoutPage() {
+  const t = useTranslations()
   const router = useRouter()
   const { items, total, subtotal, shipping, clearCart } = useCart()
   const { formatMoney, currency } = useCurrency()
@@ -216,12 +218,12 @@ export default function CheckoutPage() {
   const validateStep1 = () => {
     const errors: Record<string, string> = {}
     
-    if (!form.email) errors.email = 'E-post krävs'
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errors.email = 'Ogiltig e-postadress'
+    if (!form.email) errors.email = t('checkout.validation.emailRequired')
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errors.email = t('checkout.validation.emailInvalid')
     
-    if (!form.firstName) errors.firstName = 'Förnamn krävs'
-    if (!form.lastName) errors.lastName = 'Efternamn krävs'
-    if (!form.phone) errors.phone = 'Telefon krävs'
+    if (!form.firstName) errors.firstName = t('checkout.validation.firstNameRequired')
+    if (!form.lastName) errors.lastName = t('checkout.validation.lastNameRequired')
+    if (!form.phone) errors.phone = t('checkout.validation.phoneRequired')
 
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors)
@@ -235,9 +237,9 @@ export default function CheckoutPage() {
   const validateStep2 = () => {
     const errors: Record<string, string> = {}
     
-    if (!form.address) errors.address = 'Adress krävs'
-    if (!form.city) errors.city = 'Stad krävs'
-    if (!form.postalCode) errors.postalCode = 'Postnummer krävs'
+    if (!form.address) errors.address = t('checkout.validation.addressRequired')
+    if (!form.city) errors.city = t('checkout.validation.cityRequired')
+    if (!form.postalCode) errors.postalCode = t('checkout.validation.postalCodeRequired')
 
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors)
@@ -344,7 +346,7 @@ export default function CheckoutPage() {
             className="text-4xl font-light tracking-[0.2em] uppercase mb-4"
             style={{ fontFamily: "'Inter', sans-serif" }}
           >
-            Din varukorg är tom
+            {t('checkout.emptyCart.title')}
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
@@ -352,7 +354,7 @@ export default function CheckoutPage() {
             transition={{ delay: 0.3 }}
             className="text-gray-600 mb-8 tracking-wider"
           >
-            Upptäck våra naturliga hudvårdsprodukter
+            {t('checkout.emptyCart.description')}
           </motion.p>
           <motion.button
             initial={{ opacity: 0, y: 20 }}
@@ -363,7 +365,7 @@ export default function CheckoutPage() {
             onClick={() => router.push('/products')}
             className="bg-[#E79C1A] text-white px-10 py-4 rounded-full font-light tracking-wider hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
           >
-            FORTSÄTT HANDLA
+            {t('checkout.emptyCart.cta')}
           </motion.button>
         </div>
         <Footer />
@@ -388,15 +390,15 @@ export default function CheckoutPage() {
               className="group flex items-center gap-2 text-gray-600 hover:text-[#E79C1A] transition-colors"
             >
               <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-              <span className="hidden md:inline font-light tracking-wider">TILLBAKA</span>
+              <span className="hidden md:inline font-light tracking-wider">{t('checkout.steps.back')}</span>
             </button>
             
             <div className="flex items-center gap-2 sm:gap-3 text-xs md:text-sm">
               {[
-                { num: 1, label: 'INFORMATION' },
-                { num: 2, label: 'LEVERANS' },
-                { num: 3, label: 'ÖVERSIKT' },
-                { num: 4, label: 'BETALNING' }
+                { num: 1, label: t('checkout.steps.information') },
+                { num: 2, label: t('checkout.steps.delivery') },
+                { num: 3, label: t('checkout.steps.overview') },
+                { num: 4, label: t('checkout.steps.payment') }
               ].map((step, index) => (
                 <div key={step.num} className="flex items-center">
                   <motion.div
@@ -458,7 +460,7 @@ export default function CheckoutPage() {
                       <User className="w-6 h-6 text-white" />
                     </motion.div>
                     <h2 className="text-xl md:text-3xl font-light tracking-[0.1em] md:tracking-[0.2em] uppercase" style={{ fontFamily: "'Inter', sans-serif" }}>
-                      Kontaktinformation
+                      {t('checkout.contactInformation')}
                     </h2>
                   </div>
 
@@ -503,7 +505,7 @@ export default function CheckoutPage() {
                         peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#E79C1A] peer-focus:text-sm
                         peer-[:not(:placeholder-shown)]:-translate-y-8 peer-[:not(:placeholder-shown)]:text-sm"
                       >
-                        E-postadress
+                        {t('checkout.fields.email')}
                       </label>
                       <Mail className="absolute right-4 sm:right-6 top-3 sm:top-4 w-5 h-5 text-gray-400" />
                       {formErrors.email && (
@@ -545,7 +547,7 @@ export default function CheckoutPage() {
                           peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#E79C1A] peer-focus:text-sm
                           peer-[:not(:placeholder-shown)]:-translate-y-8 peer-[:not(:placeholder-shown)]:text-sm"
                         >
-                          Förnamn
+                          {t('checkout.fields.firstName')}
                         </label>
                         {formErrors.firstName && (
                           <motion.p
@@ -584,7 +586,7 @@ export default function CheckoutPage() {
                           peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#E79C1A] peer-focus:text-sm
                           peer-[:not(:placeholder-shown)]:-translate-y-8 peer-[:not(:placeholder-shown)]:text-sm"
                         >
-                          Efternamn
+                          {t('checkout.fields.lastName')}
                         </label>
                         {formErrors.lastName && (
                           <motion.p
@@ -627,7 +629,7 @@ export default function CheckoutPage() {
                         peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#E79C1A] peer-focus:text-sm
                         peer-[:not(:placeholder-shown)]:-translate-y-8 peer-[:not(:placeholder-shown)]:text-sm"
                       >
-                        Telefonnummer
+                        {t('checkout.fields.phone')}
                       </label>
                       <Phone className="absolute right-4 sm:right-6 top-3 sm:top-4 w-5 h-5 text-gray-400" />
                       {formErrors.phone && (
@@ -674,10 +676,10 @@ export default function CheckoutPage() {
                         </div>
                         <div>
                           <span className="text-gray-700 font-light">
-                            Ja, jag vill gärna ta del av nyheter och erbjudanden
+                            {t('checkout.newsletter.text')}
                           </span>
                           <p className="text-sm text-gray-500 mt-1">
-                            Få 10% rabatt på din första order! 🎁
+                            {t('checkout.newsletter.discount')}
                           </p>
                         </div>
                       </label>
@@ -693,7 +695,7 @@ export default function CheckoutPage() {
                       whileTap={{ scale: 0.98 }}
                       className="w-full py-5 bg-[#E79C1A] text-white rounded-2xl font-light tracking-wider text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-3 group"
                     >
-                      <span>FORTSÄTT TILL LEVERANS</span>
+                      <span>{t('checkout.buttons.continueToDelivery')}</span>
                       <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </motion.button>
                   </div>
@@ -720,7 +722,7 @@ export default function CheckoutPage() {
                       <MapPin className="w-6 h-6 text-white" />
                     </motion.div>
                     <h2 className="text-xl md:text-3xl font-light tracking-[0.1em] md:tracking-[0.2em] uppercase" style={{ fontFamily: "'Inter', sans-serif" }}>
-                      Leveransadress
+                      {t('checkout.deliveryAddress')}
                     </h2>
                   </div>
 
@@ -751,7 +753,7 @@ export default function CheckoutPage() {
                         peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#E79C1A] peer-focus:text-sm
                         peer-[:not(:placeholder-shown)]:-translate-y-8 peer-[:not(:placeholder-shown)]:text-sm"
                       >
-                        Gatuadress
+                        {t('checkout.fields.streetAddress')}
                       </label>
                       {formErrors.address && (
                         <motion.p
@@ -785,7 +787,7 @@ export default function CheckoutPage() {
                         peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#E79C1A] peer-focus:text-sm
                         peer-[:not(:placeholder-shown)]:-translate-y-8 peer-[:not(:placeholder-shown)]:text-sm"
                       >
-                        Lägenhet, svit etc. (valfritt)
+                        {t('checkout.fields.apartment')}
                       </label>
                     </motion.div>
 
@@ -816,7 +818,7 @@ export default function CheckoutPage() {
                           peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#E79C1A] peer-focus:text-sm
                           peer-[:not(:placeholder-shown)]:-translate-y-8 peer-[:not(:placeholder-shown)]:text-sm"
                         >
-                          Postnummer
+                          {t('checkout.fields.postalCode')}
                         </label>
                         {formErrors.postalCode && (
                           <motion.p
@@ -854,7 +856,7 @@ export default function CheckoutPage() {
                           peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-8 peer-focus:text-[#E79C1A] peer-focus:text-sm
                           peer-[:not(:placeholder-shown)]:-translate-y-8 peer-[:not(:placeholder-shown)]:text-sm"
                         >
-                          Stad
+                          {t('checkout.fields.city')}
                         </label>
                         {formErrors.city && (
                           <motion.p
@@ -880,14 +882,14 @@ export default function CheckoutPage() {
                         onChange={(e) => handleInputChange('country', e.target.value)}
                         className="w-full px-6 py-4 bg-[#FFF9F3] border-2 border-transparent rounded-2xl text-gray-800 focus:ring-0 focus:border-[#E79C1A] outline-none transition-all appearance-none cursor-pointer"
                       >
-                        <option value="Sverige">Sverige</option>
-                        <option value="Norge">Norge</option>
-                        <option value="Danmark">Danmark</option>
-                        <option value="Finland">Finland</option>
+                        <option value="Sverige">{t('checkout.countries.sweden')}</option>
+                        <option value="Norge">{t('checkout.countries.norway')}</option>
+                        <option value="Danmark">{t('checkout.countries.denmark')}</option>
+                        <option value="Finland">{t('checkout.countries.finland')}</option>
                       </select>
                       <ChevronRight className="absolute right-6 top-4 w-5 h-5 text-gray-400 rotate-90 pointer-events-none" />
                       <label className="absolute left-6 -top-4 text-sm text-gray-500">
-                        Land
+                        {t('checkout.fields.country')}
                       </label>
                     </motion.div>
 
@@ -903,13 +905,13 @@ export default function CheckoutPage() {
                           <Package className="w-6 h-6 text-[#E79C1A]" />
                         </div>
                         <div className="flex-1">
-                          <h3 className="font-medium text-gray-800 mb-2">Standard leverans</h3>
+                          <h3 className="font-medium text-gray-800 mb-2">{t('checkout.shipping.standardDelivery')}</h3>
                           <p className="text-sm text-gray-600 mb-3">
-                            Leverans inom 2-4 arbetsdagar
+                            {t('checkout.shipping.deliveryTime')}
                           </p>
                           <div className="flex items-center gap-2 text-[#E79C1A]">
                             <Sparkles className="w-4 h-4" />
-                                                          <span className="text-sm font-medium">Fri frakt över {formatMoney(500)}!</span>
+                            <span className="text-sm font-medium">{t('checkout.shipping.freeShippingOver', { amount: formatMoney(500) })}</span>
                           </div>
                         </div>
                       </div>
@@ -925,7 +927,7 @@ export default function CheckoutPage() {
                       whileTap={{ scale: 0.98 }}
                       className="w-full py-5 bg-[#E79C1A] text-white rounded-2xl font-light tracking-wider text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-3 group"
                     >
-                      <span>GRANSKA BESTÄLLNING</span>
+                      <span>{t('checkout.buttons.reviewOrder')}</span>
                       <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </motion.button>
                   </div>
@@ -952,7 +954,7 @@ export default function CheckoutPage() {
                       <Check className="w-6 h-6 text-white" />
                     </motion.div>
                     <h2 className="text-xl md:text-3xl font-light tracking-[0.1em] md:tracking-[0.2em] uppercase" style={{ fontFamily: "'Inter', sans-serif" }}>
-                      Orderöversikt
+                      {t('checkout.orderOverview')}
                     </h2>
                   </div>
 
@@ -966,7 +968,7 @@ export default function CheckoutPage() {
                     >
                       <div className="flex items-center gap-3 text-[#E79C1A] mb-2">
                         <MapPin className="w-5 h-5" />
-                        <h3 className="font-medium">Leveransadress</h3>
+                        <h3 className="font-medium">{t('checkout.deliveryAddress')}</h3>
                       </div>
                       <p className="text-gray-700 leading-relaxed">
                         {form.firstName} {form.lastName}<br />
@@ -984,7 +986,7 @@ export default function CheckoutPage() {
                     >
                       <div className="flex items-center gap-3 text-[#E79C1A] mb-2">
                         <Mail className="w-5 h-5" />
-                        <h3 className="font-medium">Kontaktuppgifter</h3>
+                        <h3 className="font-medium">{t('checkout.contactDetails')}</h3>
                       </div>
                       <p className="text-gray-700 leading-relaxed">
                         {form.email}<br />
@@ -1000,50 +1002,50 @@ export default function CheckoutPage() {
                     >
                       <div className="flex items-center gap-3 text-[#E79C1A] mb-4">
                         <ShoppingBag className="w-5 h-5" />
-                        <h3 className="font-medium">Orderdetaljer</h3>
+                        <h3 className="font-medium">{t('checkout.orderDetails')}</h3>
                       </div>
                       <div className="space-y-3">
                         <div className="flex justify-between text-gray-700">
-                          <span>Delsumma</span>
-                                                        <span className="font-medium">{formatMoney(subtotal)}</span>
+                          <span>{t('checkout.subtotal')}</span>
+                          <span className="font-medium">{formatMoney(subtotal)}</span>
                         </div>
                         <div className="flex justify-between text-gray-700">
-                          <span>Frakt</span>
-                                                        <span className="font-medium">{shipping === 0 ? 'Gratis' : formatMoney(shipping)}</span>
+                          <span>{t('checkout.shipping')}</span>
+                          <span className="font-medium">{shipping === 0 ? t('checkout.freeShipping') : formatMoney(shipping)}</span>
                         </div>
                         {appliedDiscount && (
                           <div className="flex justify-between text-green-600">
                             <span className="flex items-center gap-2">
                               <Gift className="w-4 h-4" />
-                              Rabatt ({appliedDiscount.code})
+                              {t('checkout.discount', { code: appliedDiscount.code })}
                             </span>
-                                                            <span className="font-medium">-{formatMoney(calculateDiscount())}</span>
+                            <span className="font-medium">-{formatMoney(calculateDiscount())}</span>
                           </div>
                         )}
                         <div className="pt-3 border-t border-[#E5D5C7]">
                           <div className="flex justify-between text-lg">
-                            <span className="font-medium">Totalt</span>
-                                                          <span className="font-semibold text-[#E79C1A]">{formatMoney(finalTotal)}</span>
+                            <span className="font-medium">{t('checkout.total')}</span>
+                            <span className="font-semibold text-[#E79C1A]">{formatMoney(finalTotal)}</span>
                           </div>
                         </div>
                       </div>
                     </motion.div>
 
-                                          {/* Security badges */}
-                      <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.4 }}
-                        className="bg-green-50 rounded-2xl p-6 border border-green-100"
-                      >
+                    {/* Security badges */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 }}
+                      className="bg-green-50 rounded-2xl p-6 border border-green-100"
+                    >
                       <div className="flex items-start gap-4">
                         <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-md">
                           <Shield className="w-6 h-6 text-green-600" />
                         </div>
                         <div>
-                                                     <h3 className="font-medium text-green-900 mb-2">Säker betalning</h3>
-                           <p className="text-sm text-green-700">
-                            Din betalningsinformation är krypterad och säker. Vi lagrar aldrig kortuppgifter.
+                          <h3 className="font-medium text-green-900 mb-2">{t('checkout.securePayment')}</h3>
+                          <p className="text-sm text-green-700">
+                            {t('checkout.securePaymentDescription')}
                           </p>
                         </div>
                       </div>
@@ -1057,9 +1059,9 @@ export default function CheckoutPage() {
                       className="grid grid-cols-3 gap-4"
                     >
                       {[
-                        { icon: Lock, text: 'SSL-krypterad' },
-                        { icon: Star, text: '4.8/5 betyg' },
-                        { icon: Heart, text: '30 dagars öppet köp' }
+                        { icon: Lock, text: t('checkout.trustBadges.sslEncrypted') },
+                        { icon: Star, text: t('checkout.trustBadges.rating') },
+                        { icon: Heart, text: t('checkout.trustBadges.returnPolicy') }
                       ].map((badge, index) => (
                         <div key={index} className="text-center">
                           <div className="w-12 h-12 bg-[#FFF9F3] rounded-full flex items-center justify-center mx-auto mb-2">
@@ -1084,12 +1086,12 @@ export default function CheckoutPage() {
                       {isProcessing ? (
                         <>
                           <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
-                          <span className="text-sm sm:text-base">BEHANDLAR BESTÄLLNING...</span>
+                          <span className="text-sm sm:text-base">{t('checkout.processing')}</span>
                         </>
                       ) : (
                         <>
                           <Zap className="w-4 h-4 sm:w-5 sm:h-5" />
-                                                      <span className="text-sm sm:text-base">SLUTFÖR KÖP ({formatMoney(finalTotal)})</span>
+                          <span className="text-sm sm:text-base">{t('checkout.completeOrder', { total: formatMoney(finalTotal) })}</span>
                           <Lock className="w-3 h-3 sm:w-4 sm:h-4 opacity-60" />
                         </>
                       )}
@@ -1097,10 +1099,10 @@ export default function CheckoutPage() {
 
                     {/* Terms */}
                     <p className="text-xs text-gray-500 text-center">
-                      Genom att slutföra köpet godkänner du våra{' '}
-                      <a href="/villkor" className="text-[#E79C1A] hover:underline">köpvillkor</a>
-                      {' '}och{' '}
-                      <a href="/integritetspolicy" className="text-[#E79C1A] hover:underline">integritetspolicy</a>
+                      {t('checkout.terms.prefix')}{' '}
+                      <a href="/villkor" className="text-[#E79C1A] hover:underline">{t('checkout.terms.terms')}</a>
+                      {' '}{t('checkout.terms.and')}{' '}
+                      <a href="/integritetspolicy" className="text-[#E79C1A] hover:underline">{t('checkout.terms.privacy')}</a>
                     </p>
                   </div>
                 </motion.div>
@@ -1118,7 +1120,7 @@ export default function CheckoutPage() {
               transition={{ delay: 0.3 }}
               className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl p-4 sm:p-6 md:p-8 border border-[#E5D5C7]/30"
             >
-              <h3 className="text-lg sm:text-xl font-light tracking-wide sm:tracking-wider mb-6 uppercase">Ordersammanfattning</h3>
+              <h3 className="text-lg sm:text-xl font-light tracking-wide sm:tracking-wider mb-6 uppercase">{t('checkout.orderSummary')}</h3>
               
               {/* Items with animation */}
               <div className="space-y-4 mb-6">
@@ -1149,7 +1151,7 @@ export default function CheckoutPage() {
                     </div>
                     <div className="flex-1">
                       <h4 className="font-medium text-gray-800">{item.product.name}</h4>
-                                                            <p className="text-sm text-gray-600 mt-1">{formatMoney(item.price)}</p>
+                      <p className="text-sm text-gray-600 mt-1">{formatMoney(item.price)}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -1168,7 +1170,7 @@ export default function CheckoutPage() {
                       type="text"
                       value={discountCode}
                       onChange={(e) => setDiscountCode(e.target.value)}
-                      placeholder="Rabattkod"
+                      placeholder={t('checkout.discountCode')}
                       className="w-full px-4 py-3 bg-[#FFF9F3] border-2 border-transparent rounded-xl text-sm focus:ring-0 focus:border-[#E79C1A] outline-none transition-all pl-10"
                       disabled={!!appliedDiscount}
                     />
@@ -1182,7 +1184,7 @@ export default function CheckoutPage() {
                       className="px-4 py-3 bg-red-100 text-red-600 rounded-xl text-sm hover:bg-red-200 transition-all flex items-center gap-2"
                     >
                       <X className="w-4 h-4" />
-                      <span>Ta bort</span>
+                      <span>{t('checkout.removeDiscount')}</span>
                     </motion.button>
                   ) : (
                     <button
@@ -1193,7 +1195,7 @@ export default function CheckoutPage() {
                       {isValidatingDiscount ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (
-                        'Använd'
+                        t('checkout.applyDiscount')
                       )}
                     </button>
                   )}
@@ -1215,7 +1217,7 @@ export default function CheckoutPage() {
                     className="text-green-600 text-xs mt-2 flex items-center gap-2"
                   >
                     <Check className="w-4 h-4" />
-                    {appliedDiscount.name} tillagd!
+                    {t('checkout.discountApplied', { name: appliedDiscount.name })}
                   </motion.p>
                 )}
               </motion.div>
@@ -1228,8 +1230,8 @@ export default function CheckoutPage() {
                 className="space-y-3 pt-6 border-t border-[#E5D5C7]"
               >
                 <div className="flex justify-between text-gray-700">
-                  <span>Delsumma</span>
-                                              <span>{formatMoney(subtotal)}</span>
+                  <span>{t('checkout.subtotal')}</span>
+                  <span>{formatMoney(subtotal)}</span>
                 </div>
                 {appliedDiscount && (
                   <motion.div
@@ -1239,17 +1241,17 @@ export default function CheckoutPage() {
                   >
                     <span className="flex items-center gap-2">
                       <Gift className="w-4 h-4" />
-                      Rabatt
+                      {t('checkout.discount')}
                     </span>
-                                                  <span>-{formatMoney(calculateDiscount())}</span>
+                    <span>-{formatMoney(calculateDiscount())}</span>
                   </motion.div>
                 )}
                 <div className="flex justify-between text-gray-700">
-                  <span>Frakt</span>
-                                              <span>{shipping === 0 ? 'Gratis' : formatMoney(shipping)}</span>
+                  <span>{t('checkout.shipping')}</span>
+                  <span>{shipping === 0 ? t('checkout.freeShipping') : formatMoney(shipping)}</span>
                 </div>
                 <div className="flex justify-between text-xl font-medium pt-3 border-t border-[#E5D5C7]">
-                  <span>Totalt</span>
+                  <span>{t('checkout.total')}</span>
                   <motion.span
                     key={finalTotal}
                     initial={{ scale: 0.8 }}
@@ -1269,9 +1271,9 @@ export default function CheckoutPage() {
                 className="mt-8 pt-6 border-t border-[#E5D5C7] space-y-4"
               >
                 {[
-                  { icon: Shield, text: 'Säker betalning', color: 'text-green-600' },
-                  { icon: Package, text: `Fri frakt över ${formatMoney(500)}`, color: 'text-blue-600' },
-                  { icon: Heart, text: '30 dagars öppet köp', color: 'text-red-600' }
+                  { icon: Shield, text: t('checkout.trustBadges.securePayment'), color: 'text-green-600' },
+                  { icon: Package, text: t('checkout.trustBadges.freeShippingOver', { amount: formatMoney(500) }), color: 'text-blue-600' },
+                  { icon: Heart, text: t('checkout.trustBadges.returnPolicy'), color: 'text-red-600' }
                 ].map((badge, index) => (
                   <motion.div
                     key={index}
@@ -1293,9 +1295,9 @@ export default function CheckoutPage() {
                 transition={{ delay: 0.9 }}
                 className="mt-6 p-4 bg-[#FFF9F3] rounded-2xl text-center"
               >
-                <p className="text-sm text-gray-600 mb-2">Behöver du hjälp?</p>
+                <p className="text-sm text-gray-600 mb-2">{t('checkout.support.needHelp')}</p>
                 <a href="/kontakt" className="text-[#E79C1A] hover:underline text-sm font-medium">
-                  Kontakta kundservice →
+                  {t('checkout.support.contactSupport')}
                 </a>
               </motion.div>
             </motion.div>

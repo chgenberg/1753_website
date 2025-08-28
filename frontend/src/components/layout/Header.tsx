@@ -223,7 +223,7 @@ export function Header() {
                       onClick={() => setIsMenuOpen(false)}
                       className="block text-sm font-light text-gray-600 hover:text-black transition-colors mb-3"
                     >
-                      Min profil
+                      {t('profile')}
                     </Link>
                     <button
                       onClick={() => {
@@ -232,7 +232,7 @@ export function Header() {
                       }}
                       className="block text-sm font-light text-gray-600 hover:text-black transition-colors"
                     >
-                      Logga ut
+                      {t('logout')}
                     </button>
                   </div>
                 )}

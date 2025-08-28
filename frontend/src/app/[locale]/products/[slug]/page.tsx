@@ -105,29 +105,29 @@ export default function ProductPage() {
             name: foundProduct.name,
             slug: foundProduct.slug,
             description: foundProduct.description || '',
-            longDescription: foundProduct.longDescription || foundProduct.description || 'En fantastisk produkt från 1753 Skincare.',
+            longDescription: foundProduct.longDescription || foundProduct.description || t('productDetail.fallbackDescription'),
             price: foundProduct.price,
             compareAtPrice: foundProduct.compareAtPrice,
             images: foundProduct.images?.map((img: any, index: number) => ({
               url: typeof img === 'string' ? img : img.url,
-              alt: typeof img === 'string' ? `${foundProduct.name} bild ${index + 1}` : (img.alt || `${foundProduct.name} bild ${index + 1}`),
+              alt: typeof img === 'string' ? t('productDetail.imageAlt', { name: foundProduct.name, number: index + 1 }) : (img.alt || t('productDetail.imageAlt', { name: foundProduct.name, number: index + 1 })),
               position: index
             })) || [{ url: '/images/products/default.png', alt: foundProduct.name, position: 0 }],
-            category: { name: foundProduct.category || 'Hudvård', slug: foundProduct.category?.toLowerCase() || 'hudvard' },
+            category: { name: foundProduct.category || t('productDetail.defaultCategory'), slug: foundProduct.category?.toLowerCase() || 'hudvard' },
             tags: foundProduct.tags || [],
             ingredients: foundProduct.keyIngredients?.map((ing: string) => ({
               name: ing,
-              description: `${ing} är en kraftfull ingrediens för huden.`,
-              benefits: ['Närande', 'Återfuktande', 'Lugnande'],
+              description: t('productDetail.ingredientDescription', { ingredient: ing }),
+              benefits: [t('productDetail.benefits.nourishing'), t('productDetail.benefits.moisturizing'), t('productDetail.benefits.soothing')],
               concentration: '2-5%'
             })) || [],
             skinTypes: foundProduct.skinTypes || ['normal', 'dry', 'oily', 'combination', 'sensitive'],
             benefits: foundProduct.benefitsDetails || foundProduct.skinConcerns || [
-              'Ger djup återfuktning',
-              'Stärker hudbarriären', 
-              'Ger naturlig lyster'
+              t('productDetail.defaultBenefits.deepMoisturizing'),
+              t('productDetail.defaultBenefits.strengthensBarrier'), 
+              t('productDetail.defaultBenefits.naturalGlow')
             ],
-            howToUse: foundProduct.howToUse || 'Applicera på ren hud morgon och kväll. Massera försiktigt tills produkten absorberats.',
+            howToUse: foundProduct.howToUse || t('productDetail.defaultUsage'),
             featured: foundProduct.isFeatured || false,
             bestseller: foundProduct.tags?.includes('bestseller') || false,
             newProduct: foundProduct.tags?.includes('new') || false,
@@ -239,7 +239,7 @@ export default function ProductPage() {
                     transition={{ delay: 0.2 }}
                     className="bg-black/80 backdrop-blur-sm text-white text-sm px-4 py-2 rounded-full"
                   >
-                    Bästsäljare
+                    {t('productsPage.badges.bestseller')}
                   </motion.span>
                 )}
                 {product.newProduct && (
@@ -249,7 +249,7 @@ export default function ProductPage() {
                     transition={{ delay: 0.3 }}
                     className="bg-emerald-500/90 backdrop-blur-sm text-white text-sm px-4 py-2 rounded-full"
                   >
-                    Nyhet
+                    {t('productsPage.badges.new')}
                   </motion.span>
                 )}
                 {discountPercentage > 0 && (

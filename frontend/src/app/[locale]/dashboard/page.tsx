@@ -22,6 +22,7 @@ import {
 } from 'lucide-react'
 import { useCart } from '@/contexts/CartContext'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import type { Product } from '@/types'
 
 interface Order {
@@ -50,6 +51,7 @@ interface Order {
 
 
 export default function DashboardPage() {
+  const t = useTranslations()
   const { user, token } = useAuth()
   const { addToCart } = useCart()
   const router = useRouter()
@@ -156,49 +158,49 @@ export default function DashboardPage() {
   }
 
   const tabs = [
-    { id: 'overview', label: 'Översikt', icon: User },
-    { id: 'orders', label: 'Mina ordrar', icon: ShoppingBag },
-    { id: 'knowledge', label: 'Kunskapscentral', icon: BookOpen },
-    { id: 'videos', label: 'Videoguider', icon: PlayCircle },
-    { id: 'quiz', label: 'Hudanalys', icon: Sparkles }
+    { id: 'overview', label: t('dashboard.tabs.overview'), icon: User },
+    { id: 'orders', label: t('dashboard.tabs.orders'), icon: ShoppingBag },
+    { id: 'knowledge', label: t('dashboard.tabs.knowledge'), icon: BookOpen },
+    { id: 'videos', label: t('dashboard.tabs.videos'), icon: PlayCircle },
+    { id: 'quiz', label: t('dashboard.tabs.quiz'), icon: Sparkles }
   ]
 
   const videos = [
-    { id: '1', title: 'MORGONRUTIN MED DUO-KIT', thumbnail: '/products_2025/DUO.png', duration: '5:23' },
-    { id: '2', title: 'APPLICERA THE ONE', thumbnail: '/products_2025/The_ONE_bottle.png', duration: '3:45' },
-    { id: '3', title: 'TA-DA FÖR PERFEKT FINISH', thumbnail: '/products_2025/TA-DA.png', duration: '4:12' },
-    { id: '4', title: 'MAKEUP REMOVER TEKNIKEN', thumbnail: '/products_2025/MakeupRemover_bottle.png', duration: '2:30' }
+    { id: '1', title: t('dashboard.videos.morningRoutine'), thumbnail: '/products_2025/DUO.png', duration: '5:23' },
+    { id: '2', title: t('dashboard.videos.applyTheOne'), thumbnail: '/products_2025/The_ONE_bottle.png', duration: '3:45' },
+    { id: '3', title: t('dashboard.videos.tadaFinish'), thumbnail: '/products_2025/TA-DA.png', duration: '4:12' },
+    { id: '4', title: t('dashboard.videos.makeupRemover'), thumbnail: '/products_2025/MakeupRemover_bottle.png', duration: '2:30' }
   ]
 
   const dashboardActions = [
     {
       id: 'orders',
-      title: 'MINA ORDRAR',
-      description: 'Se och hantera dina beställningar',
+      title: t('dashboard.actions.orders.title'),
+      description: t('dashboard.actions.orders.description'),
       icon: ShoppingBag,
       bgColor: 'from-[#FCB237] to-[#e79c1a]',
       action: () => setActiveTab('orders')
     },
     {
       id: 'knowledge',
-      title: 'KUNSKAPSCENTRAL',
-      description: 'Utforska våra guider och tips',
+      title: t('dashboard.actions.knowledge.title'),
+      description: t('dashboard.actions.knowledge.description'),
       icon: BookOpen,
       bgColor: 'from-[#4CAF50] to-[#45a049]',
       action: () => setActiveTab('knowledge')
     },
     {
       id: 'videos',
-      title: 'VIDEOGUIDER',
-      description: 'Se instruktionsvideor',
+      title: t('dashboard.actions.videos.title'),
+      description: t('dashboard.actions.videos.description'),
       icon: PlayCircle,
       bgColor: 'from-[#E91E63] to-[#C2185B]',
       action: () => setActiveTab('videos')
     },
     {
       id: 'quiz',
-      title: 'HUDANALYS',
-      description: 'Gör om din hudanalys',
+      title: t('dashboard.actions.quiz.title'),
+      description: t('dashboard.actions.quiz.description'),
       icon: Sparkles,
       bgColor: 'from-[#2196F3] to-[#1976D2]',
       action: () => router.push('/quiz')
@@ -235,10 +237,10 @@ export default function DashboardPage() {
               className="text-center max-w-4xl mx-auto"
             >
               <h1 className="text-4xl md:text-6xl font-light text-white mb-4">
-                Välkommen tillbaka
+                {t('dashboard.welcome.title')}
               </h1>
               <p className="text-lg md:text-xl text-white/90 mb-12">
-                {user?.email ? `${user.email.split('@')[0]}` : 'till ditt konto'}
+                {user?.email ? t('dashboard.welcome.withEmail', { email: user.email.split('@')[0] }) : t('dashboard.welcome.toAccount')}
               </p>
 
               {/* Action Cards */}
@@ -281,15 +283,15 @@ export default function DashboardPage() {
               >
                 <div className="text-center">
                   <p className="text-3xl font-light">{orders.length}</p>
-                  <p className="text-sm text-white/80">Ordrar</p>
+                  <p className="text-sm text-white/80">{t('dashboard.stats.orders')}</p>
                 </div>
                 <div className="text-center">
                   <p className="text-3xl font-light">85%</p>
-                  <p className="text-sm text-white/80">Hudpoäng</p>
+                  <p className="text-sm text-white/80">{t('dashboard.stats.skinScore')}</p>
                 </div>
                 <div className="text-center">
                   <p className="text-3xl font-light">3</p>
-                  <p className="text-sm text-white/80">Favoriter</p>
+                  <p className="text-sm text-white/80">{t('dashboard.stats.favorites')}</p>
                 </div>
               </motion.div>
             </motion.div>
@@ -330,7 +332,7 @@ export default function DashboardPage() {
               className="flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-colors"
             >
               <ChevronRight className="w-4 h-4 rotate-180" />
-              <span>Tillbaka till översikt</span>
+              <span>{t('dashboard.backToOverview')}</span>
             </button>
           </div>
         </div>
@@ -380,13 +382,13 @@ export default function DashboardPage() {
                 ) : orders.length === 0 ? (
                   <div className="text-center py-12">
                     <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">Inga ordrar ännu</h3>
-                    <p className="text-gray-600 mb-6">När du gör din första beställning kommer den synas här.</p>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">{t('dashboard.orders.empty.title')}</h3>
+                    <p className="text-gray-600 mb-6">{t('dashboard.orders.empty.description')}</p>
                     <Link 
                       href="/products"
                       className="inline-flex items-center gap-2 px-6 py-3 bg-[#FCB237] text-white rounded-lg hover:bg-[#E79C1A] transition-colors"
                     >
-                      Utforska produkter
+                      {t('dashboard.orders.empty.cta')}
                       <ArrowRight className="w-4 h-4" />
                     </Link>
                   </div>
@@ -398,7 +400,7 @@ export default function DashboardPage() {
                           <div className="flex justify-between items-start mb-4">
                             <div>
                               <h3 className="text-lg font-medium text-gray-900">
-                                Order #{order.orderNumber}
+                                {t('dashboard.orders.orderNumber', { number: order.orderNumber })}
                               </h3>
                               <div className="flex items-center gap-4 mt-1 text-sm text-gray-600">
                                 <span className="flex items-center gap-1">
@@ -411,7 +413,7 @@ export default function DashboardPage() {
                                 {order.trackingNumber && (
                                   <span className="flex items-center gap-1 text-blue-600">
                                     <Package className="w-4 h-4" />
-                                    <span className="text-xs">Spårning: {order.trackingNumber}</span>
+                                    <span className="text-xs">{t('dashboard.orders.tracking', { number: order.trackingNumber })}</span>
                                   </span>
                                 )}
                               </div>
@@ -448,13 +450,13 @@ export default function DashboardPage() {
                               className="flex-1 py-2 px-4 bg-[#FCB237] text-white rounded-lg hover:bg-[#E79C1A] transition-colors flex items-center justify-center gap-2"
                             >
                               <RefreshCw className="w-4 h-4" />
-                              Beställ igen
+                              {t('dashboard.orders.reorder')}
                             </button>
                             <Link
                               href={`/orders/${order.id}`}
                               className="flex-1 py-2 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-center"
                             >
-                              Visa detaljer
+                              {t('dashboard.orders.viewDetails')}
                             </Link>
                           </div>
                         </div>
@@ -475,12 +477,12 @@ export default function DashboardPage() {
                 className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
               >
                 {[
-                  { title: 'CBD & CBG GUIDE', description: 'Lär dig mer om cannabinoider', link: '/kunskap', color: 'from-[#FCB237] to-[#e79c1a]' },
-                  { title: 'HUDVÅRDSRUTINER', description: 'Skapa din perfekta rutin', link: '/kunskap', color: 'from-[#4CAF50] to-[#45a049]' },
-                  { title: 'INGREDIENSLEXIKON', description: 'Förstå våra ingredienser', link: '/om-oss/ingredienser', color: 'from-[#E91E63] to-[#C2185B]' },
-                  { title: 'FAQ', description: 'Vanliga frågor och svar', link: '/om-oss/faq', color: 'from-[#2196F3] to-[#1976D2]' },
-                  { title: 'E-BOK', description: 'Ladda ner vår gratisbok', link: '/kunskap/e-bok', color: 'from-[#9C27B0] to-[#7B1FA2]' },
-                  { title: 'BLOGG', description: 'Senaste nyheterna', link: '/blogg', color: 'from-[#FF9800] to-[#F57C00]' }
+                  { title: t('dashboard.knowledge.cbdGuide'), description: t('dashboard.knowledge.cbdGuideDesc'), link: '/kunskap', color: 'from-[#FCB237] to-[#e79c1a]' },
+                  { title: t('dashboard.knowledge.skinRoutines'), description: t('dashboard.knowledge.skinRoutinesDesc'), link: '/kunskap', color: 'from-[#4CAF50] to-[#45a049]' },
+                  { title: t('dashboard.knowledge.ingredientLexicon'), description: t('dashboard.knowledge.ingredientLexiconDesc'), link: '/om-oss/ingredienser', color: 'from-[#E91E63] to-[#C2185B]' },
+                  { title: t('dashboard.knowledge.faq'), description: t('dashboard.knowledge.faqDesc'), link: '/om-oss/faq', color: 'from-[#2196F3] to-[#1976D2]' },
+                  { title: t('dashboard.knowledge.ebook'), description: t('dashboard.knowledge.ebookDesc'), link: '/kunskap/e-bok', color: 'from-[#9C27B0] to-[#7B1FA2]' },
+                  { title: t('dashboard.knowledge.blog'), description: t('dashboard.knowledge.blogDesc'), link: '/blogg', color: 'from-[#FF9800] to-[#F57C00]' }
                 ].map((item, index) => (
                   <Link
                     key={index}
@@ -494,7 +496,7 @@ export default function DashboardPage() {
                       </h3>
                       <p className="text-gray-600 text-sm mb-4">{item.description}</p>
                       <div className="flex items-center text-[#FCB237] text-sm font-medium">
-                        Läs mer
+                        {t('dashboard.knowledge.readMore')}
                         <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                       </div>
                     </div>
@@ -569,7 +571,7 @@ export default function DashboardPage() {
                 </button>
                 <div className="relative aspect-video bg-gray-900">
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <p className="text-white">Video kommer snart...</p>
+                    <p className="text-white">{t('dashboard.videos.comingSoon')}</p>
                   </div>
                 </div>
               </motion.div>

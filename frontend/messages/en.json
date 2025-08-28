@@ -37,9 +37,81 @@
     "login": "Log in",
     "register": "Sign up",
     "logout": "Log out",
+    "profile": "My profile",
     "privacyPolicy": "Privacy Policy",
     "terms": "Terms",
     "cookies": "Cookies"
+  },
+  "dashboard": {
+    "welcome": {
+      "title": "Welcome back",
+      "withEmail": "{email}",
+      "toAccount": "to your account"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "orders": "My orders",
+      "knowledge": "Knowledge center",
+      "videos": "Video guides",
+      "quiz": "Skin analysis"
+    },
+    "actions": {
+      "orders": {
+        "title": "MY ORDERS",
+        "description": "View and manage your orders"
+      },
+      "knowledge": {
+        "title": "KNOWLEDGE CENTER",
+        "description": "Explore our guides and tips"
+      },
+      "videos": {
+        "title": "VIDEO GUIDES",
+        "description": "Watch instructional videos"
+      },
+      "quiz": {
+        "title": "SKIN ANALYSIS",
+        "description": "Retake your skin analysis"
+      }
+    },
+    "stats": {
+      "orders": "Orders",
+      "skinScore": "Skin score",
+      "favorites": "Favorites"
+    },
+    "backToOverview": "Back to overview",
+    "orders": {
+      "empty": {
+        "title": "No orders yet",
+        "description": "When you place your first order, it will appear here.",
+        "cta": "Explore products"
+      },
+      "orderNumber": "Order #{number}",
+      "tracking": "Tracking: {number}",
+      "reorder": "Reorder",
+      "viewDetails": "View details"
+    },
+    "knowledge": {
+      "cbdGuide": "CBD & CBG GUIDE",
+      "cbdGuideDesc": "Learn more about cannabinoids",
+      "skinRoutines": "SKINCARE ROUTINES",
+      "skinRoutinesDesc": "Create your perfect routine",
+      "ingredientLexicon": "INGREDIENT LEXICON",
+      "ingredientLexiconDesc": "Understand our ingredients",
+      "faq": "FAQ",
+      "faqDesc": "Frequently asked questions",
+      "ebook": "E-BOOK",
+      "ebookDesc": "Download our free book",
+      "blog": "BLOG",
+      "blogDesc": "Latest news",
+      "readMore": "Read more"
+    },
+    "videos": {
+      "morningRoutine": "MORNING ROUTINE WITH DUO-KIT",
+      "applyTheOne": "APPLY THE ONE",
+      "tadaFinish": "TA-DA FOR PERFECT FINISH",
+      "makeupRemover": "MAKEUP REMOVER TECHNIQUE",
+      "comingSoon": "Video coming soon..."
+    }
   },
   "headerTopBar": {
     "bannerPrefix": "FREE SHIPPING ON ORDERS OVER 500 KR",
@@ -126,28 +198,120 @@
   },
   "cart": {
     "title": "Shopping cart",
-    "empty": "Your shopping cart is empty.",
-    "quantity": "Number",
-    "price": "Price",
-    "total": "Total",
+    "empty": {
+      "title": "Your cart is empty",
+      "description": "It looks like you haven't added any products to your cart yet. Discover our range of natural skincare products!",
+      "cta": "Continue shopping"
+    },
+    "pricePerUnit": "Price per unit: {price} kr",
+    "clearCart": "Clear cart",
+    "orderSummary": "Order summary",
+    "discountCode": "Discount code",
+    "discountCodePlaceholder": "Enter code",
+    "applyDiscount": "Apply",
     "subtotal": "Subtotal",
+    "discount": "Discount",
     "shipping": "Shipping",
-    "tax": "VAT",
-    "remove": "Remove",
-    "updateQuantity": "Update quantity",
-    "proceedToCheckout": "Go to checkout",
-    "continueShopping": "Continue shopping"
+    "freeShipping": "Free",
+    "total": "Total",
+    "includesTax": "incl. VAT",
+    "proceedToCheckout": "Proceed to checkout",
+    "continueShopping": "Continue shopping",
+    "trustBadges": {
+      "securePayment": "Secure payment with Viva Wallet",
+      "freeShippingOver500": "Free shipping over 500 kr",
+      "paymentMethods": "Pay with card or Swish"
+    }
   },
   "checkout": {
-    "title": "Checkout",
-    "shippingAddress": "Delivery address",
-    "billingAddress": "Billing address",
-    "paymentMethod": "Payment method",
+    "emptyCart": {
+      "title": "Your cart is empty",
+      "description": "Discover our natural skincare products",
+      "cta": "CONTINUE SHOPPING"
+    },
+    "steps": {
+      "back": "BACK",
+      "information": "INFORMATION",
+      "delivery": "DELIVERY",
+      "overview": "OVERVIEW",
+      "payment": "PAYMENT"
+    },
+    "contactInformation": "Contact information",
+    "deliveryAddress": "Delivery address",
+    "orderOverview": "Order overview",
+    "contactDetails": "Contact details",
+    "orderDetails": "Order details",
     "orderSummary": "Order summary",
-    "placeOrder": "Complete order",
-    "processing": "Processing...",
-    "success": "Order completed!",
-    "error": "An error occurred while placing the order."
+    "fields": {
+      "email": "Email address",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "phone": "Phone number",
+      "streetAddress": "Street address",
+      "apartment": "Apartment, suite, etc. (optional)",
+      "postalCode": "Postal code",
+      "city": "City",
+      "country": "Country"
+    },
+    "countries": {
+      "sweden": "Sweden",
+      "norway": "Norway",
+      "denmark": "Denmark",
+      "finland": "Finland"
+    },
+    "validation": {
+      "emailRequired": "Email is required",
+      "emailInvalid": "Invalid email address",
+      "firstNameRequired": "First name is required",
+      "lastNameRequired": "Last name is required",
+      "phoneRequired": "Phone is required",
+      "addressRequired": "Address is required",
+      "cityRequired": "City is required",
+      "postalCodeRequired": "Postal code is required"
+    },
+    "newsletter": {
+      "text": "Yes, I would like to receive news and offers",
+      "discount": "Get 10% off your first order! 🎁"
+    },
+    "buttons": {
+      "continueToDelivery": "CONTINUE TO DELIVERY",
+      "reviewOrder": "REVIEW ORDER"
+    },
+    "shipping": {
+      "standardDelivery": "Standard delivery",
+      "deliveryTime": "Delivery within 2-4 business days",
+      "freeShippingOver": "Free shipping over {amount}!"
+    },
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "freeShipping": "Free",
+    "discount": "Discount ({code})",
+    "total": "Total",
+    "securePayment": "Secure payment",
+    "securePaymentDescription": "Your payment information is encrypted and secure. We never store card details.",
+    "trustBadges": {
+      "sslEncrypted": "SSL encrypted",
+      "rating": "4.8/5 rating",
+      "returnPolicy": "30-day return policy",
+      "securePayment": "Secure payment",
+      "freeShippingOver": "Free shipping over {amount}"
+    },
+    "processing": "PROCESSING ORDER...",
+    "completeOrder": "COMPLETE ORDER ({total})",
+    "terms": {
+      "prefix": "By completing the purchase you agree to our",
+      "terms": "terms of purchase",
+      "and": "and",
+      "privacy": "privacy policy"
+    },
+    "discountCode": "Discount code",
+    "removeDiscount": "Remove",
+    "applyDiscount": "Apply",
+    "discountApplied": "{name} applied!",
+    "support": {
+      "needHelp": "Need help?",
+      "contactSupport": "Contact customer service →"
+    }
   },
   "forms": {
     "required": "This field is required.",
@@ -185,18 +349,18 @@
     "help": "Help"
   },
   "productsPage": {
-    "badgeCBD": "CBD-enriched skincare",
+    "badgeCBD": "CBD-ENRICHED SKINCARE",
     "title": "OUR PRODUCTS",
     "subtitle": "Discover the power of natural skincare with our carefully selected CBD and CBG products",
     "filter": "FILTER",
     "categories": {
-      "all": "Everyone",
+      "all": "All",
       "bestseller": "Bestseller",
       "new": "New"
     },
     "sort": {
       "featured": "Featured first",
-      "name": "Names A–Z",
+      "name": "Name A–Z",
       "priceLow": "Price: Low to high",
       "priceHigh": "Price: High to low"
     },
@@ -204,10 +368,10 @@
     "resetFilters": "Clear filters",
     "loading": "Loading products...",
     "empty": {
-      "title": "No products were found with the current filter.",
+      "title": "No products found with current filters.",
       "showAll": "Show all products"
     },
-    "quickView": "Quick look",
+    "quickView": "Quick view",
     "addToCart": "Add to cart",
     "newsletter": {
       "title": "Don't miss our news",
@@ -277,48 +441,36 @@
   "home": {
     "hero": {
       "coverAlt": "Cover image for 1753 Skincare 2025",
-      "headingLine1": "Natural skincare for",
-      "headingLine2": "the skin's ecosystem",
-      "subtitle": "Scientifically developed skincare that works in harmony with the skin's cells, microbiome and endocannabinoid system",
+      "headingLine1": "This is not skincare as you know it.",
+      "headingLine2": "This is skincare that changes everything.",
+      "subtitle": "Scientifically developed skincare that works in harmony with skin cells, microbiome and endocannabinoid system",
       "authorAlt": "Portrait of Christopher Genberg",
-      "authorTagline": "Founder • 12+ years of experience • Skincare rebel",
-      "ctaQuiz": "Take the skin quiz",
-      "ctaProducts": "See products",
+      "authorTagline": "Founder • 12+ years experience • Skincare rebel",
+      "ctaQuiz": "Take skin QUIZ",
+      "ctaProducts": "View products",
       "timelineTitle": "Your journey to perfect skin",
       "steps": {
-        "step1": {
-          "title": "Take the skin quiz",
-          "badge": "2 minutes"
-        },
-        "step2": {
-          "title": "Get a recommendation",
-          "badge": "Personal plan"
-        },
-        "step3": {
-          "title": "Follow up",
-          "badge": "Weekly improvement"
-        },
-        "step4": {
-          "title": "Perfect skin!",
-          "badge": "Within 3 months"
-        }
+        "step1": { "title": "Take skin QUIZ", "badge": "2 minutes" },
+        "step2": { "title": "Get recommendation", "badge": "Personal plan" },
+        "step3": { "title": "Follow up", "badge": "Weekly improvement" },
+        "step4": { "title": "Perfect skin!", "badge": "Within 3 months" }
       },
       "modal": {
         "step1": {
-          "title": "📝 Take skin quiz",
-          "description": "Our skincare quiz takes just 2 minutes and helps us understand your unique skin type and your specific needs.\n\nBy answering a few simple questions about your skin, lifestyle and preferences, we can create a tailored skincare routine just for you.\n\nThe quiz analyzes factors such as skin type, any skin concerns, age and environmental factors to give you the most relevant product recommendations."
+          "title": "📝 Take skin QUIZ",
+          "description": "Our skincare quiz takes just 2 minutes and helps us understand your unique skin type and specific needs.\n\nBy answering a few simple questions about your skin, lifestyle and preferences, we can create a tailored skincare routine just for you.\n\nThe quiz analyzes factors like skin type, any skin concerns, age and environmental impact to give you the most relevant product recommendations." 
         },
         "step2": {
-          "title": "🎯 Get a recommendation",
-          "description": "Based on your quiz answers, you'll receive a personalized skincare plan with product recommendations specifically selected for your skin type and needs.\n\nOur algorithm combines traditional skincare knowledge with modern science to create a complete routine that includes cleansing, treatment, and protection.\n\nYou'll also get tips on how to best use the products for optimal results."
+          "title": "🎯 Get recommendation",
+          "description": "Based on your quiz answers, you'll receive a personal skincare plan with product recommendations specifically selected for your skin type and needs.\n\nOur algorithm combines traditional skincare knowledge with modern science to create a complete routine that includes cleansing, treatment and protection.\n\nYou'll also get tips on how to best use the products for optimal results." 
         },
         "step3": {
           "title": "📈 Follow up",
-          "description": "We follow your skincare journey every week to ensure you see continuous improvements.\n\nThrough regular check-ins we can adjust your routine as needed and give you personalized tips based on how your skin develops.\n\nYou will receive reminders about when it's time to apply the products and can document your progress with photos to clearly see the improvements over time."
+          "description": "We follow your skincare journey every week to ensure you see continuous improvements.\n\nThrough regular check-ins, we can adjust your routine as needed and give you personal tips based on how your skin develops.\n\nYou'll get reminders when it's time to apply products and can document your progress with photos to clearly see improvements over time." 
         },
         "step4": {
           "title": "✨ Perfect skin!",
-          "description": "Within 3 months you will see a noticeable improvement in your skin's quality and appearance.\n\nWith our natural products containing CBD and CBG, combined with your personal skincare routine, your skin will become more balanced, clearer and more radiant.\n\nMany of our customers report visible results after just a few weeks, but the full effect is usually achieved within 3 months of consistent use."
+          "description": "Within 3 months you will see a noticeable improvement in your skin's quality and appearance.\n\nWith our natural products containing CBD and CBG, combined with your personal skincare routine, your skin will become more balanced, clearer and radiant.\n\nMany of our customers report visible results after just a few weeks, but the full effect is usually achieved within 3 months of consistent use." 
         }
       }
     },
@@ -380,7 +532,22 @@
     "benefitsTitle": "Benefits",
     "benefitsLabel": "Benefits:",
     "usageTitle": "How to use {name}",
-    "mushroomShowcase": "Four powerful medicinal mushrooms"
+    "mushroomShowcase": "Four powerful medicinal mushrooms",
+    "fallbackDescription": "A fantastic product from 1753 Skincare.",
+    "imageAlt": "{name} image {number}",
+    "defaultCategory": "Skincare",
+    "ingredientDescription": "{ingredient} is a powerful ingredient for the skin.",
+    "benefits": {
+      "nourishing": "Nourishing",
+      "moisturizing": "Moisturizing",
+      "soothing": "Soothing"
+    },
+    "defaultBenefits": {
+      "deepMoisturizing": "Provides deep moisturizing",
+      "strengthensBarrier": "Strengthens skin barrier",
+      "naturalGlow": "Gives natural glow"
+    },
+    "defaultUsage": "Apply to clean skin morning and evening. Massage gently until absorbed."
   },
   "cookieBanner": {
     "title": "We care about your privacy 🍪",

@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { useCart } from '@/contexts/CartContext'
+import { useTranslations } from 'next-intl'
 import { 
   Plus, 
   Minus, 
@@ -21,6 +22,7 @@ import {
 } from 'lucide-react'
 
 export default function CartPage() {
+  const t = useTranslations()
   const { 
     items, 
     removeFromCart, 
@@ -52,18 +54,17 @@ export default function CartPage() {
           <div className="text-center max-w-md">
             <ShoppingBag className="h-24 w-24 text-gray-300 mx-auto mb-6" />
             <h1 className="text-3xl font-bold text-gray-900 mb-4">
-              Din varukorg är tom
+              {t('cart.empty.title')}
             </h1>
             <p className="text-gray-600 mb-8">
-              Det verkar som att du inte har lagt till några produkter i varukorgen än. 
-              Upptäck vårt utbud av naturliga hudvårdsprodukter!
+              {t('cart.empty.description')}
             </p>
             <Link
               href="/products"
               className="inline-flex items-center gap-2 bg-[#FCB237] text-white px-8 py-4 rounded-lg hover:bg-[#E79C1A] transition-colors"
             >
               <ArrowLeft className="h-5 w-5" />
-              Fortsätt handla
+              {t('cart.empty.cta')}
             </Link>
           </div>
         </main>
@@ -77,7 +78,7 @@ export default function CartPage() {
       <Header />
       <main className="min-h-screen bg-gray-50 pt-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-8">Varukorg</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-8">{t('cart.title')}</h1>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Cart Items */}
@@ -115,7 +116,7 @@ export default function CartPage() {
                             {item.product.name}
                           </Link>
                           <p className="mt-1 text-sm text-gray-500">
-                            Pris per styck: {item.price} kr
+                            {t('cart.pricePerUnit', { price: item.price })}
                           </p>
                         </div>
                         <button
@@ -169,7 +170,7 @@ export default function CartPage() {
                   onClick={clearCart}
                   className="text-red-600 hover:text-red-700 font-medium"
                 >
-                  Töm varukorg
+                  {t('cart.clearCart')}
                 </button>
               </div>
             </div>
@@ -178,27 +179,27 @@ export default function CartPage() {
             <div className="lg:col-span-1">
               <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 sticky top-24">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                  Ordersammanfattning
+                  {t('cart.orderSummary')}
                 </h2>
 
                 {/* Discount Code */}
                 <div className="mb-6">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Rabattkod
+                    {t('cart.discountCode')}
                   </label>
                   <div className="flex gap-2">
                     <input
                       type="text"
                       value={discountCode}
                       onChange={(e) => setDiscountCode(e.target.value)}
-                      placeholder="Ange kod"
+                      placeholder={t('cart.discountCodePlaceholder')}
                       className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FCB237]"
                     />
                     <button
                       onClick={applyDiscountCode}
                       className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
                     >
-                      Använd
+                      {t('cart.applyDiscount')}
                     </button>
                   </div>
                 </div>
@@ -206,7 +207,7 @@ export default function CartPage() {
                 {/* Summary Details */}
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between text-gray-600">
-                    <span>Delsumma</span>
+                    <span>{t('cart.subtotal')}</span>
                     <span>{subtotal} kr</span>
                   </div>
                   
@@ -214,23 +215,23 @@ export default function CartPage() {
                     <div className="flex justify-between text-[#FCB237]">
                       <span className="flex items-center gap-1">
                         <Tag className="h-4 w-4" />
-                        Rabatt
+                        {t('cart.discount')}
                       </span>
                       <span>-{appliedDiscount} kr</span>
                     </div>
                   )}
 
                   <div className="flex justify-between text-gray-600">
-                    <span>Frakt</span>
-                    <span>{shipping === 0 ? 'Gratis' : `${shipping} kr`}</span>
+                    <span>{t('cart.shipping')}</span>
+                    <span>{shipping === 0 ? t('cart.freeShipping') : `${shipping} kr`}</span>
                   </div>
 
                   <div className="pt-3 border-t">
                     <div className="flex justify-between text-lg font-semibold text-gray-900">
-                      <span>Total</span>
+                      <span>{t('cart.total')}</span>
                       <span>{finalTotal} kr</span>
                     </div>
-                    <p className="text-sm text-gray-500 mt-1">inkl. moms</p>
+                    <p className="text-sm text-gray-500 mt-1">{t('cart.includesTax')}</p>
                   </div>
                 </div>
 
@@ -239,7 +240,7 @@ export default function CartPage() {
                   href="/checkout"
                   className="w-full bg-[#FCB237] text-white py-3 rounded-lg font-medium hover:bg-[#E79C1A] transition-colors flex items-center justify-center gap-2"
                 >
-                  Gå till kassan
+                  {t('cart.proceedToCheckout')}
                   <ArrowRight className="h-5 w-5" />
                 </Link>
 
@@ -247,15 +248,15 @@ export default function CartPage() {
                 <div className="mt-6 pt-6 border-t space-y-3">
                   <div className="flex items-center gap-3 text-sm text-gray-600">
                     <Shield className="h-5 w-5 text-[#FCB237]" />
-                    <span>Säker betalning med Viva Wallet</span>
+                    <span>{t('cart.trustBadges.securePayment')}</span>
                   </div>
                   <div className="flex items-center gap-3 text-sm text-gray-600">
                     <Truck className="h-5 w-5 text-[#FCB237]" />
-                    <span>Fri frakt över 500 kr</span>
+                    <span>{t('cart.trustBadges.freeShippingOver500')}</span>
                   </div>
                   <div className="flex items-center gap-3 text-sm text-gray-600">
                     <CreditCard className="h-5 w-5 text-[#FCB237]" />
-                    <span>Betala med kort eller Swish</span>
+                    <span>{t('cart.trustBadges.paymentMethods')}</span>
                   </div>
                 </div>
 
@@ -266,7 +267,7 @@ export default function CartPage() {
                     className="text-[#FCB237] hover:text-[#E79C1A] font-medium flex items-center gap-2"
                   >
                     <ArrowLeft className="h-4 w-4" />
-                    Fortsätt handla
+                    {t('cart.continueShopping')}
                   </Link>
                 </div>
               </div>

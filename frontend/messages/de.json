@@ -37,6 +37,7 @@
     "login": "Anmelden",
     "register": "Registrieren",
     "logout": "Abmelden",
+    "profile": "Mein Profil",
     "privacyPolicy": "Datenschutz",
     "terms": "AGB",
     "cookies": "Cookies"
@@ -98,28 +99,120 @@
   },
   "cart": {
     "title": "Warenkorb",
-    "empty": "Dein Warenkorb ist leer",
-    "quantity": "Anzahl",
-    "price": "Preis",
-    "total": "Gesamt",
+    "empty": {
+      "title": "Ihr Warenkorb ist leer",
+      "description": "Es sieht so aus, als hätten Sie noch keine Produkte in Ihren Warenkorb gelegt. Entdecken Sie unser Sortiment an natürlichen Hautpflegeprodukten!",
+      "cta": "Weiter einkaufen"
+    },
+    "pricePerUnit": "Preis pro Stück: {price} kr",
+    "clearCart": "Warenkorb leeren",
+    "orderSummary": "Bestellübersicht",
+    "discountCode": "Rabattcode",
+    "discountCodePlaceholder": "Code eingeben",
+    "applyDiscount": "Anwenden",
     "subtotal": "Zwischensumme",
+    "discount": "Rabatt",
     "shipping": "Versand",
-    "tax": "Mütter",
-    "remove": "Entfernen",
-    "updateQuantity": "Anzahl aktualisieren",
+    "freeShipping": "Kostenlos",
+    "total": "Gesamt",
+    "includesTax": "inkl. MwSt.",
     "proceedToCheckout": "Zur Kasse",
-    "continueShopping": "Weiter einkaufen"
+    "continueShopping": "Weiter einkaufen",
+    "trustBadges": {
+      "securePayment": "Sichere Zahlung mit Viva Wallet",
+      "freeShippingOver500": "Kostenloser Versand ab 500 kr",
+      "paymentMethods": "Zahlung mit Karte oder Swish"
+    }
   },
   "checkout": {
-    "title": "Kasse",
-    "shippingAddress": "Lieferadresse",
-    "billingAddress": "Rechnungsadresse",
-    "paymentMethod": "Zahlungsmethode",
+    "emptyCart": {
+      "title": "Ihr Warenkorb ist leer",
+      "description": "Entdecken Sie unsere natürlichen Hautpflegeprodukte",
+      "cta": "WEITER EINKAUFEN"
+    },
+    "steps": {
+      "back": "ZURÜCK",
+      "information": "INFORMATIONEN",
+      "delivery": "LIEFERUNG",
+      "overview": "ÜBERSICHT",
+      "payment": "ZAHLUNG"
+    },
+    "contactInformation": "Kontaktinformationen",
+    "deliveryAddress": "Lieferadresse",
+    "orderOverview": "Bestellübersicht",
+    "contactDetails": "Kontaktdaten",
+    "orderDetails": "Bestelldetails",
     "orderSummary": "Bestellübersicht",
-    "placeOrder": "Bestellung durchführen",
-    "processing": "Wird verarbeitet...",
-    "success": "Bestellung abgeschlossen!",
-    "error": "Bei der Bestellung ist ein Fehler aufgetreten."
+    "fields": {
+      "email": "E-Mail-Adresse",
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "phone": "Telefonnummer",
+      "streetAddress": "Straße und Hausnummer",
+      "apartment": "Wohnung, Suite usw. (optional)",
+      "postalCode": "Postleitzahl",
+      "city": "Stadt",
+      "country": "Land"
+    },
+    "countries": {
+      "sweden": "Schweden",
+      "norway": "Norwegen",
+      "denmark": "Dänemark",
+      "finland": "Finnland"
+    },
+    "validation": {
+      "emailRequired": "E-Mail ist erforderlich",
+      "emailInvalid": "Ungültige E-Mail-Adresse",
+      "firstNameRequired": "Vorname ist erforderlich",
+      "lastNameRequired": "Nachname ist erforderlich",
+      "phoneRequired": "Telefon ist erforderlich",
+      "addressRequired": "Adresse ist erforderlich",
+      "cityRequired": "Stadt ist erforderlich",
+      "postalCodeRequired": "Postleitzahl ist erforderlich"
+    },
+    "newsletter": {
+      "text": "Ja, ich möchte gerne Neuigkeiten und Angebote erhalten",
+      "discount": "10% Rabatt auf Ihre erste Bestellung! 🎁"
+    },
+    "buttons": {
+      "continueToDelivery": "WEITER ZUR LIEFERUNG",
+      "reviewOrder": "BESTELLUNG PRÜFEN"
+    },
+    "shipping": {
+      "standardDelivery": "Standardlieferung",
+      "deliveryTime": "Lieferung innerhalb von 2-4 Werktagen",
+      "freeShippingOver": "Kostenloser Versand ab {amount}!"
+    },
+    "subtotal": "Zwischensumme",
+    "shipping": "Versand",
+    "freeShipping": "Kostenlos",
+    "discount": "Rabatt ({code})",
+    "total": "Gesamt",
+    "securePayment": "Sichere Zahlung",
+    "securePaymentDescription": "Ihre Zahlungsinformationen sind verschlüsselt und sicher. Wir speichern niemals Kartendaten.",
+    "trustBadges": {
+      "sslEncrypted": "SSL-verschlüsselt",
+      "rating": "4,8/5 Bewertung",
+      "returnPolicy": "30 Tage Rückgaberecht",
+      "securePayment": "Sichere Zahlung",
+      "freeShippingOver": "Kostenloser Versand ab {amount}"
+    },
+    "processing": "BESTELLUNG WIRD BEARBEITET...",
+    "completeOrder": "BESTELLUNG ABSCHLIESSEN ({total})",
+    "terms": {
+      "prefix": "Mit dem Abschluss des Kaufs stimmen Sie unseren",
+      "terms": "Kaufbedingungen",
+      "and": "und",
+      "privacy": "Datenschutzrichtlinien"
+    },
+    "discountCode": "Rabattcode",
+    "removeDiscount": "Entfernen",
+    "applyDiscount": "Anwenden",
+    "discountApplied": "{name} angewendet!",
+    "support": {
+      "needHelp": "Brauchen Sie Hilfe?",
+      "contactSupport": "Kundendienst kontaktieren →"
+    }
   },
   "forms": {
     "required": "Dieses Feld ist erforderlich.",
@@ -157,40 +250,40 @@
     "help": "Hilfe"
   },
   "productsPage": {
-    "badgeCBD": "CBD-angereicherte Hautpflege",
+    "badgeCBD": "CBD-ANGEREICHERTE HAUTPFLEGE",
     "title": "UNSERE PRODUKTE",
     "subtitle": "Entdecken Sie die Kraft natürlicher Hautpflege mit unseren sorgfältig ausgewählten CBD- und CBG-Produkten",
-    "filter": "Filter",
+    "filter": "FILTER",
     "categories": {
-      "all": "Alla",
+      "all": "Alle",
       "bestseller": "Bestseller",
       "new": "Neu"
     },
     "sort": {
-      "featured": "Ausgewählte zuerst",
-      "name": "Namen A–Z",
+      "featured": "Empfohlene zuerst",
+      "name": "Name A–Z",
       "priceLow": "Preis: Niedrig bis hoch",
-      "priceHigh": "Preis: Hoch bis Niedrig"
+      "priceHigh": "Preis: Hoch bis niedrig"
     },
     "activeFilters": "{count} aktiver Filter",
     "resetFilters": "Filter löschen",
     "loading": "Produkte werden geladen...",
     "empty": {
-      "title": "Für die aktuellen Filter wurden keine Produkte gefunden.",
+      "title": "Keine Produkte mit aktuellen Filtern gefunden.",
       "showAll": "Alle Produkte anzeigen"
     },
     "quickView": "Schnellansicht",
-    "addToCart": "In den Warenkorb legen",
+    "addToCart": "In den Warenkorb",
     "newsletter": {
       "title": "Verpassen Sie nicht unsere Neuigkeiten",
-      "description": "Abonnieren Sie unseren Newsletter für exklusive Angebote und Hautpflegetipps.",
-      "placeholderEmail": "Deine E‑Mail‑Adresse",
+      "description": "Abonnieren Sie unseren Newsletter für exklusive Angebote und Hautpflegetipps",
+      "placeholderEmail": "Ihre E-Mail-Adresse",
       "subscribe": "Abonnieren"
     },
     "quizCta": "Machen Sie unsere Hautanalyse",
     "badges": {
       "recommended": "EMPFOHLEN",
-      "bestseller": "Bestseller",
+      "bestseller": "BESTSELLER",
       "new": "NEU"
     }
   },
@@ -249,48 +342,36 @@
   "home": {
     "hero": {
       "coverAlt": "Titelbild für 1753 Skincare 2025",
-      "headingLine1": "Natürliche Hautpflege für",
-      "headingLine2": "Hautökosystem",
-      "subtitle": "Wissenschaftlich entwickelte Hautpflege, die im Einklang mit den Hautzellen, dem Mikrobiom und dem Endocannabinoid-System arbeitet.",
+      "headingLine1": "Das ist nicht die Hautpflege, die du kennst.",
+      "headingLine2": "Das ist Hautpflege, die alles verändert.",
+      "subtitle": "Wissenschaftlich entwickelte Hautpflege, die in Harmonie mit Hautzellen, Mikrobiom und Endocannabinoid-System arbeitet",
       "authorAlt": "Porträt von Christopher Genberg",
       "authorTagline": "Gründer • 12+ Jahre Erfahrung • Hautpflege-Rebell",
-      "ctaQuiz": "Mach Haut-QUIZ",
+      "ctaQuiz": "Haut-QUIZ machen",
       "ctaProducts": "Produkte ansehen",
-      "timelineTitle": "Deine Reise zur perfekten Haut",
+      "timelineTitle": "Ihre Reise zur perfekten Haut",
       "steps": {
-        "step1": {
-          "title": "Mache das Haut-Quiz",
-          "badge": "2 Minuten"
-        },
-        "step2": {
-          "title": "Empfehlung erhalten",
-          "badge": "Persönlicher Plan"
-        },
-        "step3": {
-          "title": "Nachfassen",
-          "badge": "Wöchentliche Verbesserung"
-        },
-        "step4": {
-          "title": "Perfekte Haut!",
-          "badge": "Innerhalb von 3 Monaten"
-        }
+        "step1": { "title": "Haut-QUIZ machen", "badge": "2 Minuten" },
+        "step2": { "title": "Empfehlung erhalten", "badge": "Persönlicher Plan" },
+        "step3": { "title": "Nachverfolgen", "badge": "Wöchentliche Verbesserung" },
+        "step4": { "title": "Perfekte Haut!", "badge": "Innerhalb von 3 Monaten" }
       },
       "modal": {
         "step1": {
           "title": "📝 Haut-QUIZ machen",
-          "description": "Vårt hudvårdsquiz tar bara 2 minuter och hjälper oss förstå din unika hudtyp och dina specifika behov.\n\nGenom att svara på några enkla frågor om din hud, livsstil och preferenser kan vi skapa en skräddarsydd hudvårdsrutin just för dig.\n\nQuizet analyserar faktorer som hudtyp, eventuella hudproblem, ålder och miljöpåverkan för att ge dig de mest relevanta produktrekommendationerna."
+          "description": "Unser Hautpflege-Quiz dauert nur 2 Minuten und hilft uns, Ihren einzigartigen Hauttyp und Ihre spezifischen Bedürfnisse zu verstehen.\n\nDurch die Beantwortung einiger einfacher Fragen zu Ihrer Haut, Ihrem Lebensstil und Ihren Vorlieben können wir eine maßgeschneiderte Hautpflegeroutine nur für Sie erstellen.\n\nDas Quiz analysiert Faktoren wie Hauttyp, eventuelle Hautprobleme, Alter und Umwelteinflüsse, um Ihnen die relevantesten Produktempfehlungen zu geben." 
         },
         "step2": {
           "title": "🎯 Empfehlung erhalten",
-          "description": "Basierend auf deinen Quiz-Antworten erhältst du einen persönlichen Hautpflegeplan mit Produktempfehlungen, die speziell auf deinen Hauttyp und deine Bedürfnisse abgestimmt sind.\n\nUnser Algorithmus kombiniert traditionelle Hautpflegekenntnisse mit moderner Wissenschaft, um eine komplette Routine zu erstellen, die Reinigung, Behandlung und Schutz umfasst.\n\nDu erhältst außerdem Tipps, wie du die Produkte am besten anwendest, um optimale Ergebnisse zu erzielen."
+          "description": "Basierend auf Ihren Quiz-Antworten erhalten Sie einen persönlichen Hautpflegeplan mit Produktempfehlungen, die speziell für Ihren Hauttyp und Ihre Bedürfnisse ausgewählt wurden.\n\nUnser Algorithmus kombiniert traditionelles Hautpflegewissen mit moderner Wissenschaft, um eine vollständige Routine zu erstellen, die Reinigung, Behandlung und Schutz umfasst.\n\nSie erhalten auch Tipps, wie Sie die Produkte am besten für optimale Ergebnisse verwenden." 
         },
         "step3": {
           "title": "📈 Nachverfolgen",
-          "description": "Wir begleiten deine Hautpflege-Reise jede Woche, um sicherzustellen, dass du kontinuierliche Verbesserungen bemerkst.\n\nDurch regelmäßige Check-ins können wir deine Routine bei Bedarf anpassen und dir persönliche Tipps geben, die auf der Entwicklung deiner Haut basieren.\n\nDu erhältst Erinnerungen daran, wann es Zeit ist, die Produkte aufzutragen, und kannst deinen Fortschritt mit Bildern dokumentieren, um die Verbesserungen im Laufe der Zeit deutlich zu sehen."
+          "description": "Wir verfolgen Ihre Hautpflegereise jede Woche, um sicherzustellen, dass Sie kontinuierliche Verbesserungen sehen.\n\nDurch regelmäßige Check-ins können wir Ihre Routine bei Bedarf anpassen und Ihnen persönliche Tipps geben, basierend darauf, wie sich Ihre Haut entwickelt.\n\nSie erhalten Erinnerungen, wann es Zeit ist, die Produkte anzuwenden, und können Ihren Fortschritt mit Fotos dokumentieren, um Verbesserungen über die Zeit deutlich zu sehen." 
         },
         "step4": {
           "title": "✨ Perfekte Haut!",
-          "description": "Innerhalb von 3 Monaten werden Sie eine deutliche Verbesserung der Qualität und des Erscheinungsbildes Ihrer Haut sehen.\n\nMit unseren natürlichen Produkten, die CBD und CBG enthalten, in Kombination mit Ihrer persönlichen Hautpflegeroutine, wird Ihre Haut ausgeglichener, klarer und strahlender.\n\nViele unserer Kunden berichten von sichtbaren Ergebnissen bereits nach einigen Wochen, aber die volle Wirkung wird normalerweise innerhalb von 3 Monaten bei konsequenter Anwendung erreicht."
+          "description": "Innerhalb von 3 Monaten werden Sie eine merkliche Verbesserung der Qualität und des Aussehens Ihrer Haut sehen.\n\nMit unseren natürlichen Produkten mit CBD und CBG, kombiniert mit Ihrer persönlichen Hautpflegeroutine, wird Ihre Haut ausgewogener, klarer und strahlender.\n\nViele unserer Kunden berichten bereits nach wenigen Wochen von sichtbaren Ergebnissen, aber die volle Wirkung wird normalerweise innerhalb von 3 Monaten bei konsequenter Anwendung erreicht." 
         }
       }
     },
@@ -352,7 +433,22 @@
     "benefitsTitle": "Vorteile",
     "benefitsLabel": "Vorteile:",
     "usageTitle": "So verwendest du {name}",
-    "mushroomShowcase": "Vier kraftvolle medizinische Pilze"
+    "mushroomShowcase": "Vier kraftvolle medizinische Pilze",
+    "fallbackDescription": "Ein fantastisches Produkt von 1753 Skincare.",
+    "imageAlt": "{name} Bild {number}",
+    "defaultCategory": "Hautpflege",
+    "ingredientDescription": "{ingredient} ist ein kraftvoller Inhaltsstoff für die Haut.",
+    "benefits": {
+      "nourishing": "Nährend",
+      "moisturizing": "Feuchtigkeitsspendend",
+      "soothing": "Beruhigend"
+    },
+    "defaultBenefits": {
+      "deepMoisturizing": "Spendet tiefe Feuchtigkeit",
+      "strengthensBarrier": "Stärkt die Hautbarriere",
+      "naturalGlow": "Verleiht natürlichen Glanz"
+    },
+    "defaultUsage": "Auf die gereinigte Haut morgens und abends auftragen. Sanft einmassieren, bis es eingezogen ist."
   },
   "cookieBanner": {
     "title": "Wir legen Wert auf Ihre Privatsphäre 🍪",
@@ -454,6 +550,77 @@
       "comingSoon": "Demnächst...",
       "moreComing": "Weitere spannende Artikel sind unterwegs!",
       "sourcesHeading": "Quellen"
+    }
+  },
+  "dashboard": {
+    "welcome": {
+      "title": "Willkommen zurück",
+      "withEmail": "{email}",
+      "toAccount": "zu Ihrem Konto"
+    },
+    "tabs": {
+      "overview": "Übersicht",
+      "orders": "Meine Bestellungen",
+      "knowledge": "Wissenszentrum",
+      "videos": "Video-Anleitungen",
+      "quiz": "Hautanalyse"
+    },
+    "actions": {
+      "orders": {
+        "title": "MEINE BESTELLUNGEN",
+        "description": "Bestellungen anzeigen und verwalten"
+      },
+      "knowledge": {
+        "title": "WISSENSZENTRUM",
+        "description": "Entdecken Sie unsere Ratgeber und Tipps"
+      },
+      "videos": {
+        "title": "VIDEO-ANLEITUNGEN",
+        "description": "Anleitungsvideos ansehen"
+      },
+      "quiz": {
+        "title": "HAUTANALYSE",
+        "description": "Hautanalyse wiederholen"
+      }
+    },
+    "stats": {
+      "orders": "Bestellungen",
+      "skinScore": "Hautwert",
+      "favorites": "Favoriten"
+    },
+    "backToOverview": "Zurück zur Übersicht",
+    "orders": {
+      "empty": {
+        "title": "Noch keine Bestellungen",
+        "description": "Wenn Sie Ihre erste Bestellung aufgeben, wird sie hier angezeigt.",
+        "cta": "Produkte entdecken"
+      },
+      "orderNumber": "Bestellung #{number}",
+      "tracking": "Sendungsverfolgung: {number}",
+      "reorder": "Erneut bestellen",
+      "viewDetails": "Details anzeigen"
+    },
+    "knowledge": {
+      "cbdGuide": "CBD & CBG RATGEBER",
+      "cbdGuideDesc": "Mehr über Cannabinoide erfahren",
+      "skinRoutines": "HAUTPFLEGEROUTINEN",
+      "skinRoutinesDesc": "Ihre perfekte Routine erstellen",
+      "ingredientLexicon": "INHALTSSTOFF-LEXIKON",
+      "ingredientLexiconDesc": "Unsere Inhaltsstoffe verstehen",
+      "faq": "FAQ",
+      "faqDesc": "Häufig gestellte Fragen",
+      "ebook": "E-BOOK",
+      "ebookDesc": "Unser kostenloses Buch herunterladen",
+      "blog": "BLOG",
+      "blogDesc": "Neueste Nachrichten",
+      "readMore": "Mehr lesen"
+    },
+    "videos": {
+      "morningRoutine": "MORGENROUTINE MIT DUO-KIT",
+      "applyTheOne": "THE ONE AUFTRAGEN",
+      "tadaFinish": "TA-DA FÜR PERFEKTES FINISH",
+      "makeupRemover": "MAKEUP REMOVER TECHNIK",
+      "comingSoon": "Video kommt bald..."
     }
   }
 }
