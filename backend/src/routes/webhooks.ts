@@ -4,6 +4,8 @@ import { vivaWalletService } from '../services/vivaWalletService'
 import { sendEmail } from '../services/emailService'
 import { logger } from '../utils/logger'
 import prisma from '../lib/prisma'
+import { fortnoxService } from '../services/fortnoxService'
+import { sybkaService } from '../services/sybkaService'
 
 const router = Router()
 
@@ -118,6 +120,97 @@ router.post('/viva-wallet', async (req, res) => {
         })
       } catch (emailError) {
         logger.error('Failed to send order confirmation email via webhook:', emailError)
+      }
+
+      // Fortnox + Sybka+ integrations (idempotent best-effort)
+      try {
+        const alreadyIntegrated = (order.internalNotes || '').includes('Fortnox:') || (order.internalNotes || '').includes('Sybka:')
+        if (!alreadyIntegrated) {
+          const shipping = order.shippingAddress as any
+
+          // Build items list
+          const items = order.items.map(item => ({
+            productId: item.productId,
+            name: item.product?.name || item.title || 'Produkt',
+            price: item.price,
+            quantity: item.quantity,
+            sku: item.sku || item.product?.sku || undefined
+          }))
+
+          // 1) Create order in Fortnox
+          let fortnoxOrderNumber: string | undefined
+          try {
+            fortnoxOrderNumber = (await fortnoxService.processOrder({
+              customer: {
+                email: order.email,
+                firstName: shipping?.firstName || (order.customerName?.split(' ')[0] || ''),
+                lastName: shipping?.lastName || (order.customerName?.split(' ').slice(1).join(' ') || ''),
+                phone: order.customerPhone || order.phone || undefined,
+                address: shipping?.address || shipping?.address1 || '',
+                apartment: shipping?.apartment || shipping?.address2 || undefined,
+                city: shipping?.city || '',
+                postalCode: shipping?.postalCode || shipping?.zip || '',
+                country: shipping?.country || 'SE'
+              },
+              items,
+              orderId: order.orderNumber,
+              total: order.totalAmount,
+              shipping: order.shippingAmount || 0,
+              orderDate: order.createdAt
+            })).orderNumber
+          } catch (err: any) {
+            logger.error('Fortnox processing failed:', err?.message || err)
+          }
+
+          // 2) Send order to Sybka+ (which handles Ongoing)
+          let sybkaOrderId: string | undefined
+          try {
+            const street = [shipping?.address || shipping?.address1, shipping?.apartment || shipping?.address2].filter(Boolean).join(', ')
+            const sybkaResp = await sybkaService.createOrder({
+              shop_order_id: order.orderNumber,
+              currency: order.currency || 'SEK',
+              grand_total: order.totalAmount,
+              shipping_firstname: shipping?.firstName || (order.customerName?.split(' ')[0] || ''),
+              shipping_lastname: shipping?.lastName || (order.customerName?.split(' ').slice(1).join(' ') || ''),
+              shipping_street: street,
+              shipping_postcode: shipping?.postalCode || shipping?.zip || '',
+              shipping_city: shipping?.city || '',
+              shipping_country: shipping?.country || 'SE',
+              shipping_email: order.email,
+              order_rows: items.map(i => ({
+                sku: i.sku || i.productId,
+                name: i.name,
+                qty_ordered: i.quantity,
+                price: i.price
+              })),
+              payment_gateway: 'vivawallet',
+              transaction_id: webhookData.transactionId || ''
+            })
+            if (sybkaResp.success) {
+              sybkaOrderId = sybkaResp.order_id
+            } else {
+              logger.error('Sybka+ order creation failed:', sybkaResp.error)
+            }
+          } catch (err: any) {
+            logger.error('Sybka+ processing failed:', err?.message || err)
+          }
+
+          // Persist external refs in internalNotes
+          const noteParts: string[] = []
+          if (fortnoxOrderNumber) noteParts.push(`Fortnox: ${fortnoxOrderNumber}`)
+          if (sybkaOrderId) noteParts.push(`Sybka: ${sybkaOrderId}`)
+          if (noteParts.length > 0) {
+            const nextNotes = `${order.internalNotes ? order.internalNotes + ' | ' : ''}${noteParts.join(' | ')}`
+            await prisma.order.update({
+              where: { id: order.id },
+              data: { internalNotes: nextNotes }
+            })
+          }
+        } else {
+          logger.info('Skipping Fortnox/Sybka integration as notes suggest it already ran', { orderId: order.id })
+        }
+      } catch (integrationErr: any) {
+        logger.error('Post-payment integration block failed:', integrationErr?.message || integrationErr)
       }
     }
 

@@ -402,9 +402,6 @@
     }
   },
   "reviews": {
-    "judgeme": {
-      "marketingRequired": "Activa las cookies de marketing para ver las reseñas."
-    },
     "floating": {
       "prevReview": "Reseña anterior",
       "nextReview": "Siguiente reseña",

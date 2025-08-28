@@ -5,9 +5,11 @@ import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { CartDrawer } from '@/components/cart/CartDrawer'
 import { HeroNavigation } from '@/components/layout/HeroNavigation'
+import { useTranslations } from 'next-intl'
 
 export function HeroSection() {
   const [isMobile, setIsMobile] = useState(false)
+  const t = useTranslations('home.hero')
 
   useEffect(() => {
     const checkMobile = () => {
@@ -50,10 +52,10 @@ export function HeroSection() {
             className="text-white text-center px-6 md:px-8 max-w-4xl"
           >
             <span className="block text-sm md:text-base font-light tracking-[0.3em] uppercase">
-              Hudvårdsindustrin har sin sanning.
+              {t('headingLine1')}
             </span>
             <span className="block text-sm md:text-base font-light tracking-[0.3em] uppercase mt-2">
-              Vi har en annan.
+              {t('headingLine2')}
             </span>
           </motion.h1>
         </div>

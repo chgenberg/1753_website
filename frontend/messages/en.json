@@ -402,9 +402,6 @@
     }
   },
   "reviews": {
-    "judgeme": {
-      "marketingRequired": "Enable marketing cookies to view reviews."
-    },
     "floating": {
       "prevReview": "Previous review",
       "nextReview": "Next review",

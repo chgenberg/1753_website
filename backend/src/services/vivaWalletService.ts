@@ -543,7 +543,7 @@ export class VivaWalletService {
     } catch (error: any) {
       logger.error('Failed to create Viva Wallet order', { 
         error: error.response?.data || error.message,
-        amount: orderData.amount,
+      amount: orderData.amount,
         currency: orderData.currency
       })
       throw new Error(`Failed to create payment order: ${error.response?.data?.message || error.message}`)
