@@ -685,7 +685,10 @@ export default function ProductPage() {
       </section>
 
       {/* Related Products */}
-      <RelatedProducts currentProductSlug={product.slug} locale={params.locale as string} />
+      <RelatedProducts 
+        currentProductSlug={product.slug} 
+        locale={(typeof window !== 'undefined' ? window.location.pathname.split('/')[1] : 'sv') || 'sv'} 
+      />
     </div>
     <Footer />
   </>

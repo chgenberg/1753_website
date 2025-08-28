@@ -12,7 +12,7 @@ export function generateStaticParams() {
   return [{locale: 'sv'}, {locale: 'en'}, {locale: 'es'}, {locale: 'de'}, {locale: 'fr'}]
 }
 
-export async function generateMetadata({ params }: { params: { locale?: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ locale?: string }> }): Promise<Metadata> {
   const { locale } = await params
   const actualLocale = locale || 'sv'
   const metaByLocale: Record<string, { title: string; description: string; keywords: string[]; ogLocale: string }> = {

@@ -99,6 +99,22 @@
   },
   "cart": {
     "title": "Carrito de compras",
+    "drawer": {
+      "title": "Carrito de compras",
+      "empty": {
+        "title": "Tu carrito está vacío",
+        "description": "Parece que aún no has añadido ningún producto a tu carrito.",
+        "cta": "Seguir comprando"
+      },
+      "freeShippingProgress": "¡Añade {amount} más para envío gratuito!",
+      "freeShippingAchieved": "¡Tienes envío gratuito!",
+      "subtotal": "Subtotal",
+      "shipping": "Envío",
+      "freeShipping": "Gratis",
+      "total": "Total",
+      "checkout": "Finalizar compra",
+      "continueShopping": "Seguir comprando"
+    },
     "empty": {
       "title": "Tu carrito está vacío",
       "description": "Parece que aún no has añadido ningún producto a tu carrito. ¡Descubre nuestra gama de productos naturales para el cuidado de la piel!",
