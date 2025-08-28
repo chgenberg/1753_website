@@ -76,7 +76,7 @@ export default function ProductPage() {
   const t = useTranslations()
   const params = useParams()
   const { addToCart } = useCart()
-  const { formatMoney } = useCurrency()
+  const { formatMoney, currency } = useCurrency()
   const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -303,12 +303,16 @@ export default function ProductPage() {
               className="flex items-center gap-4"
             >
               <span className="text-3xl font-bold text-[#FCB237]">
-                {formatMoney(product.price)}
+                {currency === 'EUR' && (product as any).priceEUR
+                  ? new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', minimumFractionDigits: 2 }).format((product as any).priceEUR)
+                  : formatMoney(product.price)}
               </span>
               {product.compareAtPrice && (
                 <>
                   <span className="text-xl text-gray-400 line-through">
-                    {formatMoney(product.compareAtPrice)}
+                    {currency === 'EUR' && (product as any).priceEUR
+                      ? new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', minimumFractionDigits: 2 }).format((product as any).priceEUR + (product.compareAtPrice - product.price) * 0)
+                      : formatMoney(product.compareAtPrice)}
                   </span>
                   <span className="bg-[#FDEDD2] text-[#8B6B47] text-sm px-2 py-1 rounded">
                     {t('productDetail.saved', { amount: formatMoney(product.compareAtPrice - product.price, false) })}

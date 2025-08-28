@@ -448,6 +448,7 @@ model Product {
   description   String?
   shortDescription String?
   price         Float
+  priceEUR      Float?
   compareAtPrice Float?
   sku           String?  @unique
   barcode       String?

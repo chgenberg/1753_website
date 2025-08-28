@@ -36,7 +36,7 @@ interface Product {
 export default function ProductsPage() {
   const t = useTranslations()
   const { addToCart } = useCart()
-  const { formatMoney } = useCurrency()
+  const { formatMoney, currency } = useCurrency()
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
@@ -333,12 +333,16 @@ export default function ProductsPage() {
                         
                         <div className="flex items-baseline gap-2 pt-2">
                           <span className="text-2xl font-bold text-gray-900">
-                            {formatMoney(product.price)}
+                            {currency === 'EUR' && (product as any).priceEUR
+                              ? new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', minimumFractionDigits: 2 }).format((product as any).priceEUR)
+                              : formatMoney(product.price)}
                           </span>
                           {product.compareAtPrice && (
                             <>
                               <span className="text-base text-gray-400 line-through">
-                                {formatMoney(product.compareAtPrice)}
+                                {currency === 'EUR' && (product as any).priceEUR
+                                  ? new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', minimumFractionDigits: 2 }).format((product as any).priceEUR + (product.compareAtPrice - product.price) * 0)
+                                  : formatMoney(product.compareAtPrice)}
                               </span>
                               <span className="text-xs font-medium text-red-500">
                                 -{Math.round((1 - product.price / product.compareAtPrice) * 100)}%

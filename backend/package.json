@@ -23,6 +23,7 @@
     "prisma:studio": "prisma studio",
     "translate:db": "ts-node --transpile-only src/scripts/translate-db.ts",
     "translate:reviews": "ts-node --transpile-only src/scripts/translateReviews.ts",
+    "seed:euro-prices": "ts-node --transpile-only src/scripts/seedEuroPrices.ts",
     "seed:raw-materials": "ts-node --transpile-only src/scripts/seedRawMaterials.ts",
     "generate:images": "ts-node --transpile-only scripts/generateRawMaterialImages.ts",
     "generate:image": "ts-node --transpile-only scripts/generateRawMaterialImages.ts -- --single",
