@@ -5,8 +5,10 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { BookOpen, ArrowRight, Sparkles } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 export function EbookSection() {
+  const t = useTranslations('sections.ebook')
   return (
     <section className="py-20 bg-gradient-to-br from-amber-50 via-orange-50 to-amber-50 relative overflow-hidden">
       {/* Background decorations */}
@@ -26,20 +28,19 @@ export function EbookSection() {
           >
             <div className="inline-flex items-center space-x-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-sm">
               <Sparkles className="w-5 h-5 text-amber-600" />
-              <span className="text-sm font-medium text-gray-700">KOSTNADSFRI</span>
+              <span className="text-sm font-medium text-gray-700">{t('badge')}</span>
             </div>
             
             <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
-              weed your skin
+              {t('title')}
             </h2>
             
             <h3 className="text-2xl lg:text-3xl font-bold text-amber-600">
-              E-BOK
+              {t('subtitle')}
             </h3>
             
             <p className="text-lg text-gray-700 leading-relaxed max-w-xl">
-              Vi älskar utbildning och har därför skrivit en e-bok som förklarar allt du behöver 
-              veta om hud, hudhälsa och hur du kan använda CBD för att uppnå en optimal hudhälsa!
+              {t('description')}
             </p>
             
             <motion.div
@@ -52,13 +53,13 @@ export function EbookSection() {
                 className="inline-flex items-center bg-gradient-to-r from-amber-600 to-orange-600 text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 group"
               >
                 <BookOpen className="w-6 h-6 mr-3" />
-                LADDA HEM BOKEN HÄR!
+                {t('ctaDownload')}
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Link>
             </motion.div>
             
             <p className="text-sm text-gray-500 italic mt-6">
-                              cultivating living skin since Linné
+              {t('tagline')}
             </p>
           </motion.div>
 
@@ -82,7 +83,7 @@ export function EbookSection() {
               >
                 <Image
                   src="/bok.jpg"
-                  alt="Weed Your Skin E-bok"
+                  alt={t('imageAlt')}
                   width={400}
                   height={550}
                   className="rounded-lg shadow-2xl"
@@ -102,7 +103,7 @@ export function EbookSection() {
                   }}
                   className="absolute -top-4 -right-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg"
                 >
-                  GRATIS!
+                  {t('freeBadge')}
                 </motion.div>
               </motion.div>
               

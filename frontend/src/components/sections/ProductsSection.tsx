@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { ShoppingBag, Star, Plus, Check, Package } from 'lucide-react'
 import { useCurrency } from '@/contexts/CurrencyContext'
+import { useTranslations } from 'next-intl'
 // Temporarily remove FloatingReviews to fix React error
 // import FloatingReviews from '@/components/reviews/FloatingReviews'
 
@@ -30,6 +31,7 @@ export function ProductsSection() {
   const [loading, setLoading] = useState(true)
   const [addedToCart, setAddedToCart] = useState<string[]>([])
   const { formatMoney } = useCurrency()
+  const t = useTranslations('sections.products')
 
   useEffect(() => {
     fetchProducts()
@@ -140,7 +142,7 @@ export function ProductsSection() {
             className="inline-flex items-center gap-2 bg-[#FCB237]/10 px-4 py-2 rounded-full mb-4"
           >
             <Package className="w-4 h-4 text-[#FCB237]" />
-            <span className="text-sm font-medium text-[#FCB237]">Handplockat för dig</span>
+            <span className="text-sm font-medium text-[#FCB237]">{t('badge')}</span>
           </motion.div>
           
           <motion.h2
@@ -150,7 +152,7 @@ export function ProductsSection() {
             transition={{ delay: 0.1 }}
             className="text-4xl md:text-5xl font-bold mb-6"
           >
-            Våra <span className="text-[#8B6B47]">produkter</span>
+            {t('titlePrefix')} <span className="text-[#8B6B47]">{t('titleEmphasis')}</span>
           </motion.h2>
           
           <motion.p
@@ -160,7 +162,7 @@ export function ProductsSection() {
             transition={{ delay: 0.2 }}
             className="text-xl text-gray-600 max-w-2xl mx-auto"
           >
-            Naturlig hudvård baserad på CBD och funktionella svampar
+            {t('subtitle')}
           </motion.p>
         </div>
 
@@ -207,7 +209,7 @@ export function ProductsSection() {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
                         <div className="text-white">
                           <p className="text-sm mb-2 line-clamp-2">{product.shortDescription || product.description}</p>
-                          <span className="text-xs">Läs mer →</span>
+                          <span className="text-xs">{t('readMore')}</span>
                         </div>
                       </div>
                     </div>
@@ -301,7 +303,7 @@ export function ProductsSection() {
             className="inline-flex items-center gap-2 bg-[#FCB237] hover:bg-[#3A2A1E] text-white px-8 py-4 rounded-full font-semibold text-lg transition-all transform hover:scale-105 shadow-xl"
           >
             <ShoppingBag className="w-5 h-5" />
-            Se alla produkter
+            {t('ctaAllProducts')}
           </Link>
         </motion.div>
       </div>

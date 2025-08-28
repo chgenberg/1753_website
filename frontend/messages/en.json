@@ -43,9 +43,37 @@
   },
   "hero": {
     "title": "Discover the power of CBD for your skin",
-    "subtitle": "Natural skincare products that support the skin's own healing process.",
+    "subtitle": "Natural skincare products that support the skin's own healing process",
     "cta": "Shop now",
-    "learnMore": "Read more"
+    "learnMore": "Learn more"
+  },
+  "sections": {
+    "products": {
+      "badge": "Handpicked for you",
+      "titlePrefix": "Our",
+      "titleEmphasis": "products",
+      "subtitle": "Natural skincare based on CBD and functional mushrooms",
+      "readMore": "Read more →",
+      "ctaAllProducts": "See all products"
+    },
+    "gallery": {
+      "title": "DISCOVER OUR WORLD",
+      "subtitle": "A visual journey through nature's beauty and the power of science",
+      "clickToReadMore": "Click to read more →",
+      "badge": "Power of nature",
+      "close": "Close",
+      "ctaSeeProducts": "See our products"
+    },
+    "ebook": {
+      "badge": "FREE",
+      "title": "weed your skin",
+      "subtitle": "E-BOOK",
+      "description": "We love education and have written an e-book that explains everything you need to know about skin, skin health, and how to use CBD to achieve optimal skin health!",
+      "ctaDownload": "DOWNLOAD THE BOOK",
+      "tagline": "cultivating living skin since Linné",
+      "imageAlt": "Weed Your Skin e-book",
+      "freeBadge": "FREE!"
+    }
   },
   "products": {
     "title": "Our fantastic products",

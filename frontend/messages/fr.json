@@ -372,5 +372,33 @@
         "desc": "Utilisé pour afficher des annonces pertinentes et mesurer l'efficacité de nos campagnes marketing."
       }
     }
+  },
+  "sections": {
+    "products": {
+      "badge": "Sélectionné pour vous",
+      "titlePrefix": "Nos",
+      "titleEmphasis": "produits",
+      "subtitle": "Soins naturels de la peau à base de CBD et de champignons fonctionnels",
+      "readMore": "En savoir plus →",
+      "ctaAllProducts": "Voir tous les produits"
+    },
+    "gallery": {
+      "title": "DÉCOUVREZ NOTRE MONDE",
+      "subtitle": "Un voyage visuel à travers la beauté de la nature et la puissance de la science",
+      "clickToReadMore": "Cliquez pour en savoir plus →",
+      "badge": "Puissance de la nature",
+      "close": "Fermer",
+      "ctaSeeProducts": "Voir nos produits"
+    },
+    "ebook": {
+      "badge": "GRATUIT",
+      "title": "weed your skin",
+      "subtitle": "E-BOOK",
+      "description": "Nous aimons l'éducation et avons donc écrit un e-book qui explique tout ce que vous devez savoir sur la peau, la santé de la peau et comment utiliser le CBD pour atteindre une santé optimale de la peau !",
+      "ctaDownload": "TÉLÉCHARGER LE LIVRE",
+      "tagline": "cultiver une peau vivante depuis Linné",
+      "imageAlt": "E-book Weed Your Skin",
+      "freeBadge": "GRATUIT !"
+    }
   }
 }

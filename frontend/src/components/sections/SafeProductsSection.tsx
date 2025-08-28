@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { ShoppingBag, Star, Package } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 interface Product {
   id: string
@@ -67,6 +68,7 @@ const fallbackProducts: Product[] = [
 export function SafeProductsSection() {
   const [products, setProducts] = useState<Product[]>(fallbackProducts)
   const [loading, setLoading] = useState(true)
+  const t = useTranslations('sections.products')
 
   useEffect(() => {
     fetchProducts()
@@ -145,7 +147,7 @@ export function SafeProductsSection() {
             viewport={{ once: true }}
             className="text-4xl md:text-5xl font-bold mb-6"
           >
-            Våra <span className="text-[#8B6B47]">produkter</span>
+            {t('titlePrefix')} <span className="text-[#8B6B47]">{t('titleEmphasis')}</span>
           </motion.h2>
           
           <motion.p
@@ -155,7 +157,7 @@ export function SafeProductsSection() {
             transition={{ delay: 0.1 }}
             className="text-xl text-gray-600 max-w-2xl mx-auto"
           >
-            Naturlig hudvård baserad på CBD och funktionella svampar
+            {t('subtitle')}
           </motion.p>
         </div>
 
@@ -277,7 +279,7 @@ export function SafeProductsSection() {
             className="inline-flex items-center gap-2 bg-[#FCB237] hover:bg-[#3A2A1E] text-white px-8 py-4 rounded-full font-semibold text-lg transition-all transform hover:scale-105 shadow-xl"
           >
             <ShoppingBag className="w-5 h-5" />
-            Se alla produkter
+            {t('ctaAllProducts')}
           </Link>
         </motion.div>
       </div>

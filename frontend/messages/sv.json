@@ -47,6 +47,34 @@
     "cta": "Shoppa nu",
     "learnMore": "Läs mer"
   },
+  "sections": {
+    "products": {
+      "badge": "Handplockat för dig",
+      "titlePrefix": "Våra",
+      "titleEmphasis": "produkter",
+      "subtitle": "Naturlig hudvård baserad på CBD och funktionella svampar",
+      "readMore": "Läs mer →",
+      "ctaAllProducts": "Se alla produkter"
+    },
+    "gallery": {
+      "title": "UPPTÄCK VÅR VÄRLD",
+      "subtitle": "En visuell resa genom naturens skönhet och vetenskapens kraft",
+      "clickToReadMore": "Klicka för att läsa mer →",
+      "badge": "Naturens kraft",
+      "close": "Stäng",
+      "ctaSeeProducts": "Se våra produkter"
+    },
+    "ebook": {
+      "badge": "KOSTNADSFRI",
+      "title": "weed your skin",
+      "subtitle": "E-BOK",
+      "description": "Vi älskar utbildning och har därför skrivit en e-bok som förklarar allt du behöver veta om hud, hudhälsa och hur du kan använda CBD för att uppnå en optimal hudhälsa!",
+      "ctaDownload": "LADDA HEM BOKEN HÄR!",
+      "tagline": "cultivating living skin since Linné",
+      "imageAlt": "Weed Your Skin E-bok",
+      "freeBadge": "GRATIS!"
+    }
+  },
   "products": {
     "title": "Våra fantastiska produkter",
     "subtitle": "Alla våra produkter innehåller CBD och CBG för optimal hudhälsa",

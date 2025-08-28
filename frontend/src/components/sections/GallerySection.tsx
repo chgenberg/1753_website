@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 import { useState } from 'react'
 import { X } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 const galleryImages = [
   {
@@ -265,6 +266,7 @@ const galleryImages = [
 export function GallerySection() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
   const [selectedImage, setSelectedImage] = useState<typeof galleryImages[0] | null>(null)
+  const t = useTranslations('sections.gallery')
 
   return (
     <section className="py-24 bg-gradient-to-b from-white to-[var(--color-bg-secondary)]">
@@ -278,10 +280,10 @@ export function GallerySection() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold text-[var(--color-primary-dark)] mb-4 tracking-tight">
-            UPPTÄCK VÅR VÄRLD
+            {t('title')}
           </h2>
           <p className="text-lg text-[var(--color-gray-600)] max-w-2xl mx-auto font-light">
-            En visuell resa genom naturens skönhet och vetenskapens kraft
+            {t('subtitle')}
           </p>
         </motion.div>
 
@@ -335,7 +337,7 @@ export function GallerySection() {
                 >
                   <h3 className="text-2xl font-serif mb-2">{image.title}</h3>
                   <p className="text-white/90">{image.description}</p>
-                  <p className="text-sm text-white/70 mt-2">Klicka för att läsa mer →</p>
+                  <p className="text-sm text-white/70 mt-2">{t('clickToReadMore')}</p>
                 </motion.div>
               </div>
             </motion.div>
@@ -409,7 +411,7 @@ export function GallerySection() {
                     <div className="flex items-center gap-3">
                       <div className="w-2 h-2 bg-[#FCB237] rounded-full"></div>
                       <span className="text-sm font-medium text-[#FCB237] uppercase tracking-wide">
-                        Naturens kraft
+                        {t('badge')}
                       </span>
                     </div>
                   </div>
@@ -432,7 +434,7 @@ export function GallerySection() {
                         onClick={() => setSelectedImage(null)}
                         className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
                       >
-                        Stäng
+                        {t('close')}
                       </button>
                       <button
                         onClick={() => {
@@ -442,7 +444,7 @@ export function GallerySection() {
                         }}
                         className="flex-1 px-4 py-2 bg-[#FCB237] text-white rounded-lg hover:bg-[#E79C1A] transition-colors font-medium"
                       >
-                        Se våra produkter
+                        {t('ctaSeeProducts')}
                       </button>
                     </div>
                   </div>

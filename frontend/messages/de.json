@@ -372,5 +372,33 @@
         "desc": "Wird verwendet, um relevante Anzeigen zu schalten und die Effektivität unserer Marketingkampagnen zu messen."
       }
     }
+  },
+  "sections": {
+    "products": {
+      "badge": "Handverlesen für dich",
+      "titlePrefix": "Unsere",
+      "titleEmphasis": "Produkte",
+      "subtitle": "Natürliche Hautpflege auf Basis von CBD und funktionellen Pilzen",
+      "readMore": "Mehr lesen →",
+      "ctaAllProducts": "Alle Produkte ansehen"
+    },
+    "gallery": {
+      "title": "ENTDECKE UNSERE WELT",
+      "subtitle": "Eine visuelle Reise durch die Schönheit der Natur und die Kraft der Wissenschaft",
+      "clickToReadMore": "Klicke, um mehr zu lesen →",
+      "badge": "Kraft der Natur",
+      "close": "Schließen",
+      "ctaSeeProducts": "Unsere Produkte ansehen"
+    },
+    "ebook": {
+      "badge": "KOSTENLOS",
+      "title": "weed your skin",
+      "subtitle": "E-BOOK",
+      "description": "Wir lieben Bildung und haben deshalb ein E-Book geschrieben, das alles erklärt, was du über Haut, Hautgesundheit und die Anwendung von CBD für optimale Hautgesundheit wissen musst!",
+      "ctaDownload": "BUCH HERUNTERLADEN",
+      "tagline": "lebendige Haut seit Linné kultivieren",
+      "imageAlt": "Weed Your Skin E-Book",
+      "freeBadge": "GRATIS!"
+    }
   }
 }
