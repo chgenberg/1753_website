@@ -505,33 +505,82 @@
     }
   },
   "reviews": {
+    "homeDefaults": {
+      "1": {
+        "author": "Emma Svensson",
+        "content": "Produits fantastiques ! Ma peau ne s'est jamais sentie si douce et équilibrée. L'huile de CBD a vraiment transformé ma routine de soins.",
+        "product": "The ONE Facial Oil"
+      },
+      "2": {
+        "author": "Marcus Andersson", 
+        "content": "L'huile de CBD a vraiment aidé ma peau sensible. Je recommande vivement ! Je vois déjà des résultats après seulement deux semaines.",
+        "product": "Au Naturel Makeup Remover"
+      },
+      "3": {
+        "author": "Sofia Lindberg",
+        "content": "Je vois déjà des résultats après deux semaines ! Produit fantastique qui tient vraiment ses promesses. Ma peau rayonne !"
+      },
+      "4": {
+        "author": "Johan Nilsson",
+        "content": "Très bonne qualité et livraison rapide. Satisfait de mon achat ! Les produits semblent luxueux et efficaces.",
+        "product": "DUO-KIT"
+      },
+      "5": {
+        "author": "Anna Persson",
+        "content": "Ma peau adore ces produits ! Je rachèterai certainement.",
+        "product": "TA-DA Serum"
+      }
+    },
+    "homeStats": {
+      "averageLabel": "Note moyenne",
+      "total": "{count} avis",
+      "wouldRecommend": "98% recommanderaient"
+    },
     "floating": {
       "prevReview": "Avis précédent",
-      "nextReview": "Avis suivant",
+      "nextReview": "Avis suivant", 
       "verifiedPurchase": "Achat vérifié",
-      "goToReview": "Aller à l’avis {index}"
+      "goToReview": "Aller à l'avis {index}"
     },
     "product": {
       "loading": "Chargement des avis...",
-      "noReviewsYet": "Pas encore d’avis. Soyez le premier à donner votre avis !",
-      "writeReview": "Écrire un avis",
+      "noReviewsYet": "Pas encore d'avis",
+      "writeReview": "Écrire le premier avis",
       "reviewsLabel": "avis",
       "verifiedBuyer": "Acheteur vérifié",
-      "loadMore": "Charger plus d’avis"
-    }
-  },
-  "map": {
-    "retailers": {
-      "visitWebsite": "Visiter le site"
+      "loadMore": "Charger plus d'avis"
     }
   },
   "errorBoundary": {
-    "title": "Un problème est survenu",
-    "description": "Désolé pour le dérangement. Une erreur inattendue s’est produite.",
+    "title": "Quelque chose s'est mal passé",
+    "description": "Nous nous excusons pour la gêne occasionnée. Essayez de recharger la page ou de retourner à la page d'accueil.",
     "retry": "Réessayer",
     "reload": "Recharger la page",
-    "goHome": "Aller à l’accueil",
+    "goHome": "Aller à l'accueil",
     "contactPrefix": "Si le problème persiste, contactez-nous à"
+  },
+  "cart": {
+    "title": "Panier",
+    "empty": {
+      "title": "Votre panier est vide",
+      "description": "Découvrez nos incroyables produits de soins de la peau",
+      "cta": "Commencer les achats"
+    },
+    "drawer": {
+      "freeShippingProgress": "Ajoutez {amount} de plus pour la livraison gratuite !",
+      "badges": {
+        "fastShipping": "Livraison rapide",
+        "securePayment": "Paiement sécurisé", 
+        "returns30days": "Retours 30 jours"
+      }
+    },
+    "subtotal": "Sous-total",
+    "shipping": "Livraison",
+    "freeShipping": "Gratuit",
+    "total": "Total",
+    "includesTax": "TTC",
+    "viewCart": "Voir le panier",
+    "proceedToCheckout": "Procéder au paiement"
   },
   "quiz": {
     "common": {

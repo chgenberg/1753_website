@@ -6,13 +6,15 @@ import CookieBanner from '@/components/cookies/CookieBanner'
 import { LanguagePopup } from '@/components/layout/LanguagePopup'
 import Script from 'next/script'
 import type { Metadata } from 'next'
+import { CartDrawer } from '@/components/cart/CartDrawer'
 
 export function generateStaticParams() {
   return [{locale: 'sv'}, {locale: 'en'}, {locale: 'es'}, {locale: 'de'}, {locale: 'fr'}]
 }
 
 export async function generateMetadata({ params }: { params: { locale?: string } }): Promise<Metadata> {
-  const locale = params?.locale || 'sv'
+  const { locale } = await params
+  const actualLocale = locale || 'sv'
   const metaByLocale: Record<string, { title: string; description: string; keywords: string[]; ogLocale: string }> = {
     sv: {
       title: '1753 SKINCARE - CBD & CBG',
@@ -45,7 +47,7 @@ export async function generateMetadata({ params }: { params: { locale?: string }
       ogLocale: 'fr_FR'
     }
   }
-  const m = metaByLocale[locale] || metaByLocale.sv
+  const m = metaByLocale[actualLocale] || metaByLocale.sv
   return {
     title: {
       default: m.title,
@@ -56,7 +58,7 @@ export async function generateMetadata({ params }: { params: { locale?: string }
     openGraph: {
       title: m.title,
       description: m.description,
-      url: `https://1753skincare.com/${locale}`,
+      url: `https://1753skincare.com/${actualLocale}`,
       siteName: '1753 Skincare',
       images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: '1753 Skincare Products' }],
       locale: m.ogLocale,
@@ -113,6 +115,7 @@ export default async function LocaleLayout({
       {children as any}
       <CookieBanner />
       <LanguagePopup />
+      <CartDrawer />
     </NextIntlClientProvider>
   )
 } 

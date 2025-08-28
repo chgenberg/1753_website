@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { CartDrawer } from '@/components/cart/CartDrawer'
-import { HeroNavigation } from '@/components/layout/HeroNavigation'
+import { ArrowRight, Play } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import Link from 'next/link'
 
 export function HeroSection() {
   const [isMobile, setIsMobile] = useState(false)
@@ -41,7 +41,7 @@ export function HeroSection() {
         </div>
 
         {/* Use the reusable navigation component */}
-        <HeroNavigation />
+        {/* HeroNavigation */}
 
         {/* Minimalist Text */}
         <div className="absolute inset-x-0 top-1/3 md:top-1/4 z-10 flex items-center justify-center">
@@ -62,7 +62,7 @@ export function HeroSection() {
       </section>
 
       {/* Cart Drawer */}
-      <CartDrawer />
+      {/* CartDrawer */}
     </>
   )
 } 

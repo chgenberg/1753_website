@@ -27,6 +27,7 @@ export function ReviewsSection() {
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
   const t = useTranslations('Reviews')
+  const tReviews = useTranslations()
 
   useEffect(() => {
     fetchReviews()
@@ -73,46 +74,46 @@ export function ReviewsSection() {
   const getDefaultReviews = () => [
     {
       id: '1',
-      reviewer: 'Emma Svensson',
+      reviewer: tReviews('reviews.homeDefaults.1.author'),
       rating: 5,
-      comment: 'Fantastiska produkter! Min hud har aldrig känt sig så mjuk och balanserad.',
-      product: 'The ONE Facial Oil',
+      comment: tReviews('reviews.homeDefaults.1.content'),
+      product: tReviews('reviews.homeDefaults.1.product'),
       createdAt: new Date().toISOString(),
       verified: true
     },
     {
       id: '2',
-      reviewer: 'Marcus Andersson',
+      reviewer: tReviews('reviews.homeDefaults.2.author'),
       rating: 5,
-      comment: 'CBD-oljan har verkligen hjälpt min känsliga hud. Rekommenderar starkt!',
-      product: 'Au Naturel Makeup Remover',
+      comment: tReviews('reviews.homeDefaults.2.content'),
+      product: tReviews('reviews.homeDefaults.2.product'),
       createdAt: new Date().toISOString(),
       verified: true
     },
     {
       id: '3',
-      reviewer: 'Sofia Lindberg',
+      reviewer: tReviews('reviews.homeDefaults.3.author'),
       rating: 5,
-      comment: 'Ser redan resultat efter två veckor! Fantastisk produkt.',
+      comment: tReviews('reviews.homeDefaults.3.content'),
       product: 'TA-DA Serum',
       createdAt: new Date().toISOString(),
       verified: true
     },
     {
       id: '4',
-      reviewer: 'Johan Nilsson',
+      reviewer: tReviews('reviews.homeDefaults.4.author'),
       rating: 4,
-      comment: 'Mycket bra kvalitet och snabb leverans. Nöjd med mitt köp!',
-      product: 'DUO-KIT',
+      comment: tReviews('reviews.homeDefaults.4.content'),
+      product: tReviews('reviews.homeDefaults.4.product'),
       createdAt: new Date().toISOString(),
       verified: true
     },
     {
       id: '5',
-      reviewer: 'Anna Persson',
+      reviewer: tReviews('reviews.homeDefaults.5.author'),
       rating: 5,
-      comment: 'Min hud älskar dessa produkter! Kommer definitivt köpa igen.',
-      product: 'TA-DA Serum',
+      comment: tReviews('reviews.homeDefaults.5.content'),
+      product: tReviews('reviews.homeDefaults.5.product'),
       createdAt: new Date().toISOString(),
       verified: true
     }

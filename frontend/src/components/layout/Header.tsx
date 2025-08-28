@@ -5,8 +5,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { CartDrawer } from '@/components/cart/CartDrawer'
 import { useCart } from '@/contexts/CartContext'
+import { useCurrency } from '@/contexts/CurrencyContext'
 import { useAuth } from '@/contexts/AuthContext'
 import { LanguageSelector } from './LanguageSelector'
 import { 
@@ -241,9 +241,6 @@ export function Header() {
           </>
         )}
       </AnimatePresence>
-
-      {/* Cart Drawer */}
-      <CartDrawer />
     </>
   )
 } 

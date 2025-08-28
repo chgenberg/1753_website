@@ -541,7 +541,17 @@
     "pageTitle": "Recensioner - 1753 Skincare",
     "pageDescription": "Läs vad våra kunder säger om 1753 Skincare. Äkta recensioner från människor som upptäckt kraften i naturlig hudvård.",
     "title": "Vad våra kunder säger",
-    "subtitle": "Äkta berättelser från människor som upptäckt kraften i naturlig hudvård",
+    "subtitle": "Över 750 nöjda kunder har delat sina upplevelser",
+    "viewAll": "Se alla recensioner",
+    "writeReview": "Skriv en recension",
+    "noReviews": "Inga recensioner än",
+    "loading": "Laddar recensioner...",
+    "verifiedBuyer": "Verifierad köpare",
+    "helpful": "Hjälpsam",
+    "notHelpful": "Inte hjälpsam",
+    "report": "Rapportera",
+    "showMore": "Visa mer",
+    "showLess": "Visa mindre",
     "totalReviews": "Baserat på",
     "averageRating": "Genomsnittligt betyg",
     "fiveStarPercentage": "5-stjärniga betyg",
@@ -757,5 +767,83 @@
       "ingredientEducation": "🧪 Ingredienslära",
       "routineAdvice": "💆‍♀️ Rutinråd"
     }
+  },
+  "reviews": {
+    "homeDefaults": {
+      "1": {
+        "author": "Emma Svensson",
+        "content": "Fantastiska produkter! Min hud har aldrig känt sig så mjuk och balanserad. CBD-oljan har verkligen förvandlat min hudvårdsrutin.",
+        "product": "The ONE Facial Oil"
+      },
+      "2": {
+        "author": "Marcus Andersson", 
+        "content": "CBD-oljan har verkligen hjälpt min känsliga hud. Rekommenderar starkt! Ser redan resultat efter bara två veckor.",
+        "product": "Au Naturel Makeup Remover"
+      },
+      "3": {
+        "author": "Sofia Lindberg",
+        "content": "Ser redan resultat efter två veckor! Fantastisk produkt som verkligen levererar vad den lovar. Min hud strålar!"
+      },
+      "4": {
+        "author": "Johan Nilsson",
+        "content": "Mycket bra kvalitet och snabb leverans. Nöjd med mitt köp! Produkterna känns lyxiga och effektiva.",
+        "product": "DUO-KIT"
+      },
+      "5": {
+        "author": "Anna Persson",
+        "content": "Min hud älskar dessa produkter! Kommer definitivt köpa igen.",
+        "product": "TA-DA Serum"
+      }
+    },
+    "homeStats": {
+      "averageLabel": "Genomsnittligt betyg",
+      "total": "{count} recensioner",
+      "wouldRecommend": "98% skulle rekommendera"
+    },
+    "floating": {
+      "prevReview": "Föregående recension",
+      "nextReview": "Nästa recension", 
+      "verifiedPurchase": "Verifierat köp",
+      "goToReview": "Gå till recension {index}"
+    },
+    "product": {
+      "loading": "Laddar recensioner...",
+      "noReviewsYet": "Inga recensioner än",
+      "writeReview": "Skriv första recensionen",
+      "reviewsLabel": "recensioner",
+      "verifiedBuyer": "Verifierad köpare",
+      "loadMore": "Ladda fler recensioner"
+    }
+  },
+  "errorBoundary": {
+    "title": "Något gick fel",
+    "description": "Vi ber om ursäkt för besväret. Försök ladda om sidan eller gå tillbaka till startsidan.",
+    "retry": "Försök igen",
+    "reload": "Ladda om sidan",
+    "goHome": "Gå till startsidan",
+    "contactPrefix": "Om problemet kvarstår, kontakta oss på"
+  },
+  "cart": {
+    "title": "Varukorg",
+    "empty": {
+      "title": "Din varukorg är tom",
+      "description": "Upptäck våra fantastiska hudvårdsprodukter",
+      "cta": "Börja handla"
+    },
+    "drawer": {
+      "freeShippingProgress": "Lägg till för {amount} till för fri frakt!",
+      "badges": {
+        "fastShipping": "Snabb leverans",
+        "securePayment": "Säker betalning", 
+        "returns30days": "30 dagars retur"
+      }
+    },
+    "subtotal": "Delsumma",
+    "shipping": "Frakt",
+    "freeShipping": "Gratis",
+    "total": "Totalt",
+    "includesTax": "Inkl. moms",
+    "viewCart": "Se varukorg",
+    "proceedToCheckout": "Gå till kassan"
   }
 } 

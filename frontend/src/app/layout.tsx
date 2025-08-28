@@ -4,7 +4,6 @@ import { Toaster } from 'react-hot-toast'
 import { CartProvider } from '@/contexts/CartContext'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { CurrencyProvider } from '@/contexts/CurrencyContext'
-import { CartDrawer } from '@/components/cart/CartDrawer'
 import './globals.css'
 
 const inter = Inter({ 
@@ -79,23 +78,18 @@ export const metadata: Metadata = {
   },
 }
 
-interface Props {
+export default function RootLayout({
+  children,
+}: {
   children: React.ReactNode
-  params?: Promise<{ locale?: string }>
-}
-
-export default async function RootLayout({ children, params }: Props) {
-  const resolvedParams = await params
-  const locale = resolvedParams?.locale || 'sv'
-  
+}) {
   return (
-    <html lang={locale} data-scroll-behavior="smooth" className={`${inter.variable} ${playfair.variable}`}>
+    <html lang="sv" data-scroll-behavior="smooth" className={`${inter.variable} ${playfair.variable}`}>
       <body className="font-sans">
         <AuthProvider>
           <CurrencyProvider>
           <CartProvider>
             {children}
-            <CartDrawer />
             <Toaster 
               position="top-right"
               toastOptions={{

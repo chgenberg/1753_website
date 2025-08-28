@@ -81,7 +81,6 @@ export default function EBookPage() {
 
   return (
     <div className="min-h-screen bg-[#FAF8F5]">
-      <CartDrawer />
       
       {/* Hero Section with Full-Screen Image */}
       <section className="relative h-screen min-h-[600px]">

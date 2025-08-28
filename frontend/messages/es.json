@@ -505,32 +505,58 @@
     }
   },
   "reviews": {
+    "homeDefaults": {
+      "1": {
+        "author": "Emma Svensson",
+        "content": "¡Productos fantásticos! Mi piel nunca se ha sentido tan suave y equilibrada. El aceite de CBD realmente ha transformado mi rutina de cuidado de la piel.",
+        "product": "The ONE Facial Oil"
+      },
+      "2": {
+        "author": "Marcus Andersson", 
+        "content": "El aceite de CBD realmente ha ayudado a mi piel sensible. ¡Lo recomiendo mucho! Ya veo resultados después de solo dos semanas.",
+        "product": "Au Naturel Makeup Remover"
+      },
+      "3": {
+        "author": "Sofia Lindberg",
+        "content": "¡Ya veo resultados después de dos semanas! Producto fantástico que realmente cumple lo que promete. ¡Mi piel está radiante!"
+      },
+      "4": {
+        "author": "Johan Nilsson",
+        "content": "Muy buena calidad y entrega rápida. ¡Contento con mi compra! Los productos se sienten lujosos y efectivos.",
+        "product": "DUO-KIT"
+      },
+      "5": {
+        "author": "Anna Persson",
+        "content": "¡Mi piel ama estos productos! Definitivamente compraré de nuevo.",
+        "product": "TA-DA Serum"
+      }
+    },
+    "homeStats": {
+      "averageLabel": "Calificación promedio",
+      "total": "{count} reseñas",
+      "wouldRecommend": "98% recomendaría"
+    },
     "floating": {
       "prevReview": "Reseña anterior",
-      "nextReview": "Siguiente reseña",
+      "nextReview": "Siguiente reseña", 
       "verifiedPurchase": "Compra verificada",
-      "goToReview": "Ir a la reseña {index}"
+      "goToReview": "Ir a reseña {index}"
     },
     "product": {
       "loading": "Cargando reseñas...",
-      "noReviewsYet": "Aún no hay reseñas. ¡Sé el primero en reseñar este producto!",
-      "writeReview": "Escribir una reseña",
+      "noReviewsYet": "Aún no hay reseñas",
+      "writeReview": "Escribir primera reseña",
       "reviewsLabel": "reseñas",
       "verifiedBuyer": "Comprador verificado",
       "loadMore": "Cargar más reseñas"
     }
   },
-  "map": {
-    "retailers": {
-      "visitWebsite": "Visitar sitio web"
-    }
-  },
   "errorBoundary": {
     "title": "Algo salió mal",
-    "description": "Disculpa las molestias. Ocurrió un error inesperado.",
+    "description": "Nos disculpamos por las molestias. Intenta recargar la página o volver a la página de inicio.",
     "retry": "Intentar de nuevo",
     "reload": "Recargar página",
-    "goHome": "Ir a la página principal",
+    "goHome": "Ir a inicio",
     "contactPrefix": "Si el problema persiste, contáctanos en"
   },
   "quiz": {

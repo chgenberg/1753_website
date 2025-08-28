@@ -8,7 +8,6 @@ import { Footer } from '@/components/layout/Footer'
 import { ChevronDown, ChevronUp, ChevronRight } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { HeroNavigation } from '@/components/layout/HeroNavigation'
-import { CartDrawer } from '@/components/cart/CartDrawer'
 import { usePathname } from 'next/navigation'
 
 interface RawMaterial {
@@ -462,7 +461,7 @@ export default function FunctionalRawMaterialsPage() {
     </div>
     <Footer />
     
-    <CartDrawer />
+    
   </>
   )
 } 

@@ -198,26 +198,27 @@
     "skinConcerns": "Skin problems"
   },
   "cart": {
-    "title": "Shopping cart",
+    "title": "Cart",
     "empty": {
       "title": "Your cart is empty",
-      "description": "It looks like you haven't added any products to your cart yet. Discover our range of natural skincare products!",
-      "cta": "Continue shopping"
+      "description": "Discover our amazing skincare products",
+      "cta": "Start shopping"
     },
-    "pricePerUnit": "Price per unit: {price} kr",
-    "clearCart": "Clear cart",
-    "orderSummary": "Order summary",
-    "discountCode": "Discount code",
-    "discountCodePlaceholder": "Enter code",
-    "applyDiscount": "Apply",
+    "drawer": {
+      "freeShippingProgress": "Add {amount} more for free shipping!",
+      "badges": {
+        "fastShipping": "Fast shipping",
+        "securePayment": "Secure payment",
+        "returns30days": "30-day returns"
+      }
+    },
     "subtotal": "Subtotal",
-    "discount": "Discount",
     "shipping": "Shipping",
     "freeShipping": "Free",
     "total": "Total",
-    "includesTax": "incl. VAT",
+    "includesTax": "Incl. tax",
+    "viewCart": "View cart",
     "proceedToCheckout": "Proceed to checkout",
-    "continueShopping": "Continue shopping",
     "trustBadges": {
       "securePayment": "Secure payment with Viva Wallet",
       "freeShippingOver500": "Free shipping over 500 kr",
@@ -459,19 +460,19 @@
       "modal": {
         "step1": {
           "title": "📝 Take skin QUIZ",
-          "description": "Our skincare quiz takes just 2 minutes and helps us understand your unique skin type and specific needs.\n\nBy answering a few simple questions about your skin, lifestyle and preferences, we can create a tailored skincare routine just for you.\n\nThe quiz analyzes factors like skin type, any skin concerns, age and environmental impact to give you the most relevant product recommendations." 
+          "description": "Our skincare quiz takes just 2 minutes and helps us understand your unique skin type and specific needs.\n\nBy answering a few simple questions about your skin, lifestyle and preferences, we can create a tailored skincare routine just for you.\n\nThe quiz analyzes factors like skin type, any skin concerns, age and environmental impact to give you the most relevant product recommendations."
         },
         "step2": {
           "title": "🎯 Get recommendation",
-          "description": "Based on your quiz answers, you'll receive a personal skincare plan with product recommendations specifically selected for your skin type and needs.\n\nOur algorithm combines traditional skincare knowledge with modern science to create a complete routine that includes cleansing, treatment and protection.\n\nYou'll also get tips on how to best use the products for optimal results." 
+          "description": "Based on your quiz answers, you'll receive a personal skincare plan with product recommendations specifically selected for your skin type and needs.\n\nOur algorithm combines traditional skincare knowledge with modern science to create a complete routine that includes cleansing, treatment and protection.\n\nYou'll also get tips on how to best use the products for optimal results."
         },
         "step3": {
           "title": "📈 Follow up",
-          "description": "We follow your skincare journey every week to ensure you see continuous improvements.\n\nThrough regular check-ins, we can adjust your routine as needed and give you personal tips based on how your skin develops.\n\nYou'll get reminders when it's time to apply products and can document your progress with photos to clearly see improvements over time." 
+          "description": "We follow your skincare journey every week to ensure you see continuous improvements.\n\nThrough regular check-ins, we can adjust your routine as needed and give you personal tips based on how your skin develops.\n\nYou'll get reminders when it's time to apply products and can document your progress with photos to clearly see improvements over time."
         },
         "step4": {
           "title": "✨ Perfect skin!",
-          "description": "Within 3 months you will see a noticeable improvement in your skin's quality and appearance.\n\nWith our natural products containing CBD and CBG, combined with your personal skincare routine, your skin will become more balanced, clearer and radiant.\n\nMany of our customers report visible results after just a few weeks, but the full effect is usually achieved within 3 months of consistent use." 
+          "description": "Within 3 months you will see a noticeable improvement in your skin's quality and appearance.\n\nWith our natural products containing CBD and CBG, combined with your personal skincare routine, your skin will become more balanced, clearer and radiant.\n\nMany of our customers report visible results after just a few weeks, but the full effect is usually achieved within 3 months of consistent use."
         }
       }
     },
@@ -576,6 +577,37 @@
     }
   },
   "reviews": {
+    "homeDefaults": {
+      "1": {
+        "author": "Emma Svensson",
+        "content": "Amazing products! My skin has never felt so soft and balanced. The CBD oil has truly transformed my skincare routine.",
+        "product": "The ONE Facial Oil"
+      },
+      "2": {
+        "author": "Marcus Andersson",
+        "content": "The CBD oil has really helped my sensitive skin. Highly recommend! Already seeing results after just two weeks.",
+        "product": "Au Naturel Makeup Remover"
+      },
+      "3": {
+        "author": "Sofia Lindberg",
+        "content": "Already seeing results after two weeks! Amazing product that truly delivers what it promises. My skin is glowing!"
+      },
+      "4": {
+        "author": "Johan Nilsson",
+        "content": "Very good quality and fast delivery. Happy with my purchase! The products feel luxurious and effective.",
+        "product": "DUO-KIT"
+      },
+      "5": {
+        "author": "Anna Persson",
+        "content": "My skin loves these products! Will definitely buy again.",
+        "product": "TA-DA Serum"
+      }
+    },
+    "homeStats": {
+      "averageLabel": "Average rating",
+      "total": "{count} reviews",
+      "wouldRecommend": "98% would recommend"
+    },
     "floating": {
       "prevReview": "Previous review",
       "nextReview": "Next review",
@@ -584,21 +616,16 @@
     },
     "product": {
       "loading": "Loading reviews...",
-      "noReviewsYet": "No reviews yet. Be the first to review this product!",
-      "writeReview": "Write a review",
+      "noReviewsYet": "No reviews yet",
+      "writeReview": "Write first review",
       "reviewsLabel": "reviews",
       "verifiedBuyer": "Verified buyer",
       "loadMore": "Load more reviews"
     }
   },
-  "map": {
-    "retailers": {
-      "visitWebsite": "Visit website"
-    }
-  },
   "errorBoundary": {
     "title": "Something went wrong",
-    "description": "Sorry for the inconvenience. An unexpected error occurred.",
+    "description": "We apologize for the inconvenience. Try reloading the page or go back to the homepage.",
     "retry": "Try again",
     "reload": "Reload page",
     "goHome": "Go to homepage",
