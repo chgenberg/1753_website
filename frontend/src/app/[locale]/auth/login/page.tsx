@@ -22,8 +22,30 @@ export default function LoginPage() {
     setIsLoading(true)
 
     try {
-      await login(email, password)
-      router.push('/dashboard')
+      const success = await login(email, password)
+      if (!success) {
+        setError('Fel e-postadress eller lösenord')
+        return
+      }
+
+      // Determine locale from current path
+      const locale = (typeof window !== 'undefined' ? window.location.pathname.split('/')[1] : 'sv') || 'sv'
+
+      // Read user role from stored userData
+      let role: string | undefined
+      try {
+        const userJson = typeof window !== 'undefined' ? localStorage.getItem('userData') : null
+        if (userJson) {
+          const parsed = JSON.parse(userJson)
+          role = parsed?.role
+        }
+      } catch {}
+
+      if (role === 'ADMIN' || role === 'SUPER_ADMIN') {
+        router.push(`/${locale}/admin`)
+      } else {
+        router.push(`/${locale}/dashboard`)
+      }
     } catch (err) {
       setError('Fel e-postadress eller lösenord')
     } finally {

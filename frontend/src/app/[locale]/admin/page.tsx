@@ -24,7 +24,8 @@ export default function AdminPage() {
   // Check admin access
   useEffect(() => {
     if (!isLoading && (!isAuthenticated || (user?.role !== 'ADMIN' && user?.role !== 'SUPER_ADMIN'))) {
-      router.push('/auth/login')
+      const locale = (typeof window !== 'undefined' ? window.location.pathname.split('/')[1] : 'sv') || 'sv'
+      router.push(`/${locale}/auth/login`)
     }
   }, [isAuthenticated, isLoading, user, router])
 
