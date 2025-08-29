@@ -28,6 +28,84 @@ router.get('/payment/viva', (req, res) => {
   }
 })
 
+// Alternativ endpoint för Viva Wallet webhook-verifiering
+router.get('/viva-webhook', (req, res) => {
+  logger.info('Viva Wallet alternative webhook verification', {
+    query: req.query,
+    headers: req.headers
+  })
+  
+  const verificationCode = req.query.VivaWalletWebhookVerificationCode
+  if (verificationCode) {
+    res.setHeader('Content-Type', 'text/plain')
+    res.setHeader('Cache-Control', 'no-cache')
+    res.status(200).end(String(verificationCode))
+  } else {
+    res.status(200).end('WEBHOOK_OK')
+  }
+})
+
+// POST-endpoint för webhook-events (alternativ)
+router.post('/viva-webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+  try {
+    logger.info('Viva Wallet alternative webhook received', {
+      body: req.body.toString(),
+      headers: req.headers
+    })
+
+    const payload = JSON.parse(req.body.toString())
+    
+    // Svara omedelbart
+    res.status(200).send('OK')
+
+    // Samma hantering som huvudendpointen
+    if (payload.EventTypeId === 1796 || payload.EventTypeId === 1797) {
+      const orderCode = payload.EventData?.OrderCode
+      
+      if (orderCode) {
+        const order = await prisma.order.findFirst({
+          where: { 
+            OR: [
+              { paymentOrderCode: orderCode },
+              { paymentReference: orderCode }
+            ]
+          },
+          include: {
+            items: {
+              include: {
+                product: true
+              }
+            }
+          }
+        })
+
+        if (order) {
+          const updatedOrder = await prisma.order.update({
+            where: { id: order.id },
+            data: { 
+              paymentStatus: 'PAID',
+              status: 'CONFIRMED'
+            }
+          })
+
+          logger.info('Order payment confirmed via alternative webhook', {
+            orderId: updatedOrder.id,
+            orderNumber: updatedOrder.orderNumber,
+            amount: updatedOrder.totalAmount
+          })
+
+          await handleOrderStatusChange(updatedOrder.id, 'CONFIRMED', 'PAID')
+        }
+      }
+    }
+  } catch (error) {
+    logger.error('Alternative Viva Wallet webhook error:', error)
+    if (!res.headersSent) {
+      res.status(200).send('ERROR')
+    }
+  }
+})
+
 // POST-endpoint för webhook-events
 router.post('/payment/viva', express.raw({ type: 'application/json' }), async (req, res) => {
   try {
