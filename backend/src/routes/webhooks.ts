@@ -6,6 +6,66 @@ import { fortnoxService } from '../services/fortnoxService'
 
 const router = express.Router()
 
+// Enkel webhook-endpoint för Viva Wallet (root level)
+router.get('/viva', (req, res) => {
+  console.log('Viva Wallet simple verification:', req.query)
+  
+  const code = req.query.VivaWalletWebhookVerificationCode
+  if (code) {
+    res.setHeader('Content-Type', 'text/plain')
+    res.status(200).send(String(code))
+  } else {
+    res.status(200).send('OK')
+  }
+})
+
+router.post('/viva', express.raw({ type: 'application/json' }), async (req, res) => {
+  try {
+    console.log('Viva Wallet simple webhook:', req.body.toString())
+    
+    const payload = JSON.parse(req.body.toString())
+    res.status(200).send('OK')
+
+    // Samma orderhantering
+    if (payload.EventTypeId === 1796 || payload.EventTypeId === 1797) {
+      const orderCode = payload.EventData?.OrderCode
+      
+      if (orderCode) {
+        const order = await prisma.order.findFirst({
+          where: { 
+            OR: [
+              { paymentOrderCode: orderCode },
+              { paymentReference: orderCode }
+            ]
+          },
+          include: {
+            items: {
+              include: {
+                product: true
+              }
+            }
+          }
+        })
+
+        if (order) {
+          const updatedOrder = await prisma.order.update({
+            where: { id: order.id },
+            data: { 
+              paymentStatus: 'PAID',
+              status: 'CONFIRMED'
+            }
+          })
+
+          await handleOrderStatusChange(updatedOrder.id, 'CONFIRMED', 'PAID')
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Viva webhook error:', error)
+    res.status(200).send('ERROR')
+  }
+})
+
 /**
  * Webhook för betalningsbekräftelser från Viva Wallet
  */
