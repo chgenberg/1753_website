@@ -19,8 +19,10 @@ router.get('/payment/viva', (req, res) => {
   // Viva Wallet kan skicka en verifieringskod i query params
   const verificationCode = req.query.VivaWalletWebhookVerificationCode
   if (verificationCode) {
-    // Svara med verifieringskoden för att bekräfta webhook
-    res.status(200).send(verificationCode)
+    // Sätt explicit content-type till text/plain
+    res.setHeader('Content-Type', 'text/plain')
+    // Svara med verifieringskoden utan några extra tecken
+    res.status(200).end(String(verificationCode))
   } else {
     res.status(200).send('OK')
   }
