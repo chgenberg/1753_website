@@ -106,21 +106,30 @@ router.post('/viva', express.raw({ type: 'application/json' }), async (req, res)
  */
 // GET-endpoint för webhook-verifiering
 router.get('/payment/viva', (req, res) => {
+  // Utökad loggning för debugging
   logger.info('Viva Wallet webhook verification request', {
     query: req.query,
-    headers: req.headers
+    headers: req.headers,
+    url: req.url,
+    originalUrl: req.originalUrl,
+    path: req.path,
+    method: req.method,
+    protocol: req.protocol,
+    host: req.get('host')
   })
   
   const verificationCode = extractVerificationCode(req.query)
   
   // Sätt alltid text/plain content-type
-  res.setHeader('Content-Type', 'text/plain')
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8')
   
   if (verificationCode) {
     // Om det finns en verifieringskod, svara med den
+    logger.info('Returning verification code', { code: verificationCode })
     res.status(200).send(verificationCode)
   } else {
     // Om ingen verifieringskod, svara med "OK"
+    logger.info('No verification code found, returning OK')
     res.status(200).send('OK')
   }
 })
@@ -563,6 +572,23 @@ router.post('/test-status-change', express.json(), async (req, res) => {
   } catch (error) {
     logger.error('Test status change error:', error)
     res.status(500).json({ error: 'Test failed' })
+  }
+})
+
+// Test endpoint - super enkel
+router.all('/test-viva', (req, res) => {
+  console.log('TEST VIVA WEBHOOK:', {
+    method: req.method,
+    query: req.query,
+    headers: req.headers
+  })
+  
+  // Om det finns en VivaWalletWebhookVerificationCode, returnera den
+  const code = req.query.VivaWalletWebhookVerificationCode
+  if (code) {
+    res.type('text/plain').send(String(code))
+  } else {
+    res.type('text/plain').send('OK')
   }
 })
 
