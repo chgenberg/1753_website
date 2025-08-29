@@ -21,13 +21,32 @@ function extractVerificationCode(query: any): string | undefined {
   for (const key of possibleKeys) {
     const value = query?.[key]
     if (typeof value === 'string' && value.length > 0) return value
-    if (Array.isArray(value) && value[0]) return String(value[0])
+    if (Array.isArray(value) && value.length > 0 && typeof value[0] === 'string') return value[0]
   }
-  const keys = Object.keys(query || {})
-  if (keys.length === 1) {
-    const only = query[keys[0]]
-    if (typeof only === 'string') return only
-    if (Array.isArray(only) && only[0]) return String(only[0])
+  return undefined
+}
+
+// NEW: Try extracting verification code from headers as well (Viva variants unknown, be liberal)
+function extractVerificationCodeFromHeaders(headers: Record<string, any>): string | undefined {
+  if (!headers) return undefined
+  const headerEntries = Object.entries(headers)
+  for (const [rawKey, rawVal] of headerEntries) {
+    const key = String(rawKey).toLowerCase()
+    if (!key.includes('verify') && !key.includes('verification') && !key.includes('viva')) continue
+    const value = Array.isArray(rawVal) ? rawVal[0] : rawVal
+    if (typeof value === 'string' && value.trim().length > 0) return value.trim()
+  }
+  // Common explicit candidates
+  const explicit = [
+    'vivawalletwebhookverificationcode',
+    'x-viva-webhook-verification',
+    'x-vivawallet-webhook-verification',
+    'x-verification-code',
+    'verification'
+  ]
+  for (const candidate of explicit) {
+    const value = headers?.[candidate]
+    if (typeof value === 'string' && value.trim().length > 0) return value.trim()
   }
   return undefined
 }
@@ -36,9 +55,9 @@ function extractVerificationCode(query: any): string | undefined {
 router.get('/viva', (req, res) => {
   console.log('Viva Wallet simple verification:', req.query)
   
-  const code = req.query.VivaWalletWebhookVerificationCode
+  const code = req.query.VivaWalletWebhookVerificationCode as string | undefined
   
-  res.setHeader('Content-Type', 'text/plain')
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8')
   
   if (code) {
     res.status(200).send(String(code))
@@ -118,7 +137,7 @@ router.get('/payment/viva', (req, res) => {
     host: req.get('host')
   })
   
-  const verificationCode = extractVerificationCode(req.query)
+  const verificationCode = extractVerificationCode(req.query) || extractVerificationCodeFromHeaders(req.headers as any)
   
   // Sätt alltid text/plain content-type
   res.setHeader('Content-Type', 'text/plain; charset=utf-8')
@@ -134,11 +153,17 @@ router.get('/payment/viva', (req, res) => {
   }
 })
 
+// Explicit HEAD & OPTIONS for compatibility
 router.head('/payment/viva', (req, res) => {
-  res.status(200).end()
+  const code = extractVerificationCode(req.query) || extractVerificationCodeFromHeaders(req.headers as any)
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+  res.status(200).send(code || 'OK')
 })
+
 router.options('/payment/viva', (req, res) => {
-  res.status(200).end()
+  res.setHeader('Allow', 'GET,POST,HEAD,OPTIONS')
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+  res.status(200).send('OK')
 })
 
 // Alternativ endpoint för Viva Wallet webhook-verifiering
@@ -148,9 +173,9 @@ router.get('/viva-webhook', (req, res) => {
     headers: req.headers
   })
   
-  const verificationCode = extractVerificationCode(req.query)
+  const verificationCode = extractVerificationCode(req.query) || extractVerificationCodeFromHeaders(req.headers as any)
   
-  res.setHeader('Content-Type', 'text/plain')
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8')
   
   if (verificationCode) {
     res.status(200).send(verificationCode)
@@ -160,10 +185,15 @@ router.get('/viva-webhook', (req, res) => {
 })
 
 router.head('/viva-webhook', (req, res) => {
-  res.status(200).end()
+  const code = extractVerificationCode(req.query) || extractVerificationCodeFromHeaders(req.headers as any)
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+  res.status(200).send(code || 'OK')
 })
+
 router.options('/viva-webhook', (req, res) => {
-  res.status(200).end()
+  res.setHeader('Allow', 'GET,POST,HEAD,OPTIONS')
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+  res.status(200).send('OK')
 })
 
 // Alias endpoint to avoid configuration mistakes
@@ -173,9 +203,9 @@ router.get('/viva-wallet', (req, res) => {
     headers: req.headers
   })
   
-  const verificationCode = extractVerificationCode(req.query)
+  const verificationCode = extractVerificationCode(req.query) || extractVerificationCodeFromHeaders(req.headers as any)
   
-  res.setHeader('Content-Type', 'text/plain')
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8')
   
   if (verificationCode) {
     res.status(200).send(verificationCode)
@@ -185,10 +215,15 @@ router.get('/viva-wallet', (req, res) => {
 })
 
 router.head('/viva-wallet', (req, res) => {
-  res.status(200).end()
+  const code = extractVerificationCode(req.query) || extractVerificationCodeFromHeaders(req.headers as any)
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+  res.status(200).send(code || 'OK')
 })
+
 router.options('/viva-wallet', (req, res) => {
-  res.status(200).end()
+  res.setHeader('Allow', 'GET,POST,HEAD,OPTIONS')
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+  res.status(200).send('OK')
 })
 
 // POST-endpoint för webhook-events (alternativ)
@@ -584,7 +619,8 @@ router.all('/test-viva', (req, res) => {
   })
   
   // Om det finns en VivaWalletWebhookVerificationCode, returnera den
-  const code = req.query.VivaWalletWebhookVerificationCode
+  const code = (req.query.VivaWalletWebhookVerificationCode as string | undefined) || extractVerificationCodeFromHeaders(req.headers as any)
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8')
   if (code) {
     res.type('text/plain').send(String(code))
   } else {
