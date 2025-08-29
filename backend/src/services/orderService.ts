@@ -226,23 +226,47 @@ class OrderService {
   private async processSybkaOrder(orderData: OrderData, transactionId: string): Promise<{ order_id: string }> {
     const sybkaOrderData = {
       shop_order_id: orderData.orderId,
+      shop_order_increment_id: `1753-${orderData.orderId}`,
+      order_date: new Date().toISOString().split('T')[0],
       currency: orderData.currency || 'SEK',
       grand_total: orderData.total,
+      subtotal: orderData.total - (orderData.total * 0.2), // Anta 20% moms
+      discount_amount: 0,
+      subtotal_incl_tax: orderData.total,
+      tax_amount: orderData.total * 0.2,
+      shipping_amount: orderData.shipping || 0,
+      shipping_incl_tax: orderData.shipping || 0,
+      shipping_tax_amount: 0,
+      status: 'confirmed' as const,
+      fulfillment_status: 'unfulfilled' as const,
+      billing_email: orderData.customer.email,
+      billing_firstname: orderData.customer.firstName,
+      billing_lastname: orderData.customer.lastName,
+      billing_street: `${orderData.customer.address}${orderData.customer.apartment ? ', ' + orderData.customer.apartment : ''}`,
+      billing_city: orderData.customer.city,
+      billing_postcode: orderData.customer.postalCode,
+      billing_country: orderData.customer.country,
+      billing_phone: orderData.customer.phone || '',
+      shipping_email: orderData.customer.email,
       shipping_firstname: orderData.customer.firstName,
       shipping_lastname: orderData.customer.lastName,
       shipping_street: `${orderData.customer.address}${orderData.customer.apartment ? ', ' + orderData.customer.apartment : ''}`,
-      shipping_postcode: orderData.customer.postalCode,
       shipping_city: orderData.customer.city,
+      shipping_postcode: orderData.customer.postalCode,
       shipping_country: orderData.customer.country,
-      shipping_email: orderData.customer.email,
+      shipping_phone: orderData.customer.phone || '',
       order_rows: orderData.items.map(item => ({
         sku: item.sku || item.productId,
         name: item.name,
         qty_ordered: item.quantity,
-        price: item.price
+        price: item.price,
+        price_incl_tax: item.price * 1.2, // Anta 20% moms
+        row_total: item.quantity * item.price,
+        row_total_incl_tax: item.quantity * item.price * 1.2,
+        tax_amount: item.quantity * item.price * 0.2,
+        tax_percent: 20
       })),
-      payment_gateway: 'vivawallet',
-      transaction_id: transactionId
+      team_id: '844'
     }
 
     const result = await sybkaService.createOrder(sybkaOrderData)

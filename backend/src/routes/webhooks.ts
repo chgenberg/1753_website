@@ -22,12 +22,13 @@ router.post('/payment/viva', express.raw({ type: 'application/json' }), async (r
       const orderCode = payload.EventData?.OrderCode
       
       if (orderCode) {
-        // Uppdatera order med betalningsstatus
-        const order = await prisma.order.update({
-          where: { paymentOrderCode: orderCode },
-          data: { 
-            paymentStatus: 'PAID',
-            status: 'CONFIRMED' // Automatiskt bekräfta order när betalning är klar
+        // Hitta order med paymentOrderCode eller paymentReference
+        const order = await prisma.order.findFirst({
+          where: { 
+            OR: [
+              { paymentOrderCode: orderCode },
+              { paymentReference: orderCode }
+            ]
           },
           include: {
             items: {
@@ -38,14 +39,27 @@ router.post('/payment/viva', express.raw({ type: 'application/json' }), async (r
           }
         })
 
-        logger.info('Order payment confirmed', {
-          orderId: order.id,
-          orderNumber: order.orderNumber,
-          amount: order.totalAmount
-        })
+        if (order) {
+          // Uppdatera order med betalningsstatus
+          const updatedOrder = await prisma.order.update({
+            where: { id: order.id },
+            data: { 
+              paymentStatus: 'PAID',
+              status: 'CONFIRMED' // Automatiskt bekräfta order när betalning är klar
+            }
+          })
 
-        // Kontrollera om vi ska skapa faktura och skicka till Sybka
-        await handleOrderStatusChange(order.id, 'CONFIRMED', 'PAID')
+          logger.info('Order payment confirmed', {
+            orderId: updatedOrder.id,
+            orderNumber: updatedOrder.orderNumber,
+            amount: updatedOrder.totalAmount
+          })
+
+          // Kontrollera om vi ska skapa faktura och skicka till Sybka
+          await handleOrderStatusChange(updatedOrder.id, 'CONFIRMED', 'PAID')
+        } else {
+          logger.warn('Order not found for payment confirmation', { orderCode })
+        }
       }
     }
 
@@ -121,37 +135,46 @@ async function handleOrderStatusChange(orderId: string, status: string, paymentS
           teamId: statusMapping.team_id
         })
 
-        const fortnoxOrderNumber = await fortnoxService.processOrder({
-          id: order.id,
-          orderNumber: order.orderNumber,
-          email: order.email,
-          totalAmount: order.totalAmount,
-          currency: order.currency,
-          shippingAddress: order.shippingAddress as any,
-          billingAddress: order.billingAddress as any,
+        // Bygga customer-objektet från order
+        const shippingAddr = order.shippingAddress as any
+        const billingAddr = order.billingAddress as any
+        
+        const fortnoxResult = await fortnoxService.processOrder({
+          customer: {
+            email: order.email,
+            firstName: shippingAddr?.firstName || billingAddr?.firstName || '',
+            lastName: shippingAddr?.lastName || billingAddr?.lastName || '',
+            phone: shippingAddr?.phone || billingAddr?.phone || order.phone || '',
+            address: shippingAddr?.address || billingAddr?.address || '',
+            apartment: shippingAddr?.apartment || billingAddr?.apartment,
+            city: shippingAddr?.city || billingAddr?.city || '',
+            postalCode: shippingAddr?.postalCode || billingAddr?.postalCode || '',
+            country: shippingAddr?.country || billingAddr?.country || 'SE'
+          },
           items: order.items.map(item => ({
-            id: item.id,
             productId: item.productId,
-            productName: item.product?.name || 'Okänd produkt',
-            quantity: item.quantity,
+            name: item.product?.name || 'Okänd produkt',
             price: item.price,
-            total: item.quantity * item.price
+            quantity: item.quantity,
+            sku: item.product?.sku || item.productId
           })),
-          createdAt: order.createdAt,
-          paymentMethod: order.paymentMethod || 'vivawallet'
+          orderId: order.orderNumber,
+          total: order.totalAmount,
+          shipping: order.shippingAmount,
+          orderDate: order.createdAt
         })
 
         // Uppdatera order med Fortnox-referens
         await prisma.order.update({
           where: { id: orderId },
           data: { 
-            internalNotes: `Fortnox order: ${fortnoxOrderNumber}${order.internalNotes ? '\n' + order.internalNotes : ''}` 
+            internalNotes: `Fortnox order: ${fortnoxResult.orderNumber}${order.internalNotes ? '\n' + order.internalNotes : ''}` 
           }
         })
 
         logger.info('Fortnox invoice created successfully', {
           orderId,
-          fortnoxOrderNumber,
+          fortnoxOrderNumber: fortnoxResult.orderNumber,
           teamId: statusMapping.team_id
         })
 
@@ -294,5 +317,4 @@ router.post('/test-status-change', express.json(), async (req, res) => {
   }
 })
 
-export default router 
 export default router 

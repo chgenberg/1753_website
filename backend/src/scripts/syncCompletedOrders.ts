@@ -30,7 +30,6 @@ async function syncCompletedOrders() {
           // For now, we'll just log the information
           logger.info(`Order ${order.shop_order_id} shipped:`, {
             trackingNumber: order.tracking_number,
-            carrier: order.carrier,
             shippedAt: order.shipped_at,
             fortnoxInvoiceId: order.fortnox_invoice_id
           })
