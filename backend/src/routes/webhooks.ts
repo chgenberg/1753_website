@@ -76,9 +76,13 @@ async function fetchVivaVerificationKey(): Promise<{ Key: string } | null> {
       logger.warn('Viva verification token fetch failed', { status: resp.status, body: text })
       return null
     }
-    const data = await resp.json().catch(() => ({} as any))
-    if (data && typeof data.Key === 'string' && data.Key.length > 0) {
-      return { Key: data.Key }
+
+    const parsed: unknown = await resp.json().catch(() => null)
+    const key = parsed && typeof parsed === 'object' && parsed !== null && typeof (parsed as any).Key === 'string'
+      ? ((parsed as any).Key as string)
+      : null
+    if (key && key.length > 0) {
+      return { Key: key }
     }
     logger.warn('Viva verification token response missing Key field')
     return null
