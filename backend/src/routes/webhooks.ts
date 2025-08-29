@@ -42,12 +42,15 @@ router.get('/viva', (req, res) => {
     res.setHeader('Content-Type', 'text/plain')
     res.status(200).send(String(code))
   } else {
-    res.status(200).send('OK')
+    res.status(204).end()
   }
 })
 
-// Also accept HEAD for verification probes
+// Also accept HEAD/OPTIONS for verification probes
 router.head('/viva', (req, res) => {
+  res.status(200).end()
+})
+router.options('/viva', (req, res) => {
   res.status(200).end()
 })
 
@@ -113,11 +116,14 @@ router.get('/payment/viva', (req, res) => {
     res.setHeader('Content-Type', 'text/plain')
     res.status(200).end(String(verificationCode))
   } else {
-    res.status(200).send('OK')
+    res.status(204).end()
   }
 })
 
 router.head('/payment/viva', (req, res) => {
+  res.status(200).end()
+})
+router.options('/payment/viva', (req, res) => {
   res.status(200).end()
 })
 
@@ -134,11 +140,14 @@ router.get('/viva-webhook', (req, res) => {
     res.setHeader('Cache-Control', 'no-cache')
     res.status(200).end(String(verificationCode))
   } else {
-    res.status(200).end('WEBHOOK_OK')
+    res.status(204).end()
   }
 })
 
 router.head('/viva-webhook', (req, res) => {
+  res.status(200).end()
+})
+router.options('/viva-webhook', (req, res) => {
   res.status(200).end()
 })
 
@@ -154,11 +163,14 @@ router.get('/viva-wallet', (req, res) => {
     res.setHeader('Content-Type', 'text/plain')
     res.status(200).end(String(verificationCode))
   } else {
-    res.status(200).send('OK')
+    res.status(204).end()
   }
 })
 
 router.head('/viva-wallet', (req, res) => {
+  res.status(200).end()
+})
+router.options('/viva-wallet', (req, res) => {
   res.status(200).end()
 })
 
