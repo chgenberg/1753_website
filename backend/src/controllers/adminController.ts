@@ -237,6 +237,35 @@ export const updateOrderStatus = async (req: AdminRequest, res: Response) => {
       adminId: req.userId
     })
 
+    // Trigga webhook för statusändring om status eller paymentStatus ändrades
+    if (status || paymentStatus) {
+      try {
+        const axios = require('axios')
+        await axios.post(`${process.env.API_BASE_URL || 'http://localhost:5002'}/api/webhooks/order-status-change`, {
+          orderId,
+          status: status || updatedOrder.status,
+          paymentStatus: paymentStatus || updatedOrder.paymentStatus
+        }, {
+          timeout: 5000,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+
+        logger.info('Order status change webhook triggered', {
+          orderId,
+          status: status || updatedOrder.status,
+          paymentStatus: paymentStatus || updatedOrder.paymentStatus
+        })
+      } catch (webhookError) {
+        logger.error('Failed to trigger order status change webhook:', {
+          orderId,
+          error: webhookError instanceof Error ? webhookError.message : 'Unknown error'
+        })
+        // Fortsätt trots webhook-fel
+      }
+    }
+
     res.json({
       success: true,
       message: 'Order uppdaterad',

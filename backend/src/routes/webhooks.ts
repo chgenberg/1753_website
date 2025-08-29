@@ -1,274 +1,298 @@
-import { Router } from 'express'
-import axios from 'axios'
-import { vivaWalletService } from '../services/vivaWalletService'
-import { sendEmail } from '../services/emailService'
+import express from 'express'
 import { logger } from '../utils/logger'
-import prisma from '../lib/prisma'
-import { fortnoxService } from '../services/fortnoxService'
+import { prisma } from '../lib/prisma'
 import { sybkaService } from '../services/sybkaService'
+import { fortnoxService } from '../services/fortnoxService'
 
-const router = Router()
+const router = express.Router()
 
 /**
- * Viva Wallet webhook endpoint
- * Called when payment status changes
+ * Webhook för betalningsbekräftelser från Viva Wallet
  */
-router.post('/viva-wallet', async (req, res) => {
+router.post('/payment/viva', express.raw({ type: 'application/json' }), async (req, res) => {
   try {
-    const payload = req.body
-    logger.info('Received Viva Wallet webhook', { payload })
+    const payload = JSON.parse(req.body.toString())
+    
+    logger.info('Viva Wallet webhook received', {
+      eventType: payload.EventTypeId,
+      orderCode: payload.EventData?.OrderCode
+    })
 
-    // Verify webhook signature if configured
-    const signature = req.headers['x-viva-signature'] as string
-    if (signature && process.env.VIVA_WALLET_WEBHOOK_SECRET) {
-      const isValid = vivaWalletService.verifyWebhookSignature(
-        JSON.stringify(payload),
-        signature
-      )
+    if (payload.EventTypeId === 1796) { // Payment Created
+      const orderCode = payload.EventData?.OrderCode
       
-      if (!isValid) {
-        logger.warn('Invalid Viva Wallet webhook signature')
-        return res.status(401).json({ error: 'Invalid signature' })
+      if (orderCode) {
+        // Uppdatera order med betalningsstatus
+        const order = await prisma.order.update({
+          where: { paymentOrderCode: orderCode },
+          data: { 
+            paymentStatus: 'PAID',
+            status: 'CONFIRMED' // Automatiskt bekräfta order när betalning är klar
+          },
+          include: {
+            items: {
+              include: {
+                product: true
+              }
+            }
+          }
+        })
+
+        logger.info('Order payment confirmed', {
+          orderId: order.id,
+          orderNumber: order.orderNumber,
+          amount: order.totalAmount
+        })
+
+        // Kontrollera om vi ska skapa faktura och skicka till Sybka
+        await handleOrderStatusChange(order.id, 'CONFIRMED', 'PAID')
       }
     }
 
-    // Process the webhook
-    const webhookData = vivaWalletService.processWebhook(payload)
-    
-    if (!webhookData.orderId) {
-      logger.warn('No order ID in webhook payload')
-      return res.status(400).json({ error: 'No order ID' })
-    }
+    res.status(200).json({ received: true })
+  } catch (error) {
+    logger.error('Viva Wallet webhook error:', error)
+    res.status(500).json({ error: 'Webhook processing failed' })
+  }
+})
 
-    // Find the order by payment reference (Viva orderCode)
-    const order = await prisma.order.findFirst({
-      where: { 
-        paymentReference: webhookData.orderId 
-      },
+/**
+ * Webhook för orderstatusändringar (intern)
+ */
+router.post('/order-status-change', express.json(), async (req, res) => {
+  try {
+    const { orderId, status, paymentStatus } = req.body
+
+    logger.info('Order status change webhook', {
+      orderId,
+      status,
+      paymentStatus
+    })
+
+    await handleOrderStatusChange(orderId, status, paymentStatus)
+
+    res.status(200).json({ success: true })
+  } catch (error) {
+    logger.error('Order status change webhook error:', error)
+    res.status(500).json({ error: 'Status change processing failed' })
+  }
+})
+
+/**
+ * Hantera orderstatusändringar och trigga Sybka/Fortnox-integration
+ */
+async function handleOrderStatusChange(orderId: string, status: string, paymentStatus: string) {
+  try {
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
       include: {
         items: {
           include: {
             product: true
           }
-        }
+        },
+        user: true
       }
     })
 
     if (!order) {
-      logger.warn('Order not found for webhook', { orderId: webhookData.orderId })
-      return res.status(404).json({ error: 'Order not found' })
+      logger.error('Order not found for status change', { orderId })
+      return
     }
 
-    // Update order status based on payment status
-    let orderStatus = 'PENDING'
-    let paymentStatus = 'PENDING'
-
-    switch (webhookData.status) {
-      case 'completed':
-        orderStatus = 'PROCESSING'
-        paymentStatus = 'PAID'
-        break
-      case 'cancelled':
-        orderStatus = 'CANCELLED'
-        paymentStatus = 'CANCELLED'
-        break
-      case 'failed':
-        orderStatus = 'CANCELLED'
-        paymentStatus = 'FAILED'
-        break
-      case 'refunded':
-        orderStatus = 'REFUNDED'
-        paymentStatus = 'REFUNDED'
-        break
-    }
-
-    // Update order in database
-    await prisma.order.update({
-      where: { id: order.id },
-      data: {
-        status: orderStatus as any,
-        paymentStatus: paymentStatus as any,
-        transactionId: webhookData.transactionId
-      }
+    const statusMapping = sybkaService.getStatusMapping()
+    
+    logger.info('Processing order status change', {
+      orderId,
+      orderNumber: order.orderNumber,
+      status,
+      paymentStatus,
+      teamId: statusMapping.team_id,
+      shouldCreateInvoice: sybkaService.shouldCreateInvoice(status, paymentStatus),
+      shouldCreateSybkaOrder: sybkaService.shouldCreateSybkaOrder(status, paymentStatus)
     })
 
-    // Send order confirmation email if payment was successful
-    if (paymentStatus === 'PAID') {
+    // 1. Skapa faktura i Fortnox om status triggar det
+    if (sybkaService.shouldCreateInvoice(status, paymentStatus)) {
       try {
-        await sendEmail({
-          to: order.email,
-          subject: `Orderbekräftelse #${order.orderNumber}`,
-          template: 'orderConfirmation',
-          data: {
-            firstName: order.customerName?.split(' ')[0] || 'Kund',
-            orderNumber: order.orderNumber,
-            orderDate: new Date().toLocaleDateString('sv-SE'),
-            items: order.items.map(item => ({
-              name: item.product.name,
-              quantity: item.quantity,
-              total: item.price * item.quantity
-            })),
-            total: order.totalAmount,
-            currency: 'kr',
-            shippingAddress: order.shippingAddress as any
-          }
+        logger.info('Creating Fortnox invoice', {
+          orderId,
+          orderNumber: order.orderNumber,
+          teamId: statusMapping.team_id
         })
-        
-        logger.info('Order confirmation email sent via webhook', {
-          orderId: order.id,
-          email: order.email
-        })
-      } catch (emailError) {
-        logger.error('Failed to send order confirmation email via webhook:', emailError)
-      }
 
-      // Fortnox + Sybka+ integrations (idempotent best-effort)
-      try {
-        const alreadyIntegrated = (order.internalNotes || '').includes('Fortnox:') || (order.internalNotes || '').includes('Sybka:')
-        if (!alreadyIntegrated) {
-          const shipping = order.shippingAddress as any
-
-          // Build items list
-          const items = order.items.map(item => ({
+        const fortnoxOrderNumber = await fortnoxService.processOrder({
+          id: order.id,
+          orderNumber: order.orderNumber,
+          email: order.email,
+          totalAmount: order.totalAmount,
+          currency: order.currency,
+          shippingAddress: order.shippingAddress as any,
+          billingAddress: order.billingAddress as any,
+          items: order.items.map(item => ({
+            id: item.id,
             productId: item.productId,
-            name: item.product?.name || item.title || 'Produkt',
-            price: item.price,
+            productName: item.product?.name || 'Okänd produkt',
             quantity: item.quantity,
-            sku: item.sku || item.product?.sku || undefined
-          }))
+            price: item.price,
+            total: item.quantity * item.price
+          })),
+          createdAt: order.createdAt,
+          paymentMethod: order.paymentMethod || 'vivawallet'
+        })
 
-          // 1) Create order in Fortnox
-          let fortnoxOrderNumber: string | undefined
-          try {
-            fortnoxOrderNumber = (await fortnoxService.processOrder({
-              customer: {
-                email: order.email,
-                firstName: shipping?.firstName || (order.customerName?.split(' ')[0] || ''),
-                lastName: shipping?.lastName || (order.customerName?.split(' ').slice(1).join(' ') || ''),
-                phone: order.customerPhone || order.phone || undefined,
-                address: shipping?.address || shipping?.address1 || '',
-                apartment: shipping?.apartment || shipping?.address2 || undefined,
-                city: shipping?.city || '',
-                postalCode: shipping?.postalCode || shipping?.zip || '',
-                country: shipping?.country || 'SE'
-              },
-              items,
-              orderId: order.orderNumber,
-              total: order.totalAmount,
-              shipping: order.shippingAmount || 0,
-              orderDate: order.createdAt
-            })).orderNumber
-          } catch (err: any) {
-            logger.error('Fortnox processing failed:', err?.message || err)
+        // Uppdatera order med Fortnox-referens
+        await prisma.order.update({
+          where: { id: orderId },
+          data: { 
+            internalNotes: `Fortnox order: ${fortnoxOrderNumber}${order.internalNotes ? '\n' + order.internalNotes : ''}` 
           }
+        })
 
-          // 2) Send order to Sybka+ (which handles Ongoing)
-          let sybkaOrderId: string | undefined
-          try {
-            const street = [shipping?.address || shipping?.address1, shipping?.apartment || shipping?.address2].filter(Boolean).join(', ')
-            const sybkaResp = await sybkaService.createOrder({
-              shop_order_id: order.orderNumber,
-              currency: order.currency || 'SEK',
-              grand_total: order.totalAmount,
-              shipping_firstname: shipping?.firstName || (order.customerName?.split(' ')[0] || ''),
-              shipping_lastname: shipping?.lastName || (order.customerName?.split(' ').slice(1).join(' ') || ''),
-              shipping_street: street,
-              shipping_postcode: shipping?.postalCode || shipping?.zip || '',
-              shipping_city: shipping?.city || '',
-              shipping_country: shipping?.country || 'SE',
-              shipping_email: order.email,
-              order_rows: items.map(i => ({
-                sku: i.sku || i.productId,
-                name: i.name,
-                qty_ordered: i.quantity,
-                price: i.price
-              })),
-              payment_gateway: 'vivawallet',
-              transaction_id: webhookData.transactionId || ''
-            })
-            if (sybkaResp.success) {
-              sybkaOrderId = sybkaResp.order_id
-            } else {
-              logger.error('Sybka+ order creation failed:', sybkaResp.error)
-            }
-          } catch (err: any) {
-            logger.error('Sybka+ processing failed:', err?.message || err)
-          }
+        logger.info('Fortnox invoice created successfully', {
+          orderId,
+          fortnoxOrderNumber,
+          teamId: statusMapping.team_id
+        })
 
-          // Persist external refs in internalNotes
-          const noteParts: string[] = []
-          if (fortnoxOrderNumber) noteParts.push(`Fortnox: ${fortnoxOrderNumber}`)
-          if (sybkaOrderId) noteParts.push(`Sybka: ${sybkaOrderId}`)
-          if (noteParts.length > 0) {
-            const nextNotes = `${order.internalNotes ? order.internalNotes + ' | ' : ''}${noteParts.join(' | ')}`
-            await prisma.order.update({
-              where: { id: order.id },
-              data: { internalNotes: nextNotes }
-            })
-          }
-        } else {
-          logger.info('Skipping Fortnox/Sybka integration as notes suggest it already ran', { orderId: order.id })
-        }
-      } catch (integrationErr: any) {
-        logger.error('Post-payment integration block failed:', integrationErr?.message || integrationErr)
+      } catch (error) {
+        logger.error('Failed to create Fortnox invoice', {
+          orderId,
+          error: error instanceof Error ? error.message : 'Unknown error',
+          teamId: statusMapping.team_id
+        })
       }
     }
 
-    logger.info('Webhook processed successfully', {
-      orderId: order.id,
-      status: webhookData.status,
-      paymentStatus
-    })
+    // 2. Skicka order till Sybka för fulfillment om status triggar det
+    if (sybkaService.shouldCreateSybkaOrder(status, paymentStatus)) {
+      try {
+        logger.info('Creating Sybka order', {
+          orderId,
+          orderNumber: order.orderNumber,
+          teamId: statusMapping.team_id
+        })
 
-    res.json({ success: true })
+        const sybkaOrderData = {
+          shop_order_id: order.orderNumber,
+          shop_order_increment_id: `1753-${order.orderNumber}`,
+          order_date: order.createdAt.toISOString().split('T')[0],
+          currency: order.currency,
+          grand_total: order.totalAmount,
+          subtotal: order.subtotal,
+          discount_amount: order.discountAmount,
+          subtotal_incl_tax: order.totalAmount,
+          tax_amount: order.taxAmount,
+          shipping_amount: order.shippingAmount,
+          shipping_incl_tax: order.shippingAmount,
+          shipping_tax_amount: 0,
+          status: status.toLowerCase() as any,
+          fulfillment_status: 'unfulfilled' as const,
+          billing_email: order.email,
+          billing_firstname: (order.billingAddress as any)?.firstName || '',
+          billing_lastname: (order.billingAddress as any)?.lastName || '',
+          billing_street: (order.billingAddress as any)?.address || '',
+          billing_city: (order.billingAddress as any)?.city || '',
+          billing_postcode: (order.billingAddress as any)?.postalCode || '',
+          billing_country: (order.billingAddress as any)?.country || 'SE',
+          billing_phone: (order.billingAddress as any)?.phone || '',
+          shipping_email: order.email,
+          shipping_firstname: (order.shippingAddress as any)?.firstName || '',
+          shipping_lastname: (order.shippingAddress as any)?.lastName || '',
+          shipping_street: (order.shippingAddress as any)?.address || '',
+          shipping_city: (order.shippingAddress as any)?.city || '',
+          shipping_postcode: (order.shippingAddress as any)?.postalCode || '',
+          shipping_country: (order.shippingAddress as any)?.country || 'SE',
+          shipping_phone: (order.shippingAddress as any)?.phone || '',
+          order_rows: order.items.map(item => ({
+            sku: item.product?.sku || item.productId,
+            name: item.product?.name || 'Okänd produkt',
+            qty_ordered: item.quantity,
+            price: item.price,
+            price_incl_tax: item.price * 1.25, // Anta 25% moms
+            row_total: item.quantity * item.price,
+            row_total_incl_tax: item.quantity * item.price * 1.25,
+            tax_amount: item.quantity * item.price * 0.25,
+            tax_percent: 25
+          })),
+          team_id: statusMapping.team_id
+        }
+
+        const result = await sybkaService.createOrder(sybkaOrderData)
+        
+        if (result.success) {
+          logger.info('Sybka order created successfully', {
+            orderId,
+            sybkaOrderId: result.order_id,
+            teamId: statusMapping.team_id
+          })
+        } else {
+          logger.error('Failed to create Sybka order', {
+            orderId,
+            error: result.error,
+            teamId: statusMapping.team_id
+          })
+        }
+
+      } catch (error) {
+        logger.error('Failed to create Sybka order', {
+          orderId,
+          error: error instanceof Error ? error.message : 'Unknown error',
+          teamId: statusMapping.team_id
+        })
+      }
+    }
+
   } catch (error) {
-    logger.error('Error processing Viva Wallet webhook:', error)
-    res.status(500).json({ error: 'Internal server error' })
+    logger.error('Error handling order status change', {
+      orderId,
+      status,
+      paymentStatus,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    })
+  }
+}
+
+/**
+ * Webhook för Fortnox-events (framtida användning)
+ */
+router.post('/fortnox', express.json(), async (req, res) => {
+  try {
+    logger.info('Fortnox webhook received', req.body)
+    
+    // Här kan vi hantera events från Fortnox om behövs
+    res.status(200).json({ received: true })
+  } catch (error) {
+    logger.error('Fortnox webhook error:', error)
+    res.status(500).json({ error: 'Webhook processing failed' })
   }
 })
 
 /**
- * Validation endpoints used by Viva Wallet UI when adding the webhook
+ * Test endpoint för att trigga statusändringar manuellt
  */
-router.head('/viva-wallet', (_req, res) => {
-  res.status(200).send('OK')
-})
-
-router.options('/viva-wallet', (_req, res) => {
-  res.setHeader('Allow', 'GET,POST,HEAD,OPTIONS')
-  res.status(200).send('OK')
-})
-
-router.get('/viva-wallet', async (_req, res) => {
+router.post('/test-status-change', express.json(), async (req, res) => {
   try {
-    // Viva requires us to echo back the verification Key received from their API
-    const merchantId = process.env.VIVA_MERCHANT_ID
-    const apiKey = process.env.VIVA_API_KEY
-    const baseUrl = process.env.VIVA_BASE_URL?.includes('demo')
-      ? 'https://demo.vivapayments.com'
-      : 'https://www.vivapayments.com'
+    const { orderId, status, paymentStatus } = req.body
 
-    if (!merchantId || !apiKey) {
-      // Fallback to env-provided key if merchant creds are not configured
-      const fallbackKey = process.env.VIVA_WALLET_WEBHOOK_SECRET || 'default-validation-key'
-      return res.status(200).json({ Key: fallbackKey })
+    if (!orderId || !status || !paymentStatus) {
+      return res.status(400).json({ 
+        error: 'Missing required fields: orderId, status, paymentStatus' 
+      })
     }
 
-    const credentials = Buffer.from(`${merchantId}:${apiKey}`).toString('base64')
-    const resp = await axios.get(`${baseUrl}/api/messages/config/token`, {
-      headers: {
-        Authorization: `Basic ${credentials}`
-      },
-      timeout: 5000
+    await handleOrderStatusChange(orderId, status, paymentStatus)
+    
+    res.status(200).json({ 
+      success: true, 
+      message: 'Status change processed',
+      teamId: sybkaService.getStatusMapping().team_id
     })
-
-    const key = resp.data?.Key || process.env.VIVA_WALLET_WEBHOOK_SECRET || 'default-validation-key'
-    res.status(200).json({ Key: key })
-  } catch (err: any) {
-    logger.error('Failed to fetch Viva verification key', { error: err.message })
-    const fallbackKey = process.env.VIVA_WALLET_WEBHOOK_SECRET || 'default-validation-key'
-    res.status(200).json({ Key: fallbackKey })
+  } catch (error) {
+    logger.error('Test status change error:', error)
+    res.status(500).json({ error: 'Test failed' })
   }
 })
 
+export default router 
 export default router 
