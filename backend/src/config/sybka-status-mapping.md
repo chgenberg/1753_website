@@ -75,14 +75,15 @@ Order: PROCESSING + PAID
 
 ```env
 # Sybka Plus
-SYNKA_ACCESS_TOKEN=QgFCIjnAOZrZlD2J4pxyJq8VmPZNH7sl5jG5U3gSQbBb25eO6r2yEQoYm1eV
+SYNKA_ACCESS_TOKEN=your-synka-access-token-here
 SYNKA_TEAM_ID=844
 SYNKA_API_URL=https://mitt.synkaplus.se/api/
 SYBKA_SYNC_URL=http://localhost:8000
 
 # Fortnox
+FORTNOX_API_TOKEN=din_fortnox_api_token
+FORTNOX_CLIENT_SECRET=din_fortnox_client_secret
 FORTNOX_CLIENT_ID=lWspWpJ1EjTS
-FORTNOX_CLIENT_SECRET=vyzsHYsaNu
 FORTNOX_ORDER_PREFIX=1753-
 ```
 

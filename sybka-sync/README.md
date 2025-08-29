@@ -52,10 +52,9 @@ docker-compose up -d
 
 ## Konfiguration
 
-API-uppgifter är redan konfigurerade:
 - **API URL:** `https://mitt.synkaplus.se/api/`
 - **Team ID:** `844`
-- **Token:** `QgFCIjnAOZrZlD2J4pxyJq8VmPZNH7sl5jG5U3gSQbBb25eO6r2yEQoYm1eV`
+- **Token:** `[SET_AS_ENVIRONMENT_VARIABLE]`
 
 ## Användning
 

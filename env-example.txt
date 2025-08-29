@@ -1,0 +1,29 @@
+# Copy this file to .env and fill in your actual values
+# NEVER commit .env to git!
+
+# Sybka Plus / Synka Integration
+SYNKA_ACCESS_TOKEN=your-actual-synka-token-here
+SYNKA_TEAM_ID=844
+SYNKA_API_URL=https://mitt.synkaplus.se/api/
+
+# Database
+DATABASE_URL=postgresql://user:password@localhost:5432/1753_skincare
+
+# API Configuration
+PORT=5002
+NODE_ENV=development
+API_BASE_URL=http://localhost:5002
+
+# JWT
+JWT_SECRET=your-secret-key-here
+
+# Viva Wallet
+VIVA_MERCHANT_ID=your-merchant-id
+VIVA_API_KEY=your-api-key
+VIVA_CLIENT_ID=your-client-id
+VIVA_CLIENT_SECRET=your-client-secret
+
+# Fortnox
+FORTNOX_API_TOKEN=your-fortnox-api-token
+FORTNOX_CLIENT_SECRET=your-fortnox-client-secret
+FORTNOX_CLIENT_ID=your-fortnox-client-id 

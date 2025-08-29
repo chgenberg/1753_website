@@ -1,7 +1,8 @@
 <?php
 
 // Explore Sybka+ API endpoints systematically
-$accessToken = 'QgFCIjnAOZrZlD2J4pxyJq8VmPZNH7sl5jG5U3gSQbBb25eO6r2yEQoYm1eV';
+// Use environment variable instead of hardcoded token
+$accessToken = $_ENV['SYNKA_ACCESS_TOKEN'] ?? 'your-token-here';
 $apiUrl = 'https://mitt.synkaplus.se/api/';
 $teamId = '844';
 

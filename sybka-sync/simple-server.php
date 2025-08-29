@@ -12,9 +12,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// Sybka API Configuration - UPDATED WITH CORRECT INFO
-$SYBKA_CONFIG = [
-    'access_token' => 'QgFCIjnAOZrZlD2J4pxyJq8VmPZNH7sl5jG5U3gSQbBb25eO6r2yEQoYm1eV',
+// Configuration - use environment variables
+$config = [
+    'access_token' => $_ENV['SYNKA_ACCESS_TOKEN'] ?? 'your-token-here',
     'api_url' => 'https://mitt.synkaplus.se/api/',
     'team_id' => '844',
     'timeout' => 30,
@@ -59,9 +59,9 @@ if ($path === '/health') {
         'timestamp' => date('c'),
         'service' => 'Sybka Sync Service',
         'config' => [
-            'api_url' => $SYBKA_CONFIG['api_url'],
-            'team_id' => $SYBKA_CONFIG['team_id'],
-            'has_token' => !empty($SYBKA_CONFIG['access_token'])
+            'api_url' => $config['api_url'],
+            'team_id' => $config['team_id'],
+            'has_token' => !empty($config['access_token'])
         ]
     ]);
     exit;
@@ -70,8 +70,8 @@ if ($path === '/health') {
 // Test connection
 if ($path === '/api/sybka/test') {
     $headers = [
-        'Authorization: Bearer ' . $SYBKA_CONFIG['access_token'],
-        'X-TeamID: ' . $SYBKA_CONFIG['team_id'],
+        'Authorization: Bearer ' . $config['access_token'],
+        'X-TeamID: ' . $config['team_id'],
         'Content-Type: application/json'
     ];
     
@@ -85,7 +85,7 @@ if ($path === '/api/sybka/test') {
     
     $results = [];
     foreach ($testEndpoints as $endpoint) {
-        $result = makeRequest('GET', $SYBKA_CONFIG['api_url'] . $endpoint, null, $headers);
+        $result = makeRequest('GET', $config['api_url'] . $endpoint, null, $headers);
         $results[$endpoint] = [
             'status' => $result['status'],
             'success' => $result['status'] >= 200 && $result['status'] < 300,
@@ -94,9 +94,9 @@ if ($path === '/api/sybka/test') {
     }
     
     echo json_encode([
-        'api_url' => $SYBKA_CONFIG['api_url'],
-        'team_id' => $SYBKA_CONFIG['team_id'],
-        'has_token' => !empty($SYBKA_CONFIG['access_token']),
+        'api_url' => $config['api_url'],
+        'team_id' => $config['team_id'],
+        'has_token' => !empty($config['access_token']),
         'endpoint_tests' => $results
     ]);
     exit;
@@ -108,8 +108,8 @@ if ($path === '/api/sybka/products' && $requestMethod === 'GET') {
     $limit = $_GET['limit'] ?? null;
     
     $headers = [
-        'Authorization: Bearer ' . $SYBKA_CONFIG['access_token'],
-        'X-TeamID: ' . $SYBKA_CONFIG['team_id'],
+        'Authorization: Bearer ' . $config['access_token'],
+        'X-TeamID: ' . $config['team_id'],
         'Content-Type: application/json'
     ];
     
@@ -117,7 +117,7 @@ if ($path === '/api/sybka/products' && $requestMethod === 'GET') {
     if ($sku) $queryParams['sku'] = $sku;
     if ($limit) $queryParams['limit'] = $limit;
     
-    $url = $SYBKA_CONFIG['api_url'] . 'product';
+    $url = $config['api_url'] . 'product';
     if (!empty($queryParams)) {
         $url .= '?' . http_build_query($queryParams);
     }
@@ -145,8 +145,8 @@ if ($path === '/api/sybka/orders/completed' && $requestMethod === 'GET') {
     $since = $_GET['since'] ?? date('Y-m-d', strtotime('-7 days'));
     
     $headers = [
-        'Authorization: Bearer ' . $SYBKA_CONFIG['access_token'],
-        'X-TeamID: ' . $SYBKA_CONFIG['team_id'],
+        'Authorization: Bearer ' . $config['access_token'],
+        'X-TeamID: ' . $config['team_id'],
         'Content-Type: application/json'
     ];
     
@@ -162,7 +162,7 @@ if ($path === '/api/sybka/orders/completed' && $requestMethod === 'GET') {
     $allCompletedOrders = [];
     
     foreach ($statusFilters as $filter) {
-        $url = $SYBKA_CONFIG['api_url'] . 'order?' . $filter;
+        $url = $config['api_url'] . 'order?' . $filter;
         if ($since) {
             $url .= '&updated_at=' . $since;
         }
@@ -229,12 +229,12 @@ if ($path === '/api/sybka/orders' && $requestMethod === 'POST') {
     }
     
     $headers = [
-        'Authorization: Bearer ' . $SYBKA_CONFIG['access_token'],
-        'X-TeamID: ' . $SYBKA_CONFIG['team_id'],
+        'Authorization: Bearer ' . $config['access_token'],
+        'X-TeamID: ' . $config['team_id'],
         'Content-Type: application/json'
     ];
     
-    $result = makeRequest('POST', $SYBKA_CONFIG['api_url'] . 'order', $orderData, $headers);
+    $result = makeRequest('POST', $config['api_url'] . 'order', $orderData, $headers);
     
     http_response_code($result['status']);
     echo json_encode([

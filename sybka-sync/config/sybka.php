@@ -10,7 +10,7 @@ return [
     |
     */
 
-    'access_token' => env('SYNKA_ACCESS_TOKEN', 'QgFCIjnAOZrZlD2J4pxyJq8VmPZNH7sl5jG5U3gSQbBb25eO6r2yEQoYm1eV'),
+    'access_token' => env('SYNKA_ACCESS_TOKEN'),
     'api_url' => env('SYNKA_API_URL', 'https://mitt.synkaplus.se/api/'),
     'team_id' => env('SYNKA_TEAM_ID', '844'),
 

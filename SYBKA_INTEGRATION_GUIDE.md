@@ -124,7 +124,7 @@ setInterval(async () => {
 ### **Sybka+ API (redan konfigurerat):**
 - URL: `https://mitt.synkaplus.se/api/`
 - Team ID: `844`
-- Token: `QgFCIjnAOZrZlD2J4pxyJq8VmPZNH7sl5jG5U3gSQbBb25eO6r2yEQoYm1eV`
+- Token: `[SECURE_ENVIRONMENT_VARIABLE]`
 
 ### **I Sybka+ admin-panel behöver du:**
 1. **Aktivera Fortnox-synk** för produkter
