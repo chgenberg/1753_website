@@ -9,16 +9,45 @@ const router = express.Router()
 /**
  * Webhook för betalningsbekräftelser från Viva Wallet
  */
+// GET-endpoint för webhook-verifiering
+router.get('/payment/viva', (req, res) => {
+  logger.info('Viva Wallet webhook verification request', {
+    query: req.query,
+    headers: req.headers
+  })
+  
+  // Viva Wallet kan skicka en verifieringskod i query params
+  const verificationCode = req.query.VivaWalletWebhookVerificationCode
+  if (verificationCode) {
+    // Svara med verifieringskoden för att bekräfta webhook
+    res.status(200).send(verificationCode)
+  } else {
+    res.status(200).send('OK')
+  }
+})
+
+// POST-endpoint för webhook-events
 router.post('/payment/viva', express.raw({ type: 'application/json' }), async (req, res) => {
   try {
+    // Logga raw body för debugging
+    logger.info('Viva Wallet webhook raw body', {
+      body: req.body.toString(),
+      headers: req.headers
+    })
+
     const payload = JSON.parse(req.body.toString())
     
     logger.info('Viva Wallet webhook received', {
       eventType: payload.EventTypeId,
-      orderCode: payload.EventData?.OrderCode
+      orderCode: payload.EventData?.OrderCode,
+      fullPayload: payload
     })
 
-    if (payload.EventTypeId === 1796) { // Payment Created
+    // Svara omedelbart med 200 OK för att bekräfta mottagning
+    res.status(200).send('OK')
+
+    // Hantera olika event-typer
+    if (payload.EventTypeId === 1796 || payload.EventTypeId === 1797) { // Payment Created eller Transaction Payment Created
       const orderCode = payload.EventData?.OrderCode
       
       if (orderCode) {
@@ -58,15 +87,18 @@ router.post('/payment/viva', express.raw({ type: 'application/json' }), async (r
           // Kontrollera om vi ska skapa faktura och skicka till Sybka
           await handleOrderStatusChange(updatedOrder.id, 'CONFIRMED', 'PAID')
         } else {
-          logger.warn('Order not found for payment confirmation', { orderCode })
+          logger.warn('Order not found for Viva Wallet webhook', { orderCode })
         }
       }
+    } else {
+      logger.info('Unhandled Viva Wallet event type', { eventTypeId: payload.EventTypeId })
     }
-
-    res.status(200).json({ received: true })
   } catch (error) {
     logger.error('Viva Wallet webhook error:', error)
-    res.status(500).json({ error: 'Webhook processing failed' })
+    // Även vid fel, svara med 200 för att undvika retry
+    if (!res.headersSent) {
+      res.status(200).send('ERROR')
+    }
   }
 })
 
