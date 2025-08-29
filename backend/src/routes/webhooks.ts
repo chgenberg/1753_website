@@ -51,19 +51,64 @@ function extractVerificationCodeFromHeaders(headers: Record<string, any>): strin
   return undefined
 }
 
+// Helper: fetch Viva verification token per docs and return { Key: string }
+async function fetchVivaVerificationKey(): Promise<{ Key: string } | null> {
+  try {
+    const merchantId = process.env.VIVA_MERCHANT_ID
+    const apiKey = process.env.VIVA_API_KEY
+    if (!merchantId || !apiKey) {
+      logger.warn('Viva verification: missing VIVA_MERCHANT_ID or VIVA_API_KEY env')
+      return null
+    }
+    const isDemo = String(process.env.VIVA_ENV || '').toLowerCase() === 'demo'
+    const baseUrl = isDemo ? 'https://demo.vivapayments.com' : 'https://www.vivapayments.com'
+    const credentials = Buffer.from(`${merchantId}:${apiKey}`).toString('base64')
+
+    const resp = await fetch(`${baseUrl}/api/messages/config/token`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Basic ${credentials}`
+      }
+    })
+
+    if (!resp.ok) {
+      const text = await resp.text().catch(() => '')
+      logger.warn('Viva verification token fetch failed', { status: resp.status, body: text })
+      return null
+    }
+    const data = await resp.json().catch(() => ({} as any))
+    if (data && typeof data.Key === 'string' && data.Key.length > 0) {
+      return { Key: data.Key }
+    }
+    logger.warn('Viva verification token response missing Key field')
+    return null
+  } catch (err) {
+    logger.error('Viva verification token fetch error', { error: err instanceof Error ? err.message : String(err) })
+    return null
+  }
+}
+
 // Enkel webhook-endpoint för Viva Wallet (root level)
-router.get('/viva', (req, res) => {
+router.get('/viva', async (req, res) => {
   console.log('Viva Wallet simple verification:', req.query)
   
   const code = req.query.VivaWalletWebhookVerificationCode as string | undefined
   
-  res.setHeader('Content-Type', 'text/plain; charset=utf-8')
-  
+  // If Viva sends a verification code, echo it back as plain text
   if (code) {
-    res.status(200).send(String(code))
-  } else {
-    res.status(200).send('OK')
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+    return res.status(200).send(String(code))
   }
+
+  // Otherwise, try returning the JSON Key per Viva docs
+  const key = await fetchVivaVerificationKey()
+  if (key) {
+    res.setHeader('Content-Type', 'application/json; charset=utf-8')
+    return res.status(200).json(key)
+  }
+
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+  return res.status(200).send('OK')
 })
 
 router.head('/viva', (req, res) => {
@@ -124,7 +169,7 @@ router.post('/viva', express.raw({ type: 'application/json' }), async (req, res)
  * Webhook för betalningsbekräftelser från Viva Wallet
  */
 // GET-endpoint för webhook-verifiering
-router.get('/payment/viva', (req, res) => {
+router.get('/payment/viva', async (req, res) => {
   // Utökad loggning för debugging
   logger.info('Viva Wallet webhook verification request', {
     query: req.query,
@@ -139,18 +184,24 @@ router.get('/payment/viva', (req, res) => {
   
   const verificationCode = extractVerificationCode(req.query) || extractVerificationCodeFromHeaders(req.headers as any)
   
-  // Sätt alltid text/plain content-type
-  res.setHeader('Content-Type', 'text/plain; charset=utf-8')
-  
   if (verificationCode) {
-    // Om det finns en verifieringskod, svara med den
+    // Echo back the verification code as plain text
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8')
     logger.info('Returning verification code', { code: verificationCode })
-    res.status(200).send(verificationCode)
-  } else {
-    // Om ingen verifieringskod, svara med "OK"
-    logger.info('No verification code found, returning OK')
-    res.status(200).send('OK')
+    return res.status(200).send(verificationCode)
   }
+
+  // Per Viva docs, attempt to return JSON {"Key":"..."}
+  const key = await fetchVivaVerificationKey()
+  if (key) {
+    res.setHeader('Content-Type', 'application/json; charset=utf-8')
+    return res.status(200).json(key)
+  }
+
+  // Fallback
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+  logger.info('No verification code found and no Key available, returning OK')
+  return res.status(200).send('OK')
 })
 
 // Explicit HEAD & OPTIONS for compatibility
@@ -167,7 +218,7 @@ router.options('/payment/viva', (req, res) => {
 })
 
 // Alternativ endpoint för Viva Wallet webhook-verifiering
-router.get('/viva-webhook', (req, res) => {
+router.get('/viva-webhook', async (req, res) => {
   logger.info('Viva Wallet alternative webhook verification', {
     query: req.query,
     headers: req.headers
@@ -175,13 +226,19 @@ router.get('/viva-webhook', (req, res) => {
   
   const verificationCode = extractVerificationCode(req.query) || extractVerificationCodeFromHeaders(req.headers as any)
   
-  res.setHeader('Content-Type', 'text/plain; charset=utf-8')
-  
   if (verificationCode) {
-    res.status(200).send(verificationCode)
-  } else {
-    res.status(200).send('OK')
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+    return res.status(200).send(verificationCode)
   }
+
+  const key = await fetchVivaVerificationKey()
+  if (key) {
+    res.setHeader('Content-Type', 'application/json; charset=utf-8')
+    return res.status(200).json(key)
+  }
+
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+  return res.status(200).send('OK')
 })
 
 router.head('/viva-webhook', (req, res) => {
@@ -197,7 +254,7 @@ router.options('/viva-webhook', (req, res) => {
 })
 
 // Alias endpoint to avoid configuration mistakes
-router.get('/viva-wallet', (req, res) => {
+router.get('/viva-wallet', async (req, res) => {
   logger.info('Viva Wallet viva-wallet endpoint verification', {
     query: req.query,
     headers: req.headers
@@ -205,13 +262,19 @@ router.get('/viva-wallet', (req, res) => {
   
   const verificationCode = extractVerificationCode(req.query) || extractVerificationCodeFromHeaders(req.headers as any)
   
-  res.setHeader('Content-Type', 'text/plain; charset=utf-8')
-  
   if (verificationCode) {
-    res.status(200).send(verificationCode)
-  } else {
-    res.status(200).send('OK')
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+    return res.status(200).send(verificationCode)
   }
+
+  const key = await fetchVivaVerificationKey()
+  if (key) {
+    res.setHeader('Content-Type', 'application/json; charset=utf-8')
+    return res.status(200).json(key)
+  }
+
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+  return res.status(200).send('OK')
 })
 
 router.head('/viva-wallet', (req, res) => {
@@ -591,11 +654,11 @@ router.post('/test-status-change', express.json(), async (req, res) => {
   try {
     const { orderId, status, paymentStatus } = req.body
 
-    if (!orderId || !status || !paymentStatus) {
-      return res.status(400).json({ 
-        error: 'Missing required fields: orderId, status, paymentStatus' 
-      })
-    }
+    logger.info('Order status change webhook', {
+      orderId,
+      status,
+      paymentStatus
+    })
 
     await handleOrderStatusChange(orderId, status, paymentStatus)
     
@@ -605,13 +668,13 @@ router.post('/test-status-change', express.json(), async (req, res) => {
       teamId: sybkaService.getStatusMapping().team_id
     })
   } catch (error) {
-    logger.error('Test status change error:', error)
-    res.status(500).json({ error: 'Test failed' })
+    logger.error('Order status change error:', error)
+    res.status(500).json({ error: 'Status change processing failed' })
   }
 })
 
 // Test endpoint - super enkel
-router.all('/test-viva', (req, res) => {
+router.all('/test-viva', async (req, res) => {
   console.log('TEST VIVA WEBHOOK:', {
     method: req.method,
     query: req.query,
@@ -620,12 +683,20 @@ router.all('/test-viva', (req, res) => {
   
   // Om det finns en VivaWalletWebhookVerificationCode, returnera den
   const code = (req.query.VivaWalletWebhookVerificationCode as string | undefined) || extractVerificationCodeFromHeaders(req.headers as any)
-  res.setHeader('Content-Type', 'text/plain; charset=utf-8')
   if (code) {
-    res.type('text/plain').send(String(code))
-  } else {
-    res.type('text/plain').send('OK')
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+    return res.type('text/plain').send(String(code))
   }
+
+  // Annars försök returnera JSON Key enligt Viva-dokumentation
+  const key = await fetchVivaVerificationKey()
+  if (key) {
+    res.setHeader('Content-Type', 'application/json; charset=utf-8')
+    return res.status(200).json(key)
+  }
+
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+  return res.type('text/plain').send('OK')
 })
 
 export default router 
