@@ -78,11 +78,11 @@ export function Header() {
     <>
       {/* Header */}
       <nav className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
-        scrolled ? 'bg-white shadow-md' : 'bg-white'
+        scrolled ? 'bg-white shadow-md' : 'bg-transparent'
       }`}>
         <div className="flex items-center justify-between p-6 md:p-8">
           {/* Logo */}
-          <Link href="/" className="block">
+          <Link href={`/${(pathname?.split('/')?.[1] || 'sv')}`} className="block">
             <Image
               src="/1753.png"
               alt="1753 Skincare"
@@ -147,8 +147,7 @@ export function Header() {
       </nav>
 
       {/* Spacer to prevent content from going under fixed header */}
-      <div className="h-20 md:h-24" />
-
+      
       {/* Slide-in Menu from Right */}
       <AnimatePresence>
         {isMenuOpen && (
