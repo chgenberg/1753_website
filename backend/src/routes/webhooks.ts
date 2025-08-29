@@ -36,13 +36,13 @@ function extractVerificationCode(query: any): string | undefined {
 router.get('/viva', (req, res) => {
   console.log('Viva Wallet simple verification:', req.query)
   
-  const code = extractVerificationCode(req.query)
+  const code = req.query.VivaWalletWebhookVerificationCode
+  
+  res.setHeader('Content-Type', 'text/plain')
+  
   if (code) {
-    res.setHeader('Content-Type', 'text/plain')
     res.status(200).send(String(code))
   } else {
-    res.setHeader('Content-Type', 'text/plain')
-    res.setHeader('Cache-Control', 'no-cache')
     res.status(200).send('OK')
   }
 })
@@ -112,12 +112,15 @@ router.get('/payment/viva', (req, res) => {
   })
   
   const verificationCode = extractVerificationCode(req.query)
+  
+  // Sätt alltid text/plain content-type
+  res.setHeader('Content-Type', 'text/plain')
+  
   if (verificationCode) {
-    res.setHeader('Content-Type', 'text/plain')
-    res.status(200).end(String(verificationCode))
+    // Om det finns en verifieringskod, svara med den
+    res.status(200).send(verificationCode)
   } else {
-    res.setHeader('Content-Type', 'text/plain')
-    res.setHeader('Cache-Control', 'no-cache')
+    // Om ingen verifieringskod, svara med "OK"
     res.status(200).send('OK')
   }
 })
@@ -137,13 +140,12 @@ router.get('/viva-webhook', (req, res) => {
   })
   
   const verificationCode = extractVerificationCode(req.query)
+  
+  res.setHeader('Content-Type', 'text/plain')
+  
   if (verificationCode) {
-    res.setHeader('Content-Type', 'text/plain')
-    res.setHeader('Cache-Control', 'no-cache')
-    res.status(200).end(String(verificationCode))
+    res.status(200).send(verificationCode)
   } else {
-    res.setHeader('Content-Type', 'text/plain')
-    res.setHeader('Cache-Control', 'no-cache')
     res.status(200).send('OK')
   }
 })
@@ -157,18 +159,18 @@ router.options('/viva-webhook', (req, res) => {
 
 // Alias endpoint to avoid configuration mistakes
 router.get('/viva-wallet', (req, res) => {
-  logger.info('Viva Wallet alias webhook verification', {
+  logger.info('Viva Wallet viva-wallet endpoint verification', {
     query: req.query,
     headers: req.headers
   })
-
+  
   const verificationCode = extractVerificationCode(req.query)
+  
+  res.setHeader('Content-Type', 'text/plain')
+  
   if (verificationCode) {
-    res.setHeader('Content-Type', 'text/plain')
-    res.status(200).end(String(verificationCode))
+    res.status(200).send(verificationCode)
   } else {
-    res.setHeader('Content-Type', 'text/plain')
-    res.setHeader('Cache-Control', 'no-cache')
     res.status(200).send('OK')
   }
 })
