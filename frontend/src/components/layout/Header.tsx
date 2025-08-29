@@ -84,7 +84,7 @@ export function Header() {
           {/* Logo */}
           <Link href={`/${(pathname?.split('/')?.[1] || 'sv')}`} className="block">
             <Image
-              src="/1753.png"
+              src={scrolled ? "/1753.png" : "/1753_white.png"}
               alt="1753 Skincare"
               width={150}
               height={60}
@@ -100,7 +100,7 @@ export function Header() {
               onClick={openCart}
               className="relative p-2 hover:opacity-70 transition-opacity"
             >
-              <ShoppingBag className="w-6 h-6 text-black" />
+              <ShoppingBag className={`w-6 h-6 ${scrolled ? 'text-black' : 'text-white'}`} />
               {cartCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-[#FCB237] text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
                   {cartCount}
@@ -113,11 +113,11 @@ export function Header() {
               href={user ? '/dashboard' : '/auth/login'}
               className="p-2 hover:opacity-70 transition-opacity"
             >
-              <User className="w-6 h-6 text-black" />
+              <User className={`w-6 h-6 ${scrolled ? 'text-black' : 'text-white'}`} />
             </Link>
 
             {/* Language Selector */}
-            <LanguageSelector variant="dark" />
+            <LanguageSelector variant={scrolled ? "dark" : "light"} />
 
             {/* Hamburger Menu */}
             <button 
@@ -125,10 +125,10 @@ export function Header() {
               className="p-2 hover:opacity-70 transition-opacity"
             >
               {isMenuOpen ? (
-                <X className="w-6 h-6 text-black" />
+                <X className={`w-6 h-6 ${scrolled ? 'text-black' : 'text-white'}`} />
               ) : (
                 <svg
-                  className="w-6 h-6 text-black"
+                  className={`w-6 h-6 ${scrolled ? 'text-black' : 'text-white'}`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
