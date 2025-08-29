@@ -23,7 +23,6 @@ function extractVerificationCode(query: any): string | undefined {
     if (typeof value === 'string' && value.length > 0) return value
     if (Array.isArray(value) && value[0]) return String(value[0])
   }
-  // Fallback: if exactly one query param exists, echo its value
   const keys = Object.keys(query || {})
   if (keys.length === 1) {
     const only = query[keys[0]]
@@ -42,11 +41,12 @@ router.get('/viva', (req, res) => {
     res.setHeader('Content-Type', 'text/plain')
     res.status(200).send(String(code))
   } else {
-    res.status(204).end()
+    res.setHeader('Content-Type', 'text/plain')
+    res.setHeader('Cache-Control', 'no-cache')
+    res.status(200).send('OK')
   }
 })
 
-// Also accept HEAD/OPTIONS for verification probes
 router.head('/viva', (req, res) => {
   res.status(200).end()
 })
@@ -116,7 +116,9 @@ router.get('/payment/viva', (req, res) => {
     res.setHeader('Content-Type', 'text/plain')
     res.status(200).end(String(verificationCode))
   } else {
-    res.status(204).end()
+    res.setHeader('Content-Type', 'text/plain')
+    res.setHeader('Cache-Control', 'no-cache')
+    res.status(200).send('OK')
   }
 })
 
@@ -140,7 +142,9 @@ router.get('/viva-webhook', (req, res) => {
     res.setHeader('Cache-Control', 'no-cache')
     res.status(200).end(String(verificationCode))
   } else {
-    res.status(204).end()
+    res.setHeader('Content-Type', 'text/plain')
+    res.setHeader('Cache-Control', 'no-cache')
+    res.status(200).send('OK')
   }
 })
 
@@ -163,7 +167,9 @@ router.get('/viva-wallet', (req, res) => {
     res.setHeader('Content-Type', 'text/plain')
     res.status(200).end(String(verificationCode))
   } else {
-    res.status(204).end()
+    res.setHeader('Content-Type', 'text/plain')
+    res.setHeader('Cache-Control', 'no-cache')
+    res.status(200).send('OK')
   }
 })
 
