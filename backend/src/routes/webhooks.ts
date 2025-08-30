@@ -655,6 +655,49 @@ router.post('/fortnox', express.json(), async (req, res) => {
 })
 
 /**
+ * Get available order statuses
+ * GET /api/webhooks/order-statuses
+ * 
+ * This endpoint is used by Synka+ to fetch available order statuses
+ */
+router.get('/order-statuses', async (req, res) => {
+  try {
+    // Define all available order statuses
+    const orderStatuses = [
+      { value: 'PENDING', label: 'Pending' },
+      { value: 'CONFIRMED', label: 'Confirmed' },
+      { value: 'PROCESSING', label: 'Processing' },
+      { value: 'SHIPPED', label: 'Shipped' },
+      { value: 'DELIVERED', label: 'Delivered' },
+      { value: 'CANCELLED', label: 'Cancelled' },
+      { value: 'REFUNDED', label: 'Refunded' }
+    ]
+
+    const paymentStatuses = [
+      { value: 'PENDING', label: 'Pending' },
+      { value: 'PAID', label: 'Paid' },
+      { value: 'PARTIALLY_PAID', label: 'Partially Paid' },
+      { value: 'REFUNDED', label: 'Refunded' },
+      { value: 'FAILED', label: 'Failed' }
+    ]
+
+    res.json({
+      success: true,
+      order_statuses: orderStatuses,
+      payment_statuses: paymentStatuses,
+      // Include our status mapping so Synka+ knows what we expect
+      status_mapping: sybkaService.getStatusMapping()
+    })
+  } catch (error: any) {
+    logger.error('Get order statuses error:', error)
+    res.status(500).json({
+      success: false,
+      error: error.message
+    })
+  }
+})
+
+/**
  * Test endpoint för att trigga statusändringar manuellt
  */
 router.post('/test-status-change', express.json(), async (req, res) => {
