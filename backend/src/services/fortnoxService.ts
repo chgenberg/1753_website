@@ -32,7 +32,7 @@ interface FortnoxArticle {
 }
 
 interface FortnoxOrderRow {
-  ArticleNumber: string
+  ArticleNumber?: string
   Description: string
   Price: number
   Quantity: number
@@ -352,6 +352,8 @@ class FortnoxService {
     orderDate: Date
   }): Promise<{ customerNumber: string; orderNumber: string }> {
     try {
+      const skipArticleCreate = String(process.env.FORTNOX_SKIP_ARTICLE_CREATE || '').toLowerCase() === 'true'
+
       // 1. Create/find customer
       const customerData: FortnoxCustomer = {
         Name: `${orderDetails.customer.firstName} ${orderDetails.customer.lastName}`,
@@ -367,24 +369,27 @@ class FortnoxService {
 
       const customerNumber = await this.createCustomer(customerData)
 
-      // 2. Create/update articles for each product
-      for (const item of orderDetails.items) {
-        const articleData: FortnoxArticle = {
-          ArticleNumber: item.sku || item.productId,
-          Description: item.name,
-          SalesPrice: item.price,
-          Unit: 'st',
-          VAT: 25, // 25% Swedish VAT
-          AccountNumber: 3001, // Sales account
-          StockGoods: true
+      // 2. Create/update articles for each product (optional)
+      if (!skipArticleCreate) {
+        for (const item of orderDetails.items) {
+          const articleData: FortnoxArticle = {
+            ArticleNumber: item.sku || item.productId,
+            Description: item.name,
+            SalesPrice: item.price,
+            Unit: 'st',
+            VAT: 25, // 25% Swedish VAT
+            AccountNumber: 3001, // Sales account
+            StockGoods: true
+          }
+          await this.createArticle(articleData)
         }
-
-        await this.createArticle(articleData)
+      } else {
+        logger.info('Skipping Fortnox article creation due to FORTNOX_SKIP_ARTICLE_CREATE=true')
       }
 
       // 3. Create order
       const orderRows: FortnoxOrderRow[] = orderDetails.items.map(item => ({
-        ArticleNumber: item.sku || item.productId,
+        ...(skipArticleCreate ? {} : { ArticleNumber: item.sku || item.productId }),
         Description: item.name,
         Price: item.price,
         Quantity: item.quantity,
@@ -395,7 +400,7 @@ class FortnoxService {
       // Add shipping as a separate row if applicable
       if (orderDetails.shipping > 0) {
         orderRows.push({
-          ArticleNumber: 'SHIPPING',
+          ...(skipArticleCreate ? {} : { ArticleNumber: 'SHIPPING' }),
           Description: 'Frakt och hantering',
           Price: orderDetails.shipping,
           Quantity: 1,
