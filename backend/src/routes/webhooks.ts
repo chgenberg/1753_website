@@ -729,7 +729,18 @@ router.get('/debug-sybka', async (req, res) => {
       SYBKA_SYNC_URL: !!process.env.SYBKA_SYNC_URL,
       SYNKA_ACCESS_TOKEN: !!process.env.SYNKA_ACCESS_TOKEN,
       SYNKA_TEAM_ID: !!process.env.SYNKA_TEAM_ID,
+      FORTNOX_API_TOKEN: !!process.env.FORTNOX_API_TOKEN,
+      FORTNOX_CLIENT_SECRET: !!process.env.FORTNOX_CLIENT_SECRET,
+      FORTNOX_BASE_URL: !!process.env.FORTNOX_BASE_URL,
       NODE_ENV: process.env.NODE_ENV
+    }
+
+    // Test Fortnox connection
+    let fortnoxTest = false
+    try {
+      fortnoxTest = await fortnoxService.testConnection()
+    } catch (error) {
+      logger.error('Fortnox test failed:', error)
     }
 
     res.json({
@@ -737,6 +748,7 @@ router.get('/debug-sybka', async (req, res) => {
       debug_info: {
         environment: envCheck,
         sybka_connection: connectionTest,
+        fortnox_connection: fortnoxTest,
         status_mapping: statusMapping,
         recent_orders: recentOrders.map(order => ({
           id: order.id,
