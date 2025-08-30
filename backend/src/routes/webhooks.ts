@@ -658,22 +658,45 @@ router.post('/test-status-change', express.json(), async (req, res) => {
   try {
     const { orderId, status, paymentStatus } = req.body
 
-    logger.info('Order status change webhook', {
+    logger.info('Manual order status change', {
       orderId,
       status,
       paymentStatus
     })
 
+    // Först uppdatera ordern i databasen
+    const updatedOrder = await prisma.order.update({
+      where: { id: orderId },
+      data: { 
+        status: status as any,
+        paymentStatus: paymentStatus as any
+      }
+    })
+
+    logger.info('Order status updated in database', {
+      orderId,
+      oldStatus: updatedOrder.status,
+      newStatus: status,
+      oldPaymentStatus: updatedOrder.paymentStatus,
+      newPaymentStatus: paymentStatus
+    })
+
+    // Sedan kör integrations-logiken
     await handleOrderStatusChange(orderId, status, paymentStatus)
     
     res.status(200).json({ 
       success: true, 
-      message: 'Status change processed',
-      teamId: sybkaService.getStatusMapping().team_id
+      message: 'Status change processed and integrations triggered',
+      teamId: sybkaService.getStatusMapping().team_id,
+      updatedOrder: {
+        id: updatedOrder.id,
+        status,
+        paymentStatus
+      }
     })
   } catch (error) {
     logger.error('Order status change error:', error)
-    res.status(500).json({ error: 'Status change processing failed' })
+    res.status(500).json({ error: 'Status change processing failed', details: error.message })
   }
 })
 
