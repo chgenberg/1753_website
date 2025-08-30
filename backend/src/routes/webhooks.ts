@@ -803,6 +803,88 @@ router.post('/manual-sybka-sync', express.json(), async (req, res) => {
 })
 
 /**
+ * Testa Sybka-ordreskapande och returnera fullständigt svar (debug)
+ * GET /api/webhooks/test-sybka-order?orderId=...
+ */
+router.get('/test-sybka-order', async (req, res) => {
+  try {
+    const orderId = (req.query.orderId as string) || ''
+    if (!orderId) {
+      return res.status(400).json({ success: false, error: 'orderId is required' })
+    }
+
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: {
+        items: { include: { product: true } },
+        user: true
+      }
+    })
+
+    if (!order) {
+      return res.status(404).json({ success: false, error: 'Order not found' })
+    }
+
+    const statusMapping = sybkaService.getStatusMapping()
+
+    const sybkaOrderData = {
+      shop_order_id: order.orderNumber,
+      shop_order_increment_id: `1753-${order.orderNumber}`,
+      order_date: order.createdAt.toISOString().split('T')[0],
+      currency: order.currency,
+      grand_total: order.totalAmount,
+      subtotal: order.subtotal,
+      discount_amount: order.discountAmount,
+      subtotal_incl_tax: order.totalAmount,
+      tax_amount: order.taxAmount,
+      shipping_amount: order.shippingAmount,
+      shipping_incl_tax: order.shippingAmount,
+      shipping_tax_amount: 0,
+      status: 'confirmed' as const,
+      fulfillment_status: 'unfulfilled' as const,
+      billing_email: order.email,
+      billing_firstname: (order.billingAddress as any)?.firstName || '',
+      billing_lastname: (order.billingAddress as any)?.lastName || '',
+      billing_street: (order.billingAddress as any)?.address || '',
+      billing_city: (order.billingAddress as any)?.city || '',
+      billing_postcode: (order.billingAddress as any)?.postalCode || '',
+      billing_country: (order.billingAddress as any)?.country || 'SE',
+      billing_phone: (order.billingAddress as any)?.phone || '',
+      shipping_email: order.email,
+      shipping_firstname: (order.shippingAddress as any)?.firstName || '',
+      shipping_lastname: (order.shippingAddress as any)?.lastName || '',
+      shipping_street: (order.shippingAddress as any)?.address || '',
+      shipping_city: (order.shippingAddress as any)?.city || '',
+      shipping_postcode: (order.shippingAddress as any)?.postalCode || '',
+      shipping_country: (order.shippingAddress as any)?.country || 'SE',
+      shipping_phone: (order.shippingAddress as any)?.phone || '',
+      order_rows: order.items.map(item => ({
+        sku: item.product?.sku || item.productId,
+        name: item.product?.name || 'Okänd produkt',
+        qty_ordered: item.quantity,
+        price: item.price,
+        price_incl_tax: item.price * 1.25,
+        row_total: item.quantity * item.price,
+        row_total_incl_tax: item.quantity * item.price * 1.25,
+        tax_amount: item.quantity * item.price * 0.25,
+        tax_percent: 25
+      })),
+      team_id: statusMapping.team_id
+    }
+
+    const result = await sybkaService.createOrder(sybkaOrderData)
+
+    return res.status(result.success ? 200 : 400).json({
+      success: result.success,
+      response: result
+    })
+  } catch (error: any) {
+    logger.error('Test Sybka order error:', error)
+    return res.status(500).json({ success: false, error: error.message })
+  }
+})
+
+/**
  * Fortnox debug endpoint with detailed error reporting
  * GET /api/webhooks/debug-fortnox
  */

@@ -79,14 +79,18 @@ class SybkaService {
   private baseUrl: string
   private accessToken: string
   private teamId: string
+  private directMode: boolean
+
   private statusMapping: SybkaStatusMapping
 
   constructor() {
     this.baseUrl = process.env.SYBKA_SYNC_URL || 'http://localhost:8000'
     this.accessToken = process.env.SYNKA_ACCESS_TOKEN || ''
     this.teamId = process.env.SYNKA_TEAM_ID || '844'
-    
-    // Konfigurera statusmappning baserat på Synka Plus rekommendationer
+    // Direct mode if pointing to mitt.synkaplus.se or explicitly enabled
+    const directFlag = String(process.env.SYBKA_DIRECT_MODE || '').toLowerCase() === 'true'
+    this.directMode = directFlag || /mitt\.synkaplus\.se/i.test(this.baseUrl)
+
     this.statusMapping = {
       invoice_triggers: ['CONFIRMED', 'PROCESSING'], // Skapa faktura när order bekräftas/behandlas
       order_triggers: ['PAID'], // Skicka till Sybka när betalning är klar
@@ -99,6 +103,12 @@ class SybkaService {
         teamId: this.teamId
       })
     }
+
+    logger.info('Sybka client initialized', {
+      baseUrl: this.baseUrl,
+      directMode: this.directMode,
+      teamId: this.teamId
+    })
   }
 
   /**
@@ -111,12 +121,16 @@ class SybkaService {
         status: orderData.status
       })
 
+      // Choose endpoint based on mode
+      const endpoint = this.directMode
+        ? this.normalizeUrl(`${this.baseUrl}/order`) // direct: https://mitt.synkaplus.se/api/order
+        : this.normalizeUrl(`${this.baseUrl}/api/sybka/orders`) // bridge: /api/sybka/orders
+
+      const payload = { ...orderData, team_id: this.teamId }
+
       const response: AxiosResponse<SybkaOrderResponse> = await axios.post(
-        `${this.baseUrl}/api/sybka/orders`,
-        {
-          ...orderData,
-          team_id: this.teamId
-        },
+        endpoint,
+        payload,
         {
           headers: {
             'Authorization': `Bearer ${this.accessToken}`,
@@ -163,12 +177,17 @@ class SybkaService {
    */
   async getCompletedOrders(): Promise<SybkaCompletedOrder[]> {
     try {
+      const endpoint = this.directMode
+        ? this.normalizeUrl(`${this.baseUrl}/order/completed`)
+        : this.normalizeUrl(`${this.baseUrl}/api/sybka/orders/completed`)
+
       const response: AxiosResponse<{ completed_orders: SybkaCompletedOrder[] }> = await axios.get(
-        `${this.baseUrl}/api/sybka/orders/completed`,
+        endpoint,
         {
           headers: {
             'Authorization': `Bearer ${this.accessToken}`,
-            'X-TeamID': this.teamId
+            'X-TeamID': this.teamId,
+            'Content-Type': 'application/json'
           },
           timeout: 30000
         }
@@ -196,7 +215,8 @@ class SybkaService {
    * Check if order status should trigger Sybka order creation
    */
   shouldCreateSybkaOrder(status: string, paymentStatus: string): boolean {
-    return this.statusMapping.order_triggers.includes(paymentStatus)
+    const should = this.statusMapping.order_triggers.includes(paymentStatus)
+    return should
   }
 
   /**
@@ -212,8 +232,9 @@ class SybkaService {
   updateStatusMapping(mapping: Partial<SybkaStatusMapping>): void {
     this.statusMapping = { ...this.statusMapping, ...mapping }
     logger.info('Sybka status mapping updated', {
-      teamId: this.teamId,
-      mapping: this.statusMapping
+      invoice_triggers: this.statusMapping.invoice_triggers,
+      order_triggers: this.statusMapping.order_triggers,
+      team_id: this.statusMapping.team_id
     })
   }
 
@@ -222,19 +243,26 @@ class SybkaService {
    */
   async testConnection(): Promise<boolean> {
     try {
-      const response = await axios.get(`${this.baseUrl}/api/sybka/test`, {
+      const endpoint = this.directMode
+        ? this.normalizeUrl(`${this.baseUrl}/product?limit=1`) // direct: simple list
+        : this.normalizeUrl(`${this.baseUrl}/api/sybka/test`) // bridge
+
+      const response = await axios.get(endpoint, {
         headers: {
           'Authorization': `Bearer ${this.accessToken}`,
           'X-TeamID': this.teamId
         },
         timeout: 10000
       })
-      
-      logger.info('Sybka+ connection test successful', {
-        teamId: this.teamId,
-        status: response.status
+
+      logger.info('Sybka+ connection test result', {
+        status: response.status,
+        directMode: this.directMode,
+        teamId: this.teamId
       })
-      return response.status === 200
+
+      return response.status >= 200 && response.status < 300
+
     } catch (error: any) {
       logger.error('Sybka+ connection test failed:', {
         error: error.message,
@@ -242,6 +270,13 @@ class SybkaService {
       })
       return false
     }
+  }
+
+  /**
+   * Normalize URL to avoid double slashes
+   */
+  private normalizeUrl(url: string): string {
+    return url.replace(/([^:])\/\/+/, '$1/')
   }
 }
 
