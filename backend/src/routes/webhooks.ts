@@ -551,11 +551,13 @@ async function handleOrderStatusChange(orderId: string, status: string, paymentS
     // 2. Skicka order till Sybka för fulfillment om status triggar det
     if (sybkaService.shouldCreateSybkaOrder(status, paymentStatus)) {
       try {
-        logger.info('Creating Sybka order', {
-          orderId,
-          orderNumber: order.orderNumber,
-          teamId: statusMapping.team_id
-        })
+        logger.info('Creating Sybka order', { orderId, orderNumber: order.orderNumber })
+
+        // Extract names from addresses or use customerName as fallback
+        const customerName = order.customerName || order.email
+        const nameParts = customerName.split(' ')
+        const fallbackFirstName = nameParts[0] || 'Customer'
+        const fallbackLastName = nameParts.slice(1).join(' ') || order.orderNumber
 
         const sybkaOrderData = {
           shop_order_id: order.orderNumber,
@@ -573,21 +575,21 @@ async function handleOrderStatusChange(orderId: string, status: string, paymentS
           status: status.toLowerCase() as any,
           fulfillment_status: 'unfulfilled' as const,
           billing_email: order.email,
-          billing_firstname: (order.billingAddress as any)?.firstName || '',
-          billing_lastname: (order.billingAddress as any)?.lastName || '',
+          billing_firstname: (order.billingAddress as any)?.firstName || fallbackFirstName,
+          billing_lastname: (order.billingAddress as any)?.lastName || fallbackLastName,
           billing_street: (order.billingAddress as any)?.address || '',
           billing_city: (order.billingAddress as any)?.city || '',
           billing_postcode: (order.billingAddress as any)?.postalCode || '',
           billing_country: (order.billingAddress as any)?.country || 'SE',
           billing_phone: order.phone || order.customerPhone || (order.billingAddress as any)?.phone || '',
           shipping_email: order.email,
-          shipping_firstname: (order.shippingAddress as any)?.firstName || '',
-          shipping_lastname: (order.shippingAddress as any)?.lastName || '',
+          shipping_firstname: (order.shippingAddress as any)?.firstName || fallbackFirstName,
+          shipping_lastname: (order.shippingAddress as any)?.lastName || fallbackLastName,
           shipping_street: (order.shippingAddress as any)?.address || '',
           shipping_city: (order.shippingAddress as any)?.city || '',
           shipping_postcode: (order.shippingAddress as any)?.postalCode || '',
           shipping_country: (order.shippingAddress as any)?.country || 'SE',
-          shipping_phone: (order.shippingAddress as any)?.phone || '',
+          shipping_phone: (order.shippingAddress as any)?.phone || order.phone || order.customerPhone || '',
           order_rows: order.items.map(item => ({
             sku: item.product?.sku || item.productId,
             name: item.product?.name || 'Okänd produkt',
@@ -827,6 +829,12 @@ router.get('/test-sybka-order', async (req, res) => {
 
     const statusMapping = sybkaService.getStatusMapping()
 
+    // Extract names from addresses or use customerName as fallback
+    const customerName = order.customerName || order.email
+    const nameParts = customerName.split(' ')
+    const fallbackFirstName = nameParts[0] || 'Customer'
+    const fallbackLastName = nameParts.slice(1).join(' ') || order.orderNumber
+
     const sybkaOrderData = {
       shop_order_id: order.orderNumber,
       shop_order_increment_id: `1753-${order.orderNumber}`,
@@ -843,21 +851,21 @@ router.get('/test-sybka-order', async (req, res) => {
       status: 'confirmed' as const,
       fulfillment_status: 'unfulfilled' as const,
       billing_email: order.email,
-      billing_firstname: (order.billingAddress as any)?.firstName || '',
-      billing_lastname: (order.billingAddress as any)?.lastName || '',
+      billing_firstname: (order.billingAddress as any)?.firstName || fallbackFirstName,
+      billing_lastname: (order.billingAddress as any)?.lastName || fallbackLastName,
       billing_street: (order.billingAddress as any)?.address || '',
       billing_city: (order.billingAddress as any)?.city || '',
       billing_postcode: (order.billingAddress as any)?.postalCode || '',
       billing_country: (order.billingAddress as any)?.country || 'SE',
       billing_phone: order.phone || order.customerPhone || (order.billingAddress as any)?.phone || '',
       shipping_email: order.email,
-      shipping_firstname: (order.shippingAddress as any)?.firstName || '',
-      shipping_lastname: (order.shippingAddress as any)?.lastName || '',
+      shipping_firstname: (order.shippingAddress as any)?.firstName || fallbackFirstName,
+      shipping_lastname: (order.shippingAddress as any)?.lastName || fallbackLastName,
       shipping_street: (order.shippingAddress as any)?.address || '',
       shipping_city: (order.shippingAddress as any)?.city || '',
       shipping_postcode: (order.shippingAddress as any)?.postalCode || '',
       shipping_country: (order.shippingAddress as any)?.country || 'SE',
-      shipping_phone: (order.shippingAddress as any)?.phone || '',
+      shipping_phone: (order.shippingAddress as any)?.phone || order.phone || order.customerPhone || '',
       order_rows: order.items.map(item => ({
         sku: item.product?.sku || item.productId,
         name: item.product?.name || 'Okänd produkt',

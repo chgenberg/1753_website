@@ -54,6 +54,7 @@ interface SybkaOrderResponse {
   order_id?: string
   error?: string
   message?: string
+  details?: any
 }
 
 interface SybkaCompletedOrder {
@@ -163,11 +164,17 @@ class SybkaService {
 
       if (error.response) {
         logger.error('Sybka+ API error response:', error.response.data)
+        
+        // Extract validation errors if present
+        if (error.response.data?.errors) {
+          logger.error('Sybka+ validation errors:', JSON.stringify(error.response.data.errors, null, 2))
+        }
       }
 
       return {
         success: false,
-        error: error.message || 'Failed to create Sybka+ order'
+        error: error.response?.data?.message || error.message || 'Failed to create Sybka+ order',
+        details: error.response?.data
       }
     }
   }
