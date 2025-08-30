@@ -3,6 +3,7 @@ import { logger } from '../utils/logger'
 import { prisma } from '../lib/prisma'
 import { sybkaService } from '../services/sybkaService'
 import { fortnoxService } from '../services/fortnoxService'
+import axios from 'axios'
 
 const router = express.Router()
 
@@ -797,6 +798,50 @@ router.post('/manual-sybka-sync', express.json(), async (req, res) => {
     res.status(500).json({
       success: false,
       error: error.message
+    })
+  }
+})
+
+/**
+ * Fortnox debug endpoint with detailed error reporting
+ * GET /api/webhooks/debug-fortnox
+ */
+router.get('/debug-fortnox', async (req, res) => {
+  const baseUrl = process.env.FORTNOX_BASE_URL || 'https://api.fortnox.se/3'
+  const headers = {
+    'Access-Token': process.env.FORTNOX_API_TOKEN || '',
+    'Client-Secret': process.env.FORTNOX_CLIENT_SECRET || '',
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  }
+
+  const envOk = {
+    FORTNOX_API_TOKEN: !!process.env.FORTNOX_API_TOKEN,
+    FORTNOX_CLIENT_SECRET: !!process.env.FORTNOX_CLIENT_SECRET,
+    FORTNOX_BASE_URL: !!process.env.FORTNOX_BASE_URL
+  }
+
+  try {
+    const resp = await axios.get(`${baseUrl}/companyinformation`, { headers })
+    return res.json({
+      success: true,
+      environment: envOk,
+      response: {
+        status: resp.status,
+        data: resp.data
+      }
+    })
+  } catch (error: any) {
+    const status = error?.response?.status
+    const data = error?.response?.data
+    logger.error('Fortnox debug error', { status, data })
+    return res.status(200).json({
+      success: false,
+      environment: envOk,
+      error: {
+        status: status || null,
+        data: data || error?.message || 'Unknown error'
+      }
     })
   }
 })
