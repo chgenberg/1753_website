@@ -145,9 +145,12 @@ class FortnoxService {
         code: errorInfo.Code
       })
       throw new Error(`Fortnox error: ${errorInfo.Message}`)
+    } else if (error.response?.data) {
+      logger.error(`Fortnox ${operation} error:`, error.response.data)
+      throw new Error(`Fortnox error: ${JSON.stringify(error.response.data)}`)
     } else {
-      logger.error(`Fortnox ${operation} error:`, error.response?.data || error.message)
-      throw new Error(`Fortnox ${operation} failed`)
+      logger.error(`Fortnox ${operation} error:`, error.message || error)
+      throw new Error(`Fortnox error: ${error.message || 'Unknown error'}`)
     }
   }
 
