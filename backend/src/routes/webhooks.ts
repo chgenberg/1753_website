@@ -4,6 +4,7 @@ import { prisma } from '../lib/prisma'
 import { sybkaService } from '../services/sybkaService'
 import { fortnoxService } from '../services/fortnoxService'
 import axios from 'axios'
+import { ongoingService } from '../services/ongoingService'
 
 const router = express.Router()
 
@@ -629,6 +630,62 @@ async function handleOrderStatusChange(orderId: string, status: string, paymentS
       }
     }
 
+    // 3. Skicka direkt till Ongoing WMS om ONGOING_DIRECT_MODE är aktiverat
+    if (process.env.ONGOING_DIRECT_MODE === 'true' && sybkaService.shouldCreateSybkaOrder(status, paymentStatus)) {
+      try {
+        logger.info('Sending order directly to Ongoing WMS', { orderId, orderNumber: order.orderNumber })
+
+        const shippingAddr = order.shippingAddress as any
+        const billingAddr = order.billingAddress as any
+        
+        const ongoingResult = await ongoingService.processOrder({
+          customer: {
+            email: order.email,
+            firstName: shippingAddr?.firstName || billingAddr?.firstName || order.customerName?.split(' ')[0] || 'Customer',
+            lastName: shippingAddr?.lastName || billingAddr?.lastName || order.customerName?.split(' ').slice(1).join(' ') || order.orderNumber,
+            phone: shippingAddr?.phone || billingAddr?.phone || order.phone || '',
+            address: shippingAddr?.address || billingAddr?.address || '',
+            apartment: shippingAddr?.apartment || billingAddr?.apartment,
+            city: shippingAddr?.city || billingAddr?.city || '',
+            postalCode: shippingAddr?.postalCode || billingAddr?.postalCode || '',
+            country: shippingAddr?.country || billingAddr?.country || 'SE'
+          },
+          items: order.items.map(item => ({
+            productId: item.productId,
+            name: item.product?.name || 'Okänd produkt',
+            price: item.price,
+            quantity: item.quantity,
+            sku: item.product?.sku || item.productId,
+            weight: item.product?.weight
+          })),
+          orderId: order.orderNumber,
+          shipping: order.shippingAmount,
+          orderDate: order.createdAt,
+          deliveryInstruction: order.customerNotes
+        })
+
+        logger.info('Ongoing WMS order created successfully', {
+          orderId,
+          ongoingCustomerNumber: ongoingResult.customerNumber,
+          ongoingOrderNumber: ongoingResult.orderNumber
+        })
+
+        // Uppdatera order med Ongoing-referens
+        await prisma.order.update({
+          where: { id: orderId },
+          data: { 
+            internalNotes: `${order.internalNotes || ''}\nOngoing order: ${ongoingResult.orderNumber}`.trim()
+          }
+        })
+
+      } catch (error) {
+        logger.error('Failed to create Ongoing WMS order', {
+          orderId,
+          error: error instanceof Error ? error.message : 'Unknown error'
+        })
+      }
+    }
+
   } catch (error) {
     logger.error('Error handling order status change', {
       orderId,
@@ -651,6 +708,49 @@ router.post('/fortnox', express.json(), async (req, res) => {
   } catch (error) {
     logger.error('Fortnox webhook error:', error)
     res.status(500).json({ error: 'Webhook processing failed' })
+  }
+})
+
+/**
+ * Debug endpoint for Ongoing WMS
+ * GET /api/webhooks/debug-ongoing
+ */
+router.get('/debug-ongoing', async (req, res) => {
+  try {
+    const hasCredentials = !!(
+      process.env.ONGOING_USERNAME &&
+      process.env.ONGOING_PASSWORD &&
+      process.env.ONGOING_GOODS_OWNER_ID
+    )
+
+    const directModeEnabled = process.env.ONGOING_DIRECT_MODE === 'true'
+    
+    // Test connection if credentials are present
+    let connectionStatus = false
+    let connectionError = null
+    
+    if (hasCredentials) {
+      try {
+        connectionStatus = await ongoingService.testConnection()
+      } catch (error: any) {
+        connectionError = error.message
+      }
+    }
+
+    res.json({
+      ongoing: {
+        credentials_configured: hasCredentials,
+        direct_mode_enabled: directModeEnabled,
+        connection: connectionStatus,
+        connection_error: connectionError,
+        base_url: process.env.ONGOING_BASE_URL || 'https://api.ongoingsystems.se',
+        goods_owner_id: process.env.ONGOING_GOODS_OWNER_ID
+      },
+      current_flow: directModeEnabled ? 'Direct to Fortnox + Ongoing' : 'Via Sybka+'
+    })
+  } catch (error) {
+    logger.error('Failed to get Ongoing debug info', error)
+    res.status(500).json({ error: 'Failed to get Ongoing debug info' })
   }
 })
 

@@ -8,7 +8,7 @@ import {
   getOrderStatistics
 } from '../controllers/adminController'
 import prisma from '../lib/prisma'
-import logger from '../utils/logger'
+import { logger } from '../utils/logger'
 
 const router = express.Router()
 
@@ -33,7 +33,7 @@ router.post('/sync-pending-orders', requireAdmin, async (req, res) => {
       where: {
         OR: [
           {
-            orderStatus: { in: ['CONFIRMED', 'PROCESSING'] },
+            status: { in: ['CONFIRMED', 'PROCESSING'] },
             paymentStatus: 'PAID'
           }
         ],
@@ -41,7 +41,7 @@ router.post('/sync-pending-orders', requireAdmin, async (req, res) => {
         // You might want to add a 'syncedToFortnox' or 'syncedToSybka' field to your Order model
       },
       include: {
-        orderItems: {
+        items: {
           include: {
             product: true
           }
@@ -82,6 +82,55 @@ router.post('/sync-pending-orders', requireAdmin, async (req, res) => {
   } catch (error) {
     logger.error('Failed to sync pending orders', error)
     res.status(500).json({ error: 'Failed to sync pending orders' })
+  }
+})
+
+/**
+ * Get sync status for all orders
+ * GET /api/admin/orders/sync-status
+ */
+router.get('/orders/sync-status', async (req, res) => {
+  try {
+    const orders = await prisma.order.findMany({
+      where: {
+        createdAt: {
+          gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Last 30 days
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      },
+      select: {
+        id: true,
+        orderNumber: true,
+        status: true,
+        paymentStatus: true,
+        totalAmount: true,
+        createdAt: true,
+        customerName: true,
+        email: true
+      }
+    })
+
+    const syncStatus = orders.map(order => ({
+      ...order,
+      shouldSyncToFortnox: ['CONFIRMED', 'PROCESSING'].includes(order.status),
+      shouldSyncToSybka: order.paymentStatus === 'PAID',
+      needsSync: (
+        (['CONFIRMED', 'PROCESSING'].includes(order.status) || order.paymentStatus === 'PAID') &&
+        // You might want to add a field to track if already synced
+        true
+      )
+    }))
+
+    res.json({
+      totalOrders: syncStatus.length,
+      needsSync: syncStatus.filter(o => o.needsSync).length,
+      orders: syncStatus
+    })
+  } catch (error) {
+    logger.error('Failed to get sync status', error)
+    res.status(500).json({ error: 'Failed to get sync status' })
   }
 })
 
