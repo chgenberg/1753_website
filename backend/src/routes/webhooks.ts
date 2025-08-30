@@ -677,6 +677,95 @@ router.post('/test-status-change', express.json(), async (req, res) => {
   }
 })
 
+/**
+ * Debug endpoint för Sybka+ integration
+ * GET /api/webhooks/debug-sybka
+ */
+router.get('/debug-sybka', async (req, res) => {
+  try {
+    const statusMapping = sybkaService.getStatusMapping()
+    
+    // Test connection
+    const connectionTest = await sybkaService.testConnection()
+    
+    // Get recent orders
+    const recentOrders = await prisma.order.findMany({
+      take: 5,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        items: {
+          include: {
+            product: true
+          }
+        }
+      }
+    })
+
+    // Check environment variables
+    const envCheck = {
+      SYBKA_SYNC_URL: !!process.env.SYBKA_SYNC_URL,
+      SYNKA_ACCESS_TOKEN: !!process.env.SYNKA_ACCESS_TOKEN,
+      SYNKA_TEAM_ID: !!process.env.SYNKA_TEAM_ID,
+      NODE_ENV: process.env.NODE_ENV
+    }
+
+    res.json({
+      success: true,
+      debug_info: {
+        environment: envCheck,
+        sybka_connection: connectionTest,
+        status_mapping: statusMapping,
+        recent_orders: recentOrders.map(order => ({
+          id: order.id,
+          orderNumber: order.orderNumber,
+          status: order.status,
+          paymentStatus: order.paymentStatus,
+          totalAmount: order.totalAmount,
+          createdAt: order.createdAt,
+          shouldCreateInvoice: sybkaService.shouldCreateInvoice(order.status, order.paymentStatus),
+          shouldCreateSybkaOrder: sybkaService.shouldCreateSybkaOrder(order.status, order.paymentStatus)
+        }))
+      }
+    })
+  } catch (error: any) {
+    logger.error('Sybka debug endpoint error:', error)
+    res.status(500).json({
+      success: false,
+      error: error.message
+    })
+  }
+})
+
+/**
+ * Manual trigger för att skicka en specifik order till Sybka+
+ * POST /api/webhooks/manual-sybka-sync
+ */
+router.post('/manual-sybka-sync', express.json(), async (req, res) => {
+  try {
+    const { orderId } = req.body
+    
+    if (!orderId) {
+      return res.status(400).json({ error: 'orderId is required' })
+    }
+
+    logger.info('Manual Sybka sync triggered', { orderId })
+
+    // Force trigger the integration
+    await handleOrderStatusChange(orderId, 'CONFIRMED', 'PAID')
+    
+    res.json({
+      success: true,
+      message: `Manual sync triggered for order ${orderId}`
+    })
+  } catch (error: any) {
+    logger.error('Manual Sybka sync error:', error)
+    res.status(500).json({
+      success: false,
+      error: error.message
+    })
+  }
+})
+
 // Test endpoint - super enkel
 router.all('/test-viva', async (req, res) => {
   console.log('TEST VIVA WEBHOOK:', {
