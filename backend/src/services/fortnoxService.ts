@@ -296,7 +296,7 @@ class FortnoxService {
 
     } catch (error: any) {
       this.handleFortnoxError(error, 'order creation')
-      throw error
+      // Don't throw again since handleFortnoxError already throws
     }
   }
 
