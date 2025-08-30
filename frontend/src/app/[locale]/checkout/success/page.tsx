@@ -154,59 +154,160 @@ function SuccessContent() {
 
   return (
     <>
-      <Header />
-      <main className="min-h-screen bg-gradient-to-br from-[#FFF9F3] via-white to-[#FFF9F3] pt-24">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-16">
-          
-          {/* Hero Section */}
+      <style jsx global>{`
+        @media print {
+          /* Hide non-essential elements */
+          .print-hide,
+          header,
+          footer,
+          nav,
+          button,
+          .timeline-section,
+          .share-section,
+          .action-buttons,
+          .confetti-canvas,
+          .no-print {
+            display: none !important;
+          }
+
+          /* Reset page margins and colors */
+          @page {
+            margin: 1.5cm;
+            size: A4;
+          }
+
+          body {
+            margin: 0;
+            color: #000 !important;
+            background: white !important;
+            font-family: 'Inter', Arial, sans-serif;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+
+          /* Show print-only elements */
+          .print-only {
+            display: block !important;
+          }
+
+          /* Main container */
+          .print-container {
+            max-width: 100% !important;
+            padding: 0 !important;
+            background: white !important;
+          }
+
+          /* Order details styling */
+          .order-details-print {
+            page-break-inside: avoid;
+          }
+
+          /* Products table */
+          .print-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+          }
+
+          .print-table th {
+            text-align: left;
+            padding: 10px;
+            border-bottom: 2px solid #E79C1A;
+            font-weight: 600;
+          }
+
+          .print-table td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+          }
+
+          /* Ensure colors and shadows are preserved */
+          * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            box-shadow: none !important;
+            text-shadow: none !important;
+          }
+
+          /* Specific color preservation */
+          .text-accent {
+            color: #E79C1A !important;
+          }
+
+          /* Remove animations */
+          * {
+            animation: none !important;
+            transition: none !important;
+          }
+        }
+      `}</style>
+
+      {/* Print-only header */}
+      <div className="print-only hidden">
+        <div className="text-center mb-8">
+          <img src="/1753.png" alt="1753 Skincare" className="h-16 mx-auto mb-4" />
+          <h1 className="text-3xl font-light tracking-[0.2em] uppercase text-accent">
+            Orderbekräftelse
+          </h1>
+          <p className="text-gray-600 mt-2">
+            {new Date().toLocaleDateString('sv-SE', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            })}
+          </p>
+        </div>
+        <div className="border-t-2 border-[#E79C1A] mb-8"></div>
+      </div>
+
+      <div className="min-h-screen bg-gradient-to-br from-[#FFF9F3] via-white to-[#FFF9F3] print-container">
+        <div className="no-print">
+          <Header />
+        </div>
+        
+        <div className="container mx-auto px-4 py-8 md:py-16 max-w-4xl">
+          {/* Animated checkmark - hidden in print */}
+          <motion.div 
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", stiffness: 200, damping: 20 }}
+            className="flex justify-center mb-8 no-print"
+          >
+            <div className="relative">
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                className="absolute inset-0"
+              >
+                <Sparkles className="w-32 h-32 text-[#E79C1A]/20" />
+              </motion.div>
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: "spring" }}
+                className="relative bg-gradient-to-br from-[#E79C1A] to-[#D68910] rounded-full p-6 shadow-2xl"
+              >
+                <CheckCircle className="w-20 h-20 text-white" strokeWidth={1.5} />
+              </motion.div>
+            </div>
+          </motion.div>
+
+          {/* Success Message */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ delay: 0.2 }}
             className="text-center mb-12"
           >
-            {/* Animated Success Icon */}
-            <motion.div 
-              className="flex justify-center mb-8"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ 
-                type: "spring",
-                stiffness: 260,
-                damping: 20,
-                delay: 0.1 
-              }}
-            >
-              <div className="relative">
-                <div className="bg-gradient-to-br from-[#E79C1A] to-[#D68910] rounded-full p-8 shadow-2xl">
-                  <CheckCircle className="w-20 h-20 text-white" strokeWidth={2.5} />
-                </div>
-                <motion.div
-                  className="absolute -top-4 -right-4"
-                  animate={{ rotate: [0, 10, -10, 10, 0] }}
-                  transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-                >
-                  <Sparkles className="w-8 h-8 text-[#E79C1A]" />
-                </motion.div>
-              </div>
-            </motion.div>
-
-            {/* Success Message */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <h1 className="text-4xl md:text-5xl font-light tracking-[0.2em] uppercase mb-4">
-                Tack för din beställning!
-              </h1>
-              <p className="text-xl text-gray-600 mb-2">
-                Vi är så glada att få vara en del av din hudvårdsresa 💛
-              </p>
-              <p className="text-gray-500">
-                En bekräftelse har skickats till din e-post
-              </p>
-            </motion.div>
+            <h1 className="text-4xl md:text-5xl font-light tracking-[0.2em] uppercase mb-4">
+              Tack för din beställning!
+            </h1>
+            <p className="text-xl text-gray-600 mb-2 no-print">
+              Vi är så glada att få vara en del av din hudvårdsresa 💛
+            </p>
+            <p className="text-gray-500 no-print">
+              En bekräftelse har skickats till din e-post
+            </p>
           </motion.div>
 
           {/* Order Details Card */}
@@ -214,66 +315,110 @@ function SuccessContent() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-white rounded-3xl shadow-xl p-8 mb-8 relative overflow-hidden"
+            className="bg-white rounded-3xl shadow-xl p-8 mb-8 relative overflow-hidden order-details-print"
           >
-            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#E79C1A]/10 to-transparent rounded-full blur-3xl -mr-32 -mt-32" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#E79C1A]/10 to-transparent rounded-full blur-3xl -mr-32 -mt-32 no-print" />
             
             <div className="relative">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 pb-6 border-b border-gray-200">
                 <div>
-                  <p className="text-sm text-gray-500 uppercase tracking-wider mb-1">Ordernummer</p>
-                  <p className="text-2xl font-semibold text-gray-900">
-                    #{orderCode || fallbackOrderNumber}
-                  </p>
+                  <h2 className="text-2xl font-medium mb-2">Orderdetaljer</h2>
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-600">Ordernummer:</span>
+                    <span className="font-mono font-medium text-[#E79C1A] text-accent">
+                      {orderCode || fallbackOrderNumber}
+                    </span>
+                    <button
+                      onClick={copyOrderNumber}
+                      className="text-gray-400 hover:text-[#E79C1A] transition-colors no-print"
+                    >
+                      {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                    </button>
+                  </div>
                 </div>
-                <div className="flex gap-3">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={copyOrderNumber}
-                    className="px-4 py-2 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors flex items-center gap-2"
-                  >
-                    {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                    <span className="text-sm">{copied ? 'Kopierat!' : 'Kopiera'}</span>
-                  </motion.button>
+                <div className="flex gap-3 mt-4 md:mt-0 no-print">
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => window.print()}
-                    className="px-4 py-2 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors flex items-center gap-2"
+                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition-all flex items-center gap-2"
                   >
                     <Printer className="w-4 h-4" />
-                    <span className="text-sm">Skriv ut</span>
+                    <span className="hidden md:inline">Skriv ut</span>
                   </motion.button>
                 </div>
               </div>
 
-              {/* Estimated Delivery */}
-              <div className="bg-[#FFF9F3] rounded-2xl p-6 flex items-center gap-4">
-                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-md">
-                  <Clock className="w-6 h-6 text-[#E79C1A]" />
+              {/* Order Summary - Print optimized */}
+              <div className="space-y-4">
+                <h3 className="font-medium text-lg mb-3">Dina produkter</h3>
+                
+                {/* Print-only summary */}
+                <div className="print-only hidden">
+                  <div className="border border-gray-200 rounded-lg p-4 mb-4">
+                    <p className="font-medium mb-2">Ordersammanfattning</p>
+                    <div className="space-y-2 text-sm">
+                      <p>• Antal produkter: 1</p>
+                      <p>• Leveransmetod: Standard (3-5 arbetsdagar)</p>
+                      <p>• Betalningsmetod: Viva Wallet</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-2xl font-semibold text-[#E79C1A]">Totalt betalt: 895 kr</p>
+                    <p className="text-sm text-gray-600 mt-1">Inkl. moms och fri frakt</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-medium text-gray-900">Beräknad leverans</p>
-                  <p className="text-sm text-gray-600">
-                    {new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toLocaleDateString('sv-SE', { 
-                      weekday: 'long', 
-                      year: 'numeric', 
-                      month: 'long', 
-                      day: 'numeric' 
-                    })}
-                  </p>
+
+                {/* Screen display */}
+                <div className="no-print">
+                  <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 bg-[#E79C1A]/10 rounded-lg flex items-center justify-center">
+                          <Gift className="w-6 h-6 text-[#E79C1A]" />
+                        </div>
+                        <div>
+                          <p className="font-medium">DUO CBD & CBG</p>
+                          <p className="text-sm text-gray-500">1 st</p>
+                        </div>
+                      </div>
+                      <p className="font-medium">895 kr</p>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <div className="flex justify-between items-center text-lg font-medium">
+                      <span>Totalt</span>
+                      <span className="text-[#E79C1A]">895 kr</span>
+                    </div>
+                    <p className="text-sm text-gray-500 mt-1">Inkl. moms och fri frakt</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Delivery information */}
+              <div className="mt-6 pt-6 border-t border-gray-200">
+                <h3 className="font-medium text-lg mb-3">Leveransinformation</h3>
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Truck className="w-5 h-5 text-[#E79C1A]" />
+                    <p className="font-medium">Standard leverans</p>
+                  </div>
+                  <p className="text-sm text-gray-600">• Leveranstid: 3-5 arbetsdagar</p>
+                  <p className="text-sm text-gray-600">• Spårbar försändelse</p>
+                  <p className="text-sm text-gray-600">• Fri frakt på alla beställningar</p>
+                  <p className="text-sm text-gray-600 mt-3">Du får ett spårningsnummer via e-post när din order skickas.</p>
                 </div>
               </div>
             </div>
           </motion.div>
 
-          {/* Timeline */}
+          {/* Timeline - hidden in print */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="bg-white rounded-3xl shadow-xl p-8 mb-8"
+            className="bg-white rounded-3xl shadow-xl p-8 mb-8 timeline-section no-print"
           >
             <h2 className="text-2xl font-light tracking-wider mb-8 text-center">Din orders resa</h2>
             
@@ -327,12 +472,12 @@ function SuccessContent() {
             </div>
           </motion.div>
 
-          {/* Share the love */}
+          {/* Share section - hidden in print */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
-            className="bg-gradient-to-r from-[#FFF9F3] to-[#FFF5ED] rounded-3xl p-8 mb-8 text-center relative overflow-hidden"
+            className="bg-gradient-to-r from-[#FFF9F3] to-[#FFF5ED] rounded-3xl p-8 mb-8 text-center relative overflow-hidden share-section no-print"
           >
             <div className="absolute inset-0 bg-pattern opacity-5" />
             <div className="relative">
@@ -382,12 +527,12 @@ function SuccessContent() {
             </div>
           </motion.div>
 
-          {/* Action Buttons */}
+          {/* Action buttons - hidden in print */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center mb-12"
+            className="flex flex-col md:flex-row gap-4 justify-center action-buttons no-print"
           >
             <Link
               href="/products"
@@ -454,9 +599,19 @@ function SuccessContent() {
               </a>
             </div>
           </motion.div>
+
+          {/* Print-only footer */}
+          <div className="print-only hidden mt-12 pt-8 border-t border-gray-200 text-center text-sm text-gray-600">
+            <p>1753 Skincare • www.1753skincare.com</p>
+            <p>Kundservice: info@1753skincare.com • Tel: 08-123 456 78</p>
+            <p className="mt-2 text-xs">Denna orderbekräftelse är automatiskt genererad</p>
+          </div>
         </div>
-      </main>
-      <Footer />
+        
+        <div className="no-print">
+          <Footer />
+        </div>
+      </div>
     </>
   )
 }
