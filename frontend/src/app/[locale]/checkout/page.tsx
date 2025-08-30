@@ -1010,7 +1010,7 @@ export default function CheckoutPage() {
                           <span className="font-medium">{formatMoney(subtotal)}</span>
                         </div>
                         <div className="flex justify-between text-gray-700">
-                          <span>{t('checkout.shipping')}</span>
+                          <span>{t('checkout.shippingLabel')}</span>
                           <span className="font-medium">{shipping === 0 ? t('checkout.freeShipping') : formatMoney(shipping)}</span>
                         </div>
                         {appliedDiscount && (
@@ -1247,7 +1247,7 @@ export default function CheckoutPage() {
                   </motion.div>
                 )}
                 <div className="flex justify-between text-gray-700">
-                  <span>{t('checkout.shipping')}</span>
+                  <span>{t('checkout.shippingLabel')}</span>
                   <span>{shipping === 0 ? t('checkout.freeShipping') : formatMoney(shipping)}</span>
                 </div>
                 <div className="flex justify-between text-xl font-medium pt-3 border-t border-[#E5D5C7]">

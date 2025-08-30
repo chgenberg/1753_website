@@ -200,7 +200,7 @@
       "freeShippingOver": "Fri frakt över {amount}!"
     },
     "subtotal": "Delsumma",
-    "shipping": "Frakt",
+    "shippingLabel": "Frakt",
     "freeShipping": "Gratis",
     "discount": "Rabatt ({code})",
     "total": "Totalt",

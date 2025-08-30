@@ -200,7 +200,7 @@
       "freeShippingOver": "¡Envío gratuito por encima de {amount}!"
     },
     "subtotal": "Subtotal",
-    "shipping": "Envío",
+    "shippingLabel": "Envío",
     "freeShipping": "Gratis",
     "discount": "Descuento ({code})",
     "total": "Total",

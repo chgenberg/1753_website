@@ -184,7 +184,7 @@
       "freeShippingOver": "Kostenloser Versand ab {amount}!"
     },
     "subtotal": "Zwischensumme",
-    "shipping": "Versand",
+    "shippingLabel": "Versand",
     "freeShipping": "Kostenlos",
     "discount": "Rabatt ({code})",
     "total": "Gesamt",

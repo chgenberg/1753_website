@@ -285,7 +285,7 @@
       "freeShippingOver": "Free shipping over {amount}!"
     },
     "subtotal": "Subtotal",
-    "shipping": "Shipping",
+    "shippingLabel": "Shipping",
     "freeShipping": "Free",
     "discount": "Discount ({code})",
     "total": "Total",

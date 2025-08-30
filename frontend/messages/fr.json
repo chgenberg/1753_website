@@ -184,7 +184,7 @@
       "freeShippingOver": "Livraison gratuite au-dessus de {amount} !"
     },
     "subtotal": "Sous-total",
-    "shipping": "Livraison",
+    "shippingLabel": "Livraison",
     "freeShipping": "Gratuit",
     "discount": "Réduction ({code})",
     "total": "Total",
