@@ -80,7 +80,7 @@ class OngoingService {
       username: process.env.ONGOING_USERNAME || '',
       password: process.env.ONGOING_PASSWORD || '',
       goodsOwnerId: parseInt(process.env.ONGOING_GOODS_OWNER_ID || '0'),
-      baseUrl: process.env.ONGOING_BASE_URL || 'https://api.ongoingsystems.se'
+      baseUrl: process.env.ONGOING_BASE_URL || 'https://api.ongoingsystems.se/Logit'
     }
 
     if (!this.credentials.username || !this.credentials.password || !this.credentials.goodsOwnerId) {
