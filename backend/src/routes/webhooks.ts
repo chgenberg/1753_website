@@ -808,7 +808,13 @@ router.post('/manual-sybka-sync', express.json(), async (req, res) => {
  */
 router.get('/debug-fortnox', async (req, res) => {
   const baseUrl = process.env.FORTNOX_BASE_URL || 'https://api.fortnox.se/3'
-  const headers = {
+  const token = (process.env.FORTNOX_API_TOKEN || '').trim()
+  const isJwt = token && (token.includes('.') && token.split('.').length >= 3 || token.startsWith('eyJ'))
+  const headers = isJwt ? {
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  } : {
     'Access-Token': process.env.FORTNOX_API_TOKEN || '',
     'Client-Secret': process.env.FORTNOX_CLIENT_SECRET || '',
     'Content-Type': 'application/json',
@@ -818,7 +824,8 @@ router.get('/debug-fortnox', async (req, res) => {
   const envOk = {
     FORTNOX_API_TOKEN: !!process.env.FORTNOX_API_TOKEN,
     FORTNOX_CLIENT_SECRET: !!process.env.FORTNOX_CLIENT_SECRET,
-    FORTNOX_BASE_URL: !!process.env.FORTNOX_BASE_URL
+    FORTNOX_BASE_URL: !!process.env.FORTNOX_BASE_URL,
+    AUTH_MODE: isJwt ? 'oauth_bearer' : 'legacy_headers'
   }
 
   try {

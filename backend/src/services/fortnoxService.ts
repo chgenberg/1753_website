@@ -90,15 +90,34 @@ class FortnoxService {
       baseUrl: process.env.FORTNOX_BASE_URL || 'https://api.fortnox.se/3'
     }
 
-    if (!this.credentials.apiToken || !this.credentials.clientSecret) {
-      logger.warn('Fortnox credentials not configured')
+    if (!this.credentials.apiToken) {
+      logger.warn('Fortnox credentials not configured: missing FORTNOX_API_TOKEN')
     }
+  }
+
+  /**
+   * Detect if apiToken is an OAuth JWT (Bearer) vs legacy Access-Token.
+   */
+  private isOAuthToken(): boolean {
+    const token = this.credentials.apiToken.trim()
+    if (!token) return false
+    // Heuristics: JWT typically has two dots, often starts with eyJ
+    return token.includes('.') && token.split('.').length >= 3 || token.startsWith('eyJ') || String(process.env.FORTNOX_USE_OAUTH || '').toLowerCase() === 'true'
   }
 
   /**
    * Get default headers for Fortnox API
    */
   private getHeaders() {
+    if (this.isOAuthToken()) {
+      // OAuth 2.0 Bearer token
+      return {
+        'Authorization': `Bearer ${this.credentials.apiToken}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    }
+    // Legacy API keys
     return {
       'Access-Token': this.credentials.apiToken,
       'Client-Secret': this.credentials.clientSecret,
@@ -419,14 +438,11 @@ class FortnoxService {
   async testConnection(): Promise<boolean> {
     try {
       await this.rateLimitDelay()
-      
       const response = await axios.get(
         `${this.credentials.baseUrl}/companyinformation`,
         { headers: this.getHeaders() }
       )
-
       return !response.data.ErrorInformation
-
     } catch (error) {
       logger.error('Fortnox connection test failed:', error)
       return false
