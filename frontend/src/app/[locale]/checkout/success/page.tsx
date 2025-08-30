@@ -139,7 +139,7 @@ function SuccessContent() {
     {
       icon: Truck,
       title: 'På väg',
-      description: 'Spårningsnummer skickas via e-post',
+      description: 'Din order är på väg till dig',
       time: '2-3 dagar',
       status: 'pending'
     },
@@ -504,18 +504,18 @@ function SuccessContent() {
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className="absolute top-full mt-2 left-1/2 -translate-x-1/2 bg-white rounded-xl shadow-xl p-2 z-20"
+                      className="absolute top-full mt-2 left-1/2 -translate-x-1/2 bg-white rounded-xl shadow-xl p-2 z-50 min-w-[160px]"
                     >
                       <button
                         onClick={() => shareOrder('instagram')}
-                        className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors w-full"
+                        className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors w-full text-left"
                       >
                         <Instagram className="w-5 h-5" />
                         <span>Instagram</span>
                       </button>
                       <button
                         onClick={() => shareOrder('facebook')}
-                        className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors w-full"
+                        className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors w-full text-left"
                       >
                         <Facebook className="w-5 h-5" />
                         <span>Facebook</span>
