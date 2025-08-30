@@ -141,6 +141,19 @@ class OngoingService {
         }
       }
 
+      // Log the customer data being sent
+      logger.info('Creating Ongoing customer with data:', {
+        customerNumber: customerData.CustomerNumber,
+        name: customerData.Name,
+        email: customerData.Email,
+        phone: customerData.Phone,
+        address: customerData.Address,
+        city: customerData.City,
+        postCode: customerData.PostCode,
+        countryCode: customerData.CountryCode,
+        goodsOwnerId: this.credentials.goodsOwnerId
+      })
+
       const response: AxiosResponse<OngoingApiResponse<{ CustomerNumber: string }>> = await axios.post(
         `${this.credentials.baseUrl}/api/v1/customers`,
         {
@@ -160,6 +173,14 @@ class OngoingService {
       return customerNumber
 
     } catch (error: any) {
+      // Log detailed error information
+      if (error.response?.data) {
+        logger.error('Ongoing customer creation error response:', {
+          status: error.response.status,
+          data: error.response.data,
+          headers: error.response.headers
+        })
+      }
       this.handleOngoingError(error, 'customer creation')
       throw error
     }
