@@ -299,6 +299,12 @@ class FortnoxService {
       return orderNumber
 
     } catch (error: any) {
+      if (error.response) {
+        logger.error('Fortnox order creation raw error response:', {
+          status: error.response.status,
+          data: error.response.data
+        })
+      }
       this.handleFortnoxError(error, 'order creation')
       // Don't throw again since handleFortnoxError already throws
     }
@@ -407,7 +413,7 @@ class FortnoxService {
       // Add shipping as a separate row if applicable
       if (orderDetails.shipping > 0) {
         orderRows.push({
-          ...(skipArticleCreate ? {} : { ArticleNumber: 'SHIPPING' }),
+          // Do not reference a non-existent SHIPPING article
           Description: 'Frakt och hantering',
           Price: orderDetails.shipping,
           OrderedQuantity: 1,
