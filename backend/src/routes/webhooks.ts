@@ -485,7 +485,9 @@ async function handleOrderStatusChange(orderId: string, status: string, paymentS
       paymentStatus,
       teamId: statusMapping.team_id,
       shouldCreateInvoice: sybkaService.shouldCreateInvoice(status, paymentStatus),
-      shouldCreateSybkaOrder: sybkaService.shouldCreateSybkaOrder(status, paymentStatus)
+      shouldCreateSybkaOrder: sybkaService.shouldCreateSybkaOrder(status, paymentStatus),
+      sybkaEnabled: (process.env.SYBKA_ENABLED || 'false').toLowerCase() === 'true',
+      ongoingDirectMode: process.env.ONGOING_DIRECT_MODE === 'true'
     })
 
     // 1. Skapa faktura i Fortnox om status triggar det
@@ -631,7 +633,7 @@ async function handleOrderStatusChange(orderId: string, status: string, paymentS
     }
 
     // 3. Skicka direkt till Ongoing WMS om ONGOING_DIRECT_MODE är aktiverat
-    if (process.env.ONGOING_DIRECT_MODE === 'true' && sybkaService.shouldCreateSybkaOrder(status, paymentStatus)) {
+    if (process.env.ONGOING_DIRECT_MODE === 'true' && (paymentStatus === 'PAID' || status === 'CONFIRMED' || status === 'PROCESSING')) {
       try {
         logger.info('Sending order directly to Ongoing WMS', { orderId, orderNumber: order.orderNumber })
 

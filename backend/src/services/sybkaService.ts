@@ -222,6 +222,8 @@ class SybkaService {
    * Check if order status should trigger Sybka order creation
    */
   shouldCreateSybkaOrder(status: string, paymentStatus: string): boolean {
+    const sybkaEnabled = (process.env.SYBKA_ENABLED || 'false').toLowerCase() === 'true'
+    if (!sybkaEnabled) return false
     const should = this.statusMapping.order_triggers.includes(paymentStatus)
     return should
   }
