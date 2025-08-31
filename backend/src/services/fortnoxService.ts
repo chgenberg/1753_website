@@ -33,11 +33,12 @@ interface FortnoxArticle {
 
 interface FortnoxOrderRow {
   ArticleNumber?: string
-  Description: string
-  Price: number
-  Quantity: number
-  VAT: number
-  Total: number
+  Description?: string
+  Price?: number
+  OrderedQuantity: number
+  DeliveredQuantity?: number
+  VAT?: number
+  Discount?: number
 }
 
 interface FortnoxOrder {
@@ -48,7 +49,7 @@ interface FortnoxOrder {
   Comments?: string
   YourReference?: string
   Currency?: string
-  VATIncluded?: boolean
+  PricesInclVat?: boolean
   DeliveryAddress?: {
     Name: string
     Address1: string
@@ -280,6 +281,9 @@ class FortnoxService {
     try {
       await this.rateLimitDelay()
 
+      // Debug: log payload we send to Fortnox to diagnose API errors
+      logger.info('Creating Fortnox order with payload', { order: orderData })
+
       const response: AxiosResponse<FortnoxResponse<{ Order: any }>> = await axios.post(
         `${this.credentials.baseUrl}/orders`,
         { Order: orderData },
@@ -395,9 +399,9 @@ class FortnoxService {
         ...(skipArticleCreate ? {} : { ArticleNumber: item.sku || item.productId }),
         Description: item.name,
         Price: item.price,
-        Quantity: item.quantity,
-        VAT: 25,
-        Total: item.price * item.quantity
+        OrderedQuantity: item.quantity,
+        DeliveredQuantity: 0,
+        VAT: 25
       }))
 
       // Add shipping as a separate row if applicable
@@ -406,9 +410,9 @@ class FortnoxService {
           ...(skipArticleCreate ? {} : { ArticleNumber: 'SHIPPING' }),
           Description: 'Frakt och hantering',
           Price: orderDetails.shipping,
-          Quantity: 1,
-          VAT: 25,
-          Total: orderDetails.shipping
+          OrderedQuantity: 1,
+          DeliveredQuantity: 0,
+          VAT: 25
         })
       }
 
@@ -419,7 +423,7 @@ class FortnoxService {
         Comments: `E-handelsorder från 1753skincare.com - Order ID: ${orderDetails.orderId}`,
         YourReference: orderDetails.orderId,
         Currency: 'SEK',
-        VATIncluded: true,
+        PricesInclVat: true,
         DeliveryAddress: {
           Name: `${orderDetails.customer.firstName} ${orderDetails.customer.lastName}`,
           Address1: orderDetails.customer.address,

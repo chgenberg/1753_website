@@ -141,16 +141,29 @@ class OngoingService {
         }
       }
 
+      // Ensure required fields fallbacks
+      const safeCustomer: OngoingCustomer = {
+        CustomerNumber: customerData.CustomerNumber || customerData.Email || 'UNKNOWN',
+        Name: customerData.Name || (customerData.Email ? customerData.Email.split('@')[0] : 'Customer'),
+        Address: customerData.Address || 'Unknown',
+        PostCode: customerData.PostCode || '00000',
+        City: customerData.City || 'Unknown',
+        CountryCode: customerData.CountryCode || 'SE',
+        Phone: customerData.Phone,
+        Email: customerData.Email,
+        CustomerType: customerData.CustomerType || 1
+      }
+
       // Log the customer data being sent
       logger.info('Creating Ongoing customer with data:', {
-        customerNumber: customerData.CustomerNumber,
-        name: customerData.Name,
-        email: customerData.Email,
-        phone: customerData.Phone,
-        address: customerData.Address,
-        city: customerData.City,
-        postCode: customerData.PostCode,
-        countryCode: customerData.CountryCode,
+        customerNumber: safeCustomer.CustomerNumber,
+        name: safeCustomer.Name,
+        email: safeCustomer.Email,
+        phone: safeCustomer.Phone,
+        address: safeCustomer.Address,
+        city: safeCustomer.City,
+        postCode: safeCustomer.PostCode,
+        countryCode: safeCustomer.CountryCode,
         goodsOwnerId: this.credentials.goodsOwnerId
       })
 
@@ -158,8 +171,7 @@ class OngoingService {
         `${this.credentials.baseUrl}/api/v1/customers`,
         {
           GoodsOwnerId: this.credentials.goodsOwnerId,
-          ...customerData,
-          CustomerType: customerData.CustomerType || 1 // 1 = End customer
+          ...safeCustomer
         },
         { headers }
       )
@@ -168,7 +180,7 @@ class OngoingService {
         throw new Error(response.data.Message || 'Failed to create customer')
       }
 
-      const customerNumber = response.data.Data?.CustomerNumber || customerData.CustomerNumber!
+      const customerNumber = response.data.Data?.CustomerNumber || safeCustomer.CustomerNumber!
       logger.info(`Ongoing customer created: ${customerNumber}`)
       return customerNumber
 
@@ -180,6 +192,8 @@ class OngoingService {
           data: error.response.data,
           headers: error.response.headers
         })
+      } else {
+        logger.error('Ongoing customer creation error:', error.message)
       }
       this.handleOngoingError(error, 'customer creation')
       throw error
