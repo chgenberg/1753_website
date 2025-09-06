@@ -5,6 +5,8 @@ interface FortnoxCredentials {
   apiToken: string
   clientSecret: string
   baseUrl: string
+  clientId?: string
+  refreshToken?: string
 }
 
 interface FortnoxCustomer {
@@ -49,7 +51,7 @@ interface FortnoxOrder {
   Comments?: string
   YourReference?: string
   Currency?: string
-  PricesInclVat?: boolean
+  PricesIncVat?: boolean
   DeliveryAddress?: {
     Name: string
     Address1: string
@@ -83,13 +85,20 @@ interface FortnoxResponse<T> {
 class FortnoxService {
   private credentials: FortnoxCredentials
   private delayMs = 500 // 500ms delay between requests
+  private inMemoryAccessToken: string
+  private inMemoryRefreshToken?: string
 
   constructor() {
     this.credentials = {
       apiToken: process.env.FORTNOX_API_TOKEN || '',
       clientSecret: process.env.FORTNOX_CLIENT_SECRET || '',
-      baseUrl: process.env.FORTNOX_BASE_URL || 'https://api.fortnox.se/3'
+      baseUrl: process.env.FORTNOX_BASE_URL || 'https://api.fortnox.se/3',
+      clientId: process.env.FORTNOX_CLIENT_ID,
+      refreshToken: process.env.FORTNOX_REFRESH_TOKEN
     }
+
+    this.inMemoryAccessToken = this.credentials.apiToken
+    this.inMemoryRefreshToken = this.credentials.refreshToken
 
     if (!this.credentials.apiToken) {
       logger.warn('Fortnox credentials not configured: missing FORTNOX_API_TOKEN')
@@ -100,7 +109,11 @@ class FortnoxService {
    * Detect if apiToken is an OAuth JWT (Bearer) vs legacy Access-Token.
    */
   private isOAuthToken(): boolean {
-    const token = this.credentials.apiToken.trim()
+    // Force legacy API for now since OAuth scopes are limited
+    if (String(process.env.FORTNOX_USE_OAUTH || '').toLowerCase() === 'false') {
+      return false
+    }
+    const token = (this.inMemoryAccessToken || this.credentials.apiToken || '').trim()
     if (!token) return false
     // Heuristics: JWT typically has two dots, often starts with eyJ
     return token.includes('.') && token.split('.').length >= 3 || token.startsWith('eyJ') || String(process.env.FORTNOX_USE_OAUTH || '').toLowerCase() === 'true'
@@ -112,8 +125,9 @@ class FortnoxService {
   private getHeaders() {
     if (this.isOAuthToken()) {
       // OAuth 2.0 Bearer token
+      const token = this.inMemoryAccessToken || this.credentials.apiToken
       return {
-        'Authorization': `Bearer ${this.credentials.apiToken}`,
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       }
@@ -132,6 +146,65 @@ class FortnoxService {
    */
   private async rateLimitDelay() {
     await new Promise(resolve => setTimeout(resolve, this.delayMs))
+  }
+
+  /**
+   * Refresh OAuth access token using refresh token (Fortnox OAuth)
+   */
+  private async refreshAccessToken(): Promise<void> {
+    if (!this.credentials.clientId || !this.credentials.clientSecret || !this.inMemoryRefreshToken) {
+      logger.warn('Fortnox token refresh skipped: missing clientId/clientSecret/refreshToken')
+      throw new Error('Missing Fortnox OAuth credentials for refresh')
+    }
+
+    const basic = Buffer.from(`${this.credentials.clientId}:${this.credentials.clientSecret}`).toString('base64')
+    try {
+      const resp = await axios.post(
+        'https://apps.fortnox.se/oauth-v1/token',
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: this.inMemoryRefreshToken
+        }),
+        {
+          headers: {
+            'Authorization': `Basic ${basic}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
+      )
+
+      const newAccess = resp.data?.access_token
+      const newRefresh = resp.data?.refresh_token
+
+      if (!newAccess) {
+        throw new Error('No access_token in Fortnox refresh response')
+      }
+
+      this.inMemoryAccessToken = newAccess
+      if (newRefresh) this.inMemoryRefreshToken = newRefresh
+
+      logger.info('Fortnox access token refreshed successfully')
+
+    } catch (err: any) {
+      logger.error('Failed to refresh Fortnox access token:', err.response?.data || err.message)
+      throw err
+    }
+  }
+
+  /**
+   * Execute a Fortnox request and on 401, refresh token once and retry
+   */
+  private async withRefreshRetry<T>(fn: () => Promise<T>): Promise<T> {
+    try {
+      return await fn()
+    } catch (error: any) {
+      const status = error?.response?.status
+      if (status === 401 && this.isOAuthToken() && this.inMemoryRefreshToken) {
+        await this.refreshAccessToken()
+        return await fn()
+      }
+      throw error
+    }
   }
 
   /**
@@ -171,17 +244,20 @@ class FortnoxService {
         }
       }
 
-      const response: AxiosResponse<FortnoxResponse<{ Customer: FortnoxCustomer }>> = await axios.post(
-        `${this.credentials.baseUrl}/customers`,
-        { Customer: customerData },
-        { headers: this.getHeaders() }
-      )
-
-      if (response.data.ErrorInformation) {
-        throw new Error(response.data.ErrorInformation.Message)
+      const exec = async () => {
+        const response: AxiosResponse<FortnoxResponse<{ Customer: FortnoxCustomer }>> = await axios.post(
+          `${this.credentials.baseUrl}/customers`,
+          { Customer: customerData },
+          { headers: this.getHeaders() }
+        )
+        if (response.data.ErrorInformation) {
+          throw new Error(response.data.ErrorInformation.Message)
+        }
+        return response
       }
 
-      const customerNumber = response.data.Customer.CustomerNumber!
+      const response = await this.withRefreshRetry(exec)
+      const customerNumber = (response as any).data.Customer.CustomerNumber!
       logger.info(`Fortnox customer created: ${customerNumber}`)
       return customerNumber
 
@@ -198,13 +274,15 @@ class FortnoxService {
     try {
       await this.rateLimitDelay()
 
-      const response = await axios.get(
+      const exec = async () => axios.get(
         `${this.credentials.baseUrl}/customers?email=${encodeURIComponent(email)}`,
         { headers: this.getHeaders() }
       )
 
-      if (response.data.Customers && response.data.Customers.length > 0) {
-        return response.data.Customers[0].CustomerNumber
+      const response = await this.withRefreshRetry(exec)
+
+      if ((response as any).data.Customers && (response as any).data.Customers.length > 0) {
+        return (response as any).data.Customers[0].CustomerNumber
       }
 
       return null
@@ -231,17 +309,20 @@ class FortnoxService {
         }
       }
 
-      const response: AxiosResponse<FortnoxResponse<{ Article: FortnoxArticle }>> = await axios.post(
-        `${this.credentials.baseUrl}/articles`,
-        { Article: articleData },
-        { headers: this.getHeaders() }
-      )
-
-      if (response.data.ErrorInformation) {
-        throw new Error(response.data.ErrorInformation.Message)
+      const exec = async () => {
+        const response: AxiosResponse<FortnoxResponse<{ Article: FortnoxArticle }>> = await axios.post(
+          `${this.credentials.baseUrl}/articles`,
+          { Article: articleData },
+          { headers: this.getHeaders() }
+        )
+        if (response.data.ErrorInformation) {
+          throw new Error(response.data.ErrorInformation.Message)
+        }
+        return response
       }
 
-      const articleNumber = response.data.Article.ArticleNumber!
+      await this.withRefreshRetry(exec)
+      const articleNumber = articleData.ArticleNumber!
       logger.info(`Fortnox article created: ${articleNumber}`)
       return articleNumber
 
@@ -258,12 +339,13 @@ class FortnoxService {
     try {
       await this.rateLimitDelay()
 
-      const response = await axios.get(
+      const exec = async () => axios.get(
         `${this.credentials.baseUrl}/articles/${articleNumber}`,
         { headers: this.getHeaders() }
       )
 
-      return response.data.Article || null
+      const response = await this.withRefreshRetry(exec)
+      return (response as any).data.Article || null
 
     } catch (error: any) {
       if (error.response?.status === 404) {
@@ -284,17 +366,21 @@ class FortnoxService {
       // Debug: log payload we send to Fortnox to diagnose API errors
       logger.info('Creating Fortnox order with payload', { order: orderData })
 
-      const response: AxiosResponse<FortnoxResponse<{ Order: any }>> = await axios.post(
-        `${this.credentials.baseUrl}/orders`,
-        { Order: orderData },
-        { headers: this.getHeaders() }
-      )
-
-      if (response.data.ErrorInformation) {
-        throw new Error(response.data.ErrorInformation.Message)
+      const exec = async () => {
+        const response: AxiosResponse<FortnoxResponse<{ Order: any }>> = await axios.post(
+          `${this.credentials.baseUrl}/orders`,
+          { Order: orderData },
+          { headers: this.getHeaders() }
+        )
+        if (response.data.ErrorInformation) {
+          throw new Error(response.data.ErrorInformation.Message)
+        }
+        return response
       }
 
-      const orderNumber = response.data.Order.DocumentNumber
+      const response = await this.withRefreshRetry(exec)
+
+      const orderNumber = (response as any).data.Order.DocumentNumber
       logger.info(`Fortnox order created: ${orderNumber}`)
       return orderNumber
 
@@ -306,7 +392,6 @@ class FortnoxService {
         })
       }
       this.handleFortnoxError(error, 'order creation')
-      // Don't throw again since handleFortnoxError already throws
     }
   }
 
@@ -317,17 +402,21 @@ class FortnoxService {
     try {
       await this.rateLimitDelay()
 
-      const response: AxiosResponse<FortnoxResponse<{ Invoice: any }>> = await axios.post(
-        `${this.credentials.baseUrl}/invoices`,
-        { Invoice: invoiceData },
-        { headers: this.getHeaders() }
-      )
-
-      if (response.data.ErrorInformation) {
-        throw new Error(response.data.ErrorInformation.Message)
+      const exec = async () => {
+        const response: AxiosResponse<FortnoxResponse<{ Invoice: any }>> = await axios.post(
+          `${this.credentials.baseUrl}/invoices`,
+          { Invoice: invoiceData },
+          { headers: this.getHeaders() }
+        )
+        if (response.data.ErrorInformation) {
+          throw new Error(response.data.ErrorInformation.Message)
+        }
+        return response
       }
 
-      const invoiceNumber = response.data.Invoice.DocumentNumber
+      const response = await this.withRefreshRetry(exec)
+
+      const invoiceNumber = (response as any).data.Invoice.DocumentNumber
       logger.info(`Fortnox invoice created: ${invoiceNumber}`)
       return invoiceNumber
 
@@ -429,7 +518,7 @@ class FortnoxService {
         Comments: `E-handelsorder från 1753skincare.com - Order ID: ${orderDetails.orderId}`,
         YourReference: orderDetails.orderId,
         Currency: 'SEK',
-        PricesInclVat: true,
+        PricesIncVat: true,
         DeliveryAddress: {
           Name: `${orderDetails.customer.firstName} ${orderDetails.customer.lastName}`,
           Address1: orderDetails.customer.address,
@@ -456,11 +545,12 @@ class FortnoxService {
   async testConnection(): Promise<boolean> {
     try {
       await this.rateLimitDelay()
-      const response = await axios.get(
+      const exec = async () => axios.get(
         `${this.credentials.baseUrl}/companyinformation`,
         { headers: this.getHeaders() }
       )
-      return !response.data.ErrorInformation
+      const response = await this.withRefreshRetry(exec)
+      return !(response as any).data.ErrorInformation
     } catch (error) {
       logger.error('Fortnox connection test failed:', error)
       return false

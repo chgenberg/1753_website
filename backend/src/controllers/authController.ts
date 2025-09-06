@@ -6,10 +6,10 @@ import { prisma } from '../lib/prisma'
 import { logger } from '../utils/logger'
 import { dripService } from '../services/dripService'
 
-// Generate simple token (replace with proper JWT later)
+// Generate JWT token
 const generateToken = (userId: string): string => {
-  // For now, just return a simple token
-  return Buffer.from(JSON.stringify({ userId, exp: Date.now() + 7 * 24 * 60 * 60 * 1000 })).toString('base64')
+  const secret = process.env.JWT_SECRET || 'fallback-secret'
+  return jwt.sign({ userId }, secret, { expiresIn: '7d' })
 }
 
 // Register new user

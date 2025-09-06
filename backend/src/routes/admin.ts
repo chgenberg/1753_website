@@ -9,6 +9,8 @@ import {
 } from '../controllers/adminController'
 import prisma from '../lib/prisma'
 import { logger } from '../utils/logger'
+import { fortnoxService } from '../services/fortnoxService'
+import { ongoingService } from '../services/ongoingService'
 
 const router = express.Router()
 
@@ -55,14 +57,48 @@ router.post('/sync-pending-orders', requireAdmin, async (req, res) => {
       try {
         logger.info('Manually syncing order', { orderId: order.id, orderNumber: order.orderNumber })
         
-        // Call the same logic as webhook handler
-        const { handleOrderStatusChange } = require('./webhooks')
-        await handleOrderStatusChange(order.id)
+        // Process order directly with Fortnox
+        const shippingAddr = order.shippingAddress as any
+        const billingAddr = order.billingAddress as any
+        
+        const fortnoxResult = await fortnoxService.processOrder({
+          customer: {
+            email: order.email,
+            firstName: shippingAddr?.firstName || billingAddr?.firstName || '',
+            lastName: shippingAddr?.lastName || billingAddr?.lastName || '',
+            phone: shippingAddr?.phone || billingAddr?.phone || order.phone || '',
+            address: shippingAddr?.address || billingAddr?.address || '',
+            apartment: shippingAddr?.apartment || billingAddr?.apartment,
+            city: shippingAddr?.city || billingAddr?.city || '',
+            postalCode: shippingAddr?.postalCode || billingAddr?.postalCode || '',
+            country: shippingAddr?.country || billingAddr?.country || 'SE'
+          },
+          items: order.items.map(item => ({
+            productId: item.productId,
+            name: item.product?.name || 'Okänd produkt',
+            price: item.price,
+            quantity: item.quantity,
+            sku: item.product?.sku || item.productId
+          })),
+          orderId: order.orderNumber,
+          total: order.totalAmount,
+          shipping: order.shippingAmount,
+          orderDate: order.createdAt
+        })
+
+        // Update order with Fortnox reference
+        await prisma.order.update({
+          where: { id: order.id },
+          data: { 
+            internalNotes: `Fortnox order: ${fortnoxResult.orderNumber}${order.internalNotes ? '\n' + order.internalNotes : ''}` 
+          }
+        })
         
         results.push({
           orderId: order.id,
           orderNumber: order.orderNumber,
-          status: 'success'
+          status: 'success',
+          fortnoxOrderNumber: fortnoxResult.orderNumber
         })
       } catch (error) {
         logger.error('Failed to sync order', { orderId: order.id, error })
@@ -131,6 +167,85 @@ router.get('/orders/sync-status', async (req, res) => {
   } catch (error) {
     logger.error('Failed to get sync status', error)
     res.status(500).json({ error: 'Failed to get sync status' })
+  }
+})
+
+/**
+ * Sync all products from database to Ongoing WMS
+ * POST /api/admin/sync-products-to-ongoing
+ */
+router.post('/sync-products-to-ongoing', requireAdmin, async (req, res) => {
+  try {
+    logger.info('Starting product sync to Ongoing WMS')
+
+    const products = await prisma.product.findMany({
+      where: { isActive: true },
+      select: {
+        id: true,
+        name: true,
+        sku: true,
+        price: true,
+        weight: true,
+        dimensions: true
+      }
+    })
+
+    const results = []
+    let successCount = 0
+    let errorCount = 0
+
+    for (const product of products) {
+      try {
+        const dimensions = product.dimensions as any || {}
+        
+        const ongoingArticle = {
+          ArticleNumber: product.sku || product.id,
+          ArticleName: product.name,
+          ProductCode: product.sku || product.id,
+          BarCode: product.sku || product.id,
+          Weight: product.weight || 0,
+          Length: dimensions.length || 0,
+          Width: dimensions.width || 0,
+          Height: dimensions.height || 0,
+          Price: product.price,
+          PurchasePrice: product.price * 0.6,
+          ArticleGroupCode: 'SKINCARE',
+          ArticleUnitCode: 'ST'
+        }
+
+        await ongoingService.createArticle(ongoingArticle)
+        successCount++
+        
+        results.push({
+          sku: product.sku,
+          name: product.name,
+          status: 'success'
+        })
+
+        await new Promise(resolve => setTimeout(resolve, 500))
+
+      } catch (error: any) {
+        errorCount++
+        results.push({
+          sku: product.sku,
+          name: product.name,
+          status: 'failed',
+          error: error.message
+        })
+      }
+    }
+
+    res.json({
+      message: `Product sync completed: ${successCount} success, ${errorCount} errors`,
+      results
+    })
+
+  } catch (error: any) {
+    logger.error('Product sync to Ongoing failed:', error)
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Product sync failed'
+    })
   }
 })
 

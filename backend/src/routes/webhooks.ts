@@ -1,7 +1,6 @@
 import express from 'express'
 import { logger } from '../utils/logger'
 import { prisma } from '../lib/prisma'
-import { sybkaService } from '../services/sybkaService'
 import { fortnoxService } from '../services/fortnoxService'
 import axios from 'axios'
 import { ongoingService } from '../services/ongoingService'
@@ -475,217 +474,102 @@ async function handleOrderStatusChange(orderId: string, status: string, paymentS
       logger.error('Order not found for status change', { orderId })
       return
     }
-
-    const statusMapping = sybkaService.getStatusMapping()
     
     logger.info('Processing order status change', {
       orderId,
       orderNumber: order.orderNumber,
       status,
-      paymentStatus,
-      teamId: statusMapping.team_id,
-      shouldCreateInvoice: sybkaService.shouldCreateInvoice(status, paymentStatus),
-      shouldCreateSybkaOrder: sybkaService.shouldCreateSybkaOrder(status, paymentStatus),
-      sybkaEnabled: (process.env.SYBKA_ENABLED || 'false').toLowerCase() === 'true',
-      ongoingDirectMode: process.env.ONGOING_DIRECT_MODE === 'true'
+      paymentStatus
     })
 
-    // 1. Skapa faktura i Fortnox om status triggar det
-    if (sybkaService.shouldCreateInvoice(status, paymentStatus)) {
-      try {
-        logger.info('Creating Fortnox invoice', {
+    // Run Fortnox and Ongoing in parallel for confirmed/paid orders
+    if (paymentStatus === 'PAID' || status === 'CONFIRMED' || status === 'PROCESSING') {
+      const orderData = {
+        customer: {
+          email: order.email,
+          firstName: (order.shippingAddress as any)?.firstName || (order.billingAddress as any)?.firstName || order.customerName?.split(' ')[0] || 'Customer',
+          lastName: (order.shippingAddress as any)?.lastName || (order.billingAddress as any)?.lastName || order.customerName?.split(' ').slice(1).join(' ') || order.orderNumber,
+          phone: (order.shippingAddress as any)?.phone || (order.billingAddress as any)?.phone || order.phone || '',
+          address: (order.shippingAddress as any)?.address || (order.billingAddress as any)?.address || '',
+          apartment: (order.shippingAddress as any)?.apartment || (order.billingAddress as any)?.apartment,
+          city: (order.shippingAddress as any)?.city || (order.billingAddress as any)?.city || '',
+          postalCode: (order.shippingAddress as any)?.postalCode || (order.billingAddress as any)?.postalCode || '',
+          country: (order.shippingAddress as any)?.country || (order.billingAddress as any)?.country || 'SE'
+        },
+        items: order.items.map(item => ({
+          productId: item.productId,
+          name: item.product?.name || 'Okänd produkt',
+          price: item.price,
+          quantity: item.quantity,
+          sku: item.product?.sku || item.productId,
+          weight: item.product?.weight
+        })),
+        orderId: order.orderNumber,
+        total: order.totalAmount,
+        shipping: order.shippingAmount,
+        orderDate: order.createdAt,
+        deliveryInstruction: order.customerNotes
+      }
+
+      // Process Fortnox and Ongoing in parallel
+      const [fortnoxResult, ongoingResult] = await Promise.allSettled([
+        (async () => {
+          logger.info('Processing Fortnox order', { orderId, orderNumber: order.orderNumber })
+          const result = await fortnoxService.processOrder(orderData)
+          logger.info('Fortnox order processed successfully', {
+            orderId,
+            customerNumber: result.customerNumber,
+            orderNumber: result.orderNumber
+          })
+          return result
+        })(),
+        (async () => {
+          logger.info('Processing Ongoing order', { orderId, orderNumber: order.orderNumber })
+          const result = await ongoingService.processOrder(orderData)
+          logger.info('Ongoing order processed successfully', {
+            orderId,
+            customerNumber: result.customerNumber,
+            orderNumber: result.orderNumber
+          })
+          return result
+        })()
+      ])
+
+      // Update order with integration references
+      let internalNotes = order.internalNotes || ''
+      
+      if (fortnoxResult.status === 'fulfilled') {
+        internalNotes += `\nFortnox order: ${fortnoxResult.value.orderNumber}`
+      } else {
+        logger.error('Failed to process Fortnox order', {
           orderId,
-          orderNumber: order.orderNumber,
-          teamId: statusMapping.team_id
+          error: fortnoxResult.reason?.message || 'Unknown error'
         })
+      }
 
-        // Bygga customer-objektet från order
-        const shippingAddr = order.shippingAddress as any
-        const billingAddr = order.billingAddress as any
-        
-        const fortnoxResult = await fortnoxService.processOrder({
-          customer: {
-            email: order.email,
-            firstName: shippingAddr?.firstName || billingAddr?.firstName || '',
-            lastName: shippingAddr?.lastName || billingAddr?.lastName || '',
-            phone: shippingAddr?.phone || billingAddr?.phone || order.phone || '',
-            address: shippingAddr?.address || billingAddr?.address || '',
-            apartment: shippingAddr?.apartment || billingAddr?.apartment,
-            city: shippingAddr?.city || billingAddr?.city || '',
-            postalCode: shippingAddr?.postalCode || billingAddr?.postalCode || '',
-            country: shippingAddr?.country || billingAddr?.country || 'SE'
-          },
-          items: order.items.map(item => ({
-            productId: item.productId,
-            name: item.product?.name || 'Okänd produkt',
-            price: item.price,
-            quantity: item.quantity,
-            sku: item.product?.sku || item.productId
-          })),
-          orderId: order.orderNumber,
-          total: order.totalAmount,
-          shipping: order.shippingAmount,
-          orderDate: order.createdAt
+      if (ongoingResult.status === 'fulfilled') {
+        internalNotes += `\nOngoing order: ${ongoingResult.value.orderNumber}`
+      } else {
+        logger.error('Failed to process Ongoing order', {
+          orderId,
+          error: ongoingResult.reason?.message || 'Unknown error'
         })
+      }
 
-        // Uppdatera order med Fortnox-referens
+      // Update order with all references
+      if (internalNotes !== (order.internalNotes || '')) {
         await prisma.order.update({
           where: { id: orderId },
-          data: { 
-            internalNotes: `Fortnox order: ${fortnoxResult.orderNumber}${order.internalNotes ? '\n' + order.internalNotes : ''}` 
-          }
-        })
-
-        logger.info('Fortnox invoice created successfully', {
-          orderId,
-          fortnoxOrderNumber: fortnoxResult.orderNumber,
-          teamId: statusMapping.team_id
-        })
-
-      } catch (error) {
-        logger.error('Failed to create Fortnox invoice', {
-          orderId,
-          error: error instanceof Error ? error.message : 'Unknown error',
-          teamId: statusMapping.team_id
+          data: { internalNotes: internalNotes.trim() }
         })
       }
-    }
-
-    // 2. Skicka order till Sybka för fulfillment om status triggar det
-    if (sybkaService.shouldCreateSybkaOrder(status, paymentStatus)) {
-      try {
-        logger.info('Creating Sybka order', { orderId, orderNumber: order.orderNumber })
-
-        // Extract names from addresses or use customerName as fallback
-        const customerName = order.customerName || order.email
-        const nameParts = customerName.split(' ')
-        const fallbackFirstName = nameParts[0] || 'Customer'
-        const fallbackLastName = nameParts.slice(1).join(' ') || order.orderNumber
-
-        const sybkaOrderData = {
-          shop_order_id: order.orderNumber,
-          shop_order_increment_id: `1753-${order.orderNumber}`,
-          order_date: order.createdAt.toISOString().split('T')[0],
-          currency: order.currency,
-          grand_total: order.totalAmount,
-          subtotal: order.subtotal,
-          discount_amount: order.discountAmount,
-          subtotal_incl_tax: order.totalAmount,
-          tax_amount: order.taxAmount,
-          shipping_amount: order.shippingAmount,
-          shipping_incl_tax: order.shippingAmount,
-          shipping_tax_amount: 0,
-          status: status.toLowerCase() as any,
-          fulfillment_status: 'unfulfilled' as const,
-          billing_email: order.email,
-          billing_firstname: (order.billingAddress as any)?.firstName || fallbackFirstName,
-          billing_lastname: (order.billingAddress as any)?.lastName || fallbackLastName,
-          billing_street: (order.billingAddress as any)?.address || '',
-          billing_city: (order.billingAddress as any)?.city || '',
-          billing_postcode: (order.billingAddress as any)?.postalCode || '',
-          billing_country: (order.billingAddress as any)?.country || 'SE',
-          billing_phone: order.phone || order.customerPhone || (order.billingAddress as any)?.phone || '',
-          shipping_email: order.email,
-          shipping_firstname: (order.shippingAddress as any)?.firstName || fallbackFirstName,
-          shipping_lastname: (order.shippingAddress as any)?.lastName || fallbackLastName,
-          shipping_street: (order.shippingAddress as any)?.address || '',
-          shipping_city: (order.shippingAddress as any)?.city || '',
-          shipping_postcode: (order.shippingAddress as any)?.postalCode || '',
-          shipping_country: (order.shippingAddress as any)?.country || 'SE',
-          shipping_phone: (order.shippingAddress as any)?.phone || order.phone || order.customerPhone || '',
-          order_rows: order.items.map(item => ({
-            sku: item.product?.sku || item.productId,
-            name: item.product?.name || 'Okänd produkt',
-            qty_ordered: item.quantity,
-            price: item.price,
-            price_incl_tax: item.price * 1.25, // Anta 25% moms
-            row_total: item.quantity * item.price,
-            row_total_incl_tax: item.quantity * item.price * 1.25,
-            tax_amount: item.quantity * item.price * 0.25,
-            tax_percent: 25
-          })),
-          team_id: statusMapping.team_id
-        }
-
-        const result = await sybkaService.createOrder(sybkaOrderData)
-        
-        if (result.success) {
-          logger.info('Sybka order created successfully', {
-            orderId,
-            sybkaOrderId: result.order_id,
-            teamId: statusMapping.team_id
-          })
-        } else {
-          logger.error('Failed to create Sybka order', {
-            orderId,
-            error: result.error,
-            teamId: statusMapping.team_id
-          })
-        }
-
-      } catch (error) {
-        logger.error('Failed to create Sybka order', {
-          orderId,
-          error: error instanceof Error ? error.message : 'Unknown error',
-          teamId: statusMapping.team_id
-        })
-      }
-    }
-
-    // 3. Skicka direkt till Ongoing WMS om ONGOING_DIRECT_MODE är aktiverat
-    if (process.env.ONGOING_DIRECT_MODE === 'true' && (paymentStatus === 'PAID' || status === 'CONFIRMED' || status === 'PROCESSING')) {
-      try {
-        logger.info('Sending order directly to Ongoing WMS', { orderId, orderNumber: order.orderNumber })
-
-        const shippingAddr = order.shippingAddress as any
-        const billingAddr = order.billingAddress as any
-        
-        const ongoingResult = await ongoingService.processOrder({
-          customer: {
-            email: order.email,
-            firstName: shippingAddr?.firstName || billingAddr?.firstName || order.customerName?.split(' ')[0] || 'Customer',
-            lastName: shippingAddr?.lastName || billingAddr?.lastName || order.customerName?.split(' ').slice(1).join(' ') || order.orderNumber,
-            phone: shippingAddr?.phone || billingAddr?.phone || order.phone || '',
-            address: shippingAddr?.address || billingAddr?.address || '',
-            apartment: shippingAddr?.apartment || billingAddr?.apartment,
-            city: shippingAddr?.city || billingAddr?.city || '',
-            postalCode: shippingAddr?.postalCode || billingAddr?.postalCode || '',
-            country: shippingAddr?.country || billingAddr?.country || 'SE'
-          },
-          items: order.items.map(item => ({
-            productId: item.productId,
-            name: item.product?.name || 'Okänd produkt',
-            price: item.price,
-            quantity: item.quantity,
-            sku: item.product?.sku || item.productId,
-            weight: item.product?.weight
-          })),
-          orderId: order.orderNumber,
-          shipping: order.shippingAmount,
-          orderDate: order.createdAt,
-          deliveryInstruction: order.customerNotes
-        })
-
-        logger.info('Ongoing WMS order created successfully', {
-          orderId,
-          ongoingCustomerNumber: ongoingResult.customerNumber,
-          ongoingOrderNumber: ongoingResult.orderNumber
-        })
-
-        // Uppdatera order med Ongoing-referens
-        await prisma.order.update({
-          where: { id: orderId },
-          data: { 
-            internalNotes: `${order.internalNotes || ''}\nOngoing order: ${ongoingResult.orderNumber}`.trim()
-          }
-        })
-
-      } catch (error) {
-        logger.error('Failed to create Ongoing WMS order', {
-          orderId,
-          error: error instanceof Error ? error.message : 'Unknown error'
-        })
-      }
+    } else {
+      logger.info('Order does not meet sync criteria', { 
+        orderId, 
+        status, 
+        paymentStatus,
+        reason: 'Not PAID or CONFIRMED/PROCESSING' 
+      })
     }
 
   } catch (error) {
@@ -786,9 +670,7 @@ router.get('/order-statuses', async (req, res) => {
     res.json({
       success: true,
       order_statuses: orderStatuses,
-      payment_statuses: paymentStatuses,
-      // Include our status mapping so Synka+ knows what we expect
-      status_mapping: sybkaService.getStatusMapping()
+      payment_statuses: paymentStatuses
     })
   } catch (error: any) {
     logger.error('Get order statuses error:', error)
@@ -835,7 +717,6 @@ router.post('/test-status-change', express.json(), async (req, res) => {
     res.status(200).json({ 
       success: true, 
       message: 'Status change processed and integrations triggered',
-      teamId: sybkaService.getStatusMapping().team_id,
       updatedOrder: {
         id: updatedOrder.id,
         status,
@@ -849,16 +730,11 @@ router.post('/test-status-change', express.json(), async (req, res) => {
 })
 
 /**
- * Debug endpoint för Sybka+ integration
- * GET /api/webhooks/debug-sybka
+ * Debug endpoint för integrations
+ * GET /api/webhooks/debug-integrations
  */
-router.get('/debug-sybka', async (req, res) => {
+router.get('/debug-integrations', async (req, res) => {
   try {
-    const statusMapping = sybkaService.getStatusMapping()
-    
-    // Test connection
-    const connectionTest = await sybkaService.testConnection()
-    
     // Get recent orders
     const recentOrders = await prisma.order.findMany({
       take: 5,
@@ -874,30 +750,35 @@ router.get('/debug-sybka', async (req, res) => {
 
     // Check environment variables
     const envCheck = {
-      SYBKA_SYNC_URL: !!process.env.SYBKA_SYNC_URL,
-      SYNKA_ACCESS_TOKEN: !!process.env.SYNKA_ACCESS_TOKEN,
-      SYNKA_TEAM_ID: !!process.env.SYNKA_TEAM_ID,
       FORTNOX_API_TOKEN: !!process.env.FORTNOX_API_TOKEN,
       FORTNOX_CLIENT_SECRET: !!process.env.FORTNOX_CLIENT_SECRET,
       FORTNOX_BASE_URL: !!process.env.FORTNOX_BASE_URL,
+      ONGOING_USERNAME: !!process.env.ONGOING_USERNAME,
+      ONGOING_PASSWORD: !!process.env.ONGOING_PASSWORD,
+      ONGOING_BASE_URL: !!process.env.ONGOING_BASE_URL,
       NODE_ENV: process.env.NODE_ENV
     }
 
-    // Test Fortnox connection
+    // Test connections
     let fortnoxTest = false
+    let ongoingTest = false
     try {
       fortnoxTest = await fortnoxService.testConnection()
     } catch (error) {
       logger.error('Fortnox test failed:', error)
+    }
+    try {
+      ongoingTest = await ongoingService.testConnection()
+    } catch (error) {
+      logger.error('Ongoing test failed:', error)
     }
 
     res.json({
       success: true,
       debug_info: {
         environment: envCheck,
-        sybka_connection: connectionTest,
         fortnox_connection: fortnoxTest,
-        status_mapping: statusMapping,
+        ongoing_connection: ongoingTest,
         recent_orders: recentOrders.map(order => ({
           id: order.id,
           orderNumber: order.orderNumber,
@@ -905,13 +786,12 @@ router.get('/debug-sybka', async (req, res) => {
           paymentStatus: order.paymentStatus,
           totalAmount: order.totalAmount,
           createdAt: order.createdAt,
-          shouldCreateInvoice: sybkaService.shouldCreateInvoice(order.status, order.paymentStatus),
-          shouldCreateSybkaOrder: sybkaService.shouldCreateSybkaOrder(order.status, order.paymentStatus)
+          shouldSync: order.paymentStatus === 'PAID' || ['CONFIRMED', 'PROCESSING'].includes(order.status)
         }))
       }
     })
   } catch (error: any) {
-    logger.error('Sybka debug endpoint error:', error)
+    logger.error('Integrations debug endpoint error:', error)
     res.status(500).json({
       success: false,
       error: error.message
@@ -920,7 +800,7 @@ router.get('/debug-sybka', async (req, res) => {
 })
 
 /**
- * Manual trigger för att skicka en specifik order till Sybka+
+ * Manual trigger for integrations sync
  * POST /api/webhooks/manual-sybka-sync
  */
 router.post('/manual-sybka-sync', express.json(), async (req, res) => {
@@ -931,7 +811,7 @@ router.post('/manual-sybka-sync', express.json(), async (req, res) => {
       return res.status(400).json({ error: 'orderId is required' })
     }
 
-    logger.info('Manual Sybka sync triggered', { orderId })
+    logger.info('Manual integration sync triggered', { orderId })
 
     // Force trigger the integration
     await handleOrderStatusChange(orderId, 'CONFIRMED', 'PAID')
@@ -941,7 +821,7 @@ router.post('/manual-sybka-sync', express.json(), async (req, res) => {
       message: `Manual sync triggered for order ${orderId}`
     })
   } catch (error: any) {
-    logger.error('Manual Sybka sync error:', error)
+    logger.error('Manual integration sync error:', error)
     res.status(500).json({
       success: false,
       error: error.message
@@ -950,89 +830,27 @@ router.post('/manual-sybka-sync', express.json(), async (req, res) => {
 })
 
 /**
- * Testa Sybka-ordreskapande och returnera fullständigt svar (debug)
- * GET /api/webhooks/test-sybka-order?orderId=...
+ * Test integration endpoint
+ * GET /api/webhooks/test-integration?orderId=...
  */
-router.get('/test-sybka-order', async (req, res) => {
+router.get('/test-integration', async (req, res) => {
   try {
     const orderId = (req.query.orderId as string) || ''
     if (!orderId) {
       return res.status(400).json({ success: false, error: 'orderId is required' })
     }
 
-    const order = await prisma.order.findUnique({
-      where: { id: orderId },
-      include: {
-        items: { include: { product: true } },
-        user: true
-      }
-    })
+    logger.info('Testing integration for order', { orderId })
 
-    if (!order) {
-      return res.status(404).json({ success: false, error: 'Order not found' })
-    }
+    // Trigger the integration
+    await handleOrderStatusChange(orderId, 'CONFIRMED', 'PAID')
 
-    const statusMapping = sybkaService.getStatusMapping()
-
-    // Extract names from addresses or use customerName as fallback
-    const customerName = order.customerName || order.email
-    const nameParts = customerName.split(' ')
-    const fallbackFirstName = nameParts[0] || 'Customer'
-    const fallbackLastName = nameParts.slice(1).join(' ') || order.orderNumber
-
-    const sybkaOrderData = {
-      shop_order_id: order.orderNumber,
-      shop_order_increment_id: `1753-${order.orderNumber}`,
-      order_date: order.createdAt.toISOString().split('T')[0],
-      currency: order.currency,
-      grand_total: order.totalAmount,
-      subtotal: order.subtotal,
-      discount_amount: order.discountAmount,
-      subtotal_incl_tax: order.totalAmount,
-      tax_amount: order.taxAmount,
-      shipping_amount: order.shippingAmount,
-      shipping_incl_tax: order.shippingAmount,
-      shipping_tax_amount: 0,
-      status: 'confirmed' as const,
-      fulfillment_status: 'unfulfilled' as const,
-      billing_email: order.email,
-      billing_firstname: (order.billingAddress as any)?.firstName || fallbackFirstName,
-      billing_lastname: (order.billingAddress as any)?.lastName || fallbackLastName,
-      billing_street: (order.billingAddress as any)?.address || '',
-      billing_city: (order.billingAddress as any)?.city || '',
-      billing_postcode: (order.billingAddress as any)?.postalCode || '',
-      billing_country: (order.billingAddress as any)?.country || 'SE',
-      billing_phone: order.phone || order.customerPhone || (order.billingAddress as any)?.phone || '',
-      shipping_email: order.email,
-      shipping_firstname: (order.shippingAddress as any)?.firstName || fallbackFirstName,
-      shipping_lastname: (order.shippingAddress as any)?.lastName || fallbackLastName,
-      shipping_street: (order.shippingAddress as any)?.address || '',
-      shipping_city: (order.shippingAddress as any)?.city || '',
-      shipping_postcode: (order.shippingAddress as any)?.postalCode || '',
-      shipping_country: (order.shippingAddress as any)?.country || 'SE',
-      shipping_phone: (order.shippingAddress as any)?.phone || order.phone || order.customerPhone || '',
-      order_rows: order.items.map(item => ({
-        sku: item.product?.sku || item.productId,
-        name: item.product?.name || 'Okänd produkt',
-        qty_ordered: item.quantity,
-        price: item.price,
-        price_incl_tax: item.price * 1.25,
-        row_total: item.quantity * item.price,
-        row_total_incl_tax: item.quantity * item.price * 1.25,
-        tax_amount: item.quantity * item.price * 0.25,
-        tax_percent: 25
-      })),
-      team_id: statusMapping.team_id
-    }
-
-    const result = await sybkaService.createOrder(sybkaOrderData)
-
-    return res.status(result.success ? 200 : 400).json({
-      success: result.success,
-      response: result
+    return res.status(200).json({
+      success: true,
+      message: `Integration test triggered for order ${orderId}`
     })
   } catch (error: any) {
-    logger.error('Test Sybka order error:', error)
+    logger.error('Test integration error:', error)
     return res.status(500).json({ success: false, error: error.message })
   }
 })

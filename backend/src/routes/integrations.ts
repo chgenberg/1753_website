@@ -1,7 +1,29 @@
 import express from 'express'
 import { logger } from '../utils/logger'
+import { fortnoxService } from '../services/fortnoxService'
 
 const router = express.Router()
+
+/**
+ * Test Fortnox connection
+ */
+router.get('/test-fortnox', async (req, res) => {
+  try {
+    const isConnected = await fortnoxService.testConnection()
+    res.json({
+      success: isConnected,
+      message: isConnected ? 'Fortnox connection successful' : 'Fortnox connection failed',
+      timestamp: new Date().toISOString()
+    })
+  } catch (error: any) {
+    logger.error('Fortnox test endpoint error:', error)
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Fortnox test failed',
+      timestamp: new Date().toISOString()
+    })
+  }
+})
 
 /**
  * Fortnox OAuth callback
@@ -10,6 +32,8 @@ const router = express.Router()
  */
 router.get('/fortnox/callback', (req, res) => {
   const { code, state, error, error_description } = req.query as Record<string, string | undefined>
+
+  const nonce = require('crypto').randomBytes(16).toString('base64')
 
   logger.info('Fortnox OAuth callback received', { codePresent: !!code, state, error, error_description })
 
@@ -49,11 +73,15 @@ router.get('/fortnox/callback', (req, res) => {
   -d "grant_type=authorization_code&code=${code || ''}&redirect_uri=https%3A%2F%2F1753websitebackend-production.up.railway.app%2Fapi%2Fintegrations%2Ffortnox%2Fcallback"</code></pre>
     </div>
   </div>
-  <script>document.getElementById('code')?.select()</script>
+  <script nonce="${nonce}">document.getElementById('code')?.select()</script>
 </body>
 </html>`
 
-  res.set('Content-Type', 'text/html; charset=utf-8').status(200).send(html)
+  res
+    .set('Content-Type', 'text/html; charset=utf-8')
+    .set('Content-Security-Policy', `default-src 'none'; img-src 'self' data:; style-src 'unsafe-inline'; script-src 'nonce-${nonce}'; base-uri 'none'; form-action 'none'`)
+    .status(200)
+    .send(html)
 })
 
 export default router 
