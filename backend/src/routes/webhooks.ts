@@ -830,6 +830,79 @@ router.post('/manual-sybka-sync', express.json(), async (req, res) => {
 })
 
 /**
+ * Sync all pending orders to Fortnox/Ongoing
+ * POST /api/webhooks/sync-all-orders
+ */
+router.post('/sync-all-orders', express.json(), async (req, res) => {
+  try {
+    logger.info('Manual sync of all pending orders triggered')
+
+    // Find all orders that should be synced
+    const pendingOrders = await prisma.order.findMany({
+      where: {
+        OR: [
+          {
+            status: { in: ['CONFIRMED', 'PROCESSING'] },
+            paymentStatus: 'PAID'
+          }
+        ]
+      },
+      include: {
+        items: {
+          include: {
+            product: true
+          }
+        }
+      }
+    })
+
+    logger.info(`Found ${pendingOrders.length} pending orders to sync`)
+
+    const results = []
+    
+    for (const order of pendingOrders) {
+      try {
+        logger.info('Syncing order', { orderId: order.id, orderNumber: order.orderNumber })
+        
+        // Trigger the integration for this order
+        await handleOrderStatusChange(order.id, 'CONFIRMED', 'PAID')
+        
+        results.push({
+          orderId: order.id,
+          orderNumber: order.orderNumber,
+          success: true
+        })
+        
+      } catch (error: any) {
+        logger.error(`Failed to sync order ${order.orderNumber}:`, error)
+        results.push({
+          orderId: order.id,
+          orderNumber: order.orderNumber,
+          success: false,
+          error: error.message
+        })
+      }
+    }
+    
+    const successCount = results.filter(r => r.success).length
+    const failureCount = results.filter(r => !r.success).length
+    
+    res.json({
+      success: true,
+      message: `Sync completed: ${successCount} successful, ${failureCount} failed`,
+      results: results
+    })
+    
+  } catch (error: any) {
+    logger.error('Manual sync all orders error:', error)
+    res.status(500).json({
+      success: false,
+      error: error.message
+    })
+  }
+})
+
+/**
  * Test integration endpoint
  * GET /api/webhooks/test-integration?orderId=...
  */

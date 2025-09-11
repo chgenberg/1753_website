@@ -3,7 +3,7 @@ import axios from 'axios'
 // Du behöver fylla i dessa värden från Fortnox Developer Portal
 const FORTNOX_CLIENT_ID = process.env.FORTNOX_CLIENT_ID || 'din_client_id'
 const FORTNOX_CLIENT_SECRET = process.env.FORTNOX_CLIENT_SECRET || 'din_client_secret'
-const REDIRECT_URI = 'https://1753websitebackend-production.up.railway.app/oauth/callback'
+const REDIRECT_URI = 'https://1753websitebackend-production.up.railway.app/api/integrations/fortnox/callback'
 
 // Du får denna kod från OAuth-flödet
 const AUTHORIZATION_CODE = process.argv[2] // Skickas som argument
@@ -36,8 +36,6 @@ async function exchangeCodeForTokens() {
     const data = new URLSearchParams({
       grant_type: 'authorization_code',
       code: AUTHORIZATION_CODE,
-      client_id: FORTNOX_CLIENT_ID,
-      client_secret: FORTNOX_CLIENT_SECRET,
       redirect_uri: REDIRECT_URI
     })
 
@@ -45,6 +43,10 @@ async function exchangeCodeForTokens() {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
         'Accept': 'application/json'
+      },
+      auth: {
+        username: FORTNOX_CLIENT_ID,
+        password: FORTNOX_CLIENT_SECRET
       },
       timeout: 10000,
       validateStatus: () => true // Don't throw on 4xx/5xx
