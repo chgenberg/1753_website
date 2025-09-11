@@ -26,7 +26,72 @@ router.get('/test-fortnox', async (req, res) => {
 })
 
 /**
- * Fortnox OAuth callback
+ * Fortnox OAuth callback (main endpoint)
+ * Redirect URI to configure in Fortnox Dev Portal:
+ *   https://1753websitebackend-production.up.railway.app/oauth/callback
+ */
+router.get('/oauth/callback', (req, res) => {
+  const { code, state, error, error_description } = req.query as Record<string, string | undefined>
+
+  const nonce = require('crypto').randomBytes(16).toString('base64')
+
+  logger.info('Fortnox OAuth callback received (main)', { codePresent: !!code, state, error, error_description })
+
+  const html = `<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fortnox OAuth – klart</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.5; }
+    code { background: #f4f4f5; padding: 0.25rem 0.4rem; border-radius: 6px; }
+    .box { border: 1px solid #e5e7eb; border-radius: 12px; padding: 1rem; background: #fff; max-width: 720px; }
+    .ok { color: #16a34a; }
+    .error { color: #dc2626; }
+    .mt { margin-top: 1rem; }
+    input { width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; font-family: monospace; }
+    pre { background: #1f2937; color: #f9fafb; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>Fortnox OAuth</h1>
+    ${error ? `
+    <div class="error">
+      <p><strong>Fel:</strong> ${error}</p>
+      ${error_description ? `<p><strong>Beskrivning:</strong> ${error_description}</p>` : ''}
+    </div>
+    ` : `
+    <div class="ok">
+      <p><strong>✅ Lyckades!</strong> Authorization code mottagen.</p>
+    </div>
+    <div class="mt">
+      <p>Authorization code:</p>
+      <input id="code" readonly value="${code || ''}" />
+    </div>
+    <div class="mt">
+      <p>State (om använt):</p>
+      <input id="state" readonly value="${state || ''}" />
+    </div>
+    <div class="mt">
+      <p>Nästa steg (i terminalen):</p>
+      <pre><code>railway run npx ts-node scripts/exchangeFortnoxCode.ts ${code || '[AUTHORIZATION_CODE]'}</code></pre>
+    </div>
+    `}
+  </div>
+  <script nonce="${nonce}">document.getElementById('code')?.select()</script>
+</body>
+</html>`
+
+  res
+    .status(error ? 400 : 200)
+    .header('Content-Security-Policy', `script-src 'nonce-${nonce}' 'strict-dynamic'; object-src 'none'; base-uri 'none';`)
+    .send(html)
+})
+
+/**
+ * Fortnox OAuth callback (legacy endpoint)
  * Redirect URI to configure in Fortnox Dev Portal:
  *   https://1753websitebackend-production.up.railway.app/api/integrations/fortnox/callback
  */

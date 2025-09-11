@@ -129,6 +129,67 @@ app.use('/api/ongoing', ongoingRoutes)
 app.use('/api/webhooks', webhookRoutes)
 app.use('/api/integrations', integrationsRoutes)
 
+// OAuth callback route (direct path for Fortnox redirect URI)
+app.get('/oauth/callback', (req, res) => {
+  const { code, state, error, error_description } = req.query as Record<string, string | undefined>
+  
+  if (error) {
+    return res.status(400).json({
+      success: false,
+      error: { message: error, description: error_description },
+      timestamp: new Date().toISOString()
+    })
+  }
+  
+  if (!code) {
+    return res.status(400).json({
+      success: false,
+      error: { message: 'No authorization code received' },
+      timestamp: new Date().toISOString()
+    })
+  }
+  
+  // Return success page with authorization code
+  const nonce = require('crypto').randomBytes(16).toString('base64')
+  const html = `<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fortnox OAuth Success</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; line-height: 1.5; background: #f9fafb; }
+    .container { max-width: 600px; margin: 0 auto; background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .success { color: #16a34a; font-size: 1.2em; margin-bottom: 1rem; }
+    .code-section { background: #f3f4f6; padding: 1rem; border-radius: 8px; margin: 1rem 0; }
+    .code { font-family: monospace; word-break: break-all; background: #1f2937; color: #f9fafb; padding: 1rem; border-radius: 6px; }
+    .next-step { background: #dbeafe; padding: 1rem; border-radius: 8px; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="success">✅ Fortnox OAuth Success!</div>
+    <p>Authorization code received successfully.</p>
+    
+    <div class="code-section">
+      <strong>Authorization Code:</strong>
+      <div class="code">${code}</div>
+    </div>
+    
+    <div class="next-step">
+      <strong>Next step:</strong> Run this command in your terminal:
+      <div class="code">railway run npx ts-node scripts/exchangeFortnoxCode.ts ${code}</div>
+    </div>
+  </div>
+</body>
+</html>`
+
+  res
+    .status(200)
+    .header('Content-Security-Policy', `script-src 'nonce-${nonce}' 'strict-dynamic'; object-src 'none'; base-uri 'none';`)
+    .send(html)
+})
+
 // Debug middleware for orders route (only in development)
 if (process.env.NODE_ENV === 'development') {
   app.use('/api/orders', (req, res, next) => {
