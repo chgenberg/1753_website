@@ -56,7 +56,7 @@ interface FortnoxOrder {
     Address2?: string
     ZipCode: string
     City: string
-    CountryCode: string
+    Country: string
   }
 }
 
@@ -520,7 +520,7 @@ class FortnoxService {
           Address2: orderDetails.customer.apartment,
           ZipCode: orderDetails.customer.postalCode,
           City: orderDetails.customer.city,
-          CountryCode: orderDetails.customer.country, // Assuming this is a 2-letter country code
+          Country: orderDetails.customer.country,
         },
       }
 
