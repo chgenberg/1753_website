@@ -4,6 +4,7 @@ import { prisma } from '../lib/prisma'
 import { fortnoxService } from '../services/fortnoxService'
 import axios from 'axios'
 import { ongoingService } from '../services/ongoingService'
+import { VivaWalletService } from '../services/vivaWalletService'
 
 const router = express.Router()
 
@@ -923,84 +924,6 @@ router.post('/sync-all-orders', express.json(), async (req, res) => {
 })
 
 /**
- * Manually force-sync a single order by its orderNumber
- * GET /api/webhooks/debug/force-sync?orderNumber=...&secret=...
- */
-router.get('/debug/force-sync', async (req, res) => {
-  // Protect with secret
-  const secret = process.env.DEBUG_SECRET || '1753'
-  if (req.query.secret !== secret) {
-    return res.status(401).json({ error: 'Unauthorized' })
-  }
-
-  const orderNumber = req.query.orderNumber as string
-  if (!orderNumber) {
-    return res.status(400).json({ error: 'Missing orderNumber query parameter' })
-  }
-
-  logger.info(`--- MANUAL FORCE SYNC TRIGGERED for order: ${orderNumber} ---`);
-  
-  try {
-    const order = await prisma.order.findUnique({
-      where: { orderNumber },
-      include: { items: { include: { product: true } }, user: true },
-    });
-
-    if (!order) {
-      return res.status(404).json({ error: `Order ${orderNumber} not found` });
-    }
-
-    const orderData = {
-      customer: {
-        email: order.email,
-        firstName: (order.shippingAddress as any)?.firstName || 'N/A',
-        lastName: (order.shippingAddress as any)?.lastName || 'N/A',
-        phone: (order.shippingAddress as any)?.phone || order.phone || '',
-        address: (order.shippingAddress as any)?.address || '',
-        apartment: (order.shippingAddress as any)?.apartment || '',
-        city: (order.shippingAddress as any)?.city || '',
-        postalCode: (order.shippingAddress as any)?.postalCode || '',
-        country: (order.shippingAddress as any)?.country || 'SE',
-      },
-      items: order.items.map(item => ({
-        productId: item.productId,
-        name: item.product?.name || 'Okänd produkt',
-        price: item.price,
-        quantity: item.quantity,
-        sku: item.product?.sku || undefined,
-        weight: item.product?.weight
-      })),
-      orderId: order.orderNumber,
-      total: order.totalAmount,
-      shipping: order.shippingAmount,
-      orderDate: order.createdAt,
-      deliveryInstruction: order.customerNotes
-    };
-
-    const result = await fortnoxService.processOrder(orderData);
-    
-    await prisma.order.update({
-        where: { id: order.id },
-        data: {
-            status: 'CONFIRMED',
-            paymentStatus: 'PAID',
-            internalNotes: (order.internalNotes || '') + `\nFORCE SYNC: Fortnox order: ${result.orderNumber}`
-        }
-    });
-
-    res.json({ success: true, message: `Order ${orderNumber} force-synced successfully.`, fortnoxResult: result });
-
-  } catch (error: any) {
-    logger.error(`Force sync failed for order ${orderNumber}`, {
-      errorMessage: error.message,
-      axiosError: error.response?.data
-    });
-    res.status(500).json({ success: false, error: error.message, details: error.response?.data });
-  }
-});
-
-
-/**
  * Temporary debug endpoint to view recent orders
  * GET /api/webhooks/debug/recent-orders
  */
@@ -1140,6 +1063,111 @@ router.all('/test-viva', async (req, res) => {
 
   res.setHeader('Content-Type', 'text/plain; charset=utf-8')
   return res.type('text/plain').send('OK')
+})
+
+// Verify order status after successful payment redirect
+router.post('/verify-order-status', async (req, res) => {
+  const { orderCode, orderId } = req.body
+  
+  logger.info('Order status verification requested', { orderCode, orderId })
+  
+  try {
+    if (!orderCode) {
+      return res.status(400).json({
+        success: false,
+        error: 'Order code is required'
+      })
+    }
+
+    // First, verify payment with Viva
+    const vivaService = new VivaWalletService()
+    const payment = await vivaService.verifyPayment(parseInt(orderCode))
+    
+    if (!payment) {
+      logger.warn('No payment found for order code', { orderCode })
+      return res.json({
+        success: false,
+        status: 'PENDING',
+        message: 'Payment not found yet'
+      })
+    }
+
+    // Check if payment was successful (statusId 'F' means successful)
+    if (payment.statusId !== 'F') {
+      logger.warn('Payment not successful', { orderCode, statusId: payment.statusId })
+      return res.json({
+        success: false,
+        status: 'FAILED',
+        message: 'Payment was not successful'
+      })
+    }
+
+    // Find order in database
+    let order
+    if (orderId) {
+      order = await prisma.order.findUnique({
+        where: { id: orderId },
+        include: { items: true }
+      })
+    } else {
+      // Try to find by orderCode
+      order = await prisma.order.findFirst({
+        where: { 
+          OR: [
+            { paymentOrderCode: orderCode }
+          ]
+        },
+        include: { items: true }
+      })
+    }
+
+    if (!order) {
+      logger.error('Order not found in database', { orderCode, orderId })
+      return res.status(404).json({
+        success: false,
+        error: 'Order not found'
+      })
+    }
+
+    // Update order status if needed
+    if (order.status !== 'CONFIRMED' && order.paymentStatus !== 'PAID') {
+      logger.info('Updating order status to CONFIRMED and payment status to PAID', { orderId: order.id })
+      
+      await prisma.order.update({
+        where: { id: order.id },
+        data: {
+          status: 'CONFIRMED',
+          paymentStatus: 'PAID',
+          paymentId: payment.transactionTypeId ? payment.transactionTypeId.toString() : undefined,
+          updatedAt: new Date()
+        }
+      })
+
+      // Handle status change (sync to Fortnox/Ongoing)
+      await handleOrderStatusChange(order.id, 'CONFIRMED', 'PAID')
+      
+      logger.info('Order status updated successfully', { orderId: order.id, orderCode })
+    }
+
+    return res.json({
+      success: true,
+      status: 'CONFIRMED',
+      paymentStatus: 'PAID',
+      message: 'Order verified and updated'
+    })
+    
+  } catch (error: any) {
+    logger.error('Error verifying order status', {
+      error: error.message,
+      orderCode,
+      orderId
+    })
+    
+    return res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to verify order status'
+    })
+  }
 })
 
 export default router 

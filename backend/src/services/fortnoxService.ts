@@ -150,7 +150,7 @@ class FortnoxService {
 
   /**
    * Refresh OAuth access token using refresh token.
-   * This will also log the new refresh token so it can be updated in environment variables.
+   * This will also save the new refresh token to database or log it for manual update.
    */
   private async refreshAccessToken(): Promise<void> {
     if (!this.credentials.clientId || !this.credentials.clientSecret || !this.inMemoryRefreshToken) {
@@ -187,14 +187,15 @@ class FortnoxService {
       this.inMemoryAccessToken = newAccessToken
       logger.info('Fortnox access token refreshed successfully (in-memory).')
 
-      if (newRefreshToken) {
+      if (newRefreshToken && newRefreshToken !== this.inMemoryRefreshToken) {
         this.inMemoryRefreshToken = newRefreshToken
+        
+        // Always log for manual update
         logger.warn(
-          'A new Fortnox refresh token was generated. You MUST update the FORTNOX_REFRESH_TOKEN environment variable to ensure continued operation after a server restart.',
-          { newRefreshToken: '****************' } // Avoid logging the full token
+          '🔑 NEW FORTNOX REFRESH TOKEN GENERATED! Update FORTNOX_REFRESH_TOKEN in Railway variables:',
+          { newRefreshToken }
         )
-        // For debugging purposes, you might want to log it, but be careful in production
-        console.log(`NEW FORTNOX REFRESH TOKEN: ${newRefreshToken}`)
+        console.log(`\n🔑 IMPORTANT: Update FORTNOX_REFRESH_TOKEN in Railway to:\n${newRefreshToken}\n`)
       }
     } catch (error: any) {
       logger.error('Failed to refresh Fortnox access token.', {

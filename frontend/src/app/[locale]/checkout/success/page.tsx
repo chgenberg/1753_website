@@ -51,6 +51,42 @@ function SuccessContent() {
     try { clearCart() } catch {}
   }, [clearCart])
 
+  // Verify order status with backend
+  useEffect(() => {
+    const verifyOrderStatus = async () => {
+      if (!orderCode) return
+      
+      try {
+        const response = await fetch('/api/webhooks/verify-order-status', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ orderCode })
+        })
+        
+        const data = await response.json()
+        
+        if (data.success) {
+          console.log('Order verified and updated:', data)
+          toast.success('Din beställning har bekräftats!', {
+            icon: '✅',
+            duration: 5000
+          })
+        } else if (data.status === 'PENDING') {
+          // Payment might not be processed yet, retry after a delay
+          setTimeout(() => {
+            verifyOrderStatus()
+          }, 3000)
+        }
+      } catch (error) {
+        console.error('Error verifying order status:', error)
+      }
+    }
+    
+    verifyOrderStatus()
+  }, [orderCode])
+
   useEffect(() => {
     // Multiple confetti bursts for extra celebration
     const burst1 = setTimeout(() => {

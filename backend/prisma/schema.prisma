@@ -974,24 +974,20 @@ model OrderDiscount {
 
 // Quiz Submission model
 model QuizSubmission {
-  id          String   @id @default(cuid())
-  email       String
-  name        String
-  gender      String
-  age         Int
-  answers     String   @db.Text // JSON string of all quiz answers
-  
-  // Analysis results (if generated)
-  results     String?  @db.Text // JSON string of AI-generated results
-  
-  // Tracking
-  timestamp   DateTime @default(now())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  @@map("quiz_submissions")
-  @@index([email])
-  @@index([createdAt])
+  id            String   @id @default(cuid())
+  email         String?
+  phone         String?
+  name          String?
+  skinType      String
+  skinConcerns  String[]
+  ageBracket    String
+  allergens     String[]
+  fragrancePreference String
+  currentRoutine String?
+  additionalInfo String?
+  recommendedProducts Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 // New: Product translations
@@ -1174,4 +1170,14 @@ enum InvoiceStatus {
   PAID
   FAILED
   CANCELED
+}
+
+model SystemConfig {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([key])
 }
