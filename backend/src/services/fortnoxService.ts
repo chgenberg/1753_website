@@ -144,45 +144,64 @@ class FortnoxService {
   }
 
   /**
-   * Refresh OAuth access token using refresh token (Fortnox OAuth)
+   * Refresh OAuth access token using refresh token.
+   * This will also log the new refresh token so it can be updated in environment variables.
    */
   private async refreshAccessToken(): Promise<void> {
     if (!this.credentials.clientId || !this.credentials.clientSecret || !this.inMemoryRefreshToken) {
-      logger.warn('Fortnox token refresh skipped: missing clientId/clientSecret/refreshToken')
+      logger.error('Fortnox token refresh failed: missing required credentials (clientId, clientSecret, or refreshToken).')
       throw new Error('Missing Fortnox OAuth credentials for refresh')
     }
 
-    const basic = Buffer.from(`${this.credentials.clientId}:${this.credentials.clientSecret}`).toString('base64')
+    logger.info('Fortnox access token has expired. Attempting to refresh...')
+
     try {
-      const resp = await axios.post(
-        'https://apps.fortnox.se/oauth-v1/token',
-        new URLSearchParams({
-          grant_type: 'refresh_token',
-          refresh_token: this.inMemoryRefreshToken
-        }),
-        {
-          headers: {
-            'Authorization': `Basic ${basic}`,
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
-        }
-      )
+      const tokenUrl = 'https://apps.fortnox.se/oauth-v1/token'
+      const data = new URLSearchParams({
+        grant_type: 'refresh_token',
+        refresh_token: this.inMemoryRefreshToken,
+      })
 
-      const newAccess = resp.data?.access_token
-      const newRefresh = resp.data?.refresh_token
+      const response = await axios.post(tokenUrl, data, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        auth: {
+          username: this.credentials.clientId,
+          password: this.credentials.clientSecret,
+        },
+      })
 
-      if (!newAccess) {
+      const newAccessToken = response.data.access_token
+      const newRefreshToken = response.data.refresh_token
+
+      if (!newAccessToken) {
         throw new Error('No access_token in Fortnox refresh response')
       }
 
-      this.inMemoryAccessToken = newAccess
-      if (newRefresh) this.inMemoryRefreshToken = newRefresh
+      this.inMemoryAccessToken = newAccessToken
+      logger.info('Fortnox access token refreshed successfully (in-memory).')
 
-      logger.info('Fortnox access token refreshed successfully')
+      if (newRefreshToken) {
+        this.inMemoryRefreshToken = newRefreshToken
+        logger.warn(
+          'A new Fortnox refresh token was generated. You MUST update the FORTNOX_REFRESH_TOKEN environment variable to ensure continued operation after a server restart.',
+          { newRefreshToken: '****************' } // Avoid logging the full token
+        )
+        // For debugging purposes, you might want to log it, but be careful in production
+        console.log(`NEW FORTNOX REFRESH TOKEN: ${newRefreshToken}`)
+      }
+    } catch (error: any) {
+      logger.error('Failed to refresh Fortnox access token.', {
+        status: error.response?.status,
+        data: error.response?.data,
+      })
+      
+      if (error.response?.data?.error === 'invalid_grant') {
+        logger.error('The Fortnox refresh token is invalid or has expired. A new authorization is required.')
+      }
 
-    } catch (err: any) {
-      logger.error('Failed to refresh Fortnox access token:', err.response?.data || err.message)
-      throw err
+      throw new Error(`Failed to refresh Fortnox access token: ${error.message}`)
     }
   }
 
