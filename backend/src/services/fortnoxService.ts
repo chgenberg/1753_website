@@ -455,26 +455,26 @@ class FortnoxService {
     shipping: number
     orderDate: Date
   }): Promise<{ customerNumber: string; orderNumber: string }> {
-    logger.info('[FortnoxProcess] Starting order processing', { orderId: orderDetails.orderId })
+    const logContext = { orderId: orderDetails.orderId, email: orderDetails.customer.email };
+    logger.info('[Fortnox] Starting order processing', logContext);
+
     try {
       const skipArticleCreate = String(process.env.FORTNOX_SKIP_ARTICLE_CREATE).toLowerCase() === 'true'
-      logger.info('[FortnoxProcess] Step 1: Check for existing customer', { email: orderDetails.customer.email })
 
+      // --- Step 1: Find or Create Customer ---
+      logger.info('[Fortnox] Step 1: Find or Create Customer', logContext);
       let customerNumber: string | null = null
-
-      // If customer email ends with 1753skincare.com, skip customer creation and try to find them
+      
       if (orderDetails.customer.email.endsWith('@1753skincare.com')) {
-        logger.info('[FortnoxProcess] Internal email detected, skipping customer creation check.')
+        logger.info('[Fortnox] Internal email detected, attempting to find existing customer.', logContext);
         customerNumber = await this.findCustomerByEmail(orderDetails.customer.email)
       } else {
         customerNumber = await this.findCustomerByEmail(orderDetails.customer.email)
       }
-      logger.info(`[FortnoxProcess] Existing customer check complete. Found: ${customerNumber || 'None'}`)
       
-      // If customer doesn't exist, create them
       if (!customerNumber && !orderDetails.customer.email.endsWith('@1753skincare.com')) {
-        logger.info('[FortnoxProcess] No existing customer found, creating a new one.')
-        const customerPayload: FortnoxCustomer = {
+        logger.info('[Fortnox] Customer not found. Creating new customer...', logContext);
+        const customerData: FortnoxCustomer = {
           Name: `${orderDetails.customer.firstName} ${orderDetails.customer.lastName}`,
           Email: orderDetails.customer.email,
           Phone1: orderDetails.customer.phone,
@@ -483,19 +483,22 @@ class FortnoxService {
           ZipCode: orderDetails.customer.postalCode,
           City: orderDetails.customer.city,
           CountryCode: orderDetails.customer.country === 'Sverige' ? 'SE' : orderDetails.customer.country,
-        }
-        customerNumber = await this.createCustomer(customerPayload)
-        logger.info(`[FortnoxProcess] New customer created with number: ${customerNumber}`)
+        };
+        customerNumber = await this.createCustomer(customerData);
+        logger.info(`[Fortnox] New customer created with number: ${customerNumber}`, logContext);
+      } else {
+        logger.info(`[Fortnox] Found existing customer with number: ${customerNumber}`, logContext);
       }
 
       if (!customerNumber) {
-        logger.error('[FortnoxProcess] CRITICAL: Could not find or create Fortnox customer. Aborting.')
-        throw new Error('Could not find or create Fortnox customer')
+        throw new Error('Could not find or create Fortnox customer');
       }
+      logger.info('[Fortnox] Step 1 COMPLETE.', logContext);
 
-      // 2. Create articles if they don't exist
+
+      // --- Step 2: Create Articles (if not skipped) ---
+      logger.info('[Fortnox] Step 2: Create Articles', { ...logContext, skipArticleCreate });
       if (!skipArticleCreate) {
-        logger.info('[FortnoxProcess] Step 2: Creating articles (if needed)')
         for (const item of orderDetails.items) {
           const articleData: FortnoxArticle = {
             ArticleNumber: item.sku || item.productId,
@@ -508,18 +511,15 @@ class FortnoxService {
           }
           await this.createArticle(articleData)
         }
-        logger.info('[FortnoxProcess] Article creation step complete.')
       } else {
-        logger.info('[FortnoxProcess] Step 2: Skipping article creation.')
+        logger.info('[Fortnox] Skipping article creation.', logContext);
       }
+      logger.info('[Fortnox] Step 2 COMPLETE.', logContext);
 
-      // 3. Create order
-      logger.info('[FortnoxProcess] Step 3: Constructing order payload')
-      // Map order items to Fortnox order rows
+      // --- Step 3: Create Order ---
+      logger.info('[Fortnox] Step 3: Create Order', logContext);
       const orderRows: FortnoxOrderRow[] = orderDetails.items.map(item => {
-        // Determine VAT rate (assuming 25% for now, this could be more dynamic)
         const vatRate = 25
-
         const row: FortnoxOrderRow = {
           Description: item.name,
           Price: item.price,
@@ -535,9 +535,7 @@ class FortnoxService {
         return row
       })
 
-      // Add shipping as a separate row if applicable
       if (orderDetails.shipping > 0) {
-        logger.info('[FortnoxProcess] Adding shipping row to order.')
         orderRows.push({
           Description: 'Frakt',
           Price: orderDetails.shipping,
@@ -546,7 +544,7 @@ class FortnoxService {
           VAT: 25, // Assuming 25% VAT on shipping
         })
       }
-
+      
       const orderPayload: FortnoxOrder = {
         CustomerNumber: customerNumber,
         OrderDate: orderDetails.orderDate.toISOString().split('T')[0],
@@ -563,17 +561,15 @@ class FortnoxService {
         Country: orderDetails.customer.country,
       }
 
-      logger.info('[FortnoxProcess] Order payload constructed. Submitting to Fortnox...')
-      const orderNumber = await this.createOrder(orderPayload)
-      logger.info(`[FortnoxProcess] Successfully created Fortnox order: ${orderNumber}`)
-
+      logger.info('[Fortnox] Final order payload constructed. Calling createOrder...', { ...logContext, payloadItems: orderRows.length });
+      const orderNumber = await this.createOrder(orderPayload);
+      logger.info(`[Fortnox] Order created successfully with number: ${orderNumber}`, logContext);
+      logger.info('[Fortnox] Step 3 COMPLETE.', logContext);
+      
       return { customerNumber, orderNumber }
 
     } catch (error) {
-      logger.error('[FortnoxProcess] An error occurred during order processing', { 
-        orderId: orderDetails.orderId,
-        error: error instanceof Error ? error.message : String(error)
-      })
+      logger.error('[Fortnox] Order processing failed catastrophically.', { ...logContext, error: error instanceof Error ? error.message : String(error) });
       throw error
     }
   }
