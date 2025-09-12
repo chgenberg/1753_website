@@ -8,21 +8,38 @@ const prisma = new PrismaClient()
 // Save quiz submission
 router.post('/save', async (req, res) => {
   try {
-    const { email, name, gender, age, answers, timestamp } = req.body
+    const { 
+      email, 
+      phone, 
+      name, 
+      skinType, 
+      skinConcerns, 
+      ageBracket, 
+      allergens, 
+      fragrancePreference, 
+      currentRoutine, 
+      additionalInfo,
+      recommendedProducts 
+    } = req.body
 
     // Save to database
     const quizSubmission = await prisma.quizSubmission.create({
       data: {
         email,
+        phone,
         name,
-        gender,
-        age: parseInt(age),
-        answers: JSON.stringify(answers),
-        timestamp: new Date(timestamp)
+        skinType,
+        skinConcerns,
+        ageBracket,
+        allergens,
+        fragrancePreference,
+        currentRoutine,
+        additionalInfo,
+        recommendedProducts
       }
     })
 
-    logger.info(`Quiz submission saved for ${email}`)
+    logger.info(`Quiz submission saved for ${email || phone || 'anonymous'}`)
 
     res.json({
       success: true,
@@ -43,7 +60,7 @@ router.get('/stats', async (req, res) => {
     const totalSubmissions = await prisma.quizSubmission.count()
     const last30Days = await prisma.quizSubmission.count({
       where: {
-        timestamp: {
+        createdAt: {
           gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
         }
       }
@@ -51,7 +68,7 @@ router.get('/stats', async (req, res) => {
 
     res.json({
       success: true,
-      data: {
+      stats: {
         totalSubmissions,
         last30Days
       }
