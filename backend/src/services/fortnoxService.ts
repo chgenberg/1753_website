@@ -285,25 +285,43 @@ class FortnoxService {
    * Find customer by email
    */
   async findCustomerByEmail(email: string): Promise<string | null> {
+    const url = `${this.credentials.baseUrl}/customers?email=${encodeURIComponent(email)}`;
+    logger.info('[Fortnox] Attempting to find customer by email', { email, url });
+
     try {
-      await this.rateLimitDelay()
+      await this.rateLimitDelay();
 
-      const exec = async () => axios.get(
-        `${this.credentials.baseUrl}/customers?email=${encodeURIComponent(email)}`,
-        { headers: this.getHeaders() }
-      )
+      const exec = () => axios.get(url, { headers: this.getHeaders() });
+      const response = await this.withRefreshRetry(exec);
 
-      const response = await this.withRefreshRetry(exec)
-
-      if ((response as any).data.Customers && (response as any).data.Customers.length > 0) {
-        return (response as any).data.Customers[0].CustomerNumber
+      if (response.data?.Customers?.length > 0) {
+        const customerNumber = response.data.Customers[0].CustomerNumber;
+        logger.info(`[Fortnox] Found customer with number: ${customerNumber}`, { email });
+        return customerNumber;
       }
 
-      return null
+      logger.info('[Fortnox] No customer found with that email.', { email });
+      return null;
 
     } catch (error: any) {
-      logger.error('Failed to find customer by email:', error.response?.data || error.message)
-      return null
+      // Detta är det kritiska felet vi ser i loggarna
+      if (error.response?.data?.ErrorInformation?.Message === 'Fel inträffade vid deserialisering.') {
+         logger.error('[Fortnox] DESERIALIZATION ERROR while finding customer. This often means the request format was invalid.', {
+            email,
+            url,
+            errorData: error.response.data,
+            status: error.response.status
+         });
+      } else {
+        logger.error('[Fortnox] Failed to find customer by email due to an unexpected error.', { 
+          email,
+          url,
+          errorMessage: error.message,
+          errorResponse: error.response?.data 
+        });
+      }
+      // Returnera null istället för att kasta felet, så att processen kan fortsätta till att skapa en ny kund
+      return null;
     }
   }
 
