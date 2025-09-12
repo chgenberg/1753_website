@@ -38,7 +38,7 @@ interface FortnoxOrderRow {
   Description?: string
   Price?: number
   OrderedQuantity: number
-  DeliveredQuantity?: number
+  DeliveredQuantity: number
   VAT?: number
   Discount?: number
 }
@@ -46,19 +46,17 @@ interface FortnoxOrderRow {
 interface FortnoxOrder {
   CustomerNumber: string
   OrderDate: string
-  DeliveryDate?: string
-  OrderRows: FortnoxOrderRow[]
-  Comments?: string
+  InvoiceRows: FortnoxOrderRow[]
   YourReference?: string
   Currency?: string
   VATIncluded?: boolean
-  DeliveryAddress?: {
-    Name: string
+  DeliveryAddress1?: {
+    CustomerName: string
     Address1: string
     Address2?: string
     ZipCode: string
     City: string
-    Country: string
+    CountryCode: string
   }
 }
 
@@ -457,7 +455,7 @@ class FortnoxService {
       const skipArticleCreate = String(process.env.FORTNOX_SKIP_ARTICLE_CREATE || '').toLowerCase() === 'true'
 
       // 1. Create/find customer
-      const customerData: FortnoxCustomer = {
+      let customerData: FortnoxCustomer = {
         Name: `${orderDetails.customer.firstName} ${orderDetails.customer.lastName}`,
         Email: orderDetails.customer.email,
         Phone: orderDetails.customer.phone,
@@ -490,43 +488,52 @@ class FortnoxService {
       }
 
       // 3. Create order
-      const orderRows: FortnoxOrderRow[] = orderDetails.items.map(item => ({
-        ...(skipArticleCreate ? {} : { ArticleNumber: item.sku || item.productId }),
-        Description: item.name,
-        Price: item.price,
-        OrderedQuantity: item.quantity,
-        DeliveredQuantity: 0,
-        VAT: 25
-      }))
+      // Map order items to Fortnox order rows
+      const orderRows: FortnoxOrderRow[] = orderDetails.items.map(item => {
+        // Determine VAT rate (assuming 25% for now, this could be more dynamic)
+        const vatRate = 25
+
+        const row: FortnoxOrderRow = {
+          Description: item.name,
+          Price: item.price,
+          OrderedQuantity: item.quantity,
+          DeliveredQuantity: item.quantity,
+          VAT: vatRate,
+        }
+        
+        if (item.sku) {
+          row.ArticleNumber = item.sku
+        }
+
+        return row
+      })
 
       // Add shipping as a separate row if applicable
       if (orderDetails.shipping > 0) {
         orderRows.push({
-          // Do not reference a non-existent SHIPPING article
-          Description: 'Frakt och hantering',
+          Description: 'Frakt',
           Price: orderDetails.shipping,
           OrderedQuantity: 1,
-          DeliveredQuantity: 0,
-          VAT: 25
+          DeliveredQuantity: 1,
+          VAT: 25, // Assuming 25% VAT on shipping
         })
       }
 
       const orderPayload: FortnoxOrder = {
         CustomerNumber: customerNumber,
         OrderDate: orderDetails.orderDate.toISOString().split('T')[0],
-        OrderRows: orderRows,
-        Comments: `E-handelsorder från 1753skincare.com - Order ID: ${orderDetails.orderId}`,
+        InvoiceRows: orderRows,
         YourReference: orderDetails.orderId,
-        Currency: 'SEK',
+        Currency: orderDetails.items[0].price > 500 ? 'SEK' : 'EUR', // Simple currency detection
         VATIncluded: true,
-        DeliveryAddress: {
-          Name: `${orderDetails.customer.firstName} ${orderDetails.customer.lastName}`,
+        DeliveryAddress1: {
+          CustomerName: `${orderDetails.customer.firstName} ${orderDetails.customer.lastName}`,
           Address1: orderDetails.customer.address,
-          Address2: orderDetails.customer.apartment || '',
+          Address2: orderDetails.customer.apartment,
           ZipCode: orderDetails.customer.postalCode,
           City: orderDetails.customer.city,
-          Country: orderDetails.customer.country
-        }
+          CountryCode: orderDetails.customer.country, // Assuming this is a 2-letter country code
+        },
       }
 
       logger.info('Creating Fortnox order', {
