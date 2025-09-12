@@ -51,7 +51,7 @@ interface FortnoxOrder {
   Comments?: string
   YourReference?: string
   Currency?: string
-  PricesIncVat?: boolean
+  VATIncluded?: boolean
   DeliveryAddress?: {
     Name: string
     Address1: string
@@ -511,14 +511,14 @@ class FortnoxService {
         })
       }
 
-      const order: FortnoxOrder = {
+      const orderPayload: FortnoxOrder = {
         CustomerNumber: customerNumber,
         OrderDate: orderDetails.orderDate.toISOString().split('T')[0],
         OrderRows: orderRows,
         Comments: `E-handelsorder från 1753skincare.com - Order ID: ${orderDetails.orderId}`,
         YourReference: orderDetails.orderId,
         Currency: 'SEK',
-        PricesIncVat: true,
+        VATIncluded: true,
         DeliveryAddress: {
           Name: `${orderDetails.customer.firstName} ${orderDetails.customer.lastName}`,
           Address1: orderDetails.customer.address,
@@ -529,7 +529,13 @@ class FortnoxService {
         }
       }
 
-      const orderNumber = await this.createOrder(order)
+      logger.info('Creating Fortnox order', {
+        orderId: orderDetails.orderId,
+        customerNumber: customerNumber,
+        payload: { ...orderPayload, OrderRows: '...' }
+      })
+
+      const orderNumber = await this.createOrder(orderPayload)
 
       return { customerNumber, orderNumber }
 
