@@ -10,16 +10,14 @@ interface FortnoxCredentials {
 }
 
 interface FortnoxCustomer {
-  CustomerNumber?: string
   Name: string
-  Email?: string
-  Phone?: string
+  Email: string
+  Phone1?: string
   Address1?: string
   Address2?: string
   ZipCode?: string
   City?: string
-  Country?: string
-  Comments?: string
+  CountryCode?: string
 }
 
 interface FortnoxArticle {
@@ -439,24 +437,43 @@ class FortnoxService {
     orderDate: Date
   }): Promise<{ customerNumber: string; orderNumber: string }> {
     try {
-      const skipArticleCreate = String(process.env.FORTNOX_SKIP_ARTICLE_CREATE || '').toLowerCase() === 'true'
+      // Avoid creating articles for now as it's complex
+      const skipArticleCreate = String(process.env.FORTNOX_SKIP_ARTICLE_CREATE).toLowerCase() === 'true'
 
-      // 1. Create/find customer
-      let customerData: FortnoxCustomer = {
-        Name: `${orderDetails.customer.firstName} ${orderDetails.customer.lastName}`,
-        Email: orderDetails.customer.email,
-        Phone: orderDetails.customer.phone,
-        Address1: orderDetails.customer.address,
-        Address2: orderDetails.customer.apartment,
-        ZipCode: orderDetails.customer.postalCode,
-        City: orderDetails.customer.city,
-        Country: orderDetails.customer.country,
-        Comments: `E-handel kund från 1753skincare.com`
+      let customerNumber: string | null = null
+
+      // If customer email ends with 1753skincare.com, skip customer creation and try to find them
+      if (orderDetails.customer.email.endsWith('@1753skincare.com')) {
+        logger.info('Skipping Fortnox customer creation for 1753skincare.com emails')
+        customerNumber = await this.findCustomerByEmail(orderDetails.customer.email)
+      } else {
+        // Find customer by email
+        customerNumber = await this.findCustomerByEmail(orderDetails.customer.email)
+      }
+      
+      // If customer doesn't exist, create them
+      if (!customerNumber && !orderDetails.customer.email.endsWith('@1753skincare.com')) {
+        logger.info('Fortnox customer not found, creating new customer', {
+          email: orderDetails.customer.email,
+        })
+
+        customerNumber = await this.createCustomer({
+          Name: `${orderDetails.customer.firstName} ${orderDetails.customer.lastName}`,
+          Email: orderDetails.customer.email,
+          Phone1: orderDetails.customer.phone,
+          Address1: orderDetails.customer.address,
+          Address2: orderDetails.customer.apartment,
+          ZipCode: orderDetails.customer.postalCode,
+          City: orderDetails.customer.city,
+          CountryCode: orderDetails.customer.country === 'Sverige' ? 'SE' : orderDetails.customer.country,
+        })
       }
 
-      const customerNumber = await this.createCustomer(customerData)
+      if (!customerNumber) {
+        throw new Error('Could not find or create Fortnox customer')
+      }
 
-      // 2. Create/update articles for each product (optional)
+      // 2. Create articles if they don't exist
       if (!skipArticleCreate) {
         for (const item of orderDetails.items) {
           const articleData: FortnoxArticle = {
