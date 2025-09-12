@@ -296,26 +296,80 @@ router.get('/user', authenticateToken, async (req: any, res) => {
 
 // Helper function to get readable order status
 function getOrderStatusText(status: string, paymentStatus: string, fulfillmentStatus: string): string {
-  if (paymentStatus === 'PAID') {
-    if (fulfillmentStatus === 'FULFILLED') {
-      return 'Levererad'
-    } else if (fulfillmentStatus === 'PARTIALLY_FULFILLED') {
-      return 'Delvis levererad'
-    } else if (fulfillmentStatus === 'SHIPPED') {
-      return 'Skickad'
-    } else {
-      return 'Behandlas'
-    }
-  } else if (paymentStatus === 'PENDING') {
-    return 'Väntar på betalning'
-  } else if (paymentStatus === 'FAILED') {
-    return 'Betalning misslyckades'
-  } else if (paymentStatus === 'CANCELLED') {
-    return 'Avbruten'
-  } else {
-    return 'Okänd status'
-  }
+  if (paymentStatus === 'FAILED') return 'Betalning misslyckades'
+  if (status === 'CANCELLED') return 'Avbruten'
+  if (status === 'REFUNDED') return 'Återbetald'
+  if (fulfillmentStatus === 'DELIVERED') return 'Levererad'
+  if (fulfillmentStatus === 'SHIPPED') return 'Skickad'
+  if (fulfillmentStatus === 'PROCESSING') return 'Behandlas'
+  if (paymentStatus === 'PAID') return 'Bekräftad'
+  if (status === 'CONFIRMED') return 'Bekräftad'
+  if (status === 'PENDING') return 'Väntar på betalning'
+  return 'Okänd'
 }
+
+/**
+ * Get order by ID (public endpoint with limited info)
+ * GET /api/orders/:orderId
+ */
+router.get('/:orderId', async (req, res) => {
+  try {
+    const { orderId } = req.params
+
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: {
+        items: {
+          include: {
+            product: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+                images: true
+              }
+            }
+          }
+        }
+      }
+    })
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        error: 'Order not found'
+      })
+    }
+
+    // Return limited order information for security
+    res.json({
+      id: order.id,
+      orderNumber: order.orderNumber,
+      status: order.status,
+      paymentStatus: order.paymentStatus,
+      fulfillmentStatus: order.fulfillmentStatus,
+      totalAmount: order.totalAmount,
+      currency: order.currency || 'SEK',
+      items: order.items.map(item => ({
+        id: item.id,
+        name: item.product?.name || item.title || 'Produkt',
+        quantity: item.quantity,
+        price: item.price,
+        product: item.product ? {
+          name: item.product.name,
+          images: item.product.images
+        } : null
+      }))
+    })
+
+  } catch (error: any) {
+    logger.error('Failed to get order:', error)
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get order'
+    })
+  }
+})
 
 /**
  * Complete payment after card tokenization

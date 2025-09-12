@@ -1138,7 +1138,7 @@ router.post('/verify-order-status', async (req, res) => {
         data: {
           status: 'CONFIRMED',
           paymentStatus: 'PAID',
-          paymentId: payment.transactionTypeId ? payment.transactionTypeId.toString() : undefined,
+          transactionId: payment.transactionTypeId ? payment.transactionTypeId.toString() : undefined,
           updatedAt: new Date()
         }
       })
@@ -1153,6 +1153,8 @@ router.post('/verify-order-status', async (req, res) => {
       success: true,
       status: 'CONFIRMED',
       paymentStatus: 'PAID',
+      orderId: order.id,
+      orderNumber: order.orderNumber,
       message: 'Order verified and updated'
     })
     

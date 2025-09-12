@@ -69,6 +69,16 @@ function SuccessContent() {
         
         if (data.success) {
           console.log('Order verified and updated:', data)
+          
+          // Fetch full order details
+          if (data.orderId) {
+            const orderResponse = await fetch(`/api/orders/${data.orderId}`)
+            if (orderResponse.ok) {
+              const orderDetails = await orderResponse.json()
+              setOrderData(orderDetails)
+            }
+          }
+          
           toast.success('Din beställning har bekräftats!', {
             icon: '✅',
             duration: 5000
@@ -133,7 +143,7 @@ function SuccessContent() {
   }, [])
 
   const copyOrderNumber = () => {
-    const orderNumber = orderCode || fallbackOrderNumber
+    const orderNumber = orderData?.orderNumber || orderCode || fallbackOrderNumber
     navigator.clipboard.writeText(orderNumber)
     setCopied(true)
     toast.success('Ordernummer kopierat!')
@@ -362,7 +372,7 @@ function SuccessContent() {
                   <div className="flex items-center gap-2">
                     <span className="text-gray-600">Ordernummer:</span>
                     <span className="font-mono font-medium text-[#E79C1A] text-accent">
-                      {orderCode || fallbackOrderNumber}
+                      {orderData?.orderNumber || orderCode || fallbackOrderNumber}
                     </span>
                     <button
                       onClick={copyOrderNumber}
@@ -407,25 +417,49 @@ function SuccessContent() {
 
                 {/* Screen display */}
                 <div className="no-print">
-                  <div className="bg-gray-50 rounded-xl p-4 space-y-3">
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-[#E79C1A]/10 rounded-lg flex items-center justify-center">
-                          <Gift className="w-6 h-6 text-[#E79C1A]" />
+                  {orderData ? (
+                    <div className="space-y-3">
+                      {orderData.items?.map((item: any, index: number) => (
+                        <div key={index} className="bg-gray-50 rounded-xl p-4">
+                          <div className="flex justify-between items-center">
+                            <div className="flex items-center gap-3">
+                              <div className="w-12 h-12 bg-[#E79C1A]/10 rounded-lg flex items-center justify-center">
+                                <Gift className="w-6 h-6 text-[#E79C1A]" />
+                              </div>
+                              <div>
+                                <p className="font-medium">{item.product?.name || item.name || 'Produkt'}</p>
+                                <p className="text-sm text-gray-500">{item.quantity} st</p>
+                              </div>
+                            </div>
+                            <p className="font-medium">{item.price * item.quantity} kr</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-medium">DUO CBD & CBG</p>
-                          <p className="text-sm text-gray-500">1 st</p>
-                        </div>
-                      </div>
-                      <p className="font-medium">895 kr</p>
+                      ))}
                     </div>
-                  </div>
+                  ) : (
+                    // Fallback/Loading state
+                    <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 bg-[#E79C1A]/10 rounded-lg flex items-center justify-center">
+                            <Gift className="w-6 h-6 text-[#E79C1A]" />
+                          </div>
+                          <div>
+                            <div className="h-5 bg-gray-200 rounded w-32 animate-pulse"></div>
+                            <div className="h-4 bg-gray-200 rounded w-16 mt-1 animate-pulse"></div>
+                          </div>
+                        </div>
+                        <div className="h-5 bg-gray-200 rounded w-20 animate-pulse"></div>
+                      </div>
+                    </div>
+                  )}
                   
                   <div className="mt-4 pt-4 border-t border-gray-200">
                     <div className="flex justify-between items-center text-lg font-medium">
                       <span>Totalt</span>
-                      <span className="text-[#E79C1A]">895 kr</span>
+                      <span className="text-[#E79C1A]">
+                        {orderData ? `${orderData.totalAmount} kr` : '... kr'}
+                      </span>
                     </div>
                     <p className="text-sm text-gray-500 mt-1">Inkl. moms och fri frakt</p>
                   </div>
