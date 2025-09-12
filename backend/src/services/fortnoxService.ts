@@ -50,14 +50,13 @@ interface FortnoxOrder {
   YourReference?: string
   Currency?: string
   VATIncluded?: boolean
-  DeliveryAddress1?: {
-    CustomerName: string
-    Address1: string
-    Address2?: string
-    ZipCode: string
-    City: string
-    Country: string
-  }
+  // Delivery address fields are now top-level
+  CustomerName: string
+  Address1: string
+  Address2?: string
+  ZipCode: string
+  City: string
+  Country: string
 }
 
 interface FortnoxInvoice {
@@ -514,14 +513,13 @@ class FortnoxService {
         YourReference: orderDetails.orderId,
         Currency: orderDetails.items[0].price > 500 ? 'SEK' : 'EUR', // Simple currency detection
         VATIncluded: true,
-        DeliveryAddress1: {
-          CustomerName: `${orderDetails.customer.firstName} ${orderDetails.customer.lastName}`,
-          Address1: orderDetails.customer.address,
-          Address2: orderDetails.customer.apartment,
-          ZipCode: orderDetails.customer.postalCode,
-          City: orderDetails.customer.city,
-          Country: orderDetails.customer.country,
-        },
+        // Delivery address fields are now at the root of the Order object
+        CustomerName: `${orderDetails.customer.firstName} ${orderDetails.customer.lastName}`,
+        Address1: orderDetails.customer.address,
+        Address2: orderDetails.customer.apartment,
+        ZipCode: orderDetails.customer.postalCode,
+        City: orderDetails.customer.city,
+        Country: orderDetails.customer.country,
       }
 
       logger.info('Creating Fortnox order', {
