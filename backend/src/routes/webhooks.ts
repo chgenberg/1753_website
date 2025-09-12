@@ -545,6 +545,8 @@ async function handleOrderStatusChange(orderId: string, status: string, paymentS
           orderId,
           error: fortnoxResult.reason?.message || 'Unknown error'
         })
+        // Kasta ett fel för att signalera att synken misslyckades
+        throw new Error(`Fortnox sync failed: ${fortnoxResult.reason?.message || 'Unknown error'}`)
       }
 
       if (ongoingResult.status === 'fulfilled') {
@@ -554,6 +556,8 @@ async function handleOrderStatusChange(orderId: string, status: string, paymentS
           orderId,
           error: ongoingResult.reason?.message || 'Unknown error'
         })
+        // Valfritt: Kasta fel även för Ongoing, eller bara logga
+        // throw new Error(`Ongoing sync failed: ${ongoingResult.reason?.message || 'Unknown error'}`)
       }
 
       // Update order with all references
@@ -899,6 +903,44 @@ router.post('/sync-all-orders', express.json(), async (req, res) => {
       success: false,
       error: error.message
     })
+  }
+})
+
+/**
+ * Temporary debug endpoint to view recent orders
+ * GET /api/webhooks/debug/recent-orders
+ */
+router.get('/debug/recent-orders', async (req, res) => {
+  // Add a simple secret query param to protect this endpoint
+  const secret = process.env.DEBUG_SECRET || '1753'
+  if (req.query.secret !== secret) {
+    return res.status(401).json({ error: 'Unauthorized' })
+  }
+
+  try {
+    const orders = await prisma.order.findMany({
+      take: 10,
+      orderBy: { createdAt: 'desc' },
+      select: {
+        orderNumber: true,
+        status: true,
+        paymentStatus: true,
+        totalAmount: true,
+        createdAt: true,
+        internalNotes: true,
+        email: true
+      }
+    })
+
+    res.json({
+      success: true,
+      orders: orders.map(o => ({
+        ...o,
+        shouldSync: o.paymentStatus === 'PAID' || ['CONFIRMED', 'PROCESSING'].includes(o.status),
+      }))
+    })
+  } catch (error: any) {
+    res.status(500).json({ success: false, error: error.message })
   }
 })
 
