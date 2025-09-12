@@ -46,7 +46,7 @@ interface FortnoxOrderRow {
 interface FortnoxOrder {
   CustomerNumber: string
   OrderDate: string
-  InvoiceRows: FortnoxOrderRow[]
+  OrderRows: FortnoxOrderRow[]
   YourReference?: string
   Currency?: string
   VATIncluded?: boolean
@@ -522,7 +522,7 @@ class FortnoxService {
       const orderPayload: FortnoxOrder = {
         CustomerNumber: customerNumber,
         OrderDate: orderDetails.orderDate.toISOString().split('T')[0],
-        InvoiceRows: orderRows,
+        OrderRows: orderRows,
         YourReference: orderDetails.orderId,
         Currency: orderDetails.items[0].price > 500 ? 'SEK' : 'EUR', // Simple currency detection
         VATIncluded: true,
