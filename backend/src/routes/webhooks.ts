@@ -923,6 +923,84 @@ router.post('/sync-all-orders', express.json(), async (req, res) => {
 })
 
 /**
+ * Manually force-sync a single order by its orderNumber
+ * GET /api/webhooks/debug/force-sync?orderNumber=...&secret=...
+ */
+router.get('/debug/force-sync', async (req, res) => {
+  // Protect with secret
+  const secret = process.env.DEBUG_SECRET || '1753'
+  if (req.query.secret !== secret) {
+    return res.status(401).json({ error: 'Unauthorized' })
+  }
+
+  const orderNumber = req.query.orderNumber as string
+  if (!orderNumber) {
+    return res.status(400).json({ error: 'Missing orderNumber query parameter' })
+  }
+
+  logger.info(`--- MANUAL FORCE SYNC TRIGGERED for order: ${orderNumber} ---`);
+  
+  try {
+    const order = await prisma.order.findUnique({
+      where: { orderNumber },
+      include: { items: { include: { product: true } }, user: true },
+    });
+
+    if (!order) {
+      return res.status(404).json({ error: `Order ${orderNumber} not found` });
+    }
+
+    const orderData = {
+      customer: {
+        email: order.email,
+        firstName: (order.shippingAddress as any)?.firstName || 'N/A',
+        lastName: (order.shippingAddress as any)?.lastName || 'N/A',
+        phone: (order.shippingAddress as any)?.phone || order.phone || '',
+        address: (order.shippingAddress as any)?.address || '',
+        apartment: (order.shippingAddress as any)?.apartment || '',
+        city: (order.shippingAddress as any)?.city || '',
+        postalCode: (order.shippingAddress as any)?.postalCode || '',
+        country: (order.shippingAddress as any)?.country || 'SE',
+      },
+      items: order.items.map(item => ({
+        productId: item.productId,
+        name: item.product?.name || 'Okänd produkt',
+        price: item.price,
+        quantity: item.quantity,
+        sku: item.product?.sku || undefined,
+        weight: item.product?.weight
+      })),
+      orderId: order.orderNumber,
+      total: order.totalAmount,
+      shipping: order.shippingAmount,
+      orderDate: order.createdAt,
+      deliveryInstruction: order.customerNotes
+    };
+
+    const result = await fortnoxService.processOrder(orderData);
+    
+    await prisma.order.update({
+        where: { id: order.id },
+        data: {
+            status: 'CONFIRMED',
+            paymentStatus: 'PAID',
+            internalNotes: (order.internalNotes || '') + `\nFORCE SYNC: Fortnox order: ${result.orderNumber}`
+        }
+    });
+
+    res.json({ success: true, message: `Order ${orderNumber} force-synced successfully.`, fortnoxResult: result });
+
+  } catch (error: any) {
+    logger.error(`Force sync failed for order ${orderNumber}`, {
+      errorMessage: error.message,
+      axiosError: error.response?.data
+    });
+    res.status(500).json({ success: false, error: error.message, details: error.response?.data });
+  }
+});
+
+
+/**
  * Temporary debug endpoint to view recent orders
  * GET /api/webhooks/debug/recent-orders
  */
