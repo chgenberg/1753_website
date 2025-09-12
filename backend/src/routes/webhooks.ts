@@ -357,21 +357,20 @@ router.post('/viva-webhook', express.raw({ type: 'application/json' }), async (r
 
 // POST-endpoint för webhook-events
 router.post('/payment/viva', express.raw({ type: 'application/json' }), async (req, res) => {
-  try {
-    // Logga raw body för debugging
-    logger.info('Viva Wallet webhook raw body', {
-      body: req.body.toString(),
-      headers: req.headers
-    })
+  // --- OMFATTANDE DEBUG-LOGGNING ---
+  logger.info('VIVA WEBHOOK RECEIVED (RAW)', {
+    timestamp: new Date().toISOString(),
+    headers: req.headers,
+    body: req.body.toString(),
+    query: req.query,
+    method: req.method,
+    url: req.originalUrl,
+  });
+  // --- SLUT PÅ DEBUG-LOGGNING ---
 
+  try {
     const payload = JSON.parse(req.body.toString())
     
-    logger.info('Viva Wallet webhook received', {
-      eventType: payload.EventTypeId,
-      orderCode: payload.EventData?.OrderCode,
-      fullPayload: payload
-    })
-
     // Svara omedelbart med 200 OK för att bekräfta mottagning
     res.status(200).send('OK')
 
