@@ -369,7 +369,24 @@ router.post('/payment/viva', express.raw({ type: 'application/json' }), async (r
   // --- SLUT PÅ DEBUG-LOGGNING ---
 
   try {
-    const payload = JSON.parse(req.body.toString())
+    let payload;
+    const bodyStr = req.body.toString();
+
+    // Kontrollera om kroppen är den felaktiga strängen "[object Object]"
+    if (bodyStr.toLowerCase().includes('[object object]')) {
+      logger.warn('Received malformed "[object Object]" string in webhook body. Attempting to parse from query parameters.');
+      // I detta fall, anta att den riktiga datan finns i query-parametrarna som en enda JSON-sträng
+      // Detta är ett känt beteende för vissa Viva Wallet-konfigurationer
+      const eventData = req.query.eventData || req.query.EventData;
+      if (typeof eventData === 'string') {
+        payload = JSON.parse(eventData);
+        logger.info('Successfully parsed webhook payload from query parameter', { payload });
+      } else {
+        throw new Error('Malformed webhook body and no valid eventData query parameter found.');
+      }
+    } else {
+      payload = JSON.parse(bodyStr);
+    }
     
     // Svara omedelbart med 200 OK för att bekräfta mottagning
     res.status(200).send('OK')
