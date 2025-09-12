@@ -355,30 +355,18 @@ class FortnoxService {
   }
 
   /**
-   * Create order in Fortnox
+   * Create order
    */
   async createOrder(orderData: FortnoxOrder): Promise<string> {
     try {
       await this.rateLimitDelay()
-
-      // Debug: log payload we send to Fortnox to diagnose API errors
-      logger.info('Creating Fortnox order with payload', { order: orderData })
-
-      const exec = async () => {
-        const response: AxiosResponse<FortnoxResponse<{ Order: any }>> = await axios.post(
-          `${this.credentials.baseUrl}/orders`,
-          { Order: orderData },
-          { headers: this.getHeaders() }
-        )
-        if (response.data.ErrorInformation) {
-          throw new Error(response.data.ErrorInformation.Message)
-        }
-        return response
-      }
-
+      const payload = { Order: orderData }
+      const exec = () => axios.post(`${this.credentials.baseUrl}/orders`, payload, { headers: this.getHeaders() })
       const response = await this.withRefreshRetry(exec)
+      
+      const order = (response.data as FortnoxResponse<any>).Order
 
-      const orderNumber = (response as any).data.Order.DocumentNumber
+      const orderNumber = order.DocumentNumber
       logger.info(`Fortnox order created: ${orderNumber}`)
       return orderNumber
 
