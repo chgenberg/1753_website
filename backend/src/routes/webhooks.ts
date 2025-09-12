@@ -938,6 +938,7 @@ router.get('/debug/recent-orders', async (req, res) => {
       take: 10,
       orderBy: { createdAt: 'desc' },
       select: {
+        id: true, // Lägg till id
         orderNumber: true,
         status: true,
         paymentStatus: true,
