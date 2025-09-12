@@ -118,22 +118,27 @@ class FortnoxService {
    * Get default headers for Fortnox API
    */
   private getHeaders() {
-    if (this.isOAuthToken()) {
-      // OAuth 2.0 Bearer token
-      const token = this.inMemoryAccessToken || this.credentials.apiToken
-      return {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      }
-    }
-    // Legacy API keys
-    return {
-      'Access-Token': this.credentials.apiToken,
-      'Client-Secret': this.credentials.clientSecret,
+    let headers: Record<string, string> = {
       'Content-Type': 'application/json',
       'Accept': 'application/json'
+    };
+  
+    if (this.isOAuthToken()) {
+      const token = this.inMemoryAccessToken || this.credentials.apiToken;
+      headers['Authorization'] = `Bearer ${token}`;
+    } else {
+      headers['Access-Token'] = this.credentials.apiToken;
+      headers['Client-Secret'] = this.credentials.clientSecret;
     }
+    
+    // Säkerställ att inga undefined värden skickas, vilket kan få axios att agera konstigt
+    Object.keys(headers).forEach(key => {
+      if (headers[key] === undefined) {
+        delete headers[key];
+      }
+    });
+
+    return headers;
   }
 
   /**
@@ -285,42 +290,35 @@ class FortnoxService {
    * Find customer by email
    */
   async findCustomerByEmail(email: string): Promise<string | null> {
-    const url = `${this.credentials.baseUrl}/customers?email=${encodeURIComponent(email)}`;
-    logger.info('[Fortnox] Attempting to find customer by email', { email, url });
+    const url = `${this.credentials.baseUrl}/customers`;
+    const params = { email: email };
+    logger.info('[Fortnox] Finding customer by email with GET and URL params', { url, params });
 
     try {
       await this.rateLimitDelay();
 
-      const exec = () => axios.get(url, { headers: this.getHeaders() });
+      const exec = () => axios.get(url, { 
+        headers: this.getHeaders(),
+        params: params, // Använd 'params' för att garantera att det blir query-parametrar
+      });
+
       const response = await this.withRefreshRetry(exec);
 
       if (response.data?.Customers?.length > 0) {
         const customerNumber = response.data.Customers[0].CustomerNumber;
-        logger.info(`[Fortnox] Found customer with number: ${customerNumber}`, { email });
+        logger.info(`[Fortnox] Found customer: ${customerNumber}`);
         return customerNumber;
       }
-
-      logger.info('[Fortnox] No customer found with that email.', { email });
+      
+      logger.info('[Fortnox] Customer not found by email.');
       return null;
 
     } catch (error: any) {
-      // Detta är det kritiska felet vi ser i loggarna
-      if (error.response?.data?.ErrorInformation?.Message === 'Fel inträffade vid deserialisering.') {
-         logger.error('[Fortnox] DESERIALIZATION ERROR while finding customer. This often means the request format was invalid.', {
-            email,
-            url,
-            errorData: error.response.data,
-            status: error.response.status
-         });
-      } else {
-        logger.error('[Fortnox] Failed to find customer by email due to an unexpected error.', { 
-          email,
-          url,
-          errorMessage: error.message,
-          errorResponse: error.response?.data 
-        });
-      }
-      // Returnera null istället för att kasta felet, så att processen kan fortsätta till att skapa en ny kund
+      logger.error('[Fortnox] Error finding customer by email', { 
+        errorMessage: error.message,
+        errorResponse: error.response?.data 
+      });
+      // Returnera null så att en ny kund kan skapas
       return null;
     }
   }
