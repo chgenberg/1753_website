@@ -620,14 +620,12 @@ class OngoingService {
         })
       }
 
-      // Determine delivery method based on country
-      const isSweden = orderDetails.customer.country === 'SE' || orderDetails.customer.country === 'Sweden'
-      const wayOfDelivery = isSweden ? 'Early Bird' : 'DHL'
+      // Use simple standard delivery method to avoid issues
+      const wayOfDelivery = 'Standard'
       
       logger.info('Setting delivery method for Ongoing order', {
         orderId: orderDetails.orderId,
         country: orderDetails.customer.country,
-        isSweden,
         wayOfDelivery
       })
 

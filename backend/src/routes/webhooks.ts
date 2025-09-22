@@ -680,6 +680,60 @@ router.post('/fortnox', express.json(), async (req, res) => {
 })
 
 /**
+ * Manual webhook test endpoint
+ * GET /api/webhooks/test-webhook?orderNumber=1753-xxx
+ */
+router.get('/test-webhook', async (req, res) => {
+  try {
+    const orderNumber = req.query.orderNumber as string
+    
+    if (!orderNumber) {
+      return res.status(400).json({ error: 'orderNumber required' })
+    }
+    
+    // Find order by orderNumber
+    const order = await prisma.order.findFirst({
+      where: { orderNumber },
+      include: {
+        items: {
+          include: {
+            product: true
+          }
+        }
+      }
+    })
+    
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found', orderNumber })
+    }
+    
+    // Manually trigger the same process as webhook
+    logger.info('Manual webhook test triggered', { orderNumber, orderId: order.id })
+    
+    const updatedOrder = await prisma.order.update({
+      where: { id: order.id },
+      data: { 
+        paymentStatus: 'PAID',
+        status: 'CONFIRMED'
+      }
+    })
+    
+    await handleOrderStatusChange(updatedOrder.id, 'CONFIRMED', 'PAID')
+    
+    res.json({ 
+      success: true, 
+      message: 'Webhook test completed',
+      orderNumber,
+      orderId: order.id
+    })
+    
+  } catch (error) {
+    logger.error('Webhook test error:', error)
+    res.status(500).json({ error: 'Test failed' })
+  }
+})
+
+/**
  * Debug endpoint for Ongoing WMS
  * GET /api/webhooks/debug-ongoing
  */
