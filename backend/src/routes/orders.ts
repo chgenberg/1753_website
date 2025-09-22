@@ -168,7 +168,8 @@ router.post('/create', optionalAuth, async (req: any, res) => {
     await prisma.order.update({
       where: { id: order.id },
       data: {
-        paymentReference: paymentOrder.orderCode.toString()
+        paymentReference: paymentOrder.orderCode.toString(),
+        paymentOrderCode: paymentOrder.orderCode.toString() // Also store in paymentOrderCode for webhook lookup
       }
     })
     
