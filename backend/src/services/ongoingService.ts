@@ -620,13 +620,25 @@ class OngoingService {
         })
       }
 
+      // Determine delivery method based on country
+      const isSweden = orderDetails.customer.country === 'SE' || orderDetails.customer.country === 'Sweden'
+      const wayOfDelivery = isSweden ? 'Early Bird' : 'DHL'
+      
+      logger.info('Setting delivery method for Ongoing order', {
+        orderId: orderDetails.orderId,
+        country: orderDetails.customer.country,
+        isSweden,
+        wayOfDelivery
+      })
+
       const order: OngoingOrder = {
         OrderNumber: orderDetails.orderId,
         CustomerNumber: customerNumber,
         OrderLines: orderLines,
         DeliveryInstruction: orderDetails.deliveryInstruction,
         OrderRemark: `E-handelsorder från 1753skincare.com`,
-        DeliveryDate: orderDetails.orderDate.toISOString()
+        DeliveryDate: orderDetails.orderDate.toISOString(),
+        WayOfDelivery: wayOfDelivery
       }
 
       const orderNumber = await this.createOrder(order)
