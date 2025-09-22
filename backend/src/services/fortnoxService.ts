@@ -48,13 +48,13 @@ interface FortnoxOrder {
   YourReference?: string
   Currency?: string
   VATIncluded?: boolean
-  // Delivery address fields are now top-level
-  CustomerName: string
-  Address1: string
-  Address2?: string
-  ZipCode: string
-  City: string
-  Country: string
+  // Delivery address (Fortnox naming)
+  DeliveryName?: string
+  DeliveryAddress1?: string
+  DeliveryAddress2?: string
+  DeliveryZipCode?: string
+  DeliveryCity?: string
+  DeliveryCountryCode?: string
 }
 
 interface FortnoxInvoice {
@@ -676,13 +676,13 @@ class FortnoxService {
         YourReference: orderDetails.orderId,
         Currency: 'SEK',
         VATIncluded: true,
-        // Delivery address fields are now at the root of the Order object
-        CustomerName: `${orderDetails.customer.firstName} ${orderDetails.customer.lastName}`,
-        Address1: orderDetails.customer.address,
-        Address2: orderDetails.customer.apartment,
-        ZipCode: orderDetails.customer.postalCode,
-        City: orderDetails.customer.city,
-        Country: orderDetails.customer.country,
+        // Correct Fortnox delivery address fields
+        DeliveryName: `${orderDetails.customer.firstName} ${orderDetails.customer.lastName}`,
+        DeliveryAddress1: orderDetails.customer.address,
+        DeliveryAddress2: orderDetails.customer.apartment,
+        DeliveryZipCode: orderDetails.customer.postalCode,
+        DeliveryCity: orderDetails.customer.city,
+        DeliveryCountryCode: (orderDetails.customer.country || 'SE'),
       }
 
       logger.info('[Fortnox] Final order payload constructed. Calling createOrder...', { ...logContext, payloadItems: orderRows.length });
