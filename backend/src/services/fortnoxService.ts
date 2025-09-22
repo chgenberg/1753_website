@@ -149,6 +149,63 @@ class FortnoxService {
   }
 
   /**
+   * Update refresh token in Railway using Railway API
+   */
+  private async updateRefreshTokenInRailway(newRefreshToken: string): Promise<boolean> {
+    try {
+      const railwayToken = process.env.RAILWAY_API_TOKEN
+      const projectId = process.env.RAILWAY_PROJECT_ID
+      const serviceId = process.env.RAILWAY_SERVICE_ID
+      const environmentId = process.env.RAILWAY_ENVIRONMENT_ID
+
+      if (!railwayToken || !projectId || !serviceId || !environmentId) {
+        logger.warn('Railway API credentials not configured for automatic token update')
+        return false
+      }
+
+      const response = await axios.post(
+        `https://backboard.railway.app/graphql`,
+        {
+          query: `
+            mutation VariableUpsert($input: VariableUpsertInput!) {
+              variableUpsert(input: $input) {
+                id
+              }
+            }
+          `,
+          variables: {
+            input: {
+              projectId: projectId,
+              environmentId: environmentId,
+              serviceId: serviceId,
+              name: "FORTNOX_REFRESH_TOKEN",
+              value: newRefreshToken
+            }
+          }
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${railwayToken}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+
+      if (response.data.errors) {
+        logger.error('Railway API error:', response.data.errors)
+        return false
+      }
+
+      logger.info('✅ Successfully updated FORTNOX_REFRESH_TOKEN in Railway automatically!')
+      return true
+
+    } catch (error: any) {
+      logger.error('Failed to update Railway variable automatically:', error.message)
+      return false
+    }
+  }
+
+  /**
    * Refresh OAuth access token using refresh token.
    * This will also save the new refresh token to database or log it for manual update.
    */
@@ -190,12 +247,19 @@ class FortnoxService {
       if (newRefreshToken && newRefreshToken !== this.inMemoryRefreshToken) {
         this.inMemoryRefreshToken = newRefreshToken
         
-        // Always log for manual update
-        logger.warn(
-          '🔑 NEW FORTNOX REFRESH TOKEN GENERATED! Update FORTNOX_REFRESH_TOKEN in Railway variables:',
-          { newRefreshToken }
-        )
-        console.log(`\n🔑 IMPORTANT: Update FORTNOX_REFRESH_TOKEN in Railway to:\n${newRefreshToken}\n`)
+        // Try to update Railway automatically first
+        const railwayUpdated = await this.updateRefreshTokenInRailway(newRefreshToken)
+        
+        if (railwayUpdated) {
+          logger.info('🎉 Refresh token updated automatically in Railway! No manual action needed.')
+        } else {
+          // Fallback to manual logging
+          logger.warn(
+            '🔑 NEW FORTNOX REFRESH TOKEN GENERATED! Update FORTNOX_REFRESH_TOKEN in Railway variables:',
+            { newRefreshToken }
+          )
+          console.log(`\n🔑 IMPORTANT: Update FORTNOX_REFRESH_TOKEN in Railway to:\n${newRefreshToken}\n`)
+        }
       }
     } catch (error: any) {
       logger.error('Failed to refresh Fortnox access token.', {
