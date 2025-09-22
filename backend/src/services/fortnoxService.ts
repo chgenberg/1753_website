@@ -592,14 +592,11 @@ class FortnoxService {
       logger.info('[Fortnox] Step 1: Find or Create Customer', logContext);
       let customerNumber: string | null = null
       
-      if (orderDetails.customer.email.endsWith('@1753skincare.com')) {
-        logger.info('[Fortnox] Internal email detected, attempting to find existing customer.', logContext);
-        customerNumber = await this.findCustomerByEmail(orderDetails.customer.email)
-      } else {
-        customerNumber = await this.findCustomerByEmail(orderDetails.customer.email)
-      }
+      // Always attempt to find existing customer by email first
+      customerNumber = await this.findCustomerByEmail(orderDetails.customer.email)
       
-      if (!customerNumber && !orderDetails.customer.email.endsWith('@1753skincare.com')) {
+      // If not found, create a new customer (even for internal/test emails)
+      if (!customerNumber) {
         logger.info('[Fortnox] Customer not found. Creating new customer...', logContext);
         const customerData: FortnoxCustomer = {
           Name: `${orderDetails.customer.firstName} ${orderDetails.customer.lastName}`,
