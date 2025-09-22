@@ -366,6 +366,9 @@ router.post('/payment/viva', express.raw({ type: 'application/json' }), async (r
     query: req.query,
     method: req.method,
     url: req.originalUrl,
+    bodyLength: req.body.length,
+    queryKeys: Object.keys(req.query),
+    queryValues: Object.values(req.query)
   });
   // --- SLUT PÅ DEBUG-LOGGNING ---
 
@@ -471,7 +474,27 @@ router.post('/payment/viva', express.raw({ type: 'application/json' }), async (r
           // Kontrollera om vi ska skapa faktura och skicka till Sybka
           await handleOrderStatusChange(updatedOrder.id, 'CONFIRMED', 'PAID')
         } else {
-          logger.warn('Order not found for Viva Wallet webhook', { orderCode })
+          logger.warn('Order not found for Viva Wallet webhook', { 
+            orderCode,
+            searchedFor: {
+              paymentOrderCode: orderCode,
+              paymentReference: orderCode
+            }
+          })
+          
+          // Debug: Show recent orders to help identify the issue
+          const recentOrders = await prisma.order.findMany({
+            select: {
+              orderNumber: true,
+              paymentOrderCode: true,
+              paymentReference: true,
+              createdAt: true
+            },
+            orderBy: { createdAt: 'desc' },
+            take: 5
+          })
+          
+          logger.info('Recent orders for debugging', { recentOrders })
         }
       }
     } else {
