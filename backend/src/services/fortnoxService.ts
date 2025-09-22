@@ -98,6 +98,11 @@ class FortnoxService {
     if (!this.credentials.apiToken) {
       logger.warn('Fortnox credentials not configured: missing FORTNOX_API_TOKEN')
     }
+
+    // Start proactive refresh timer if using OAuth
+    if (this.isOAuthToken()) {
+      this.startProactiveRefresh()
+    }
   }
 
   /**
@@ -273,6 +278,47 @@ class FortnoxService {
 
       throw new Error(`Failed to refresh Fortnox access token: ${error.message}`)
     }
+  }
+
+  /**
+   * Proactive refresh: checks token expiry periodically and refreshes before expiry
+   */
+  private startProactiveRefresh() {
+    const CHECK_INTERVAL_MS = 10 * 60 * 1000 // every 10 minutes
+    const REFRESH_BEFORE_MS = 5 * 60 * 1000  // refresh if <5 minutes left
+
+    const getJwtExpMs = (token: string): number | null => {
+      try {
+        const parts = token.split('.')
+        if (parts.length < 2) return null
+        const payloadJson = Buffer.from(parts[1].replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8')
+        const payload = JSON.parse(payloadJson)
+        if (typeof payload.exp === 'number') return payload.exp * 1000
+        return null
+      } catch {
+        return null
+      }
+    }
+
+    const tick = async () => {
+      try {
+        if (!this.isOAuthToken() || !this.inMemoryAccessToken || !this.inMemoryRefreshToken) return
+        const expMs = getJwtExpMs(this.inMemoryAccessToken)
+        if (!expMs) return
+        const now = Date.now()
+        const timeLeft = expMs - now
+        if (timeLeft <= REFRESH_BEFORE_MS) {
+          logger.info('[Fortnox] Proactive refresh: token close to expiry, refreshing...')
+          await this.refreshAccessToken()
+        }
+      } catch (err: any) {
+        logger.warn('[Fortnox] Proactive refresh tick failed', { error: err?.message })
+      }
+    }
+
+    // immediate check and then interval
+    setTimeout(tick, 5 * 1000)
+    setInterval(tick, CHECK_INTERVAL_MS)
   }
 
   /**
