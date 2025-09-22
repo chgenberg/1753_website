@@ -723,7 +723,8 @@ router.get('/create-test-order', async (req, res) => {
             {
               productId: 'test-product',
               quantity: 1,
-              price: 299
+              price: 299,
+              title: 'Test Product'
             }
           ]
         }
