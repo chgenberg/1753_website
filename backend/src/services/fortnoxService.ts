@@ -54,7 +54,7 @@ interface FortnoxOrder {
   DeliveryAddress2?: string
   DeliveryZipCode?: string
   DeliveryCity?: string
-  DeliveryCountryCode?: string
+  DeliveryCountry?: string
 }
 
 interface FortnoxInvoice {
@@ -683,7 +683,7 @@ class FortnoxService {
         DeliveryAddress2: orderDetails.customer.apartment,
         DeliveryZipCode: orderDetails.customer.postalCode,
         DeliveryCity: orderDetails.customer.city,
-        DeliveryCountryCode: (orderDetails.customer.country || 'SE'),
+        DeliveryCountry: (orderDetails.customer.country || 'SE'),
       }
 
       logger.info('[Fortnox] Final order payload constructed. Calling createOrder...', { ...logContext, payloadItems: orderRows.length });
