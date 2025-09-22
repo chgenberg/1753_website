@@ -1189,6 +1189,116 @@ router.get('/test-integration', async (req, res) => {
 })
 
 /**
+ * Fortnox OAuth: start authorization
+ * GET /api/fortnox/oauth/start
+ */
+router.get('/fortnox/oauth/start', async (req, res) => {
+  try {
+    const clientId = process.env.FORTNOX_CLIENT_ID || ''
+    const redirectUri = process.env.FORTNOX_REDIRECT_URI || `${process.env.BACKEND_URL || ''}/api/fortnox/oauth/callback`
+    const scopes = (process.env.FORTNOX_SCOPES || 'companyinformation customers orders articles').split(/[,\s]+/).join('%20')
+
+    if (!clientId) {
+      return res.status(500).send('FORTNOX_CLIENT_ID is not set')
+    }
+
+    const url = `https://apps.fortnox.se/oauth-v1/auth?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scopes}&response_type=code&access_type=offline`
+    return res.redirect(url)
+  } catch (error: any) {
+    logger.error('Fortnox OAuth start error:', error.message)
+    return res.status(500).send('Failed to start Fortnox OAuth flow')
+  }
+})
+
+/**
+ * Fortnox OAuth: callback to exchange code for tokens
+ * GET /api/fortnox/oauth/callback?code=...
+ */
+router.get('/fortnox/oauth/callback', async (req, res) => {
+  try {
+    const code = req.query.code as string | undefined
+    if (!code) {
+      return res.status(400).send('Missing code')
+    }
+
+    const clientId = process.env.FORTNOX_CLIENT_ID || ''
+    const clientSecret = process.env.FORTNOX_CLIENT_SECRET || ''
+    const redirectUri = process.env.FORTNOX_REDIRECT_URI || `${process.env.BACKEND_URL || ''}/api/fortnox/oauth/callback`
+
+    if (!clientId || !clientSecret) {
+      return res.status(500).send('Missing Fortnox OAuth credentials')
+    }
+
+    // Exchange code for tokens
+    const tokenUrl = 'https://apps.fortnox.se/oauth-v1/token'
+    const body = new URLSearchParams({
+      grant_type: 'authorization_code',
+      code,
+      redirect_uri: redirectUri
+    })
+
+    const tokenResp = await axios.post(tokenUrl, body, {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      auth: { username: clientId, password: clientSecret }
+    })
+
+    const accessToken = tokenResp.data?.access_token
+    const refreshToken = tokenResp.data?.refresh_token
+
+    if (!accessToken || !refreshToken) {
+      logger.error('Fortnox OAuth callback: missing tokens', tokenResp.data)
+      return res.status(500).send('Fortnox did not return tokens')
+    }
+
+    // Try to update Railway variables
+    const railwayToken = process.env.RAILWAY_API_TOKEN
+    const projectId = process.env.RAILWAY_PROJECT_ID
+    const serviceId = process.env.RAILWAY_SERVICE_ID
+    const environmentId = process.env.RAILWAY_ENVIRONMENT_ID
+
+    const upsertVar = async (name: string, value: string) => {
+      if (!railwayToken || !projectId || !serviceId || !environmentId) return false
+      const resp = await axios.post(
+        'https://backboard.railway.app/graphql',
+        {
+          query: `mutation VariableUpsert($input: VariableUpsertInput!){ variableUpsert(input:$input){ id } }`,
+          variables: { input: { projectId, environmentId, serviceId, name, value } }
+        },
+        { headers: { Authorization: `Bearer ${railwayToken}`, 'Content-Type': 'application/json' } }
+      )
+      return !resp.data?.errors
+    }
+
+    const updates = [] as Array<{ name: string, ok: boolean }>
+    updates.push({ name: 'FORTNOX_REFRESH_TOKEN', ok: await upsertVar('FORTNOX_REFRESH_TOKEN', refreshToken) })
+    updates.push({ name: 'FORTNOX_API_TOKEN', ok: await upsertVar('FORTNOX_API_TOKEN', accessToken) })
+    updates.push({ name: 'FORTNOX_USE_OAUTH', ok: await upsertVar('FORTNOX_USE_OAUTH', 'true') })
+
+    logger.info('Fortnox OAuth tokens received and variable update attempts done', { updates })
+
+    // Show a simple success page
+    return res.status(200).send(`
+      <html>
+        <body style="font-family: Inter, Arial; max-width: 640px; margin: 40px auto;">
+          <h2>Fortnox inloggning slutförd ✅</h2>
+          <p>Access token och refresh token är mottagna.</p>
+          <ul>
+            <li>FORTNOX_USE_OAUTH = true</li>
+            <li>FORTNOX_API_TOKEN uppdaterad: ${updates[1].ok ? '✅' : '⚠️ (krävde manuell)'} </li>
+            <li>FORTNOX_REFRESH_TOKEN uppdaterad: ${updates[0].ok ? '✅' : '⚠️ (krävde manuell)'} </li>
+          </ul>
+          ${!updates[0].ok || !updates[1].ok ? `<p><strong>VIKTIGT:</strong> Kopiera dessa och uppdatera i Railway:<br/>Access token: ${accessToken}<br/>Refresh token: ${refreshToken}</p>` : ''}
+          <p>Du kan nu stänga detta fönster.</p>
+        </body>
+      </html>
+    `)
+  } catch (error: any) {
+    logger.error('Fortnox OAuth callback error:', { message: error.message, data: error.response?.data })
+    return res.status(500).send('Failed to complete Fortnox OAuth flow')
+  }
+})
+
+/**
  * Fortnox debug endpoint with detailed error reporting
  * GET /api/webhooks/debug-fortnox
  */
