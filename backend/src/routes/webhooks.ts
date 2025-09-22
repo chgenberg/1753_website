@@ -688,6 +688,18 @@ router.get('/create-test-order', async (req, res) => {
   try {
     const orderNumber = `1753-TEST-${Date.now()}`
     
+    // Pick an existing product to satisfy FK on order_items.productId
+    const sampleProduct = await prisma.product.findFirst({
+      select: { id: true, name: true, sku: true }
+    })
+    logger.info('Create test order: selected sample product', { sampleProduct })
+
+    if (!sampleProduct) {
+      return res.status(400).json({
+        error: 'No products found in database. Create at least one product first to run the test.'
+      })
+    }
+
     // Create a test order in database
     const testOrder = await prisma.order.create({
       data: {
@@ -722,10 +734,12 @@ router.get('/create-test-order', async (req, res) => {
         items: {
           create: [
             {
-              productId: 'test-product',
+              // Use explicit relation connect to avoid FK issues
+              product: { connect: { id: sampleProduct.id } },
               quantity: 1,
               price: 299,
-              title: 'Test Product'
+              title: sampleProduct.name || 'Test Product',
+              sku: sampleProduct.sku || sampleProduct.id
             }
           ]
         }
