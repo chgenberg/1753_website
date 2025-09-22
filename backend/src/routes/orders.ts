@@ -62,7 +62,7 @@ const createOrderSchema = z.object({
   shippingCost: z.number().min(0),
   total: z.number().positive(),
   currency: z.enum(['SEK', 'EUR']).default('SEK'),
-  newsletter: z.boolean(),
+  newsletter: z.boolean().optional(),
   isSubscription: z.boolean().optional(),
   subscriptionInterval: z.enum(['monthly', 'bimonthly', 'quarterly']).optional()
 })

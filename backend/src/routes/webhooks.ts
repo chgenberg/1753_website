@@ -680,6 +680,90 @@ router.post('/fortnox', express.json(), async (req, res) => {
 })
 
 /**
+ * Create test order and trigger webhook processing
+ * GET /api/webhooks/create-test-order
+ */
+router.get('/create-test-order', async (req, res) => {
+  try {
+    const orderNumber = `1753-TEST-${Date.now()}`
+    
+    // Create a test order in database
+    const testOrder = await prisma.order.create({
+      data: {
+        orderNumber,
+        email: 'test@1753skincare.com',
+        customerName: 'Test Customer',
+        phone: '0701234567',
+        status: 'PENDING',
+        paymentStatus: 'PENDING',
+        subtotal: 299,
+        shippingAmount: 49,
+        totalAmount: 348,
+        currency: 'SEK',
+        paymentReference: 'TEST123',
+        paymentOrderCode: 'TEST123',
+        shippingAddress: {
+          firstName: 'Test',
+          lastName: 'Customer', 
+          address: 'Testgatan 1',
+          city: 'Stockholm',
+          postalCode: '11122',
+          country: 'SE'
+        },
+        billingAddress: {
+          firstName: 'Test',
+          lastName: 'Customer',
+          address: 'Testgatan 1', 
+          city: 'Stockholm',
+          postalCode: '11122',
+          country: 'SE'
+        },
+        items: {
+          create: [
+            {
+              productId: 'test-product',
+              quantity: 1,
+              price: 299
+            }
+          ]
+        }
+      },
+      include: {
+        items: {
+          include: {
+            product: true
+          }
+        }
+      }
+    })
+    
+    logger.info('Test order created', { orderNumber, orderId: testOrder.id })
+    
+    // Now trigger webhook processing
+    const updatedOrder = await prisma.order.update({
+      where: { id: testOrder.id },
+      data: { 
+        paymentStatus: 'PAID',
+        status: 'CONFIRMED'
+      }
+    })
+    
+    await handleOrderStatusChange(updatedOrder.id, 'CONFIRMED', 'PAID')
+    
+    res.json({ 
+      success: true, 
+      message: 'Test order created and processed',
+      orderNumber,
+      orderId: testOrder.id
+    })
+    
+  } catch (error) {
+    logger.error('Test order creation error:', error)
+    res.status(500).json({ error: 'Test order failed', details: error.message })
+  }
+})
+
+/**
  * Manual webhook test endpoint
  * GET /api/webhooks/test-webhook?orderNumber=1753-xxx
  */
