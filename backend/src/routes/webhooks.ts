@@ -1,4 +1,5 @@
 import express from 'express'
+import crypto from 'crypto'
 import { logger } from '../utils/logger'
 import { prisma } from '../lib/prisma'
 import { fortnoxService } from '../services/fortnoxService'
@@ -1203,12 +1204,24 @@ router.get('/fortnox/oauth/start', async (req, res) => {
       .replace(/\borders\b/g, 'order')
       .replace(/\binvoices\b/g, 'invoice')
     const scopes = rawScopes.split(/[\,\s]+/).filter(Boolean).join('%20')
+    const state = crypto.randomBytes(16).toString('hex')
+
+    // Set a short-lived cookie to (optionally) validate returned state
+    try {
+      res.cookie('fortnox_oauth_state', state, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'lax',
+        maxAge: 10 * 60 * 1000,
+        path: '/'
+      })
+    } catch {}
 
     if (!clientId) {
       return res.status(500).send('FORTNOX_CLIENT_ID is not set')
     }
 
-    const url = `https://apps.fortnox.se/oauth-v1/auth?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scopes}&response_type=code&access_type=offline`
+    const url = `https://apps.fortnox.se/oauth-v1/auth?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scopes}&response_type=code&access_type=offline&state=${encodeURIComponent(state)}`
     return res.redirect(url)
   } catch (error: any) {
     logger.error('Fortnox OAuth start error:', error.message)
