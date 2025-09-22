@@ -1195,7 +1195,8 @@ router.get('/test-integration', async (req, res) => {
 router.get('/fortnox/oauth/start', async (req, res) => {
   try {
     const clientId = process.env.FORTNOX_CLIENT_ID || ''
-    const redirectUri = process.env.FORTNOX_REDIRECT_URI || `${process.env.BACKEND_URL || ''}/api/fortnox/oauth/callback`
+    // Use the documented direct callback path as a safe default
+    const redirectUri = process.env.FORTNOX_REDIRECT_URI || `${process.env.BACKEND_URL || ''}/oauth/callback`
     const scopes = (process.env.FORTNOX_SCOPES || 'companyinformation customers orders articles').split(/[,\s]+/).join('%20')
 
     if (!clientId) {
@@ -1223,7 +1224,8 @@ router.get('/fortnox/oauth/callback', async (req, res) => {
 
     const clientId = process.env.FORTNOX_CLIENT_ID || ''
     const clientSecret = process.env.FORTNOX_CLIENT_SECRET || ''
-    const redirectUri = process.env.FORTNOX_REDIRECT_URI || `${process.env.BACKEND_URL || ''}/api/fortnox/oauth/callback`
+    // Must exactly match the redirect used in the authorization request
+    const redirectUri = process.env.FORTNOX_REDIRECT_URI || `${process.env.BACKEND_URL || ''}/oauth/callback`
 
     if (!clientId || !clientSecret) {
       return res.status(500).send('Missing Fortnox OAuth credentials')

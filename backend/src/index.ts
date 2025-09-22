@@ -190,6 +190,18 @@ app.get('/oauth/callback', (req, res) => {
     .send(html)
 })
 
+// Aliases for Fortnox OAuth start/callback under /api to avoid confusion
+app.get('/api/fortnox/oauth/start', (req, res) => {
+  // Redirect to the actual mounted route under /api/webhooks
+  return res.redirect(302, '/api/webhooks/fortnox/oauth/start')
+})
+
+app.get('/api/fortnox/oauth/callback', (req, res) => {
+  // Redirect to the direct callback we recommend registering
+  const qs = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : ''
+  return res.redirect(302, `/oauth/callback${qs}`)
+})
+
 // Debug middleware for orders route (only in development)
 if (process.env.NODE_ENV === 'development') {
   app.use('/api/orders', (req, res, next) => {
