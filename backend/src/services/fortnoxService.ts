@@ -517,7 +517,8 @@ class FortnoxService {
       if (error.response) {
         logger.error('Fortnox order creation raw error response:', {
           status: error.response.status,
-          data: error.response.data
+          data: error.response.data,
+          orderRef: orderData.YourReference
         })
       }
       this.handleFortnoxError(error, 'order creation')
