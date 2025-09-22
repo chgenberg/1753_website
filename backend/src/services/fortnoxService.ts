@@ -674,7 +674,7 @@ class FortnoxService {
         OrderDate: orderDetails.orderDate.toISOString().split('T')[0],
         OrderRows: orderRows,
         YourReference: orderDetails.orderId,
-        Currency: orderDetails.items[0].price > 500 ? 'SEK' : 'EUR', // Simple currency detection
+        Currency: 'SEK',
         VATIncluded: true,
         // Delivery address fields are now at the root of the Order object
         CustomerName: `${orderDetails.customer.firstName} ${orderDetails.customer.lastName}`,
