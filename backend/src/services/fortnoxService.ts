@@ -105,6 +105,30 @@ class FortnoxService {
     }
   }
 
+  private normalizeDeliveryCountry(country: string | undefined): string {
+    const code = (country || '').trim()
+    if (!code) return 'Sverige'
+    const upper = code.toUpperCase()
+    const map: Record<string, string> = {
+      SE: 'Sverige',
+      NO: 'Norge',
+      DK: 'Danmark',
+      FI: 'Finland',
+      DE: 'Tyskland',
+      NL: 'Nederländerna',
+      GB: 'Storbritannien',
+      UK: 'Storbritannien',
+      US: 'USA',
+      FR: 'Frankrike',
+      ES: 'Spanien',
+      IT: 'Italien'
+    }
+    if (map[upper]) return map[upper]
+    // If already looks like a full country name, return as-is
+    if (code.length > 2) return code
+    return 'Sverige'
+  }
+
   /**
    * Detect if apiToken is an OAuth JWT (Bearer) vs legacy Access-Token.
    */
@@ -683,7 +707,7 @@ class FortnoxService {
         DeliveryAddress2: orderDetails.customer.apartment,
         DeliveryZipCode: orderDetails.customer.postalCode,
         DeliveryCity: orderDetails.customer.city,
-        DeliveryCountry: (orderDetails.customer.country || 'SE'),
+        DeliveryCountry: this.normalizeDeliveryCountry(orderDetails.customer.country),
       }
 
       logger.info('[Fortnox] Final order payload constructed. Calling createOrder...', { ...logContext, payloadItems: orderRows.length });
