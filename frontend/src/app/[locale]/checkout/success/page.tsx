@@ -37,6 +37,9 @@ function SuccessContent() {
   const [showShareMenu, setShowShareMenu] = useState(false)
   const { clearCart } = useCart()
   
+  // Backend API base (must be set via NEXT_PUBLIC_API_URL)
+  const apiBase = process.env.NEXT_PUBLIC_API_URL || ''
+  
   // Get parameters from URL (from Viva Wallet or our internal redirect)
   const transactionId = searchParams.get('transactionId') || searchParams.get('t')
   const orderCode = searchParams.get('orderCode') || searchParams.get('orderid')
@@ -57,7 +60,7 @@ function SuccessContent() {
       if (!orderCode) return
       
       try {
-        const response = await fetch('/api/webhooks/verify-order-status', {
+        const response = await fetch(`${apiBase}/api/webhooks/verify-order-status`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -72,7 +75,7 @@ function SuccessContent() {
           
           // Fetch full order details
           if (data.orderId) {
-            const orderResponse = await fetch(`/api/orders/${data.orderId}`)
+            const orderResponse = await fetch(`${apiBase}/api/orders/${data.orderId}`)
             if (orderResponse.ok) {
               const orderDetails = await orderResponse.json()
               setOrderData(orderDetails)
