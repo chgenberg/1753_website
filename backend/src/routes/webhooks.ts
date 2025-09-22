@@ -1195,9 +1195,14 @@ router.get('/test-integration', async (req, res) => {
 router.get('/fortnox/oauth/start', async (req, res) => {
   try {
     const clientId = process.env.FORTNOX_CLIENT_ID || ''
-    // Use the documented direct callback path as a safe default
-    const redirectUri = process.env.FORTNOX_REDIRECT_URI || `${process.env.BACKEND_URL || ''}/oauth/callback`
-    const scopes = (process.env.FORTNOX_SCOPES || 'companyinformation customers orders articles').split(/[,\s]+/).join('%20')
+    // Legacy integrations callback (must match Fortnox registration and token script)
+    const redirectUri = process.env.FORTNOX_REDIRECT_URI || `${process.env.BACKEND_URL || ''}/api/integrations/fortnox/callback`
+    const rawScopes = (process.env.FORTNOX_SCOPES || 'companyinformation customer article order invoice')
+      .replace(/\bcustomers\b/g, 'customer')
+      .replace(/\barticles\b/g, 'article')
+      .replace(/\borders\b/g, 'order')
+      .replace(/\binvoices\b/g, 'invoice')
+    const scopes = rawScopes.split(/[\,\s]+/).filter(Boolean).join('%20')
 
     if (!clientId) {
       return res.status(500).send('FORTNOX_CLIENT_ID is not set')
@@ -1225,7 +1230,7 @@ router.get('/fortnox/oauth/callback', async (req, res) => {
     const clientId = process.env.FORTNOX_CLIENT_ID || ''
     const clientSecret = process.env.FORTNOX_CLIENT_SECRET || ''
     // Must exactly match the redirect used in the authorization request
-    const redirectUri = process.env.FORTNOX_REDIRECT_URI || `${process.env.BACKEND_URL || ''}/oauth/callback`
+    const redirectUri = process.env.FORTNOX_REDIRECT_URI || `${process.env.BACKEND_URL || ''}/api/integrations/fortnox/callback`
 
     if (!clientId || !clientSecret) {
       return res.status(500).send('Missing Fortnox OAuth credentials')
