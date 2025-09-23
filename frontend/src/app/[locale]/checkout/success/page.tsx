@@ -60,51 +60,83 @@ function SuccessContent() {
       if (!orderCode) return
       
       try {
-        const response = await fetch(`${apiBase}/api/webhooks/verify-order-status`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ orderCode })
-        })
-        
-        const data = await response.json()
-        
-        if (data.success) {
-          console.log('Order verified and updated:', data)
+        // First try to verify with Viva if orderCode looks like a Viva order code (numeric)
+        if (/^\d+$/.test(orderCode)) {
+          const response = await fetch(`${apiBase}/api/webhooks/verify-order-status`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ orderCode })
+          })
           
-          // Fetch full order details using orderNumber
-          if (data.orderNumber) {
-            const orderResponse = await fetch(`${apiBase}/api/orders/by-number/${data.orderNumber}`)
-            if (orderResponse.ok) {
-              const orderDetails = await orderResponse.json()
-              if (orderDetails.success) {
-                setOrderData(orderDetails.order)
+          const data = await response.json()
+          
+          if (data.success) {
+            console.log('Order verified and updated:', data)
+            
+            // Fetch full order details using orderNumber
+            if (data.orderNumber) {
+              const orderResponse = await fetch(`${apiBase}/api/orders/by-number/${data.orderNumber}`)
+              if (orderResponse.ok) {
+                const orderDetails = await orderResponse.json()
+                if (orderDetails.success) {
+                  setOrderData(orderDetails.order)
+                }
               }
             }
-          } else if (data.orderId) {
-            // Fallback to orderId if orderNumber not available
-            const orderResponse = await fetch(`${apiBase}/api/orders/${data.orderId}`)
-            if (orderResponse.ok) {
-              const orderDetails = await orderResponse.json()
-              if (orderDetails.success) {
-                setOrderData(orderDetails.order)
+            
+            toast.success('Din beställning har bekräftats!', {
+              icon: '✅',
+              duration: 5000
+            })
+            return
+          } else if (data.status === 'PENDING') {
+            // Payment might not be processed yet, retry after a delay
+            setTimeout(() => {
+              verifyOrderStatus()
+            }, 3000)
+            return
+          }
+        }
+        
+        // Fallback: If orderCode looks like our orderNumber format, fetch directly
+        if (orderCode.startsWith('1753-')) {
+          const orderResponse = await fetch(`${apiBase}/api/orders/by-number/${orderCode}`)
+          if (orderResponse.ok) {
+            const orderDetails = await orderResponse.json()
+            if (orderDetails.success) {
+              setOrderData(orderDetails.order)
+              console.log('Order fetched directly by orderNumber:', orderDetails.order)
+              
+              // Only show success toast if order is confirmed/paid
+              if (orderDetails.order.status === 'CONFIRMED' && orderDetails.order.paymentStatus === 'PAID') {
+                toast.success('Din beställning har bekräftats!', {
+                  icon: '✅',
+                  duration: 5000
+                })
               }
             }
           }
-          
-          toast.success('Din beställning har bekräftats!', {
-            icon: '✅',
-            duration: 5000
-          })
-        } else if (data.status === 'PENDING') {
-          // Payment might not be processed yet, retry after a delay
-          setTimeout(() => {
-            verifyOrderStatus()
-          }, 3000)
         }
+        
       } catch (error) {
         console.error('Error verifying order status:', error)
+        
+        // Final fallback: try to fetch by orderNumber if it looks like our format
+        if (orderCode.startsWith('1753-')) {
+          try {
+            const orderResponse = await fetch(`${apiBase}/api/orders/by-number/${orderCode}`)
+            if (orderResponse.ok) {
+              const orderDetails = await orderResponse.json()
+              if (orderDetails.success) {
+                setOrderData(orderDetails.order)
+              }
+            }
+          } catch (fallbackError) {
+            console.error('Fallback fetch also failed:', fallbackError)
+          }
+        }
       }
     }
     
