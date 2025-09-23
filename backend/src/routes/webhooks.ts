@@ -491,7 +491,6 @@ router.post('/payment/viva', express.raw({ type: 'application/json' }), async (r
           
           logger.info('Recent orders for debugging', { recentOrders })
       }
-      }
     } else {
       logger.info('Unhandled Viva Wallet event type', { eventTypeId: payload.EventTypeId })
     }
