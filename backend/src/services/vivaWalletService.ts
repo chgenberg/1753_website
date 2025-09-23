@@ -520,6 +520,7 @@ export class VivaWalletService {
 
              logger.info('Viva Wallet order created', { 
          orderCode: response.data.orderCode,
+         fullResponse: response.data,
          amount: orderData.amount,
          currency,
          enableSwish: vivaOrderData.enableSwish,

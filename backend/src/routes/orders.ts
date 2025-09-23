@@ -168,11 +168,17 @@ router.post('/create', optionalAuth, async (req: any, res) => {
     }
     
     // Update order with payment reference (store Viva orderCode)
+    logger.info('Updating order with Viva orderCode', {
+      orderId: order.id,
+      vivaOrderCode: paymentOrder.orderCode,
+      paymentOrderType: typeof paymentOrder.orderCode
+    })
+    
     await prisma.order.update({
       where: { id: order.id },
       data: {
-        paymentReference: paymentOrder.orderCode.toString(),
-        paymentOrderCode: paymentOrder.orderCode.toString() // Also store in paymentOrderCode for webhook lookup
+        paymentReference: paymentOrder.orderCode?.toString(),
+        paymentOrderCode: paymentOrder.orderCode?.toString() // Also store in paymentOrderCode for webhook lookup
       }
     })
     
