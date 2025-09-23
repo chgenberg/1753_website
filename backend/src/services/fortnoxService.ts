@@ -235,6 +235,51 @@ class FortnoxService {
   }
 
   /**
+   * Update access token in Railway (optional – keeps env in sync to avoid 401 on restart)
+   */
+  private async updateAccessTokenInRailway(newAccessToken: string): Promise<boolean> {
+    try {
+      const railwayToken = process.env.RAILWAY_API_TOKEN
+      const projectId = process.env.RAILWAY_PROJECT_ID
+      const serviceId = process.env.RAILWAY_SERVICE_ID
+      const environmentId = process.env.RAILWAY_ENVIRONMENT_ID
+
+      if (!railwayToken || !projectId || !serviceId || !environmentId) {
+        return false
+      }
+
+      const response = await axios.post(
+        `https://backboard.railway.app/graphql`,
+        {
+          query: `
+            mutation VariableUpsert($input: VariableUpsertInput!) {
+              variableUpsert(input: $input) { id }
+            }
+          `,
+          variables: {
+            input: {
+              projectId,
+              environmentId,
+              serviceId,
+              name: 'FORTNOX_API_TOKEN',
+              value: newAccessToken
+            }
+          }
+        },
+        { headers: { 'Authorization': `Bearer ${railwayToken}`, 'Content-Type': 'application/json' } }
+      )
+
+      if (response.data.errors) {
+        logger.warn('Railway API (access token) error:', response.data.errors)
+        return false
+      }
+      return true
+    } catch {
+      return false
+    }
+  }
+
+  /**
    * Refresh OAuth access token using refresh token.
    * This will also save the new refresh token to database or log it for manual update.
    */
@@ -272,6 +317,12 @@ class FortnoxService {
 
       this.inMemoryAccessToken = newAccessToken
       logger.info('Fortnox access token refreshed successfully (in-memory).')
+
+      // Best effort: keep env var in sync to avoid 401 after restarts
+      const apiUpdated = await this.updateAccessTokenInRailway(newAccessToken)
+      if (apiUpdated) {
+        logger.info('Updated FORTNOX_API_TOKEN in Railway (best effort).')
+      }
 
       if (newRefreshToken && newRefreshToken !== this.inMemoryRefreshToken) {
         this.inMemoryRefreshToken = newRefreshToken

@@ -435,29 +435,28 @@ router.post('/payment/viva', express.raw({ type: 'application/json' }), async (r
     });
     
     if (payload.EventTypeId === 1796 || payload.EventTypeId === 1797) { // Payment Created eller Transaction Payment Created
-      const orderCode = payload.EventData?.OrderCode
+      const eventData = payload.EventData || payload.eventData || payload.Data || payload.data || {}
+      const orderCode = (eventData.OrderCode || eventData.orderCode || payload.OrderCode || payload.orderCode || '').toString()
+      const merchantTrns = (eventData.MerchantTrns || eventData.merchantTrns || payload.MerchantTrns || payload.merchantTrns || '').toString()
       
       logger.info('Processing payment webhook', { orderCode, eventType: payload.EventTypeId });
       
+      // Försök hitta order först via OrderCode, därefter via MerchantTrns (matcha orderNumber)
+      let order = null as any
       if (orderCode) {
-        // Hitta order med paymentOrderCode eller paymentReference
-        const order = await prisma.order.findFirst({
-          where: { 
-            OR: [
-              { paymentOrderCode: orderCode },
-              { paymentReference: orderCode }
-            ]
-          },
-          include: {
-            items: {
-              include: {
-                product: true
-              }
-            }
-          }
+        order = await prisma.order.findFirst({
+          where: { OR: [ { paymentOrderCode: orderCode }, { paymentReference: orderCode } ] },
+          include: { items: { include: { product: true } } }
         })
+      }
+      if (!order && merchantTrns) {
+        order = await prisma.order.findFirst({
+          where: { orderNumber: merchantTrns },
+          include: { items: { include: { product: true } } }
+        })
+      }
 
-        if (order) {
+      if (order) {
           // Uppdatera order med betalningsstatus
           const updatedOrder = await prisma.order.update({
             where: { id: order.id },
@@ -475,14 +474,8 @@ router.post('/payment/viva', express.raw({ type: 'application/json' }), async (r
 
           // Kontrollera om vi ska skapa faktura och skicka till Sybka
           await handleOrderStatusChange(updatedOrder.id, 'CONFIRMED', 'PAID')
-        } else {
-          logger.warn('Order not found for Viva Wallet webhook', { 
-            orderCode,
-            searchedFor: {
-              paymentOrderCode: orderCode,
-              paymentReference: orderCode
-            }
-          })
+      } else {
+          logger.warn('Order not found for Viva Wallet webhook', { orderCode, merchantTrns, searchedFor: { paymentOrderCode: orderCode, paymentReference: orderCode, orderNumber: merchantTrns } })
           
           // Debug: Show recent orders to help identify the issue
           const recentOrders = await prisma.order.findMany({
@@ -497,7 +490,7 @@ router.post('/payment/viva', express.raw({ type: 'application/json' }), async (r
           })
           
           logger.info('Recent orders for debugging', { recentOrders })
-        }
+      }
       }
     } else {
       logger.info('Unhandled Viva Wallet event type', { eventTypeId: payload.EventTypeId })
@@ -1429,18 +1422,18 @@ router.post('/verify-order-status', async (req, res) => {
   logger.info('Order status verification requested', { orderCode, orderId })
   
   try {
-    if (!orderCode) {
-      return res.status(400).json({
-        success: false,
-        error: 'Order code is required'
-      })
+    if (!orderCode && !orderId) {
+      return res.status(400).json({ success: false, error: 'Order code or orderId is required' })
     }
 
-    // First, verify payment with Viva
+    // First, verify payment with Viva if orderCode provided
     const vivaService = new VivaWalletService()
-    const payment = await vivaService.verifyPayment(parseInt(orderCode))
+    let payment = null as any
+    if (orderCode) {
+      payment = await vivaService.verifyPayment(parseInt(orderCode))
+    }
     
-    if (!payment) {
+    if (orderCode && !payment) {
       logger.warn('No payment found for order code', { orderCode })
       return res.json({
         success: false,
@@ -1450,7 +1443,7 @@ router.post('/verify-order-status', async (req, res) => {
     }
 
     // Check if payment was successful (statusId 'F' means successful)
-    if (payment.statusId !== 'F') {
+    if (payment && payment.statusId !== 'F') {
       logger.warn('Payment not successful', { orderCode, statusId: payment.statusId })
       return res.json({
         success: false,
