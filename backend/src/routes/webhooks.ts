@@ -393,18 +393,57 @@ router.post('/payment/viva', express.raw({ type: 'application/json' }), async (r
         }
       }
       
-      // Strategi 2: Försök parsa alla query parameters som potentiell payload
+      // Strategi 2: Kolla om Viva skickar data i headers
+      if (!payload) {
+        // Railway kan ibland skicka webhook-data i headers
+        const allHeaders = req.headers;
+        logger.info('All webhook headers for debugging', { headers: allHeaders });
+        
+        // Kolla specifika Viva-headers
+        const possibleHeaders = ['x-viva-eventdata', 'x-viva-event-data', 'x-webhook-data', 'x-event-data'];
+        for (const headerName of possibleHeaders) {
+          const headerValue = req.headers[headerName];
+          if (headerValue && typeof headerValue === 'string') {
+            try {
+              payload = JSON.parse(headerValue);
+              logger.info(`Successfully parsed webhook payload from header: ${headerName}`, { payload });
+              break;
+            } catch (e) {
+              logger.warn(`Could not parse header ${headerName}:`, e);
+            }
+          }
+        }
+      }
+      
+      // Strategi 3: Försök parsa alla query parameters som potentiell payload
       if (!payload) {
         const queryKeys = Object.keys(req.query);
-        for (const key of queryKeys) {
-          const value = req.query[key];
-          if (typeof value === 'string' && value.startsWith('{')) {
-            try {
-              payload = JSON.parse(value);
-              logger.info(`Successfully parsed webhook payload from query key: ${key}`, { payload });
-              break;
-            } catch (parseError) {
-              // Continue trying other keys
+        logger.info('All query parameters for debugging', { query: req.query });
+        
+        // Om det finns ett EventTypeId direkt i query, bygg payload från query params
+        if (req.query.EventTypeId || req.query.eventTypeId) {
+          payload = {
+            EventTypeId: parseInt(req.query.EventTypeId as string || req.query.eventTypeId as string),
+            EventData: {
+              OrderCode: req.query.OrderCode || req.query.orderCode,
+              MerchantTrns: req.query.MerchantTrns || req.query.merchantTrns,
+              ReferenceNumber: req.query.ReferenceNumber || req.query.referenceNumber,
+              CustomerTrns: req.query.CustomerTrns || req.query.customerTrns
+            }
+          };
+          logger.info('Built payload from individual query parameters', { payload });
+        } else {
+          // Försök parsa JSON från query params
+          for (const key of queryKeys) {
+            const value = req.query[key];
+            if (typeof value === 'string' && value.startsWith('{')) {
+              try {
+                payload = JSON.parse(value);
+                logger.info(`Successfully parsed webhook payload from query key: ${key}`, { payload });
+                break;
+              } catch (parseError) {
+                // Continue trying other keys
+              }
             }
           }
         }

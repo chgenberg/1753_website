@@ -73,12 +73,23 @@ function SuccessContent() {
         if (data.success) {
           console.log('Order verified and updated:', data)
           
-          // Fetch full order details
-          if (data.orderId) {
+          // Fetch full order details using orderNumber
+          if (data.orderNumber) {
+            const orderResponse = await fetch(`${apiBase}/api/orders/by-number/${data.orderNumber}`)
+            if (orderResponse.ok) {
+              const orderDetails = await orderResponse.json()
+              if (orderDetails.success) {
+                setOrderData(orderDetails.order)
+              }
+            }
+          } else if (data.orderId) {
+            // Fallback to orderId if orderNumber not available
             const orderResponse = await fetch(`${apiBase}/api/orders/${data.orderId}`)
             if (orderResponse.ok) {
               const orderDetails = await orderResponse.json()
-              setOrderData(orderDetails)
+              if (orderDetails.success) {
+                setOrderData(orderDetails.order)
+              }
             }
           }
           

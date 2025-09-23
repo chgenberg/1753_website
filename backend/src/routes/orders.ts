@@ -313,6 +313,68 @@ function getOrderStatusText(status: string, paymentStatus: string, fulfillmentSt
 }
 
 /**
+ * Get order by orderNumber (public endpoint for confirmation page)
+ * GET /api/orders/by-number/:orderNumber
+ */
+router.get('/by-number/:orderNumber', async (req, res) => {
+  try {
+    const { orderNumber } = req.params
+
+    const order = await prisma.order.findUnique({
+      where: { orderNumber },
+      include: {
+        items: {
+          include: {
+            product: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+                images: true,
+                price: true
+              }
+            }
+          }
+        }
+      }
+    })
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        error: 'Order not found'
+      })
+    }
+
+    // Return only essential info for confirmation page
+    res.json({
+      success: true,
+      order: {
+        id: order.id,
+        orderNumber: order.orderNumber,
+        totalAmount: order.totalAmount,
+        currency: order.currency,
+        status: order.status,
+        paymentStatus: order.paymentStatus,
+        createdAt: order.createdAt,
+        items: order.items.map(item => ({
+          id: item.id,
+          quantity: item.quantity,
+          price: item.price,
+          product: item.product
+        }))
+      }
+    })
+  } catch (error) {
+    logger.error('Failed to get order by number:', error)
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get order'
+    })
+  }
+})
+
+/**
  * Get order by ID (public endpoint with limited info)
  * GET /api/orders/:orderId
  */
