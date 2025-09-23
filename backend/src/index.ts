@@ -31,6 +31,7 @@ import subscriptionRoutes from './routes/subscriptions'
 import ongoingRoutes from './routes/ongoing'
 import webhookRoutes from './routes/webhooks'
 import integrationsRoutes from './routes/integrations'
+import { FortnoxService } from './services/fortnoxService'
 // Initialize
 const app = express()
 const PORT = parseInt(process.env.PORT || '5002')
@@ -262,6 +263,17 @@ async function startServer() {
         environment: process.env.NODE_ENV,
         cors_origin: env.CORS_ORIGIN
       })
+      
+      // Start Fortnox proactive token refresh
+      if (process.env.FORTNOX_USE_OAUTH === 'true') {
+        try {
+          const fortnoxService = new FortnoxService()
+          fortnoxService.startProactiveRefresh()
+          console.log(`✅ Fortnox proactive token refresh started`)
+        } catch (error) {
+          console.warn(`⚠️  Could not start Fortnox proactive refresh:`, error.message)
+        }
+      }
       
       if (process.env.NODE_ENV === 'development') {
         console.log(`🚀 Server ready at http://0.0.0.0:${PORT}`)
