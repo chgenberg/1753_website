@@ -137,6 +137,9 @@ router.post('/create', optionalAuth, async (req: any, res) => {
         requestLang: getRequestLang(validatedData.currency)
       },
       merchantTrns: order.orderNumber,
+      successUrl: `${process.env.FRONTEND_URL || 'https://1753website-production.up.railway.app'}/order/${order.orderNumber}`,
+      cancelUrl: `${process.env.FRONTEND_URL || 'https://1753website-production.up.railway.app'}/order/${order.orderNumber}?cancelled=1`,
+      failureUrl: `${process.env.FRONTEND_URL || 'https://1753website-production.up.railway.app'}/order/${order.orderNumber}?error=payment_failed`,
       tags: ['ecommerce', 'webshop', '1753']
     }
 

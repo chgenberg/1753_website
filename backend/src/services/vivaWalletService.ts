@@ -151,9 +151,9 @@ export class VivaWalletService {
         disableCash: true,
         disableWallet: false,
         enableSwish: true,
-        successUrl: `${process.env.FRONTEND_URL || 'https://1753website-production.up.railway.app'}/checkout/success`,
-        cancelUrl: `${process.env.FRONTEND_URL || 'https://1753website-production.up.railway.app'}/checkout`,
-        failureUrl: `${process.env.FRONTEND_URL || 'https://1753website-production.up.railway.app'}/checkout?error=payment_failed`,
+        successUrl: (orderData as any).successUrl || `${process.env.FRONTEND_URL || 'https://1753website-production.up.railway.app'}/checkout/success`,
+        cancelUrl: (orderData as any).cancelUrl || `${process.env.FRONTEND_URL || 'https://1753website-production.up.railway.app'}/checkout`,
+        failureUrl: (orderData as any).failureUrl || `${process.env.FRONTEND_URL || 'https://1753website-production.up.railway.app'}/checkout?error=payment_failed`,
         sourceCode: resolvedSourceCode,
         merchantTrns: `Order-${Date.now()}`
       }

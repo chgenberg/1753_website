@@ -438,6 +438,8 @@ router.post('/payment/viva', express.raw({ type: 'application/json' }), async (r
       const eventData = payload.EventData || payload.eventData || payload.Data || payload.data || {}
       const orderCode = (eventData.OrderCode || eventData.orderCode || payload.OrderCode || payload.orderCode || '').toString()
       const merchantTrns = (eventData.MerchantTrns || eventData.merchantTrns || payload.MerchantTrns || payload.merchantTrns || '').toString()
+      const referenceNumber = (eventData.ReferenceNumber || eventData.referenceNumber || payload.ReferenceNumber || payload.referenceNumber || '').toString()
+      const customerTrns = (eventData.CustomerTrns || eventData.customerTrns || payload.CustomerTrns || payload.customerTrns || '').toString()
       
       logger.info('Processing payment webhook', { orderCode, eventType: payload.EventTypeId });
       
@@ -454,6 +456,22 @@ router.post('/payment/viva', express.raw({ type: 'application/json' }), async (r
           where: { orderNumber: merchantTrns },
           include: { items: { include: { product: true } } }
         })
+      }
+      // Fallback: try ReferenceNumber (some Viva payloads) and parse from customerTrns
+      if (!order && referenceNumber) {
+        order = await prisma.order.findFirst({
+          where: { orderNumber: referenceNumber },
+          include: { items: { include: { product: true } } }
+        })
+      }
+      if (!order && customerTrns) {
+        const match = customerTrns.match(/1753-[0-9]{13,}-[A-Z0-9]+/)
+        if (match && match[0]) {
+          order = await prisma.order.findFirst({
+            where: { orderNumber: match[0] },
+            include: { items: { include: { product: true } } }
+          })
+        }
       }
 
       if (order) {
@@ -475,7 +493,7 @@ router.post('/payment/viva', express.raw({ type: 'application/json' }), async (r
           // Kontrollera om vi ska skapa faktura och skicka till Sybka
           await handleOrderStatusChange(updatedOrder.id, 'CONFIRMED', 'PAID')
       } else {
-          logger.warn('Order not found for Viva Wallet webhook', { orderCode, merchantTrns, searchedFor: { paymentOrderCode: orderCode, paymentReference: orderCode, orderNumber: merchantTrns } })
+          logger.warn('Order not found for Viva Wallet webhook', { orderCode, merchantTrns, referenceNumber, customerTrns, searchedFor: { paymentOrderCode: orderCode, paymentReference: orderCode, orderNumber: merchantTrns || referenceNumber || '[parsed from customerTrns]' } })
           
           // Debug: Show recent orders to help identify the issue
           const recentOrders = await prisma.order.findMany({
