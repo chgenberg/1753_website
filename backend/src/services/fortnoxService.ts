@@ -346,6 +346,41 @@ class FortnoxService {
   }
 
   /**
+   * DEBUG: Expose token expiry info (without leaking token)
+   */
+  public getAccessTokenExpiryInfo() {
+    const token = this.inMemoryAccessToken || this.credentials.apiToken
+    const decode = (t: string) => {
+      try {
+        const parts = t.split('.')
+        if (parts.length < 2) return null
+        const payloadJson = Buffer.from(parts[1].replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8')
+        const payload = JSON.parse(payloadJson)
+        return payload
+      } catch {
+        return null
+      }
+    }
+    const payload = token ? decode(token) : null
+    const expMs = payload?.exp ? payload.exp * 1000 : undefined
+    return {
+      isOAuth: this.isOAuthToken(),
+      expMs,
+      expISO: expMs ? new Date(expMs).toISOString() : undefined,
+      nowISO: new Date().toISOString()
+    }
+  }
+
+  /**
+   * DEBUG: Force refresh immediately (for manual verification)
+   */
+  public async debugRefreshAccessToken(): Promise<{ refreshed: boolean; rotated: boolean }> {
+    const before = this.inMemoryAccessToken
+    await this.refreshAccessToken()
+    const after = this.inMemoryAccessToken
+    return { refreshed: true, rotated: before !== after }
+  }
+  /**
    * Execute a Fortnox request and on 401, refresh token once and retry
    */
   private async withRefreshRetry<T>(fn: () => Promise<T>): Promise<T> {

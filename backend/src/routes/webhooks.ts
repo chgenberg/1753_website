@@ -6,6 +6,7 @@ import { fortnoxService } from '../services/fortnoxService'
 import axios from 'axios'
 import { ongoingService } from '../services/ongoingService'
 import { VivaWalletService } from '../services/vivaWalletService'
+// (no default import)
 
 const router = express.Router()
 
@@ -1360,9 +1361,11 @@ router.get('/debug-fortnox', async (req, res) => {
 
   try {
     const resp = await axios.get(`${baseUrl}/companyinformation`, { headers })
+    const tokenInfo = fortnoxService.getAccessTokenExpiryInfo()
     return res.json({
       success: true,
       environment: envOk,
+      token: tokenInfo,
       response: {
         status: resp.status,
         data: resp.data
@@ -1380,6 +1383,16 @@ router.get('/debug-fortnox', async (req, res) => {
         data: data || error?.message || 'Unknown error'
       }
     })
+  }
+})
+
+// Force refresh token (debug)
+router.post('/debug-fortnox/refresh', async (req, res) => {
+  try {
+    const result = await fortnoxService.debugRefreshAccessToken()
+    return res.json({ success: true, result })
+  } catch (error: any) {
+    return res.status(500).json({ success: false, error: error.message })
   }
 })
 
