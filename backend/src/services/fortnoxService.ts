@@ -358,7 +358,7 @@ class FortnoxService {
   /**
    * Proactive refresh: checks token expiry periodically and refreshes before expiry
    */
-  private startProactiveRefresh() {
+  public startProactiveRefresh() {
     const CHECK_INTERVAL_MS = 10 * 60 * 1000 // every 10 minutes
     const REFRESH_BEFORE_MS = 5 * 60 * 1000  // refresh if <5 minutes left
 
