@@ -376,10 +376,16 @@ router.post('/payment/viva', express.raw({ type: 'application/json' }), async (r
 
   try {
     let payload;
-    const bodyStr = req.body.toString();
-
-    // Kontrollera om kroppen är den felaktiga strängen "[object Object]"
-    if (bodyStr.toLowerCase().includes('[object object]')) {
+    
+    // Check if body is already a parsed object (Railway's doing)
+    if (typeof req.body === 'object' && req.body !== null && !Buffer.isBuffer(req.body)) {
+      payload = req.body;
+      logger.info('Webhook received as parsed object (Railway)', { payload });
+    } else {
+      const bodyStr = req.body.toString();
+      
+      // Kontrollera om kroppen är den felaktiga strängen "[object Object]"
+      if (bodyStr.toLowerCase().includes('[object object]')) {
       logger.warn('Received malformed "[object Object]" string in webhook body. Attempting multiple parsing strategies.');
       
       // Strategi 1: Försök parsa från query parameters
@@ -459,8 +465,9 @@ router.post('/payment/viva', express.raw({ type: 'application/json' }), async (r
           }
         };
       }
-    } else {
-      payload = JSON.parse(bodyStr);
+      } else {
+        payload = JSON.parse(bodyStr);
+      }
     }
     
     // Svara omedelbart med 200 OK för att bekräfta mottagning
