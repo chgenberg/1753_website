@@ -42,7 +42,8 @@ function SuccessContent() {
   
   // Get parameters from URL (from Viva Wallet or our internal redirect)
   const transactionId = searchParams.get('transactionId') || searchParams.get('t')
-  const orderCode = searchParams.get('orderCode') || searchParams.get('orderid')
+  const vivaOrderCode = searchParams.get('s') // Viva's orderCode parameter
+  const orderCode = searchParams.get('orderCode') || searchParams.get('orderid') || vivaOrderCode
   const eventId = searchParams.get('eventId') // From Viva Wallet
   const eci = searchParams.get('eci') // From Viva Wallet
   
