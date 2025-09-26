@@ -178,103 +178,107 @@ class FortnoxService {
   }
 
   /**
-   * Update refresh token in Railway using Railway API
+   * Update refresh token in Railway using Railway CLI (more reliable than GraphQL API)
    */
   private async updateRefreshTokenInRailway(newRefreshToken: string): Promise<boolean> {
     try {
-      const railwayToken = process.env.RAILWAY_API_TOKEN
-      const projectId = process.env.RAILWAY_PROJECT_ID
-      const serviceId = process.env.RAILWAY_SERVICE_ID
-      const environmentId = process.env.RAILWAY_ENVIRONMENT_ID
-
-      if (!railwayToken || !projectId || !serviceId || !environmentId) {
-        logger.warn('Railway API credentials not configured for automatic token update')
-        return false
-      }
-
-      const response = await axios.post(
-        `https://backboard.railway.app/graphql`,
-        {
-          query: `
-            mutation VariableUpsert($input: VariableUpsertInput!) {
-              variableUpsert(input: $input) {
-                id
-              }
-            }
-          `,
-          variables: {
-            input: {
-              projectId: projectId,
-              environmentId: environmentId,
-              serviceId: serviceId,
-              name: "FORTNOX_REFRESH_TOKEN",
-              value: newRefreshToken
-            }
+      const { spawn } = require('child_process')
+      
+      return new Promise((resolve) => {
+        // Use Railway CLI to set the variable
+        const railway = spawn('railway', ['variables', 'set', `FORTNOX_REFRESH_TOKEN=${newRefreshToken}`], {
+          stdio: ['pipe', 'pipe', 'pipe'],
+          env: { ...process.env }
+        })
+        
+        let output = ''
+        let errorOutput = ''
+        
+        railway.stdout.on('data', (data: Buffer) => {
+          output += data.toString()
+        })
+        
+        railway.stderr.on('data', (data: Buffer) => {
+          errorOutput += data.toString()
+        })
+        
+        railway.on('close', (code: number) => {
+          if (code === 0) {
+            logger.info('✅ Successfully updated FORTNOX_REFRESH_TOKEN in Railway via CLI!')
+            resolve(true)
+          } else {
+            logger.warn('Railway CLI update failed:', { code, output, errorOutput })
+            resolve(false)
           }
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${railwayToken}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      )
-
-      if (response.data.errors) {
-        logger.error('Railway API error:', response.data.errors)
-        return false
-      }
-
-      logger.info('✅ Successfully updated FORTNOX_REFRESH_TOKEN in Railway automatically!')
-      return true
+        })
+        
+        railway.on('error', (error: Error) => {
+          logger.warn('Railway CLI spawn error:', error.message)
+          resolve(false)
+        })
+        
+        // Timeout after 10 seconds
+        setTimeout(() => {
+          railway.kill()
+          logger.warn('Railway CLI update timed out')
+          resolve(false)
+        }, 10000)
+      })
 
     } catch (error: any) {
-      logger.error('Failed to update Railway variable automatically:', error.message)
+      logger.error('Failed to update Railway variable via CLI:', error.message)
       return false
     }
   }
 
   /**
-   * Update access token in Railway (optional – keeps env in sync to avoid 401 on restart)
+   * Update access token in Railway using Railway CLI
    */
   private async updateAccessTokenInRailway(newAccessToken: string): Promise<boolean> {
     try {
-      const railwayToken = process.env.RAILWAY_API_TOKEN
-      const projectId = process.env.RAILWAY_PROJECT_ID
-      const serviceId = process.env.RAILWAY_SERVICE_ID
-      const environmentId = process.env.RAILWAY_ENVIRONMENT_ID
-
-      if (!railwayToken || !projectId || !serviceId || !environmentId) {
-        return false
-      }
-
-      const response = await axios.post(
-        `https://backboard.railway.app/graphql`,
-        {
-          query: `
-            mutation VariableUpsert($input: VariableUpsertInput!) {
-              variableUpsert(input: $input) { id }
-            }
-          `,
-          variables: {
-            input: {
-              projectId,
-              environmentId,
-              serviceId,
-              name: 'FORTNOX_API_TOKEN',
-              value: newAccessToken
-            }
+      const { spawn } = require('child_process')
+      
+      return new Promise((resolve) => {
+        const railway = spawn('railway', ['variables', 'set', `FORTNOX_API_TOKEN=${newAccessToken}`], {
+          stdio: ['pipe', 'pipe', 'pipe'],
+          env: { ...process.env }
+        })
+        
+        let output = ''
+        let errorOutput = ''
+        
+        railway.stdout.on('data', (data: Buffer) => {
+          output += data.toString()
+        })
+        
+        railway.stderr.on('data', (data: Buffer) => {
+          errorOutput += data.toString()
+        })
+        
+        railway.on('close', (code: number) => {
+          if (code === 0) {
+            logger.info('✅ Successfully updated FORTNOX_API_TOKEN in Railway via CLI!')
+            resolve(true)
+          } else {
+            logger.warn('Railway CLI access token update failed:', { code, output, errorOutput })
+            resolve(false)
           }
-        },
-        { headers: { 'Authorization': `Bearer ${railwayToken}`, 'Content-Type': 'application/json' } }
-      )
+        })
+        
+        railway.on('error', (error: Error) => {
+          logger.warn('Railway CLI access token spawn error:', error.message)
+          resolve(false)
+        })
+        
+        setTimeout(() => {
+          railway.kill()
+          logger.warn('Railway CLI access token update timed out')
+          resolve(false)
+        }, 10000)
+      })
 
-      if (response.data.errors) {
-        logger.warn('Railway API (access token) error:', response.data.errors)
-        return false
-      }
-      return true
-    } catch {
+    } catch (error: any) {
+      logger.error('Failed to update Railway access token via CLI:', error.message)
       return false
     }
   }
