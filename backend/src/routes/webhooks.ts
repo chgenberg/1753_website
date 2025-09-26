@@ -1460,7 +1460,23 @@ router.all('/viva-debug', async (req, res) => {
   console.log('Raw body:', req.body)
   console.log('=== END VIVA DEBUG ===\n')
   
-  // Always respond OK
+  // Handle Viva verification (GET requests)
+  if (req.method === 'GET') {
+    const verificationCode = extractVerificationCode(req.query) || extractVerificationCodeFromHeaders(req.headers as any)
+    if (verificationCode) {
+      res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+      return res.status(200).send(verificationCode)
+    }
+    
+    // Try to return JSON Key per Viva docs
+    const key = await fetchVivaVerificationKey()
+    if (key) {
+      res.setHeader('Content-Type', 'application/json; charset=utf-8')
+      return res.status(200).json(key)
+    }
+  }
+  
+  // Always respond OK for POST/other methods
   res.status(200).send('DEBUG_OK')
 })
 
