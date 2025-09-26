@@ -1445,6 +1445,25 @@ router.post('/debug-fortnox/refresh', async (req, res) => {
   }
 })
 
+// Ultra-debug webhook endpoint to capture all possible data formats
+router.all('/viva-debug', async (req, res) => {
+  const timestamp = new Date().toISOString()
+  console.log(`\n=== VIVA DEBUG WEBHOOK ${timestamp} ===`)
+  console.log('Method:', req.method)
+  console.log('URL:', req.url)
+  console.log('Original URL:', req.originalUrl)
+  console.log('Query:', JSON.stringify(req.query, null, 2))
+  console.log('Headers:', JSON.stringify(req.headers, null, 2))
+  console.log('Body type:', typeof req.body)
+  console.log('Body length:', req.body?.length || 0)
+  console.log('Body toString:', req.body?.toString())
+  console.log('Raw body:', req.body)
+  console.log('=== END VIVA DEBUG ===\n')
+  
+  // Always respond OK
+  res.status(200).send('DEBUG_OK')
+})
+
 // Test endpoint - super enkel
 router.all('/test-viva', async (req, res) => {
   console.log('TEST VIVA WEBHOOK:', {
