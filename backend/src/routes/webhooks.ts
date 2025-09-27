@@ -1460,6 +1460,51 @@ router.post('/debug-fortnox/refresh', async (req, res) => {
   }
 })
 
+// Persist current in-memory Fortnox tokens to Railway env vars (admin/debug)
+router.post('/debug-fortnox/persist-env', async (req, res) => {
+  try {
+    // Access current tokens from service (in-memory)
+    const accessToken = (fortnoxService as any).inMemoryAccessToken
+    const refreshToken = (fortnoxService as any).inMemoryRefreshToken
+
+    if (!accessToken || !refreshToken) {
+      return res.status(400).json({ success: false, error: 'No tokens in memory to persist' })
+    }
+
+    const railwayToken = process.env.RAILWAY_API_TOKEN
+    const projectId = process.env.RAILWAY_PROJECT_ID
+    const serviceId = process.env.RAILWAY_SERVICE_ID
+    const environmentId = process.env.RAILWAY_ENVIRONMENT_ID
+
+    if (!railwayToken || !projectId || !serviceId || !environmentId) {
+      return res.status(400).json({ success: false, error: 'Railway credentials missing' })
+    }
+
+    const axios = (await import('axios')).default
+    const upsert = async (name: string, value: string) => axios.post(
+      'https://backboard.railway.app/graphql',
+      {
+        query: `mutation VariableUpsert($input: VariableUpsertInput!){ variableUpsert(input:$input){ id } }`,
+        variables: { input: { projectId, environmentId, serviceId, name, value } }
+      },
+      { headers: { Authorization: `Bearer ${railwayToken}` } }
+    )
+
+    const r1 = await upsert('FORTNOX_API_TOKEN', accessToken)
+    const r2 = await upsert('FORTNOX_REFRESH_TOKEN', refreshToken)
+    const r3 = await upsert('FORTNOX_USE_OAUTH', 'true')
+
+    return res.json({ success: true, persisted: {
+      FORTNOX_API_TOKEN: !r1.data?.errors,
+      FORTNOX_REFRESH_TOKEN: !r2.data?.errors,
+      FORTNOX_USE_OAUTH: !r3.data?.errors
+    } })
+  } catch (error: any) {
+    logger.error('Persist tokens to Railway failed', { error: error.message })
+    return res.status(500).json({ success: false, error: error.message })
+  }
+})
+
 // Ultra-debug webhook endpoint to capture all possible data formats
 router.all('/viva-debug', async (req, res) => {
   const timestamp = new Date().toISOString()
