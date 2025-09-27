@@ -131,11 +131,7 @@ router.get('/fortnox/callback', (req, res) => {
       <input id="state" readonly value="${state || ''}" />
     </div>
     <div class="mt">
-      <p>Nästa steg (i terminalen):</p>
-      <pre><code>curl -X POST https://apps.fortnox.se/oauth-v1/token \
-  -H "Content-Type: application/x-www-form-urlencoded" \
-  -u "$FORTNOX_CLIENT_ID:$FORTNOX_CLIENT_SECRET" \
-  -d "grant_type=authorization_code&code=${code || ''}&redirect_uri=https%3A%2F%2F1753websitebackend-production.up.railway.app%2Fapi%2Fintegrations%2Ffortnox%2Fcallback"</code></pre>
+      <p>Byter kod mot token automatiskt...</p>
     </div>
   </div>
   <script nonce="${nonce}">document.getElementById('code')?.select()</script>
@@ -147,6 +143,55 @@ router.get('/fortnox/callback', (req, res) => {
     .set('Content-Security-Policy', `default-src 'none'; img-src 'self' data:; style-src 'unsafe-inline'; script-src 'nonce-${nonce}'; base-uri 'none'; form-action 'none'`)
     .status(200)
     .send(html)
+  
+  // Fire-and-forget: exchange the code and apply tokens in memory
+  ;(async () => {
+    try {
+      if (!code) return
+      const axios = (await import('axios')).default
+      const clientId = process.env.FORTNOX_CLIENT_ID || ''
+      const clientSecret = process.env.FORTNOX_CLIENT_SECRET || ''
+      const redirectUri = 'https://1753websitebackend-production.up.railway.app/api/integrations/fortnox/callback'
+      const body = new URLSearchParams({
+        grant_type: 'authorization_code',
+        code: code,
+        redirect_uri: redirectUri
+      })
+      const tokenResp = await axios.post('https://apps.fortnox.se/oauth-v1/token', body, {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        auth: { username: clientId, password: clientSecret }
+      })
+      const accessToken = tokenResp.data?.access_token
+      const refreshToken = tokenResp.data?.refresh_token
+      if (!accessToken || !refreshToken) return
+      // Apply in-memory
+      try {
+        const { fortnoxService } = await import('../services/fortnoxService')
+        ;(fortnoxService as any).inMemoryAccessToken = accessToken
+        ;(fortnoxService as any).inMemoryRefreshToken = refreshToken
+      } catch {}
+      // Persist to Railway via GraphQL
+      try {
+        const railwayToken = process.env.RAILWAY_API_TOKEN
+        const projectId = process.env.RAILWAY_PROJECT_ID
+        const serviceId = process.env.RAILWAY_SERVICE_ID
+        const environmentId = process.env.RAILWAY_ENVIRONMENT_ID
+        if (railwayToken && projectId && serviceId && environmentId) {
+          const gql = (await import('axios')).default
+          const upsert = async (name: string, value: string) => gql.post(
+            'https://backboard.railway.app/graphql',
+            { query: `mutation VariableUpsert($input: VariableUpsertInput!){ variableUpsert(input:$input){ id } }`, variables: { input: { projectId, environmentId, serviceId, name, value } } },
+            { headers: { Authorization: `Bearer ${railwayToken}` } }
+          )
+          await upsert('FORTNOX_API_TOKEN', accessToken)
+          await upsert('FORTNOX_REFRESH_TOKEN', refreshToken)
+          await upsert('FORTNOX_USE_OAUTH', 'true')
+        }
+      } catch {}
+    } catch (e) {
+      // swallow
+    }
+  })()
 })
 
 export default router 

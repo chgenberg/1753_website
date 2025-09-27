@@ -1267,9 +1267,8 @@ router.get('/test-integration', async (req, res) => {
 router.get('/fortnox/oauth/start', async (req, res) => {
   try {
     const clientId = process.env.FORTNOX_CLIENT_ID || ''
-    // Use the token-exchange callback so tokens are stored automatically
-    const baseUrl = process.env.BACKEND_URL || `${req.protocol}://${req.get('host')}`
-    const redirectUri = `${baseUrl}/api/webhooks/fortnox/oauth/callback`
+    // Legacy integrations callback (must match Fortnox registration)
+    const redirectUri = process.env.FORTNOX_REDIRECT_URI || `${process.env.BACKEND_URL || ''}/api/integrations/fortnox/callback`
     const rawScopes = (process.env.FORTNOX_SCOPES || 'companyinformation customer article order invoice')
       .replace(/\bcustomers\b/g, 'customer')
       .replace(/\barticles\b/g, 'article')
