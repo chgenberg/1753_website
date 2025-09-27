@@ -38,7 +38,7 @@ function SuccessContent() {
   const { clearCart } = useCart()
   
   // Backend API base (must be set via NEXT_PUBLIC_API_URL)
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || ''
+  const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://1753websitebackend-production.up.railway.app'
   
   // Get parameters from URL (from Viva Wallet or our internal redirect)
   const transactionId = searchParams.get('transactionId') || searchParams.get('t')
