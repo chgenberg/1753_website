@@ -1541,9 +1541,16 @@ router.post('/verify-order-status', async (req, res) => {
     
     if (orderCode && !payment) {
       logger.warn('No payment found for order code', { orderCode })
+      // Try to find our order by stored Viva order code to return orderNumber for frontend display
+      const existing = await prisma.order.findFirst({
+        where: { OR: [ { paymentOrderCode: orderCode }, { paymentReference: orderCode } ] },
+        select: { id: true, orderNumber: true }
+      })
       return res.json({
         success: false,
         status: 'PENDING',
+        orderId: existing?.id,
+        orderNumber: existing?.orderNumber,
         message: 'Payment not found yet'
       })
     }

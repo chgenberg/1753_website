@@ -283,9 +283,15 @@ export class VivaWalletService {
           auth: {
             username: this.config.merchantId,
             password: this.config.apiKey
-          }
+          },
+          // Treat 404 as "not found yet" instead of throwing
+          validateStatus: (status) => status === 200 || status === 404
         }
       )
+
+      if (response.status === 404) {
+        return null
+      }
 
       if (response.data && response.data.length > 0) {
         const payment = response.data[0]
@@ -303,7 +309,8 @@ export class VivaWalletService {
         error: error.message,
         orderCode 
       })
-      throw new Error(`Failed to verify payment: ${error.message}`)
+      // Fall back to null on transient errors to avoid failing the confirmation page
+      return null
     }
   }
 
