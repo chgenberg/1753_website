@@ -93,7 +93,19 @@ function SuccessContent() {
             })
             return
           } else if (data.status === 'PENDING') {
-            // Payment might not be processed yet, retry after a delay
+            // If we already know our orderNumber, show products immediately
+            if (data.orderNumber) {
+              try {
+                const orderResponse = await fetch(`${apiBase}/api/orders/by-number/${data.orderNumber}`)
+                if (orderResponse.ok) {
+                  const orderDetails = await orderResponse.json()
+                  if (orderDetails.success) {
+                    setOrderData(orderDetails.order)
+                  }
+                }
+              } catch {}
+            }
+            // Retry verification after a short delay
             setTimeout(() => {
               verifyOrderStatus()
             }, 3000)
