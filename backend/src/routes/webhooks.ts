@@ -1365,6 +1365,14 @@ router.get('/fortnox/oauth/callback', async (req, res) => {
     updates.push({ name: 'FORTNOX_API_TOKEN', ok: await upsertVar('FORTNOX_API_TOKEN', accessToken) })
     updates.push({ name: 'FORTNOX_USE_OAUTH', ok: await upsertVar('FORTNOX_USE_OAUTH', 'true') })
 
+    // Apply tokens in-memory immediately to avoid restarts
+    try {
+      const { fortnoxService } = await import('../services/fortnoxService')
+      ;(fortnoxService as any).inMemoryAccessToken = accessToken
+      ;(fortnoxService as any).inMemoryRefreshToken = refreshToken
+      logger.info('Fortnox OAuth tokens applied in-memory for immediate use')
+    } catch {}
+
     logger.info('Fortnox OAuth tokens received and variable update attempts done', { updates })
 
     // Show a simple success page
