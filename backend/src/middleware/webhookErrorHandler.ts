@@ -1,5 +1,6 @@
 import { logger } from '../utils/logger'
 import { prisma } from '../lib/prisma'
+import { OrderStatus, PaymentStatus } from '@prisma/client'
 
 /**
  * Interface for webhook processing results
@@ -170,8 +171,8 @@ export async function safeUpdateOrderStatus(
     const order = await prisma.order.update({
       where: { id: orderId },
       data: {
-        status,
-        paymentStatus,
+        status: status as OrderStatus,
+        paymentStatus: paymentStatus as PaymentStatus,
         updatedAt: new Date()
       },
       include: { items: { include: { product: true } } }
