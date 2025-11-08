@@ -521,23 +521,78 @@ router.post('/payment/viva', express.raw({ type: 'application/json' }), async (r
       }
 
       if (order) {
+          logger.info('💳 Payment webhook received - Processing order', {
+            orderId: order.id,
+            orderNumber: order.orderNumber,
+            orderCode,
+            eventTypeId: payload.EventTypeId,
+            currentStatus: order.status,
+            currentPaymentStatus: order.paymentStatus
+          })
+
+          // Check if already processed to avoid duplicate processing
+          if (order.paymentStatus === 'PAID' && order.status === 'CONFIRMED') {
+            logger.info('⚠️  Order already processed (PAID/CONFIRMED), checking if Fortnox sync needed...', {
+              orderId: order.id,
+              orderNumber: order.orderNumber,
+              internalNotes: order.internalNotes
+            })
+            
+            // If not synced to Fortnox yet, trigger sync
+            if (!order.internalNotes?.includes('Fortnox order:')) {
+              logger.info('🔄 Order paid but not synced to Fortnox, triggering sync...', {
+                orderId: order.id,
+                orderNumber: order.orderNumber
+              })
+              await handleOrderStatusChange(order.id, 'CONFIRMED', 'PAID')
+            } else {
+              logger.info('✅ Order already synced to Fortnox, skipping', {
+                orderId: order.id,
+                orderNumber: order.orderNumber
+              })
+            }
+            return
+          }
+
           // Uppdatera order med betalningsstatus
           const updatedOrder = await prisma.order.update({
             where: { id: order.id },
             data: { 
               paymentStatus: 'PAID',
-              status: 'CONFIRMED' // Automatiskt bekräfta order när betalning är klar
+              status: 'CONFIRMED', // Automatiskt bekräfta order när betalning är klar
+              updatedAt: new Date()
             }
           })
 
-          logger.info('Order payment confirmed', {
+          logger.info('✅ Order payment confirmed and status updated', {
             orderId: updatedOrder.id,
             orderNumber: updatedOrder.orderNumber,
-            amount: updatedOrder.totalAmount
+            amount: updatedOrder.totalAmount,
+            status: updatedOrder.status,
+            paymentStatus: updatedOrder.paymentStatus
           })
 
-          // Kontrollera om vi ska skapa faktura och skicka till Sybka
-          await handleOrderStatusChange(updatedOrder.id, 'CONFIRMED', 'PAID')
+          // Trigger Fortnox and Ongoing sync
+          logger.info('🚀 Triggering Fortnox and Ongoing sync...', {
+            orderId: updatedOrder.id,
+            orderNumber: updatedOrder.orderNumber
+          })
+          
+          try {
+            await handleOrderStatusChange(updatedOrder.id, 'CONFIRMED', 'PAID')
+            logger.info('✅ Order status change processing completed', {
+              orderId: updatedOrder.id,
+              orderNumber: updatedOrder.orderNumber
+            })
+          } catch (syncError: any) {
+            logger.error('❌ Failed to sync order to Fortnox/Ongoing', {
+              orderId: updatedOrder.id,
+              orderNumber: updatedOrder.orderNumber,
+              error: syncError.message || String(syncError),
+              stack: syncError.stack
+            })
+            // Don't throw - order is already marked as PAID, error is logged and order is marked for retry
+          }
       } else {
           logger.warn('Order not found for Viva Wallet webhook', { orderCode, merchantTrns, referenceNumber, customerTrns, searchedFor: { paymentOrderCode: orderCode, paymentReference: orderCode, orderNumber: merchantTrns || referenceNumber || '[parsed from customerTrns]' } })
           
@@ -590,10 +645,126 @@ router.post('/order-status-change', express.json(), async (req, res) => {
 })
 
 /**
+ * Retry helper with exponential backoff
+ */
+async function retryWithBackoff<T>(
+  fn: () => Promise<T>,
+  maxRetries = 3,
+  baseDelayMs = 1000,
+  operationName = 'operation'
+): Promise<T> {
+  let lastError: Error | null = null
+  
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      if (attempt > 0) {
+        const delayMs = Math.min(baseDelayMs * Math.pow(2, attempt - 1), 30000) // Max 30 seconds
+        logger.info(`${operationName} - Retry attempt ${attempt}/${maxRetries} after ${delayMs}ms delay`)
+        await new Promise(resolve => setTimeout(resolve, delayMs))
+      }
+      
+      return await fn()
+    } catch (error: any) {
+      lastError = error instanceof Error ? error : new Error(String(error))
+      
+      // Don't retry on certain errors
+      if (error.response?.status === 400 || error.response?.status === 404) {
+        logger.error(`${operationName} - Non-retryable error (${error.response.status})`, {
+          error: lastError.message
+        })
+        throw lastError
+      }
+      
+      if (attempt < maxRetries) {
+        logger.warn(`${operationName} - Attempt ${attempt + 1} failed, will retry`, {
+          error: lastError.message,
+          attempt: attempt + 1,
+          maxRetries
+        })
+      } else {
+        logger.error(`${operationName} - All ${maxRetries + 1} attempts failed`, {
+          error: lastError.message
+        })
+        throw lastError
+      }
+    }
+  }
+  
+  throw lastError || new Error(`${operationName} failed after ${maxRetries + 1} attempts`)
+}
+
+/**
+ * Verify Fortnox token is valid before processing
+ */
+async function ensureFortnoxTokenValid(): Promise<boolean> {
+  try {
+    // Check if using OAuth
+    const isOAuth = String(process.env.FORTNOX_USE_OAUTH || '').toLowerCase() === 'true'
+    
+    if (!isOAuth) {
+      // Legacy API - just check credentials exist
+      return !!(process.env.FORTNOX_API_TOKEN && process.env.FORTNOX_CLIENT_SECRET)
+    }
+    
+    // For OAuth, verify token is valid by testing connection
+    const isValid = await fortnoxService.testConnection()
+    
+    if (!isValid) {
+      logger.warn('Fortnox token appears invalid, attempting refresh...')
+      try {
+        await fortnoxService.debugRefreshAccessToken()
+        // Test again after refresh
+        return await fortnoxService.testConnection()
+      } catch (refreshError) {
+        logger.error('Failed to refresh Fortnox token', {
+          error: refreshError instanceof Error ? refreshError.message : String(refreshError)
+        })
+        return false
+      }
+    }
+    
+    return true
+  } catch (error) {
+    logger.error('Error verifying Fortnox token', {
+      error: error instanceof Error ? error.message : 'Unknown error'
+    })
+    return false
+  }
+}
+
+/**
  * Hantera orderstatusändringar och trigga Sybka/Fortnox-integration
+ * Förbättrad med retry-logik och bättre error handling
  */
 async function handleOrderStatusChange(orderId: string, status: string, paymentStatus: string) {
+  const logContext = { orderId, status, paymentStatus }
+  
   try {
+    // Check if order is already synced to avoid duplicate processing
+    const existingOrder = await prisma.order.findUnique({
+      where: { id: orderId },
+      select: { 
+        id: true,
+        internalNotes: true,
+        status: true,
+        paymentStatus: true
+      }
+    })
+
+    if (!existingOrder) {
+      logger.error('Order not found for status change', logContext)
+      return
+    }
+
+    // Check if already synced to Fortnox
+    if (existingOrder.internalNotes?.includes('Fortnox order:')) {
+      logger.info('Order already synced to Fortnox, skipping', {
+        ...logContext,
+        orderNumber: existingOrder.id
+      })
+      return
+    }
+
     const order = await prisma.order.findUnique({
       where: { id: orderId },
       include: {
@@ -607,19 +778,39 @@ async function handleOrderStatusChange(orderId: string, status: string, paymentS
     })
 
     if (!order) {
-      logger.error('Order not found for status change', { orderId })
+      logger.error('Order not found for status change', logContext)
       return
     }
     
-    logger.info('Processing order status change', {
+    logger.info('🔄 Processing order status change', {
       orderId,
       orderNumber: order.orderNumber,
       status,
-      paymentStatus
+      paymentStatus,
+      totalAmount: order.totalAmount,
+      itemCount: order.items.length
     })
 
     // Run Fortnox and Ongoing in parallel for confirmed/paid orders
     if (paymentStatus === 'PAID' || status === 'CONFIRMED' || status === 'PROCESSING') {
+      // Verify Fortnox token before processing
+      logger.info('🔐 Verifying Fortnox token validity...', logContext)
+      const tokenValid = await ensureFortnoxTokenValid()
+      
+      if (!tokenValid) {
+        logger.error('❌ Fortnox token is invalid and refresh failed', logContext)
+        // Mark order for manual retry
+        await prisma.order.update({
+          where: { id: orderId },
+          data: { 
+            internalNotes: `${order.internalNotes || ''}\n[ERROR] Fortnox sync failed: Invalid token - Manual retry required`.trim()
+          }
+        })
+        throw new Error('Fortnox token invalid and refresh failed')
+      }
+      
+      logger.info('✅ Fortnox token verified', logContext)
+
       const orderData = {
         customer: {
           email: order.email,
@@ -647,53 +838,114 @@ async function handleOrderStatusChange(orderId: string, status: string, paymentS
         deliveryInstruction: order.customerNotes
       }
 
-      // Process Fortnox and Ongoing in parallel
-      const [fortnoxResult, ongoingResult] = await Promise.allSettled([
+      // Process Fortnox with retry logic
+      let fortnoxResult: PromiseSettledResult<{ customerNumber: string; orderNumber: string }> | null = null
+      
+      try {
+        fortnoxResult = await Promise.allSettled([
+          retryWithBackoff(
+            async () => {
+              logger.info('📤 Processing Fortnox order', { 
+                orderId, 
+                orderNumber: order.orderNumber,
+                customerEmail: order.email,
+                itemCount: orderData.items.length
+              })
+              const result = await fortnoxService.processOrder(orderData)
+              
+              // Verify order was actually created in Fortnox
+              logger.info('✅ Fortnox order processed successfully', {
+                orderId,
+                orderNumber: order.orderNumber,
+                fortnoxOrderNumber: result.orderNumber,
+                customerNumber: result.customerNumber
+              })
+              
+              return result
+            },
+            3, // maxRetries
+            2000, // baseDelayMs
+            'Fortnox order sync'
+          )
+        ]).then(results => results[0])
+      } catch (fortnoxError: any) {
+        logger.error('❌ Fortnox sync failed after retries', {
+          orderId,
+          orderNumber: order.orderNumber,
+          error: fortnoxError.message || String(fortnoxError),
+          stack: fortnoxError.stack
+        })
+        
+        // Mark order for manual retry
+        await prisma.order.update({
+          where: { id: orderId },
+          data: { 
+            internalNotes: `${order.internalNotes || ''}\n[ERROR] Fortnox sync failed: ${fortnoxError.message || 'Unknown error'} - Manual retry required`.trim()
+          }
+        })
+        
+        // Don't throw - let Ongoing process continue
+        fortnoxResult = { status: 'rejected', reason: fortnoxError } as PromiseRejectedResult
+      }
+
+      // Process Ongoing (non-blocking)
+      const ongoingResult = await Promise.allSettled([
         (async () => {
-          logger.info('Processing Fortnox order', { orderId, orderNumber: order.orderNumber })
-          const result = await fortnoxService.processOrder(orderData)
-          logger.info('Fortnox order processed successfully', {
-            orderId,
-            customerNumber: result.customerNumber,
-            orderNumber: result.orderNumber
-          })
-          return result
-        })(),
-        (async () => {
-          logger.info('Processing Ongoing order', { orderId, orderNumber: order.orderNumber })
-          const result = await ongoingService.processOrder(orderData)
-          logger.info('Ongoing order processed successfully', {
-            orderId,
-            customerNumber: result.customerNumber,
-            orderNumber: result.orderNumber
-          })
-          return result
+          try {
+            logger.info('📤 Processing Ongoing order', { orderId, orderNumber: order.orderNumber })
+            const result = await ongoingService.processOrder(orderData)
+            logger.info('✅ Ongoing order processed successfully', {
+              orderId,
+              orderNumber: order.orderNumber,
+              ongoingOrderNumber: result.orderNumber
+            })
+            return result
+          } catch (error: any) {
+            logger.error('❌ Ongoing sync failed', {
+              orderId,
+              orderNumber: order.orderNumber,
+              error: error.message || String(error)
+            })
+            throw error
+          }
         })()
-      ])
+      ]).then(results => results[0])
 
       // Update order with integration references
       let internalNotes = order.internalNotes || ''
       
-      if (fortnoxResult.status === 'fulfilled') {
+      if (fortnoxResult?.status === 'fulfilled') {
         internalNotes += `\nFortnox order: ${fortnoxResult.value.orderNumber}`
-      } else {
-        logger.error('Failed to process Fortnox order', {
+        logger.info('✅ Fortnox sync completed', {
           orderId,
-          error: fortnoxResult.reason?.message || 'Unknown error'
+          orderNumber: order.orderNumber,
+          fortnoxOrderNumber: fortnoxResult.value.orderNumber
         })
-        // Kasta ett fel för att signalera att synken misslyckades
-        throw new Error(`Fortnox sync failed: ${fortnoxResult.reason?.message || 'Unknown error'}`)
+      } else {
+        const errorMsg = fortnoxResult?.status === 'rejected' 
+          ? (fortnoxResult.reason?.message || 'Unknown error')
+          : 'Unknown error'
+        logger.error('❌ Fortnox sync failed', {
+          orderId,
+          orderNumber: order.orderNumber,
+          error: errorMsg
+        })
+        // Don't throw - order is already marked as PAID, we'll retry later
       }
 
       if (ongoingResult.status === 'fulfilled') {
         internalNotes += `\nOngoing order: ${ongoingResult.value.orderNumber}`
-      } else {
-        logger.error('Failed to process Ongoing order', {
+        logger.info('✅ Ongoing sync completed', {
           orderId,
+          orderNumber: order.orderNumber
+        })
+      } else {
+        logger.error('❌ Ongoing sync failed', {
+          orderId,
+          orderNumber: order.orderNumber,
           error: ongoingResult.reason?.message || 'Unknown error'
         })
-        // Valfritt: Kasta fel även för Ongoing, eller bara logga
-        // throw new Error(`Ongoing sync failed: ${ongoingResult.reason?.message || 'Unknown error'}`)
+        // Non-critical - don't fail the whole process
       }
 
       // Update order with all references
@@ -703,8 +955,15 @@ async function handleOrderStatusChange(orderId: string, status: string, paymentS
           data: { internalNotes: internalNotes.trim() }
         })
       }
+      
+      logger.info('✅ Order status change processing completed', {
+        orderId,
+        orderNumber: order.orderNumber,
+        fortnoxSynced: fortnoxResult?.status === 'fulfilled',
+        ongoingSynced: ongoingResult.status === 'fulfilled'
+      })
     } else {
-      logger.info('Order does not meet sync criteria', { 
+      logger.info('⏭️  Order does not meet sync criteria', { 
         orderId, 
         status, 
         paymentStatus,
@@ -713,12 +972,28 @@ async function handleOrderStatusChange(orderId: string, status: string, paymentS
     }
 
   } catch (error) {
-    logger.error('Error handling order status change', {
+    logger.error('❌ Error handling order status change', {
       orderId,
       status,
       paymentStatus,
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined
     })
+    
+    // Mark order for manual retry
+    try {
+      await prisma.order.update({
+        where: { id: orderId },
+        data: { 
+          internalNotes: `[ERROR] Status change processing failed: ${error instanceof Error ? error.message : 'Unknown error'} - Manual retry required`
+        }
+      })
+    } catch (updateError) {
+      logger.error('Failed to update order with error note', {
+        orderId,
+        updateError: updateError instanceof Error ? updateError.message : String(updateError)
+      })
+    }
   }
 }
 

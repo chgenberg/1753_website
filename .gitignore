@@ -130,4 +130,4 @@ temp/
 .eslintcache
 
 # Misc
-*.tar.gz 
+*.tar.gz fortnox_token.json

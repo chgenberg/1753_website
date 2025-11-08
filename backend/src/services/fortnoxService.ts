@@ -284,6 +284,47 @@ class FortnoxService {
   }
 
   /**
+   * Fallback: Update Railway variables via GraphQL API if CLI is unavailable
+   */
+  private async upsertRailwayVariableGraphQL(name: string, value: string): Promise<boolean> {
+    try {
+      const railwayToken = process.env.RAILWAY_API_TOKEN
+      const projectId = process.env.RAILWAY_PROJECT_ID
+      const serviceId = process.env.RAILWAY_SERVICE_ID
+      const environmentId = process.env.RAILWAY_ENVIRONMENT_ID
+
+      if (!railwayToken || !projectId || !serviceId || !environmentId) {
+        logger.warn('Railway GraphQL credentials missing; cannot persist token', {
+          hasToken: !!railwayToken,
+          hasProject: !!projectId,
+          hasService: !!serviceId,
+          hasEnv: !!environmentId
+        })
+        return false
+      }
+
+      const resp = await axios.post(
+        'https://backboard.railway.app/graphql',
+        {
+          query: `mutation VariableUpsert($input: VariableUpsertInput!){ variableUpsert(input:$input){ id } }`,
+          variables: { input: { projectId, environmentId, serviceId, name, value } }
+        },
+        { headers: { Authorization: `Bearer ${railwayToken}`, 'Content-Type': 'application/json' } }
+      )
+
+      if (resp.data?.errors) {
+        logger.warn('Railway GraphQL upsert returned errors', { name, errors: resp.data.errors })
+        return false
+      }
+      logger.info(`✅ Railway GraphQL variable upsert succeeded for ${name}`)
+      return true
+    } catch (err: any) {
+      logger.warn('Railway GraphQL upsert failed', { name, error: err.message })
+      return false
+    }
+  }
+
+  /**
    * Refresh OAuth access token using refresh token.
    * This will also save the new refresh token to database or log it for manual update.
    */
@@ -320,19 +361,40 @@ class FortnoxService {
       }
 
       this.inMemoryAccessToken = newAccessToken
-      logger.info('Fortnox access token refreshed successfully (in-memory).')
+      logger.info('[Fortnox] ✅ Access token refreshed successfully (in-memory).', {
+        tokenLength: newAccessToken.length,
+        tokenPrefix: newAccessToken.substring(0, 20) + '...'
+      })
 
       // Best effort: keep env var in sync to avoid 401 after restarts
-      const apiUpdated = await this.updateAccessTokenInRailway(newAccessToken)
-      if (apiUpdated) {
-        logger.info('Updated FORTNOX_API_TOKEN in Railway (best effort).')
+      let apiUpdated = false
+      try {
+        apiUpdated = await this.updateAccessTokenInRailway(newAccessToken)
+        if (!apiUpdated) {
+          // Fallback to GraphQL if CLI failed/unavailable
+          logger.info('[Fortnox] Railway CLI update failed, trying GraphQL fallback...')
+          apiUpdated = await this.upsertRailwayVariableGraphQL('FORTNOX_API_TOKEN', newAccessToken)
+        }
+        if (apiUpdated) {
+          logger.info('[Fortnox] ✅ Updated FORTNOX_API_TOKEN in Railway (best effort).')
+        } else {
+          logger.warn('[Fortnox] ⚠️  Failed to update FORTNOX_API_TOKEN in Railway. Token is updated in-memory but will be lost on restart.')
+        }
+      } catch (updateError: any) {
+        logger.error('[Fortnox] ❌ Error updating Railway token', {
+          error: updateError.message || String(updateError)
+        })
       }
 
       if (newRefreshToken && newRefreshToken !== this.inMemoryRefreshToken) {
         this.inMemoryRefreshToken = newRefreshToken
         
         // Try to update Railway automatically first
-        const railwayUpdated = await this.updateRefreshTokenInRailway(newRefreshToken)
+        let railwayUpdated = await this.updateRefreshTokenInRailway(newRefreshToken)
+        if (!railwayUpdated) {
+          // Fallback to GraphQL upsert
+          railwayUpdated = await this.upsertRailwayVariableGraphQL('FORTNOX_REFRESH_TOKEN', newRefreshToken)
+        }
         
         if (railwayUpdated) {
           logger.info('🎉 Refresh token updated automatically in Railway! No manual action needed.')
@@ -437,16 +499,46 @@ class FortnoxService {
   }
   /**
    * Execute a Fortnox request and on 401, refresh token once and retry
+   * Förbättrad med bättre error handling och logging
    */
   private async withRefreshRetry<T>(fn: () => Promise<T>): Promise<T> {
     try {
       return await fn()
     } catch (error: any) {
       const status = error?.response?.status
+      
+      // Handle 401 Unauthorized - token expired or invalid
       if (status === 401 && this.isOAuthToken() && this.inMemoryRefreshToken) {
-        await this.refreshAccessToken()
-        return await fn()
+        logger.warn('[Fortnox] Received 401 Unauthorized, attempting token refresh...', {
+          error: error.response?.data || error.message,
+          hasRefreshToken: !!this.inMemoryRefreshToken
+        })
+        
+        try {
+          await this.refreshAccessToken()
+          logger.info('[Fortnox] Token refreshed successfully, retrying request...')
+          
+          // Retry the original request with new token
+          return await fn()
+        } catch (refreshError: any) {
+          logger.error('[Fortnox] Token refresh failed during retry', {
+            error: refreshError.message || String(refreshError),
+            originalError: error.message || String(error)
+          })
+          throw new Error(`Fortnox authentication failed: Token refresh failed - ${refreshError.message || 'Unknown error'}`)
+        }
       }
+      
+      // Handle other errors
+      if (status === 401) {
+        logger.error('[Fortnox] 401 Unauthorized but cannot refresh token', {
+          isOAuth: this.isOAuthToken(),
+          hasRefreshToken: !!this.inMemoryRefreshToken,
+          error: error.response?.data || error.message
+        })
+        throw new Error(`Fortnox authentication failed: ${error.response?.data?.message || error.message || 'Unauthorized'}`)
+      }
+      
       throw error
     }
   }
